@@ -200,3 +200,16 @@ production_server_key="defaultkey"
 
 Xác nhận server hoạt động từ trình duyệt hoặc thiết bị di động:
 `https://api.yourdomain.com/v2/rpc/get_game_config?table=heroes` (với header Authorization tương ứng).
+
+
+### Private runtime keys (C123)
+
+Keep actual values only in nakama/.env. Before using docker compose directly,
+run `python3 configure_runtime.py` from nakama/. `./deploy.sh start` and
+`./deploy.sh restart` do this automatically. The generated runtime.secret.yml
+is ignored by Git and mounted read-only; never print or commit its contents.
+Required socket, console/MFA, session and bridge keys are mapped from .env.
+`./deploy.sh seed` also passes the matching HTTP key without command-line secrets.
+Do not run `docker compose config` without capturing its output: resolved
+configuration contains secrets. No production deployment is performed by this change.
+Session/signing key changes require reauthentication of existing clients.

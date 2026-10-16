@@ -27,6 +27,9 @@ nakama/data/.cookie
 nakama/data/modules/build/
 nakama/local.yml
 nakama/iap.secret.yml
+nakama/runtime.secret.yml
+nakama/.runtime-secret-*
+nakama/google-play-service-account.json
 nakama/backups/
 .env
 nakama/.env
@@ -34,3 +37,4 @@ nakama/.env
 # Allow pre-compiled runtime bundle
 !nakama/data/build/
 !nakama/data/build/*.js
+nakama/google-play-service-account.json

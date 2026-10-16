@@ -5,3 +5,5 @@
 - [Seed, remote settings and publication commands](SEEDING.md).
 
 - [C121 Online-only gameplay config](contracts/C121_ONLINE_ONLY_CONFIG.md) - version 1.0.0; supersedes offline fallback.
+
+- [C123 Runtime secret binding](contracts/C123_RUNTIME_SECRET_BINDING.md) v1.0.0: use existing .env keys without logging or committing values.

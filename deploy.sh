@@ -42,6 +42,7 @@ wait_for_nakama() {
 
 cmd_start() {
     ensure_secrets
+    python3 configure_runtime.py
     echo "[INFO] Starting Survival TD stack (PostgreSQL, Nakama, Monetization Verifier)..."
     docker compose up -d --build
     wait_for_nakama
@@ -53,13 +54,15 @@ cmd_stop() {
 }
 
 cmd_restart() {
+    ensure_secrets
+    python3 configure_runtime.py
     cmd_stop
     cmd_start
 }
 
 cmd_seed() {
     echo "[INFO] Seeding game configurations into PostgreSQL via Nakama..."
-    python3 seed_all.py
+    python3 configure_runtime.py --seed
 }
 
 cmd_build() {
