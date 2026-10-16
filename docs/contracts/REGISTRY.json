@@ -1,6 +1,13 @@
 {
   "contracts": [
     {
+      "id": "C124_PUBLIC_PROXY_NETWORK",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "contract_file": "docs/contracts/C124_PUBLIC_PROXY_NETWORK.md",
+      "updated_at": "2026-10-16"
+    },
+    {
       "id": "C123_RUNTIME_SECRET_BINDING",
       "version": "1.0.0",
       "status": "ACTIVE",

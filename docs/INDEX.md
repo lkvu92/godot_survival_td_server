@@ -1,5 +1,7 @@
 # Server documentation
 
+- [C124 Public proxy network](contracts/C124_PUBLIC_PROXY_NETWORK.md) v1.0.0: shared Nginx network and stable game service aliases.
+
 - [C119 Config and seed integrity](contracts/C119_CONFIG_SEED_INTEGRITY.md) — v1.0.0.
 - [Repository split](../REPOSITORY_SPLIT.md).
 - [Seed, remote settings and publication commands](SEEDING.md).
