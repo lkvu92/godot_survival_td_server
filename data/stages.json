@@ -386,6 +386,9 @@
             "boss": true,
             "modifiers": {
               "speed_mul": 1.5,
+              "hp_mul": 0.5,
+              "atk_mul": 0.7,
+              "attack_speed_mul": 0.7,
               "def_mul": 0.8,
               "exp": 116
             }
@@ -831,6 +834,9 @@
             "boss": true,
             "modifiers": {
               "speed_mul": 1.5,
+              "hp_mul": 0.5,
+              "atk_mul": 0.7,
+              "attack_speed_mul": 0.7,
               "def_mul": 0.8,
               "exp": 226
             }
@@ -1861,6 +1867,9 @@
             "boss": true,
             "modifiers": {
               "speed_mul": 1.5,
+              "hp_mul": 0.5,
+              "atk_mul": 0.7,
+              "attack_speed_mul": 0.7,
               "def_mul": 0.8,
               "exp": 479
             }
