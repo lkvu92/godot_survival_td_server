@@ -12,6 +12,8 @@ Profile includes Đổi tên, remaining chance, input in shared Login skin and a
 
 Validation: compiled backend tests for generation/preservation, validation, one-time/replay/CAS; Godot rename UI and profile display tests; build and static checks. ACTIVE only after required verification.
 
+2026-10-16 verification: backend build and compiled-name tests pass; 42 globally registered RPC entrypoints and existing account-link regressions pass. Isolated PostgreSQL tests preserve spent rename quota for both merge winner choices. Rendered Godot rename flow passes explicit confirmation, pending prevention, display update and spent-chance state; UI visually inspected. Client static checks and 14 server Python tests pass. Full server runner still references the pre-existing missing test_new_profile_inventory.cjs. Backend deployed to VPS, DB/files backed up at /opt/thong-thien-lo/backups/player-names-20261016T143934Z; Nakama health 200 and rename_player registered. Existing profiles repair on next authenticated load. No real player rename chance was spent for validation; retain IN_PROGRESS pending live player acceptance. Provisional gate score 9/10.
+
 | Version | Date | Change |
 |---|---|---|
 | 1.0.0 | 2026-10-16 | Persistent generated Google player names, account-owned display and one-time rename. |

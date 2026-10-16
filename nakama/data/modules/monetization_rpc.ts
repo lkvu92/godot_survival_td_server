@@ -86,6 +86,18 @@ function monetizationMode(ctx: nkruntime.Context): string {
     return "sandbox";
 }
 
+function isProductionTestPurchaseAllowed(ctx: nkruntime.Context, nk: nkruntime.Nakama, purchase: nkruntime.ValidatedPurchase): boolean {
+    if (monetizationMode(ctx) !== "production" || String(purchase.environment).toLowerCase() === "production") return true;
+    const allowedEmails = String(ctx.env.GOOGLE_PLAY_TESTER_EMAILS || "")
+        .split(",").map((value) => value.trim().toLowerCase()).filter((value) => value.length > 0);
+    if (allowedEmails.length === 0) return false;
+    try {
+        return allowedEmails.indexOf(String(nk.accountGetId(ctx.userId).email || "").trim().toLowerCase()) >= 0;
+    } catch (_e) {
+        return false;
+    }
+}
+
 function environmentValue(ctx: nkruntime.Context, baseName: string): string {
     const suffix = monetizationMode(ctx) === "production" ? "PRODUCTION" : "DEVELOP";
     return String(ctx.env[`${baseName}_${suffix}`] || "");
@@ -212,7 +224,7 @@ function auditLegacyVipOrder(ctx: nkruntime.Context, nk: nkruntime.Nakama, order
     const validation = nk.purchaseValidateGoogle(ctx.userId, receipt, true);
     const purchase = (validation.validatedPurchases || []).find((p: any) => p.productId === order.product_id && isLinkedReceiptOwner(nk,p.userId,ctx.userId));
     if (!purchase || !purchase.transactionId || Number(purchase.refundTime || 0) > 0) throw new Error("Legacy purchase could not be verified");
-    if (mode === "production" && String(purchase.environment).toLowerCase() !== "production") throw new Error("Legacy test purchase cannot grant production VIP");
+    if (!isProductionTestPurchaseAllowed(ctx, nk, purchase)) throw new Error("Test purchase is not authorized for this account");
     const wire = JSON.parse(receipt);
     const token = String(wire.purchaseToken || wire.purchase_token || "");
     if (!token) throw new Error("Legacy receipt has no purchase token");
@@ -549,7 +561,7 @@ const iapGoogleClaim: nkruntime.RpcFunction = (ctx, logger, nk, payload) => {
             value && value.productId === productId && isLinkedReceiptOwner(nk,value.userId,ctx.userId));
         if (!purchase || !purchase.transactionId) return monetizationError(409, "Validated product does not match claim");
         receiptOwner = String(purchase.userId);
-        if (mode === "production" && String(purchase.environment).toLowerCase() !== "production") return monetizationError(409, "Test purchase cannot grant production rewards");
+        if (!isProductionTestPurchaseAllowed(ctx, nk, purchase)) return monetizationError(409, "Test purchase is not authorized for this account");
         transactionId = String(purchase.transactionId);
         seenBefore = Boolean(purchase.seenBefore);
         let receiptData: any;
