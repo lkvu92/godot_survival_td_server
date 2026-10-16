@@ -1,13 +1,15 @@
 # C123 — Password setup for Google accounts
 
-- Version: `1.0.0`
+- Version: `1.1.0`
 - Status: `IN_PROGRESS`
 - Date: `2026-10-16`
 - Scope: AuthService, ProfileDialog, PasswordSetupDialog, Login input styling; sibling server account_link.ts and main.ts.
 
 ## Behavior and API
 
-Profile exposes Cài đặt mật khẩu. Authenticated `account_password_status {}` returns `{success:true,email,has_password,can_setup}`. Email is read-only and comes from the current server account. Setup is available only for active Google-linked accounts with a nonempty email and no password. Existing passwords are never reset by this flow. No anonymous account lookup, profile creation, merge, reward or identity reassignment occurs.
+Profile exposes Cài đặt mật khẩu. Authenticated `account_password_status {}` returns `{success:true,email,has_password,can_setup}`. Email is read-only and comes from the current server account. Setup is available only for active Google-linked accounts with a nonempty email and no password. Existing passwords are never reset by this flow. No anonymous lookup RPC, profile creation, merge, reward or identity reassignment occurs.
+
+Email authentication before-hook identifies active Google accounts without an email password and rejects login/register with gRPC 9 and `PASSWORD_SETUP_REQUIRED` plus a precise Vietnamese explanation. It returns no account IDs, provider IDs or credentials. Other auth requests retain native behavior. AuthService maps only this marker to `action:setup_password`; ordinary wrong-password errors never claim the account lacks a password. Login automatically opens PasswordSetupDialog in recovery mode. Android verifies Google with create=false, checks the authenticated server email against the requested email, then enables password entry with the existing Google proof kept only in RAM. Wrong Google selection clears the temporary session and permits retry. Closing without success clears that session; success continues through LoadingScreen. Desktop opens the same dialog with a specific Android instruction, without granting access or permitting an unauthenticated password write.
 
 `setup_account_password {password,id_token}` requires an authenticated session and Google proof verified by `authenticateGoogle(create=false)` resolving to the same user ID. The server derives email and Google ID, validates password (at least 8 characters and at most 72 UTF-8 bytes), hashes with Nakama bcryptHash, and conditionally updates only the still-passwordless active user with unchanged identity. Concurrent setup has one winner. Account-link lease prevents merge while updating. No passwords/hashes/tokens in responses, logs, disk or analytics. TLS is required by production endpoint configuration.
 
@@ -27,4 +29,5 @@ Local verification (2026-10-16): backend build, password ownership/validation/re
 
 | Version | Date | Change |
 |---|---|---|
+| 1.1.0 | 2026-10-16 | Precise missing-password auth error and automatic Login-to-password recovery handoff with Google ownership verification. |
 | 1.0.0 | 2026-10-16 | Initial password setup on the existing Google account, server proof and Login-style UI. |

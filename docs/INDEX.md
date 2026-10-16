@@ -11,4 +11,4 @@
 
 - [C123 Runtime secret binding](contracts/C123_RUNTIME_SECRET_BINDING.md) v1.0.0: use existing .env keys without logging or committing values.
 
-- [C123 Account password setup](contracts/C123_ACCOUNT_PASSWORD.md) v1.0.0 IN_PROGRESS - Google proof, same account email login and Login-style UI.
+- [C123 Account password setup](contracts/C123_ACCOUNT_PASSWORD.md) v1.1.0 IN_PROGRESS - Google proof, same account email login and Login-style UI.

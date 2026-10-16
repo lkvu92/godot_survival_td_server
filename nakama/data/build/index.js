@@ -2633,6 +2633,16 @@ function isLinkedReceiptOwner(nk, receiptOwner, userId) {
   if (receiptOwner === userId) return true;
   return nk.sqlQuery("SELECT 1 FROM account_link_archives WHERE loser_id=$1::UUID AND winner_id=$2::UUID", [receiptOwner, userId]).length > 0;
 }
+function beforeEmailPasswordSetup(_ctx, _logger, nk, request) {
+  const email = request && request.account && request.account.email;
+  const password = request && request.account && request.account.password;
+  if (typeof email !== "string" || typeof password !== "string" || password.length < 8 || email.length > 255) return request;
+  const rows = nk.sqlQuery(`SELECT 1 FROM users WHERE email=$1
+        AND COALESCE(google_id,'')<>'' AND COALESCE(octet_length(password),0)=0
+        AND COALESCE(EXTRACT(EPOCH FROM disable_time),0)=0 LIMIT 1`, [email.toLowerCase()]);
+  if (rows.length) throw { code: 9, message: "PASSWORD_SETUP_REQUIRED: T\xE0i kho\u1EA3n n\xE0y \u0111\xE3 \u0111\u0103ng nh\u1EADp b\u1EB1ng Google nh\u01B0ng ch\u01B0a c\xE0i \u0111\u1EB7t m\u1EADt kh\u1EA9u email. H\xE3y x\xE1c nh\u1EADn Google \u0111\u1EC3 c\xE0i \u0111\u1EB7t m\u1EADt kh\u1EA9u." };
+  return request;
+}
 const accountPasswordStatus = (ctx, _logger, nk) => {
   if (!ctx.userId) return JSON.stringify({ success: false, code: 401, message: "C\u1EA7n \u0111\u0103ng nh\u1EADp l\u1EA1i." });
   const rows = nk.sqlQuery(`SELECT email, COALESCE(octet_length(password),0)>0 AS has_password,
@@ -6433,6 +6443,7 @@ function InitModule(ctx, logger, nk, initializer) {
   createGameConfigTables(nk, logger);
   createMonetizationTables(nk, logger);
   createAccountLinkTables(nk);
+  initializer.registerBeforeAuthenticateEmail(beforeEmailPasswordSetup);
   initializer.registerRpc("account_password_status", linkedRpc_account_password_status);
   initializer.registerRpc("setup_account_password", linkedRpc_setup_account_password);
   initializer.registerRpc("google_link_status", linkedRpc_google_link_status);

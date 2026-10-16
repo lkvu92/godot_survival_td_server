@@ -174,6 +174,18 @@ function isLinkedReceiptOwner(nk: nkruntime.Nakama, receiptOwner: string, userId
     return nk.sqlQuery("SELECT 1 FROM account_link_archives WHERE loser_id=$1::UUID AND winner_id=$2::UUID", [receiptOwner,userId]).length > 0;
 }
 
+function beforeEmailPasswordSetup(_ctx: nkruntime.Context, _logger: nkruntime.Logger, nk: nkruntime.Nakama, request: any): any {
+    const email=request && request.account && request.account.email;
+    const password=request && request.account && request.account.password;
+    // Preserve Nakama validation and username authentication for all other requests.
+    if (typeof email!=="string" || typeof password!=="string" || password.length<8 || email.length>255) return request;
+    const rows=nk.sqlQuery(`SELECT 1 FROM users WHERE email=$1
+        AND COALESCE(google_id,'')<>'' AND COALESCE(octet_length(password),0)=0
+        AND COALESCE(EXTRACT(EPOCH FROM disable_time),0)=0 LIMIT 1`,[email.toLowerCase()]);
+    if (rows.length) throw {code:9,message:"PASSWORD_SETUP_REQUIRED: Tài khoản này đã đăng nhập bằng Google nhưng chưa cài đặt mật khẩu email. Hãy xác nhận Google để cài đặt mật khẩu."};
+    return request;
+}
+
 const accountPasswordStatus: nkruntime.RpcFunction = (ctx, _logger, nk) => {
     if (!ctx.userId) return JSON.stringify({success:false,code:401,message:"Cần đăng nhập lại."});
     const rows = nk.sqlQuery(`SELECT email, COALESCE(octet_length(password),0)>0 AS has_password,

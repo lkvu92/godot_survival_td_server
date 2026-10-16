@@ -61,3 +61,15 @@ assert.equal(invoke('accountPasswordStatus', ctx, nk, '{}').has_password, true);
 assert.equal(invoke('accountPasswordStatus', ctx, nk, '{}').can_setup, false);
 assert.equal(setup(body()).code, 409); assert.equal(updated, 1, 'retries cannot reset an existing password');
 console.log('PASS password setup: ownership, validation, conditional update, replay and account lease');
+const hook=vm.runInContext('beforeEmailPasswordSetup',context);
+for (const create of [false,true]) {
+  const request={account:{email:'Google@Example.test',password:'test-password'},create};
+  let queryArgs;
+  assert.throws(()=>hook({}, {}, {sqlQuery(sql,args){queryArgs=args;assert(sql.includes("COALESCE(octet_length(password),0)=0"));return [{}];}}, request),
+    error=>error.code===9 && error.message.startsWith('PASSWORD_SETUP_REQUIRED:'));
+  assert.equal(queryArgs[0],'google@example.test');
+  assert.strictEqual(hook({}, {}, {sqlQuery(){return [];}},request),request,'normal password and new account retain native auth');
+}
+const usernameRequest={account:{password:'test-password'},username:'player'};
+assert.strictEqual(hook({}, {}, {sqlQuery(){throw Error('must not query');}},usernameRequest),usernameRequest);
+console.log('PASS email auth recovery hook: precise missing-password marker for login/register, native auth preserved');

@@ -105,6 +105,7 @@ declare namespace nkruntime {
     }
 
     interface Initializer {
+        registerBeforeAuthenticateEmail(func: (ctx: Context, logger: Logger, nk: Nakama, request: any) => any): void;
         registerRpc(id: string, func: RpcFunction): void;
         registerBeforeRt(id: string, func: any): void;
         registerAfterRt(id: string, func: any): void;

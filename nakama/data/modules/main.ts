@@ -136,6 +136,7 @@ function InitModule(
     createGameConfigTables(nk, logger);
     createMonetizationTables(nk, logger);
     createAccountLinkTables(nk);
+    initializer.registerBeforeAuthenticateEmail(beforeEmailPasswordSetup);
     initializer.registerRpc("account_password_status", linkedRpc_account_password_status);
     initializer.registerRpc("setup_account_password", linkedRpc_setup_account_password);
     initializer.registerRpc("google_link_status", linkedRpc_google_link_status);
