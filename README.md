@@ -1,5 +1,7 @@
 # Survival TD — Production Backend Deployment (VPS)
 
+Seed/schema updates and explicit ads/payment publication: [Seeding guide](docs/SEEDING.md).
+
 > **Repository:** `https://github.com/lkvu92/godot_survival_td_server.git` — branch `main`
 > Nhánh này chỉ chứa toàn bộ mã nguồn backend, dịch vụ xác thực thanh toán, cấu hình Docker và dữ liệu cân bằng game (`data/*.json`) cần thiết để vận hành máy chủ trên VPS. Đã loại bỏ hoàn toàn mã nguồn client Godot, assets hình ảnh/âm thanh và tài liệu phát triển.
 

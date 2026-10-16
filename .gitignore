@@ -20,6 +20,7 @@ node_modules/
 # Python
 __pycache__/
 *.pyc
+.tmp-*/
 
 # Nakama runtime & build
 nakama/data/.cookie

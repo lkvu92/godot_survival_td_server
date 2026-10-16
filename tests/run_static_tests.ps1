@@ -1,0 +1,21 @@
+$ErrorActionPreference = 'Stop'
+$repoRoot = Split-Path $PSScriptRoot -Parent
+Push-Location $repoRoot
+try {
+    Get-ChildItem data -Filter '*.json' -Recurse | ForEach-Object {
+        Get-Content -LiteralPath $_.FullName -Raw -Encoding UTF8 | ConvertFrom-Json | Out-Null
+    }
+    & node --check nakama/data/build/index.js
+    if ($LASTEXITCODE -ne 0) { throw 'Runtime syntax failed' }
+    & node --check services/monetization-verifier/src/server.js
+    if ($LASTEXITCODE -ne 0) { throw 'Verifier syntax failed' }
+    & python -B -m unittest discover -s tests -p 'test_*.py'
+    if ($LASTEXITCODE -ne 0) { throw 'Seed CLI regressions failed' }
+    if ($env:SEED_TEST_PSQL -and $env:SEED_TEST_PORT) {
+        & node tests/test_seed_integrity.cjs
+        if ($LASTEXITCODE -ne 0) { throw 'PostgreSQL regressions failed' }
+    }
+    Write-Output 'PASS server static checks and seed CLI regressions'
+} finally {
+    Pop-Location
+}

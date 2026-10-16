@@ -1,11 +1,99 @@
-// Gọi 1 lần qua RPC "seed_game_data" từ Console hoặc curl
+// PostgreSQL dollar quoting avoids SQL injection and backslash/encoding ambiguity.
+function seedSqlLiteral(value: any): string {
+    if (value === null || value === undefined) return "NULL";
+    if (typeof value === "boolean") return value ? "TRUE" : "FALSE";
+    if (typeof value === "number") {
+        if (!Number.isFinite(value)) throw new Error("Non-finite SQL value");
+        return String(value);
+    }
+    const text = String(value);
+    if (text.indexOf("\u0000") >= 0) throw new Error("NUL is not supported");
+    let tag = "$seed$";
+    while (text.indexOf(tag) >= 0) tag = tag.slice(0, -1) + "x$";
+    return tag + text + tag;
+}
+
+function seedBindSql(sql: string, params: any[]): string {
+    return sql.replace(/\$(\d+)/g, (_match, index) => {
+        if (Number(index) > params.length) throw new Error("Missing SQL parameter");
+        return seedSqlLiteral(params[Number(index) - 1]);
+    });
+}
+
+function seedPgArray(values: string[]): string {
+    return "{" + values.map(value => '"' + value.replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '"').join(",") + "}";
+}
+
+function validateSeedRequest(data: any): string {
+    const tables = ["heroes","enemies","items","skills","stages","stage_levels","arcs","cards","effects","talismans","store_catalog","content_configs","config","remote_settings"];
+    if (tables.indexOf(data.table) < 0) return "Unknown table";
+    if (data.replace_all !== undefined && typeof data.replace_all !== "boolean") return "replace_all must be boolean";
+    if (data.table === "config") {
+        return typeof data.config_key !== "string" || !data.config_key || !data.config_value || typeof data.config_value !== "object" || Array.isArray(data.config_value) ? "Invalid config" : "";
+    }
+    const ids: {[id:string]: boolean} = {};
+    const extensions = seedExtensionColumns()[data.table] || {};
+    for (const row of data.rows) {
+        if (!row || typeof row !== "object" || Array.isArray(row)) return "Invalid row";
+        const id = data.table === "remote_settings" ? row.module + ":" + row.key : row.id;
+        if ((typeof id !== "string" && typeof id !== "number") || !String(id) || ids[String(id)]) return "Missing or duplicate id";
+        ids[String(id)] = true;
+        if (data.table === "store_catalog") {
+            if (typeof row.product_id !== "string" || !row.product_id || ids["product:" + row.product_id]) return "Missing or duplicate product_id";
+            ids["product:" + row.product_id] = true;
+        }
+        if (data.table === "talismans" && (!Number.isInteger(row.id) || row.id <= 0)) return "Invalid talisman id";
+        if (["heroes","enemies","items","skills","stages","arcs","cards","effects"].indexOf(data.table) >= 0 && (typeof row.display_name !== "string" || !row.display_name)) return "Missing display_name";
+        if (data.table === "stage_levels" && (!row.stage_id || !row.level_id)) return "Missing stage reference";
+        for (const key of Object.keys(extensions)) {
+            if (row[key] === undefined) continue;
+            const type = extensions[key];
+            if (type === "INT" && (!Number.isInteger(row[key]) || row[key] < 0)) return "Invalid integer: " + key;
+            if (type === "REAL" && (typeof row[key] !== "number" || !Number.isFinite(row[key]) || row[key] < 0)) return "Invalid number: " + key;
+            if (type === "TEXT" && typeof row[key] !== "string") return "Invalid text: " + key;
+            if (type === "JSONB" && (!row[key] || typeof row[key] !== "object")) return "Invalid JSON: " + key;
+            if (["boss_skill_ids","boss_skill_entry_indexes","spawn_sequence"].indexOf(key) >= 0 && !Array.isArray(row[key])) return "Expected array: " + key;
+            if (["fragment_drop","stage_rules","stat_growth","metadata"].indexOf(key) >= 0 && Array.isArray(row[key])) return "Expected object: " + key;
+        }
+        if (row.waves !== undefined && (!Array.isArray(row.waves) || row.waves.some((wave: any) => !wave || typeof wave !== "object" || (wave.entries !== undefined && !Array.isArray(wave.entries))))) return "Invalid waves";
+        if (data.table === "content_configs" && (!row.payload || typeof row.payload !== "object" || Array.isArray(row.payload))) return "Invalid content config";
+        if (data.table === "remote_settings") {
+            if (["system","game_play"].indexOf(row.module) < 0 || typeof row.key !== "string" || !row.key || typeof row.value !== "string") return "Invalid setting";
+            try { parseRemoteSetting(row.value_type, row.value); } catch (_e) { return "Invalid setting type/value"; }
+            if (["ads_enabled","payment_enabled"].indexOf(row.key) >= 0 && (row.module !== "system" || row.value_type !== "bool")) return "Feature flags must be system bools";
+        }
+    }
+    return "";
+}
+
+// One request is one transaction; do not use BEGIN/COMMIT across pooled sqlExec calls.
 const seedGameData: nkruntime.RpcFunction = (
     ctx: nkruntime.Context,
     logger: nkruntime.Logger,
     nk: nkruntime.Nakama,
     payload: string
 ): string => {
-    const data = JSON.parse(payload);
+    if (ctx.userId && ctx.userId !== String(ctx.env.CONFIG_ADMIN_USER_ID || "")) {
+        return JSON.stringify({error: "Forbidden", code: 403});
+    }
+    let data: any;
+    try { data = JSON.parse(payload); } catch (_e) { return JSON.stringify({error: "Invalid JSON"}); }
+    if (!data || typeof data !== "object" || Array.isArray(data)) return JSON.stringify({error: "Expected object"});
+    const statements: string[] = [];
+    const checks: string[] = [];
+    const write = (sql: string, params: any[]) => {
+        statements.push(seedBindSql(sql, params));
+        const insert = /INSERT INTO\s+(\w+)\s*\(([^)]+)\)\s*VALUES\s*\(([^)]+)\)/i.exec(sql);
+        if (insert) {
+            const columns = insert[2].split(",").map(value => value.trim());
+            const values = insert[3].split(",").map(value => value.trim());
+            // NOW() and generated columns are not input values.
+            // Cast expected values through the real table type (not NUMERIC vs REAL).
+            const predicates = columns.map((column, i) => /^\$\d+(::\w+)?$/.test(values[i] || "") ? column + " IS NOT DISTINCT FROM (jsonb_populate_record(NULL::" + insert[1] + ",jsonb_build_object('" + column + "'," + seedBindSql(values[i], params) + ")))." + column : "").filter(Boolean);
+            checks.push(`IF NOT EXISTS (SELECT 1 FROM ${insert[1]} WHERE ${predicates.join(" AND ")}) THEN RAISE EXCEPTION 'Seed readback mismatch'; END IF`);
+        }
+    };
+    try {
     // payload format: { "table": "heroes", "rows": [...] }
 
     const table = data.table as string;
@@ -16,24 +104,21 @@ const seedGameData: nkruntime.RpcFunction = (
     }
 
     // "config" table uses config_value instead of rows
-    if (table !== "config" && (!rows || rows.length === 0)) {
+    if (table !== "config" && (!Array.isArray(rows) || rows.length === 0)) {
         return JSON.stringify({ error: "Missing table or rows" });
     }
 
+    const validation = validateSeedRequest(data);
+    if (validation) return JSON.stringify({error: validation});
     let inserted = 0;
 
     switch (table) {
         case "heroes":
-            const heroIds = rows.map((r: any) => `'${r.id}'`).join(',');
-            if (heroIds.length > 0) {
-                try {
-                    nk.sqlExec(`DELETE FROM game_heroes WHERE id NOT IN (${heroIds})`, []);
-                } catch (e) {
-                    logger.warn(`Could not prune obsolete heroes: ${e}`);
-                }
+            if (data.replace_all === true) {
+                write("DELETE FROM game_heroes WHERE NOT (id = ANY($1::text[]))", [seedPgArray(rows.map((r: any) => r.id))]);
             }
             for (const row of rows) {
-                nk.sqlExec(`
+                write(`
                     INSERT INTO game_heroes (id, display_name, role, element, description,
                         auto_basic_attack, visual_scale, price, require, attributes, level_up_stats,
                         starting_skills, skill_pool)
@@ -49,7 +134,7 @@ const seedGameData: nkruntime.RpcFunction = (
                     row.id, row.display_name, row.role || '',
                     row.element || '', row.description || '',
                     row.auto_basic_attack !== false,
-                    row.visual_scale || 1.0,
+                    row.visual_scale ?? 1.0,
                     JSON.stringify(row.price || {}),
                     JSON.stringify(row.require || {}),
                     JSON.stringify(row.attributes || {}),
@@ -63,7 +148,7 @@ const seedGameData: nkruntime.RpcFunction = (
 
         case "enemies":
             for (const row of rows) {
-                nk.sqlExec(`
+                write(`
                     INSERT INTO game_enemies (id, display_name, element, attack_type, visual_scale, boss_visual_scale, exp,
                         is_boss, boss_scale, attributes, skills, attack_effects, generic_skills, boss_skills, reward)
                     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10::jsonb,$11::jsonb,$12::jsonb,$13::jsonb,$14::jsonb,$15::jsonb)
@@ -77,9 +162,9 @@ const seedGameData: nkruntime.RpcFunction = (
                         updated_at=NOW()
                 `, [
                     row.id, row.display_name, row.element || '',
-                    row.attack_type || 'melee', row.visual_scale || 0.364,
-                    row.boss_visual_scale || 0.442, row.exp || 0,
-                    row.is_boss || false, row.boss_scale || 1.0,
+                    row.attack_type || 'melee', row.visual_scale ?? 0.364,
+                    row.boss_visual_scale ?? 0.442, row.exp ?? 0,
+                    row.is_boss || false, row.boss_scale ?? 1.0,
                     JSON.stringify(row.attributes || {}),
                     JSON.stringify(row.skills || []),
                     JSON.stringify(row.attack_effects || []),
@@ -94,9 +179,9 @@ const seedGameData: nkruntime.RpcFunction = (
         case "items":
 			// Remove superseded mock/rune-backed talisman materials. Upgrade
 			// requirements now use the dedicated Thiên Tinh catalog item.
-			nk.sqlExec("DELETE FROM game_items WHERE id IN ('mat_wood','mat_water','mat_metal','mat_earth','stone_metal_high','talisman_meteorite_low','talisman_meteorite_medium','talisman_meteorite_high','talisman_heavenly_crystal_low')", []);
+			write("DELETE FROM game_items WHERE id IN ('mat_wood','mat_water','mat_metal','mat_earth','stone_metal_high','talisman_meteorite_low','talisman_meteorite_medium','talisman_meteorite_high','talisman_heavenly_crystal_low')", []);
             for (const row of rows) {
-                nk.sqlExec(`
+                write(`
                     INSERT INTO game_items (id, display_name, description, category, rarity,
                         icon_id, stackable, max_stack, sort_order, expires_after_hours, tags, attributes)
                     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11::jsonb,$12::jsonb)
@@ -111,8 +196,8 @@ const seedGameData: nkruntime.RpcFunction = (
                     row.id, row.display_name, row.description || '',
                     row.category || '', row.rarity || 'common',
                     row.icon_id || '', row.stackable !== false,
-                    row.max_stack || 999, row.order || 0,
-                    row.expires_after_hours || 0,
+                    row.max_stack ?? 999, row.order ?? 0,
+                    row.expires_after_hours ?? 0,
                     JSON.stringify(row.tags || []),
                     JSON.stringify(row.attributes || {})
                 ]);
@@ -122,7 +207,7 @@ const seedGameData: nkruntime.RpcFunction = (
 
         case "skills":
             for (const row of rows) {
-                nk.sqlExec(`
+                write(`
                     INSERT INTO game_skills (id, display_name, category, skill_class,
                         activation, skill_type, element, description, positioning, deployment,
                         vfx_frames, cast_config, description_rows, criteria_unlock, hero_level_unlock, levels)
@@ -145,7 +230,7 @@ const seedGameData: nkruntime.RpcFunction = (
                     JSON.stringify(row.cast_config || {}),
                     JSON.stringify(row.description_rows || []),
                     JSON.stringify(row.createria_unlock || row.criteria_unlock || {}),
-					Math.max(1, Number(row.hero_level_unlock || 1)),
+					Math.max(1, Number(row.hero_level_unlock ?? 1)),
                     JSON.stringify(row.levels || [])
                 ]);
                 inserted++;
@@ -155,7 +240,7 @@ const seedGameData: nkruntime.RpcFunction = (
         case "stages":
             // stages.json has waves embedded — split into game_stages + game_stage_waves
             for (const row of rows) {
-                nk.sqlExec(`
+                write(`
                     INSERT INTO game_stages (id, arc_id, level, display_name, description,
                         sort_order, exp_weight, is_boss, background, music, enabled_if, difficulty_levels, loot_table)
                     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11::jsonb,$12::jsonb,$13::jsonb)
@@ -168,10 +253,10 @@ const seedGameData: nkruntime.RpcFunction = (
                         loot_table=EXCLUDED.loot_table,
                         updated_at=NOW()
                 `, [
-                    row.id, row.arc_id, row.level || 1,
+                    row.id, row.arc_id, row.level ?? 1,
                     row.display_name, row.description || '',
-                    row.order || row.sort_order || 0,
-					row.exp_weight || 1.0, row.is_boss || false, row.background || '',
+                    row.order ?? row.sort_order ?? 0,
+					row.exp_weight ?? 1.0, row.is_boss || false, row.background || '',
                     row.music || '',
                     JSON.stringify(row.enabled_if || {}),
                     JSON.stringify(row.difficulty_levels || []),
@@ -182,10 +267,10 @@ const seedGameData: nkruntime.RpcFunction = (
                 const waves = row.waves || [];
                 // A stage may gain or lose waves between data revisions. Clear its
                 // relational children first so obsolete wave rows cannot survive a reseed.
-                nk.sqlExec("DELETE FROM game_stage_waves WHERE stage_id = $1", [row.id]);
+                write("DELETE FROM game_stage_waves WHERE stage_id = $1", [row.id]);
                 for (let i = 0; i < waves.length; i++) {
                     const wave = waves[i];
-                    nk.sqlExec(`
+                    write(`
                         INSERT INTO game_stage_waves (stage_id, wave_index, wave_id, display_name, entries)
                         VALUES ($1, $2, $3, $4, $5::jsonb)
                         ON CONFLICT (stage_id, wave_index) DO UPDATE SET
@@ -203,7 +288,7 @@ const seedGameData: nkruntime.RpcFunction = (
 
         case "stage_levels":
             for (const row of rows) {
-                nk.sqlExec(`
+                write(`
                     INSERT INTO game_stage_levels (id, stage_id, level_id, display_name, description,
                         sort_order, recommended_power, exp_multiplier, stamina_cost, gold_reward, enemy_modifiers, loot_table, boss_loot_table,
                         unlock_condition, stage_rules, ui)
@@ -217,8 +302,8 @@ const seedGameData: nkruntime.RpcFunction = (
                         stage_rules=EXCLUDED.stage_rules, ui=EXCLUDED.ui, updated_at=NOW()
                 `, [
                     row.id, row.stage_id, row.level_id, row.display_name || row.level_id,
-                    row.description || '', row.order || row.sort_order || 0,
-                    row.recommended_power || 0, row.exp_multiplier || 1.0, row.stamina_cost || 1, row.gold_reward || 0,
+                    row.description || '', row.order ?? row.sort_order ?? 0,
+                    row.recommended_power ?? 0, row.exp_multiplier ?? 1.0, row.stamina_cost ?? 1, row.gold_reward ?? 0,
                     JSON.stringify(row.enemy_modifiers || {}), JSON.stringify(row.loot_table || []), JSON.stringify(row.boss_loot_table || []),
                     JSON.stringify(row.unlock_condition || {}), JSON.stringify(row.stage_rules || {}),
                     JSON.stringify(row.ui || {})
@@ -229,7 +314,7 @@ const seedGameData: nkruntime.RpcFunction = (
 
         case "arcs":
             for (const row of rows) {
-                nk.sqlExec(`
+                write(`
                     INSERT INTO game_arcs (id, display_name, description, level_min, level_max,
                         element, sort_order, enabled_if, stage_ids)
                     VALUES ($1,$2,$3,$4,$5,$6,$7,$8::jsonb,$9::jsonb)
@@ -240,9 +325,9 @@ const seedGameData: nkruntime.RpcFunction = (
                         enabled_if=EXCLUDED.enabled_if, stage_ids=EXCLUDED.stage_ids
                 `, [
                     row.id, row.display_name, row.description || '',
-                    row.level_min || 1, row.level_max || 10,
+                    row.level_min ?? 1, row.level_max ?? 10,
                     row.element || '',
-                    row.order || row.sort_order || 0,
+                    row.order ?? row.sort_order ?? 0,
                     JSON.stringify(row.enabled_if || {}),
                     JSON.stringify(row.stage_ids || [])
                 ]);
@@ -252,7 +337,7 @@ const seedGameData: nkruntime.RpcFunction = (
 
         case "cards":
             for (const row of rows) {
-                nk.sqlExec(`
+                write(`
                     INSERT INTO game_cards (id, display_name, card_type, rarity, icon_id,
                         description, effect_description, effect)
                     VALUES ($1,$2,$3,$4,$5,$6,$7,$8::jsonb)
@@ -278,7 +363,7 @@ const seedGameData: nkruntime.RpcFunction = (
 				delete metadata.display_name;
 				delete metadata.description;
 				delete metadata.default_props;
-                nk.sqlExec(`
+                write(`
                     INSERT INTO game_effects (id, display_name, description, default_props, metadata)
                     VALUES ($1,$2,$3,$4::jsonb,$5::jsonb)
                     ON CONFLICT (id) DO UPDATE SET
@@ -294,11 +379,11 @@ const seedGameData: nkruntime.RpcFunction = (
 
         case "talismans":
             for (const row of rows) {
-                const numericId = Number(row.id || 0);
+                const numericId = Number(row.id ?? 0);
                 const qualityTier = numericId <= 15 ? "Hạ phẩm" : (numericId <= 25 ? "Trung phẩm" : "Thượng phẩm");
                 const elementOrder = ["metal", "wood", "water", "fire", "earth"];
                 const normalizedElement = row.element || elementOrder[Math.max(0, numericId - 16) % elementOrder.length];
-                nk.sqlExec(`
+                write(`
                     INSERT INTO game_talismans (id, display_name, tier, element, type, level, max_level,
                         is_equipped, description, skill, stats, upgrade_exp, upgrade_max_exp, materials)
                     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11::jsonb,$12,$13,$14::jsonb)
@@ -311,13 +396,13 @@ const seedGameData: nkruntime.RpcFunction = (
                         updated_at=NOW()
                 `, [
                     row.id, row.name || row.display_name || '',
-                    qualityTier, normalizedElement, row.type || 'attack',
-                    row.level || 1, row.max_level || 30,
+                    row.tier || qualityTier, normalizedElement, row.type || 'attack',
+                    row.level ?? 1, row.max_level ?? 30,
                     row.is_equipped === true, row.description || '',
                     row.skill || '',
                     JSON.stringify(row.stats || {}),
-                    row.upgrade_exp || 0,
-                    row.upgrade_max_exp || 20,
+                    row.upgrade_exp ?? 0,
+                    row.upgrade_max_exp ?? 20,
                     JSON.stringify(row.materials || [])
                 ]);
                 inserted++;
@@ -327,14 +412,14 @@ const seedGameData: nkruntime.RpcFunction = (
         case "store_catalog":
             // Products removed from the seed are retained for PO history but
             // cannot be sold until explicitly present and active again.
-            nk.sqlExec("UPDATE game_store_products SET active = FALSE, updated_at = NOW()", []);
+            if (data.replace_all === true) write("UPDATE game_store_products SET active = FALSE, updated_at = NOW()", []);
             for (const row of rows) {
                 const rewards = Array.isArray(row.rewards) ? row.rewards : [];
                 if (!row.product_id || !row.id || rewards.length === 0) {
                     return JSON.stringify({ error: `Invalid store product: ${row.product_id || row.id || "unknown"}` });
                 }
                 for (const reward of rewards) {
-                    if (!reward.reward_type || !reward.reward_id || Number(reward.quantity || 0) <= 0) {
+                    if (!reward || ["item","hero","currency","entitlement","stamina"].indexOf(reward.reward_type) < 0 || !reward.reward_id || !Number.isSafeInteger(reward.quantity) || reward.quantity <= 0) {
                         return JSON.stringify({ error: `Invalid reward in product ${row.product_id}` });
                     }
                     if (reward.reward_type === "item" && nk.sqlQuery("SELECT id FROM game_items WHERE id = $1", [reward.reward_id]).length === 0) {
@@ -344,7 +429,7 @@ const seedGameData: nkruntime.RpcFunction = (
                         return JSON.stringify({ error: `Unknown hero ${reward.reward_id} in product ${row.product_id}` });
                     }
                 }
-                nk.sqlExec(`
+                write(`
                     INSERT INTO game_store_products
                         (product_id, pack_id, tab_id, display_name, description, badge,
                          icon_type, icon_key, fallback_price, google_product_type,
@@ -365,11 +450,11 @@ const seedGameData: nkruntime.RpcFunction = (
                     row.desc || row.subtitle || "", row.badge || "", row.icon_type || "pack",
                     row.icon_key || "", row.price || row.display_price || "", "inapp",
                     row.fulfillment_type || "consumable", row.active === true,
-                    row.unique_purchase === true, Number(row.purchase_limit || 0),
+                    row.unique_purchase === true, Number(row.purchase_limit ?? 0),
                     row.purchase_limit_period || "", JSON.stringify(row)
                 ]);
-                nk.sqlExec("DELETE FROM game_store_product_rewards WHERE product_id = $1", [row.product_id]);
-                rewards.forEach((reward: any, index: number) => nk.sqlExec(`
+                write("DELETE FROM game_store_product_rewards WHERE product_id = $1", [row.product_id]);
+                rewards.forEach((reward: any, index: number) => write(`
                     INSERT INTO game_store_product_rewards
                         (product_id, line_no, reward_type, reward_id, quantity, metadata)
                     VALUES ($1,$2,$3,$4,$5,$6::jsonb)
@@ -386,7 +471,7 @@ const seedGameData: nkruntime.RpcFunction = (
                     const validationError = eventValidateConfig(row.payload);
                     if (validationError) return JSON.stringify({ error: `Invalid events config: ${validationError}` });
                 }
-                nk.sqlExec(`
+                write(`
                     INSERT INTO game_content_configs (id, payload, active, updated_at)
                     VALUES ($1, $2::jsonb, $3, NOW())
                     ON CONFLICT (id) DO UPDATE SET payload=EXCLUDED.payload,
@@ -396,9 +481,21 @@ const seedGameData: nkruntime.RpcFunction = (
             }
             break;
 
+        case "remote_settings":
+            for (const row of rows) {
+                write(`INSERT INTO remote_config_settings (module,key,value_type,value,description,is_active,updated_by)
+                    VALUES ($1,$2,$3,$4,$5,$6,$7)
+                    ON CONFLICT (module,key) DO UPDATE SET value_type=EXCLUDED.value_type,
+                    value=EXCLUDED.value,description=EXCLUDED.description,is_active=EXCLUDED.is_active,
+                    updated_by=EXCLUDED.updated_by,updated_at=NOW()`,
+                    [row.module,row.key,row.value_type,row.value,row.description ?? "",row.is_active !== false,ctx.userId || "http-key-seed"]);
+                inserted++;
+            }
+            break;
+
         case "config":
             // progression.json → key="progression"
-            nk.sqlExec(`
+            write(`
                 INSERT INTO game_config (key, value)
                 VALUES ($1, $2::jsonb)
                 ON CONFLICT (key) DO UPDATE SET value=EXCLUDED.value, updated_at=NOW()
@@ -410,6 +507,33 @@ const seedGameData: nkruntime.RpcFunction = (
             return JSON.stringify({ error: `Unknown table: ${table}` });
     }
 
+    const columns = seedExtensionColumns()[table];
+    if (columns) for (const row of rows) {
+        const fields = Object.keys(columns).filter(key => key === "metadata" || row[key] !== undefined);
+        if (!fields.length) continue;
+        const params: any[] = [row.id];
+        const assignments = fields.map(key => {
+            let value = row[key];
+            if (table === "skills" && key === "metadata") {
+                value = {...row};
+                ["id","display_name","category","skill_class","activation","skill_type","element","description",
+                 "positioning","deployment","vfx_frames","cast_config","description_rows","criteria_unlock",
+                 "createria_unlock","hero_level_unlock","levels","metadata"].forEach(k => delete value[k]);
+            }
+            params.push(columns[key] === "JSONB" ? JSON.stringify(value) : value);
+            return `${key}=$${params.length}${columns[key] === "JSONB" ? "::jsonb" : ""}`;
+        });
+        write(`UPDATE game_${table} SET ${assignments.join(",")} WHERE id=$1`, params);
+        const predicates = fields.map((key, index) => `${key} IS NOT DISTINCT FROM (jsonb_populate_record(NULL::game_${table},jsonb_build_object('${key}',${seedSqlLiteral(params[index + 1])}${columns[key] === "JSONB" ? "::jsonb" : ""}))).${key}`);
+        checks.push(`IF NOT EXISTS (SELECT 1 FROM game_${table} WHERE id=${seedSqlLiteral(row.id)} AND ${predicates.join(" AND ")}) THEN RAISE EXCEPTION 'Seed extension readback mismatch'; END IF`);
+    }
+    // One PostgreSQL statement runs every mutation atomically, even with pooled connections.
+    const body = "BEGIN\n" + statements.concat(checks).join(";\n") + ";\nEND";
+    nk.sqlExec("DO " + seedSqlLiteral(body), []);
     logger.info(`Seeded ${inserted} rows into ${table}`);
     return JSON.stringify({ success: true, table, inserted });
+    } catch (error) {
+        logger.error("Seed request failed: %s", String(error));
+        return JSON.stringify({error: "Seed failed; no changes committed", code: 422});
+    }
 };

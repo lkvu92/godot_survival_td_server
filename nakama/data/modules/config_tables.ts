@@ -1,3 +1,44 @@
+function seedExtensionColumns(): {[table: string]: {[column: string]: string}} {
+    return {
+    "heroes": {
+        "basic_attack_range": "REAL"
+    },
+    "arcs": {
+        "boss_skill_ids": "JSONB",
+        "enemy_visual_scale_multiplier": "REAL"
+    },
+    "stages": {
+        "boss_skill_ids": "JSONB",
+        "boss_skill_entry_indexes": "JSONB",
+        "fragment_drop": "JSONB",
+        "spawn_sequence": "JSONB",
+        "stage_rules": "JSONB"
+    },
+    "cards": {
+        "min_hero_level": "INT",
+        "tier": "TEXT",
+        "selection_weight": "REAL",
+        "support_family": "TEXT"
+    },
+    "talismans": {
+        "item_id": "TEXT",
+        "skill_id": "TEXT",
+        "category": "TEXT",
+        "quality": "TEXT",
+        "severe_repair_item_id": "TEXT",
+        "stat_growth": "JSONB",
+        "max_battle_uses": "INT",
+        "durability_cost_per_cast": "INT",
+        "durability_cost_per_battle": "INT",
+        "repair_cost_per_point": "INT",
+        "severe_repair_item_quantity": "INT"
+    },
+    "skills": {
+        "metadata": "JSONB"
+    }
+};
+}
+
 function createGameConfigTables(nk: nkruntime.Nakama, logger: nkruntime.Logger) {
     // ── heroes ──
     nk.sqlExec(`
@@ -22,11 +63,6 @@ function createGameConfigTables(nk: nkruntime.Nakama, logger: nkruntime.Logger) 
 
     try {
         nk.sqlExec("ALTER TABLE game_heroes ADD COLUMN IF NOT EXISTS visual_scale REAL DEFAULT 1.0", []);
-    } catch (e) {
-    }
-
-    try {
-        nk.sqlExec("DELETE FROM game_heroes WHERE id IN ('storm_sage', 'meteor_knight', 'glacier_lancer')", []);
     } catch (e) {
     }
 
@@ -332,5 +368,10 @@ function createGameConfigTables(nk: nkruntime.Nakama, logger: nkruntime.Logger) 
                 VALUES (1, $1::jsonb, '1.0.0', '1.0.0', '', 'system')
                 ON CONFLICT (config_version) DO NOTHING`, [JSON.stringify(defaultSettings)]);
 
+    const extensions = seedExtensionColumns();
+    Object.keys(extensions).forEach(table => Object.keys(extensions[table]).forEach(column => {
+        // Names/types come exclusively from the static allowlist above.
+        nk.sqlExec(`ALTER TABLE game_${table} ADD COLUMN IF NOT EXISTS ${column} ${extensions[table][column]}`, []);
+    }));
     logger.info("Game config tables created/verified.");
 }

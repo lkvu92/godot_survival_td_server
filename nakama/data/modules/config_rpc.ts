@@ -1,3 +1,14 @@
+// Nullable extension columns preserve pre-migration client fallback until seeded.
+function processSeedExtensions(row: any, table: string): any {
+    if (!row) return row;
+    const columns = seedExtensionColumns()[table] || {};
+    Object.keys(columns).forEach(key => {
+        if (row[key] === null || row[key] === undefined) delete row[key];
+        else if (columns[key] === "JSONB") row[key] = parseJsonb(row[key]);
+    });
+    return row;
+}
+
 // Client gọi RPC này để lấy game config — tương đương DataRegistry._load_json()
 function decodeUtf8Bytes(val: number[]): string {
     let str = "";
@@ -55,6 +66,7 @@ function parseJsonb(val: any): any {
 
 function processHero(row: any): any {
     if (!row) return row;
+    processSeedExtensions(row, "heroes");
     row.attributes = parseJsonb(row.attributes);
     row.level_up_stats = parseJsonb(row.level_up_stats);
     row.price = parseJsonb(row.price);
@@ -84,6 +96,11 @@ function processItem(row: any): any {
 
 function processSkill(row: any): any {
     if (!row) return row;
+    const metadata = parseJsonb(row.metadata);
+    delete row.metadata;
+    if (metadata && typeof metadata === "object" && !Array.isArray(metadata)) {
+        Object.keys(metadata).forEach(key => { if (!(key in row)) row[key] = metadata[key]; });
+    }
     row.levels = parseJsonb(row.levels);
     row.criteria_unlock = parseJsonb(row.criteria_unlock);
     row.positioning = parseJsonb(row.positioning);
@@ -96,6 +113,7 @@ function processSkill(row: any): any {
 
 function processArc(row: any): any {
     if (!row) return row;
+    processSeedExtensions(row, "arcs");
     row.enabled_if = parseJsonb(row.enabled_if);
     row.stage_ids = parseJsonb(row.stage_ids);
     return row;
@@ -103,12 +121,14 @@ function processArc(row: any): any {
 
 function processCard(row: any): any {
     if (!row) return row;
+    processSeedExtensions(row, "cards");
     row.effect = parseJsonb(row.effect);
     return row;
 }
 
 function processTalisman(row: any): any {
     if (!row) return row;
+    processSeedExtensions(row, "talismans");
     row.stats = parseJsonb(row.stats);
     row.materials = parseJsonb(row.materials);
     if (!row.name && row.display_name) row.name = row.display_name;
@@ -128,11 +148,10 @@ function processEffect(row: any): any {
 
 function processStage(row: any, nk: nkruntime.Nakama): any {
 	if (!row) return row;
+    processSeedExtensions(row, "stages");
 	row.enabled_if = parseJsonb(row.enabled_if);
 	row.difficulty_levels = parseJsonb(row.difficulty_levels);
 	row.loot_table = parseJsonb(row.loot_table);
-    row.spawn_sequence = parseJsonb(row.spawn_sequence);
-    row.stage_rules = parseJsonb(row.stage_rules);
     
     const waves = nk.sqlQuery(
         "SELECT * FROM game_stage_waves WHERE stage_id = $1 ORDER BY wave_index",
@@ -416,6 +435,9 @@ const publishConfigRelease: nkruntime.RpcFunction = (
     } catch (e) { return JSON.stringify({ status: "error", code: 422, message: String(e) }); }
     const minVersion = String(snapshot.system.min_app_version || "");
     const latestVersion = String(snapshot.system.latest_app_version || "");
+    if (typeof snapshot.system.ads_enabled !== "boolean" || typeof snapshot.system.payment_enabled !== "boolean") {
+        return JSON.stringify({status: "error", code: 422, message: "Missing or invalid monetization flags"});
+    }
     if (!minVersion || !latestVersion || compareVersions(minVersion, latestVersion) > 0) {
         return JSON.stringify({ status: "error", code: 422, message: "Invalid app-version settings" });
     }

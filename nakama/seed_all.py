@@ -1,139 +1,133 @@
+"""Seed CLI: each RPC is atomic; a full run commits requests independently."""
+import argparse
 import json
-import urllib.request
-import urllib.error
 import os
 import sys
+import urllib.error
+import urllib.parse
+import urllib.request
+from pathlib import Path
 
-HTTP_KEY = os.environ.get("NAKAMA_HTTP_KEY", "local-monetization-http-key-2026")
-HOST = os.environ.get("NAKAMA_HOST", "localhost")
-PORT = os.environ.get("NAKAMA_PORT", "7350")
-BASE_URL = os.environ.get("NAKAMA_SEED_URL", f"http://{HOST}:{PORT}/v2/rpc/seed_game_data?http_key={HTTP_KEY}")
-DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
+DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 
-def invoke_seed(table_name, payload_dict, label=""):
-    inner_json = json.dumps(payload_dict)
-    outer_json = json.dumps(inner_json)
-    req = urllib.request.Request(
-        BASE_URL,
-        data=outer_json.encode('utf-8'),
-        headers={'Content-Type': 'application/json'}
-    )
-    name = label if label else table_name
+
+class SeedError(Exception):
+    pass
+
+
+def rpc_url(name):
+    override = os.environ.get("NAKAMA_SEED_URL")
+    if override:
+        parsed = urllib.parse.urlsplit(override)
+        return urllib.parse.urlunsplit(parsed._replace(path="/v2/rpc/" + name))
+    base = os.environ.get("NAKAMA_URL")
+    if not base:
+        base = "http://{}:{}".format(os.environ.get("NAKAMA_HOST", "localhost"), os.environ.get("NAKAMA_PORT", "7350"))
+    key = os.environ.get("NAKAMA_HTTP_KEY", "local-monetization-http-key-2026")
+    return base.rstrip("/") + "/v2/rpc/" + name + "?" + urllib.parse.urlencode({"http_key": key})
+
+
+def invoke_rpc(name, payload, bearer=None):
+    url = rpc_url(name)
+    headers = {"Content-Type": "application/json"}
+    if bearer:
+        parsed = urllib.parse.urlsplit(url)
+        url = urllib.parse.urlunsplit(parsed._replace(query=""))
+        headers["Authorization"] = "Bearer " + bearer
+    request = urllib.request.Request(url, data=json.dumps(json.dumps(payload)).encode("utf-8"), headers=headers)
     try:
-        with urllib.request.urlopen(req) as resp:
-            data = resp.read().decode('utf-8')
-            try:
-                wire = json.loads(data)
-                result = json.loads(wire.get("payload", "{}")) if isinstance(wire, dict) else {}
-                if isinstance(result, dict) and result.get("error"):
-                    print(f"  [ERR] {name} - {result['error']}")
-                    return False
-            except (ValueError, TypeError):
-                print(f"  [ERR] {name} - Invalid seed response: {data[:200]}")
-                return False
-            print(f"  [OK]  {name}")
-            return True
-    except urllib.error.HTTPError as e:
-        err_msg = e.read().decode('utf-8')
-        print(f"  [ERR] {name} - HTTP {e.code}: {err_msg}")
-        return False
-    except Exception as e:
-        print(f"  [ERR] {name} - {str(e)}")
-        return False
+        with urllib.request.urlopen(request, timeout=float(os.environ.get("NAKAMA_SEED_TIMEOUT", "60"))) as response:
+            wire = json.loads(response.read().decode("utf-8"))
+        result = json.loads(wire["payload"])
+    except (urllib.error.URLError, ValueError, KeyError, TypeError, OSError) as error:
+        # URLs and exception text may expose credentials.
+        raise SeedError(f"{name}: transport/response failure ({type(error).__name__})") from error
+    if not isinstance(result, dict) or result.get("error") or result.get("status") in ("error", "force_update"):
+        raise SeedError(f"{name}: server rejected request")
+    return result
 
-def seed_file(table_name, filename, batch_size=0):
-    filepath = os.path.join(DATA_DIR, filename)
-    if not os.path.exists(filepath):
-        print(f"  [SKIP] File not found: {filename}")
-        return
 
-    with open(filepath, 'r', encoding='utf-8') as f:
-        rows = json.load(f)
+def invoke_seed(table, payload):
+    result = invoke_rpc("seed_game_data", {"table": table, **payload})
+    expected = len(payload["rows"]) if "rows" in payload else 1
+    if result.get("success") is not True or result.get("table") != table or result.get("inserted") != expected:
+        raise SeedError(f"{table}: invalid success/readback count")
+    print(f"[OK] {table}: {expected} rows verified")
 
-    if not isinstance(rows, list):
-        print(f"  [SKIP] {filename} is not a list")
-        return
-
-    total = len(rows)
-    if batch_size <= 0 or total <= batch_size:
-        print(f"Seeding {table_name} ({total} rows)...")
-        invoke_seed(table_name, {"table": table_name, "rows": rows})
-    else:
-        print(f"Seeding {table_name} ({total} rows in batches of {batch_size})...")
-        for i in range(0, total, batch_size):
-            batch = rows[i:i + batch_size]
-            label = f"{table_name} ({i + 1}-{i + len(batch)}/{total})"
-            invoke_seed(table_name, {"table": table_name, "rows": batch}, label)
-
-def seed_progression():
-    filepath = os.path.join(DATA_DIR, "progression.json")
-    if not os.path.exists(filepath):
-        return
-    with open(filepath, 'r', encoding='utf-8') as f:
-        prog = json.load(f)
-    print("Seeding progression...")
-    invoke_seed("config", {"table": "config", "config_key": "progression", "config_value": prog}, "progression")
 
 def read_json(filename):
-    with open(os.path.join(DATA_DIR, filename), 'r', encoding='utf-8') as f:
-        return json.load(f)
+    try:
+        with (DATA_DIR / filename).open(encoding="utf-8-sig") as source:
+            return json.load(source)
+    except (OSError, ValueError) as error:
+        raise SeedError(f"Cannot read required data: {filename}") from error
 
-def seed_commerce():
+
+def seed_file(table, filename, replace_all=False, batch_size=0):
+    rows = read_json(filename)
+    if not isinstance(rows, list) or not rows:
+        raise SeedError(f"{filename}: expected a nonempty array")
+    if replace_all or batch_size <= 0:
+        invoke_seed(table, {"rows": rows, "replace_all": replace_all})
+    else:
+        for offset in range(0, len(rows), batch_size):
+            invoke_seed(table, {"rows": rows[offset:offset + batch_size]})
+
+
+def seed_commerce(replace_all=False):
     packs = read_json("packs.json")
-    rows = []
-    for tab_id, products in packs.get("packs_by_tab", {}).items():
-        for product in products:
-            row = dict(product)
-            row["tab_id"] = tab_id
-            rows.append(row)
-    first_topup = read_json("first_topup.json")
-    rows.append({
-        **first_topup,
-        "id": "first_topup_pack",
-        "name": first_topup.get("title", "First Top-up"),
-        "desc": first_topup.get("subtitle", ""),
-        "tab_id": "first_topup",
-        "icon_type": "pack",
-        "icon_key": "first_purchase_pack",
-        "price": first_topup.get("display_price", ""),
-        "presentation_rewards": first_topup.get("rewards", []),
-        "rewards": first_topup.get("grant_lines", []),
-    })
-    print(f"Seeding store_catalog ({len(rows)} products)...")
-    invoke_seed("store_catalog", {"table": "store_catalog", "rows": rows})
+    rows = [{**product, "tab_id": tab} for tab, products in packs["packs_by_tab"].items() for product in products]
+    first = read_json("first_topup.json")
+    rows.append({**first, "id": "first_topup_pack", "name": first.get("title", "First Top-up"),
+                 "desc": first.get("subtitle", ""), "tab_id": "first_topup", "icon_type": "pack",
+                 "icon_key": "first_purchase_pack", "price": first.get("display_price", ""),
+                 "presentation_rewards": first.get("rewards", []), "rewards": first.get("grant_lines", [])})
+    invoke_seed("store_catalog", {"rows": rows, "replace_all": replace_all})
+    configs = [("daily_checkin", "daily_checkin.json"), ("events", "events.json"),
+               ("stamina", "stamina_config.json"), ("vip", "vip_config.json"), ("rewarded_ads", "rewarded_ads.json")]
+    invoke_seed("content_configs", {"rows": [{"id": key, "payload": read_json(filename), "active": True} for key, filename in configs]})
 
-    configs = []
-    for config_id, filename in [
-        ("daily_checkin", "daily_checkin.json"),
-        ("events", "events.json"),
-        ("stamina", "stamina_config.json"),
-        ("vip", "vip_config.json"),
-        ("rewarded_ads", "rewarded_ads.json"),
-    ]:
-        configs.append({"id": config_id, "payload": read_json(filename), "active": True})
-    print(f"Seeding content_configs ({len(configs)} configs)...")
-    invoke_seed("content_configs", {"table": "content_configs", "rows": configs})
 
-def main():
-    print("=== Starting Nakama Data Synchronization ===")
-    seed_file("heroes", "heroes.json")
-    seed_file("enemies", "enemies.json")
-    seed_file("items", "items.json")
-    seed_file("skills", "skills.json")
-    seed_file("arcs", "arcs.json")
-    seed_file("cards", "cards.json")
-    seed_file("effects", "effects.json")
-    seed_file("talismans", "talismans.json")
-    
-    # Stages has wave details: batch by 5 stages
-    seed_file("stages", "stages.json", batch_size=5)
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--replace-all", action="store_true", help="Prune absent heroes and deactivate absent products; full catalogs only")
+    parser.add_argument("--settings", type=Path, help="Remote settings JSON array; updates draft only")
+    parser.add_argument("--settings-only", action="store_true", help="Skip content seed; requires --settings")
+    parser.add_argument("--publish", action="store_true", help="Publish using NAKAMA_CONFIG_ADMIN_TOKEN after successful seed")
+    parser.add_argument("--app-version", default="1.0.0")
+    parser.add_argument("--store-url", default="")
+    args = parser.parse_args(argv)
+    try:
+        if args.settings_only and not args.settings:
+            raise SeedError("--settings-only requires --settings")
+        admin = os.environ.get("NAKAMA_CONFIG_ADMIN_TOKEN")
+        if args.publish and (not args.settings or not admin):
+            raise SeedError("--publish requires --settings and NAKAMA_CONFIG_ADMIN_TOKEN")
+        settings = None
+        if args.settings:
+            settings = json.loads(args.settings.read_text(encoding="utf-8-sig"))
+            if not isinstance(settings, list) or not settings:
+                raise SeedError("Settings must be a nonempty JSON array")
+        if not args.settings_only:
+            for table in ("heroes", "enemies", "items", "skills", "arcs", "cards", "effects", "talismans"):
+                seed_file(table, table + ".json", args.replace_all and table == "heroes")
+            seed_file("stages", "stages.json", batch_size=5)
+            seed_file("stage_levels", "stage_levels.json", batch_size=30)
+            invoke_seed("config", {"config_key": "progression", "config_value": read_json("progression.json")})
+            seed_commerce(args.replace_all)
+        if settings is not None:
+            invoke_seed("remote_settings", {"rows": settings})
+        if args.publish:
+            result = invoke_rpc("publish_config_release", {"app_version": args.app_version, "store_url": args.store_url}, admin)
+            if result.get("status") != "ok" or not isinstance(result.get("config_version"), int):
+                raise SeedError("Publication failed")
+            print(f"[OK] Published config version {result['config_version']}")
+        print("Synchronization complete. Separate requests commit independently.")
+        return 0
+    except (SeedError, OSError, ValueError, KeyError, TypeError) as error:
+        print(f"[ERR] {error}", file=sys.stderr)
+        return 1
 
-    # Stage levels has 150 entries: batch by 30
-    seed_file("stage_levels", "stage_levels.json", batch_size=30)
-
-    seed_progression()
-    seed_commerce()
-    print("=== Synchronization Complete ===")
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

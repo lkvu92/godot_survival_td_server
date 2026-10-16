@@ -1,0 +1,4 @@
+[
+  {"module":"system","key":"ads_enabled","value_type":"bool","value":"true","description":"Enable production ads explicitly"},
+  {"module":"system","key":"payment_enabled","value_type":"bool","value":"true","description":"Enable production payments explicitly"}
+]
