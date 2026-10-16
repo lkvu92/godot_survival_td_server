@@ -347,7 +347,9 @@ function createGameConfigTables(nk: nkruntime.Nakama, logger: nkruntime.Logger) 
             ads_enabled: false, ads_interval_sec: 120, payment_enabled: false
         },
         game_play: {
-            wave_duration_sec: 60, exp_to_level: [0, 100, 250, 450, 700],
+            boss_enrage_after_sec: 90, boss_enrage_hero_atk_per_sec: 0.01,
+            regular_wave_warning_sec: 120, regular_wave_warning_delay_sec: 10,
+            exp_to_level: [0, 100, 250, 450, 700],
             element_upgrade_stones: [10, 25, 50, 100, 200]
         }
     };

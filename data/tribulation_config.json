@@ -1,11 +1,6 @@
 {
   "max_attempts": 3,
   "penalty_exp_percent": 0.3,
-  "post_boss_heal": [
-    {"weight": 65, "heal_percent": 0.15},
-    {"weight": 25, "heal_percent": 0.25},
-    {"weight": 10, "heal_percent": 0.5}
-  ],
   "element_cap": 400.0,
   "element_damage_divisor": 300.0,
   "reward_base": 5.0,
@@ -18,52 +13,218 @@
   "failure_penalty": 0.05,
   "reward_multiplier_min": 0.8,
   "reward_multiplier_max": 1.2,
-  "wave_stat_start": 0.6,
-  "wave_stat_step": 0.1,
-  "wave_hp_start": 2.0,
-  "wave_hp_step": 0.25,
-  "boss_base_hp": 4000.0,
-  "boss_hp_per_user_level": 750.0,
-  "boss_base_atk": 50.0,
-  "boss_atk_per_user_level": 10.0,
-  "boss_hp_multiplier_start": 1.0,
-  "boss_hp_multiplier_step": 0.35,
-  "boss_atk_multiplier_start": 1.0,
-  "boss_atk_multiplier_step": 0.18,
   "wave_delta": [
-    {"delta": 0, "weight": 70},
-    {"delta": -1, "weight": 15},
-    {"delta": 1, "weight": 10},
-    {"delta": 2, "weight": 5}
+    {
+      "delta": 0,
+      "weight": 70
+    },
+    {
+      "delta": -1,
+      "weight": 15
+    },
+    {
+      "delta": 1,
+      "weight": 10
+    },
+    {
+      "delta": 2,
+      "weight": 5
+    }
   ],
   "tiers": [
-    {"id": "thai_co", "display_name": "Thái Cổ", "weight": 1, "score_min": 90.0, "score_max": 100.0, "main_min": 0.8, "main_max": 0.95, "base_waves": 7},
-    {"id": "cuc_pham", "display_name": "Cực Phẩm", "weight": 5, "score_min": 80.0, "score_max": 90.0, "main_min": 0.6, "main_max": 0.8, "base_waves": 6},
-    {"id": "thien_linh_can", "display_name": "Thiên Linh Căn", "weight": 10, "score_min": 70.0, "score_max": 80.0, "main_min": 0.5, "main_max": 0.7, "base_waves": 5},
-    {"id": "thuong_pham", "display_name": "Thượng Phẩm", "weight": 15, "score_min": 60.0, "score_max": 70.0, "main_min": 0.4, "main_max": 0.6, "base_waves": 4},
-    {"id": "trung_pham", "display_name": "Trung Phẩm", "weight": 20, "score_min": 50.0, "score_max": 60.0, "main_min": 0.3, "main_max": 0.5, "base_waves": 3},
-    {"id": "ha_pham", "display_name": "Hạ Phẩm", "weight": 49, "score_min": 10.0, "score_max": 50.0, "main_min": 0.2, "main_max": 0.4, "base_waves": 2}
+    {
+      "id": "thai_co",
+      "display_name": "Thái Cổ",
+      "weight": 1,
+      "score_min": 90.0,
+      "score_max": 100.0,
+      "main_min": 0.8,
+      "main_max": 0.95,
+      "base_waves": 7
+    },
+    {
+      "id": "cuc_pham",
+      "display_name": "Cực Phẩm",
+      "weight": 5,
+      "score_min": 80.0,
+      "score_max": 90.0,
+      "main_min": 0.6,
+      "main_max": 0.8,
+      "base_waves": 6
+    },
+    {
+      "id": "thien_linh_can",
+      "display_name": "Thiên Linh Căn",
+      "weight": 10,
+      "score_min": 70.0,
+      "score_max": 80.0,
+      "main_min": 0.5,
+      "main_max": 0.7,
+      "base_waves": 5
+    },
+    {
+      "id": "thuong_pham",
+      "display_name": "Thượng Phẩm",
+      "weight": 15,
+      "score_min": 60.0,
+      "score_max": 70.0,
+      "main_min": 0.4,
+      "main_max": 0.6,
+      "base_waves": 4
+    },
+    {
+      "id": "trung_pham",
+      "display_name": "Trung Phẩm",
+      "weight": 20,
+      "score_min": 50.0,
+      "score_max": 60.0,
+      "main_min": 0.3,
+      "main_max": 0.5,
+      "base_waves": 3
+    },
+    {
+      "id": "ha_pham",
+      "display_name": "Hạ Phẩm",
+      "weight": 49,
+      "score_min": 10.0,
+      "score_max": 50.0,
+      "main_min": 0.2,
+      "main_max": 0.4,
+      "base_waves": 2
+    }
   ],
-  "elements": ["metal", "wood", "water", "fire", "earth"],
-  "element_names": {"metal": "Kim", "wood": "Mộc", "water": "Thủy", "fire": "Hỏa", "earth": "Thổ"},
+  "elements": [
+    "metal",
+    "wood",
+    "water",
+    "fire",
+    "earth"
+  ],
+  "element_names": {
+    "metal": "Kim",
+    "wood": "Mộc",
+    "water": "Thủy",
+    "fire": "Hỏa",
+    "earth": "Thổ"
+  },
   "skill_1": {
     "id": "thien_phat",
     "display_name": "Thiên Phạt",
     "cooldown": 6.0,
     "warning_duration": 1.5,
     "radius": 120.0,
-    "damage_multiplier": 1.5
+    "damage_multiplier": 0.8
   },
   "phase_2": {
     "enabled": true,
-    "ruleset_version": 2,
+    "ruleset_version": 3,
     "global_cast_gap": 0.65,
     "max_simultaneous_warnings": 1,
-    "skill_2": {"id": "loi_vuc", "display_name": "Lôi Vực", "enabled": true, "unlock_wave": 3, "cooldown": 8.0, "scheduler_weight": 1.0, "warning_duration": 0.0, "duration": 2.5, "tick_interval": 0.5, "radius": 105.0, "damage_multiplier_per_tick": 0.25, "stun_duration": 0.1},
-    "skill_3": {"id": "loi_vong", "display_name": "Lôi Võng", "enabled": true, "unlock_wave": 5, "cooldown": 10.0, "scheduler_weight": 0.8, "radius": 120.0, "hit_delays": [0.0, 0.5, 1.0], "damage_multipliers": [0.3, 0.5, 0.7], "stun_chance": 0.3, "stun_duration": 0.5},
-    "skill_4": {"id": "cuong_loi", "display_name": "Cuồng Lôi", "enabled": true, "unlock_wave": 7, "cooldown": 14.0, "scheduler_weight": 0.5, "charge_duration": 1.5, "damage_multiplier": 2.5, "repeat_chance": 0.15, "repeat_damage_multiplier": 0.5, "track_target": true, "asset_forward_angle_degrees": 0.0},
-    "enrage": {"id": "cuong_loi_enrage", "enabled": false}
+    "skill_2": {
+      "id": "loi_vuc",
+      "display_name": "Lôi Vực",
+      "enabled": true,
+      "unlock_wave": 3,
+      "cooldown": 8.0,
+      "scheduler_weight": 1.0,
+      "warning_duration": 0.8,
+      "duration": 2.5,
+      "tick_interval": 0.5,
+      "radius": 105.0,
+      "damage_multiplier_per_tick": 0.25,
+      "stun_duration": 0.1
+    },
+    "skill_3": {
+      "id": "loi_vong",
+      "display_name": "Lôi Võng",
+      "enabled": true,
+      "unlock_wave": 5,
+      "cooldown": 10.0,
+      "scheduler_weight": 0.8,
+      "radius": 120.0,
+      "hit_delays": [
+        0.0,
+        0.5,
+        1.0
+      ],
+      "damage_multipliers": [
+        0.2,
+        0.25,
+        0.4
+      ],
+      "stun_chance": 0.3,
+      "stun_duration": 0.25,
+      "warning_duration": 0.7
+    },
+    "skill_4": {
+      "id": "cuong_loi",
+      "display_name": "Cuồng Lôi",
+      "enabled": true,
+      "unlock_wave": 7,
+      "cooldown": 14.0,
+      "scheduler_weight": 0.5,
+      "charge_duration": 2.0,
+      "damage_multiplier": 1.5,
+      "repeat_chance": 0.15,
+      "repeat_damage_multiplier": 0.5,
+      "track_target": false,
+      "asset_forward_angle_degrees": 0.0,
+      "repeat_warning_duration": 0.6,
+      "radius": 120.0
+    },
+    "enrage": {
+      "id": "cuong_loi_enrage",
+      "enabled": false
+    }
   },
   "debug_force_breakthrough_button": false,
-  "debug_local_breakthrough_waves": 9
+  "debug_local_breakthrough_waves": 9,
+  "balance_version": 3,
+  "boss_profiles": [
+    {
+      "user_level": 9,
+      "base_hp": 3000,
+      "base_atk": 147,
+      "hp_step": 0.15,
+      "atk_step": 0.08
+    },
+    {
+      "user_level": 19,
+      "base_hp": 6500,
+      "base_atk": 229,
+      "hp_step": 0.15,
+      "atk_step": 0.08
+    },
+    {
+      "user_level": 29,
+      "base_hp": 20000,
+      "base_atk": 357,
+      "hp_step": 0.15,
+      "atk_step": 0.08
+    },
+    {
+      "user_level": 39,
+      "base_hp": 45000,
+      "base_atk": 556,
+      "hp_step": 0.15,
+      "atk_step": 0.08
+    },
+    {
+      "user_level": 49,
+      "base_hp": 100000,
+      "base_atk": 868,
+      "hp_step": 0.15,
+      "atk_step": 0.08
+    }
+  ],
+  "post_boss_heal_by_wave": [
+    0.2,
+    0.2,
+    0.25,
+    0.25,
+    0.3,
+    0.3,
+    0.35,
+    0.35
+  ]
 }
