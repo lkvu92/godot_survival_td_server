@@ -183,13 +183,13 @@
     "display_name": "Normal",
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
-    "recommended_power": 1100,
+    "recommended_power": 770,
     "exp_multiplier": 1,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
-      "speed_mul": 1
+      "hp_mul": 0.72,
+      "atk_mul": 0.72,
+      "speed_mul": 0.95
     },
     "loot_table": [
       {
@@ -302,13 +302,13 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 1518,
+    "recommended_power": 1060,
     "exp_multiplier": 1.25,
     "stamina_cost": 2,
     "enemy_modifiers": {
-      "hp_mul": 1.5,
-      "atk_mul": 1.5,
-      "speed_mul": 1.2
+      "hp_mul": 1.08,
+      "atk_mul": 1.08,
+      "speed_mul": 1.14
     },
     "loot_table": [
       {
@@ -427,13 +427,13 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 2035,
+    "recommended_power": 1420,
     "exp_multiplier": 1.6,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
-      "speed_mul": 1.4
+      "hp_mul": 1.44,
+      "atk_mul": 1.44,
+      "speed_mul": 1.33
     },
     "loot_table": [
       {
