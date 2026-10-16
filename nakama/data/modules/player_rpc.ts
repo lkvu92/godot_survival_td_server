@@ -1,5 +1,53 @@
 const HERO_ID_MIGRATIONS: any = { ice_demoness: "hero_1", flame_archer: "hero_2" };
 
+function ensurePlayerName(nk: nkruntime.Nakama, userId: string, profile: any): boolean {
+    const identities=nk.storageRead([{collection:"player_identity",key:"name",userId}]);
+    if (identities.length) {
+        const identity=identities[0].value;
+        const changed=profile.display_name!==identity.display_name || Number(profile.name_changes_used||0)!==Number(identity.name_changes_used||0);
+        profile.display_name=identity.display_name;profile.name_changes_used=Number(identity.name_changes_used||0);
+        return changed;
+    }
+    const account=nk.accountGetId(userId);
+    const existing=String(profile.display_name||"").trim();
+    const generatedGoogle=!!account.user.googleId && existing===String(account.user.username||"") && !Number(profile.name_changes_used||0);
+    if (!existing || generatedGoogle) profile.display_name=account.user.googleId
+        ? "Tu Giả " + nk.uuidv4().replace(/-/g,"").slice(0,6).toUpperCase()
+        : String(account.user.username||"").trim() || "Tu Giả " + nk.uuidv4().replace(/-/g,"").slice(0,6).toUpperCase();
+    nk.storageWrite([{collection:"player_identity",key:"name",userId,
+        value:{display_name:profile.display_name,name_changes_used:Math.min(1,Number(profile.name_changes_used||0))},
+        permissionRead:1,permissionWrite:0,version:"*"}]);
+    return !existing || generatedGoogle;
+}
+
+const renamePlayer: nkruntime.RpcFunction = (ctx, _logger, nk, payload) => {
+    const fail=(code:number,message:string)=>JSON.stringify({success:false,code,message});
+    if (!ctx.userId) return fail(401,"Cần đăng nhập lại.");
+    let req:any;
+    try {req=JSON.parse(payload||"{}");} catch (_e) {return fail(400,"Tên người chơi không hợp lệ.");}
+    if (!req || typeof req.display_name!=="string" || req.display_name.length>200) return fail(400,"Tên người chơi không hợp lệ.");
+    const name=req.display_name.trim();
+    if (Array.from(name).length<3 || Array.from(name).length>24 || /[\x00-\x1f\x7f-\x9f\u200b-\u200f\u202a-\u202e\u2060-\u206f\ufeff<>\[\]]/.test(name))
+        return fail(400,"Tên cần từ 3 đến 24 ký tự, không chứa ký tự điều khiển hoặc ký hiệu định dạng.");
+    const rows=nk.storageRead([{collection:"player_profiles",key:"main",userId:ctx.userId}]);
+    if (!rows.length) return fail(409,"Chưa tải được hồ sơ. Hãy đăng nhập lại.");
+    const profile=rows[0].value;
+    ensurePlayerName(nk,ctx.userId,profile);
+    const identities=nk.storageRead([{collection:"player_identity",key:"name",userId:ctx.userId}]);
+    if (Number(profile.name_changes_used||0)>=1) {
+        if (profile.display_name===name) return JSON.stringify({success:true,display_name:name,name_changes_used:1});
+        return fail(409,"Bạn đã sử dụng lượt đổi tên duy nhất của tài khoản.");
+    }
+    if (profile.display_name===name) return fail(400,"Hãy nhập tên mới khác tên hiện tại.");
+    profile.display_name=name;profile.name_changes_used=1;
+    try {nk.storageWrite([{collection:"player_profiles",key:"main",userId:ctx.userId,value:profile,
+        permissionRead:1,permissionWrite:0,version:rows[0].version},
+        {collection:"player_identity",key:"name",userId:ctx.userId,value:{display_name:name,name_changes_used:1},
+            permissionRead:1,permissionWrite:0,version:identities[0].version}]);}
+    catch (_e) {return fail(409,"Hồ sơ đã thay đổi. Hãy tải lại hồ sơ trước khi thử lại.");}
+    return JSON.stringify({success:true,display_name:name,name_changes_used:1});
+};
+
 const setPlayerAvatar: nkruntime.RpcFunction = (ctx, _logger, nk, payload) => {
     if (!ctx.userId) return JSON.stringify({ success: false, code: 401, message: "Authentication required" });
     let req: any;
@@ -125,15 +173,17 @@ const savePlayerProfile: nkruntime.RpcFunction = (
                 data.profile[key] = authoritative[key];
             });
             data.profile = Object.assign({}, authoritative, {
-                display_name: String((data.profile || {}).display_name || authoritative.display_name || "").slice(0, 32),
+                display_name: String(authoritative.display_name || ""),
                 // Explicit avatar changes use set_player_avatar. Delayed cloud
                 // saves must never undo a newer confirmed selection.
                 avatar_url: String(authoritative.avatar_url || "hero_1")
             });
+            ensurePlayerName(nk, ctx.userId, data.profile);
         } else {
             // Account bootstrap is completely server-owned; client supplied
             // currency, unlocks, elements, hero stats and talent rolls are ignored.
-            data.profile = defaultPlayerProfile(String((data.profile || {}).display_name || "").slice(0, 32));
+            data.profile = defaultPlayerProfile("");
+            ensurePlayerName(nk, ctx.userId, data.profile);
             cultivationEnsureProfile(nk, data.profile, false);
         }
         writes.push({
@@ -227,9 +277,13 @@ const loadPlayerProfile: nkruntime.RpcFunction = (
     const repairWrites: nkruntime.StorageWriteRequest[] = [];
     if (!profileObject) {
         result.profile = defaultPlayerProfile("");
+        ensurePlayerName(nk, ctx.userId, result.profile);
         cultivationEnsureProfile(nk, result.profile, false);
         repairWrites.push({ collection: "player_profiles", key: "main", userId: ctx.userId,
             value: result.profile, permissionRead: 1, permissionWrite: 0, version: "*" });
+    } else if (ensurePlayerName(nk, ctx.userId, result.profile)) {
+        repairWrites.push({collection:"player_profiles",key:"main",userId:ctx.userId,value:result.profile,
+            permissionRead:1,permissionWrite:0,version:profileObject.version});
     }
     const canonicalHeroes = canonicalHeroStates(nk, result.heroes);
     const heroesChanged = !result.heroes || JSON.stringify(result.heroes.heroes || []) !== JSON.stringify(canonicalHeroes);
@@ -252,7 +306,13 @@ const loadPlayerProfile: nkruntime.RpcFunction = (
         repairWrites.push({ collection: "player_settings", key: "prefs", userId: ctx.userId,
             value: result.settings, permissionRead: 1, permissionWrite: 0, version: "*" });
     }
-    if (repairWrites.length > 0) nk.storageWrite(repairWrites);
+    if (repairWrites.length > 0) {
+        const repaired=nk.storageWrite(repairWrites);
+        if (profileObject) {
+            const profileAck=repaired.find(ack=>ack.collection==="player_profiles" && ack.key==="main");
+            if (profileAck) profileObject.version=profileAck.version;
+        }
+    }
 
     result.monetization = buildMonetizationResponse(nk, ctx.userId, monetizationMode(ctx));
 

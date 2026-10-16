@@ -11,6 +11,8 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'New profile inventory regression failed' }
     & node tests/test_account_password.cjs
     if ($LASTEXITCODE -ne 0) { throw 'Account password regression failed' }
+    & node tests/test_player_names.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Player names regression failed' }
     & node --check services/monetization-verifier/src/server.js
     if ($LASTEXITCODE -ne 0) { throw 'Verifier syntax failed' }
     & python -B -m unittest discover -s tests -p 'test_*.py'

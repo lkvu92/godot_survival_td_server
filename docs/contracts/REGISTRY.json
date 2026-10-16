@@ -1,6 +1,13 @@
 {
   "contracts": [
     {
+      "id": "C125_PLAYER_NAMES",
+      "version": "1.0.0",
+      "status": "IN_PROGRESS",
+      "updated_at": "2026-10-16",
+      "contract_file": "docs/contracts/C125_PLAYER_NAMES.md"
+    },
+    {
       "id": "C123_ACCOUNT_PASSWORD",
       "version": "1.1.0",
       "status": "IN_PROGRESS",

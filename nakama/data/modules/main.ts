@@ -2,6 +2,9 @@
 // Phase 2: Config Tables + Seed + Config RPC
 // Build: npx esbuild data/modules/main.ts --bundle --platform=node --target=es5 --outfile=data/build/index.js
 
+function linkedRpc_rename_player(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("rename_player", renamePlayer)(ctx, logger, nk, payload);
+}
 function linkedRpc_account_password_status(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
     return accountGuardedRpc("account_password_status", accountPasswordStatus)(ctx, logger, nk, payload);
 }
@@ -136,6 +139,7 @@ function InitModule(
     createGameConfigTables(nk, logger);
     createMonetizationTables(nk, logger);
     createAccountLinkTables(nk);
+    initializer.registerRpc("rename_player", linkedRpc_rename_player);
     initializer.registerBeforeAuthenticateEmail(beforeEmailPasswordSetup);
     initializer.registerRpc("account_password_status", linkedRpc_account_password_status);
     initializer.registerRpc("setup_account_password", linkedRpc_setup_account_password);

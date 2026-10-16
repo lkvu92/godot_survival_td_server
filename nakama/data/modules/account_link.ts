@@ -90,6 +90,16 @@ function createAccountLinkTables(nk: nkruntime.Nakama): void {
         UPDATE storage SET value=heroes_value,version=md5(random()::TEXT||clock_timestamp()::TEXT),update_time=NOW()
             WHERE user_id=w.id AND collection='player_heroes' AND key='states' AND value IS DISTINCT FROM heroes_value;
         SELECT value INTO profile_value FROM storage WHERE user_id=w.id AND collection='player_profiles' AND key='main';
+        profile_value:=jsonb_set(profile_value,'{display_name}',to_jsonb(COALESCE(NULLIF(profile_value->>'display_name',''),
+            CASE WHEN COALESCE(w.google_id,'')<>'' THEN 'Tu Giả '||UPPER(LEFT(REPLACE(w.id::TEXT,'-',''),6)) ELSE w.username END)));
+        profile_value:=jsonb_set(profile_value,'{name_changes_used}',to_jsonb(GREATEST(
+            COALESCE((profile_value->>'name_changes_used')::INT,0),
+            COALESCE((SELECT (value->>'name_changes_used')::INT FROM storage WHERE user_id=l.id AND collection='player_profiles' AND key='main'),0),
+            COALESCE((SELECT MAX((value->>'name_changes_used')::INT) FROM storage WHERE user_id IN(w.id,l.id) AND collection='player_identity' AND key='name'),0))));
+        INSERT INTO storage(collection,key,user_id,value,version,read,write,create_time,update_time)
+        VALUES('player_identity','name',w.id,jsonb_build_object('display_name',profile_value->>'display_name','name_changes_used',profile_value->'name_changes_used'),
+            md5(random()::TEXT||clock_timestamp()::TEXT),1,0,NOW(),NOW())
+        ON CONFLICT(collection,key,user_id) DO UPDATE SET value=EXCLUDED.value,version=EXCLUDED.version,update_time=NOW();
         FOR reward IN SELECT r->>'reward_id' AS item_id,SUM((r->>'quantity')::BIGINT) AS quantity FROM monetization_purchase_orders o,
             LATERAL jsonb_array_elements(o.reward_snapshot) r WHERE o.user_id=l.id::TEXT AND o.status='fulfilled'
                 AND r->>'reward_type'='entitlement' AND r->>'reward_id'<>'no_ads_seconds'
