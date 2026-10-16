@@ -25,6 +25,8 @@ Backend compiled-runtime tests: unauthenticated, wrong Google owner, invalid tok
 
 ## Changelog
 
+v1.1.0 verification (2026-10-16): email hook tests pass for login/register with normal auth preserved. Login recovery runtime tests pass for automatic handoff, exact Vietnamese reason, wrong Google rejection, create=false, credential clearing and successful continuation. Backend runtime deployed to VPS with a pre-update file backup at `/opt/thong-thien-lo/backups/password-recovery-20261016T122446Z`; Nakama healthy and hook registered. Public login and register probes for the existing passwordless account both return gRPC 9 / PASSWORD_SETUP_REQUIRED. Actual Godot AuthService calling the VPS recognizes the action; recovery UI rendered and inspected. Client static checks pass. Real Android Google acceptance remains pending; IN_PROGRESS refers to that remaining acceptance.
+
 Local verification (2026-10-16): backend build, password ownership/validation/replay tests, existing account-link server regressions, client static checks, 14 server Python regressions, isolated PostgreSQL password/link transactions and rendered Godot UI tests pass. Form and success images inspected at 720px viewport; no horizontal overflow. Provisional score 9/10 for local implementation. Full server runner is blocked by pre-existing missing `tests/test_new_profile_inventory.cjs`; existing Google-link UI regression passes its assertions but emits a pre-existing CombatPowerService `signature` metadata error. Headless audio teardown warns about button-click resources; rendered password UI test exits cleanly. VPS deployment and actual Android Google proof acceptance remain pending; keep IN_PROGRESS.
 
 | Version | Date | Change |
