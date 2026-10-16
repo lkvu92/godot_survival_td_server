@@ -37,3 +37,4 @@ nakama/.env
 !nakama/data/build/*.js
 nakama/google-play-service-account.json
 nakama/google-play-service-account.json
+nakama/runtime.secret.yml
