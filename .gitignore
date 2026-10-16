@@ -35,3 +35,5 @@ nakama/.env
 # Allow pre-compiled runtime bundle
 !nakama/data/build/
 !nakama/data/build/*.js
+nakama/google-play-service-account.json
+nakama/google-play-service-account.json

@@ -1,6 +1,13 @@
 {
   "contracts": [
     {
+      "id": "C123_RUNTIME_SECRET_BINDING",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "contract_file": "docs/contracts/C123_RUNTIME_SECRET_BINDING.md",
+      "updated_at": "2026-10-16"
+    },
+    {
       "id": "C121_ONLINE_ONLY_CONFIG",
       "version": "1.0.1",
       "status": "ACTIVE",
