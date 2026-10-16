@@ -61,6 +61,14 @@ class SeedCliTests(unittest.TestCase):
         with patch.dict(os.environ, {"NAKAMA_URL": "https://example.test", "NAKAMA_HTTP_KEY": "a&b"}, clear=True):
             self.assertEqual(cli.rpc_url("seed_game_data"), "https://example.test/v2/rpc/seed_game_data?http_key=a%26b")
 
+    def test_content_only_seeds_complete_remote_supplements(self):
+        with patch.object(cli, "invoke_seed") as seed:
+            self.assertEqual(self.run_main(["--content-only"]), 0)
+            self.assertEqual(seed.call_count, 1)
+            table, payload = seed.call_args.args
+            self.assertEqual(table, "content_configs")
+            self.assertEqual({row["id"] for row in payload["rows"]}, {"daily_checkin", "events", "stamina", "vip", "rewarded_ads", "enemy_skills", "boss_skills", "tribulation"})
+
     def test_bearer_does_not_send_http_key(self):
         class Response:
             def __enter__(self): return self

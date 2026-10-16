@@ -17,7 +17,7 @@ const sandbox = vm.createContext({console});
 for (const file of ['config_tables','monetization_tables','seed','event_service_rpc','config_rpc']) {
   vm.runInContext(fs.readFileSync(path.join(root,'nakama/data/modules/build',file+'.js'),'utf8'), sandbox);
 }
-const api = vm.runInContext('({seedGameData,createGameConfigTables,createMonetizationTables,seedBindSql,processHero,processArc,processCard,processTalisman,processSkill,processStage,processEffect,publishConfigRelease})',sandbox);
+const api = vm.runInContext('({seedGameData,createGameConfigTables,createMonetizationTables,seedBindSql,processHero,processArc,processCard,processTalisman,processSkill,processStage,processEffect,publishConfigRelease,getGameConfig})',sandbox);
 let mutations = 0;
 const nk = {
  sqlExec(query, params) { mutations++; return sql(params.length ? api.seedBindSql(query, params) : query); },
@@ -90,7 +90,7 @@ assert.deepEqual(nk.sqlQuery('SELECT product_id,active FROM game_store_products 
 good('store_catalog',[selected],{replace_all:true});
 assert.equal(nk.sqlQuery('SELECT COUNT(*)::int AS n FROM game_store_products WHERE active=TRUE',[])[0].n,1);
 assert.ok(seed('store_catalog',[selected, {...selected,id:'other-pack'}]).error);
-for (const [id,file] of [['daily_checkin','daily_checkin'],['events','events'],['stamina','stamina_config'],['vip','vip_config'],['rewarded_ads','rewarded_ads']]) good('content_configs',[{id,payload:read(file)}]);
+for (const [id,file] of [['daily_checkin','daily_checkin'],['events','events'],['stamina','stamina_config'],['vip','vip_config'],['rewarded_ads','rewarded_ads'],['enemy_skills','enemy_skills'],['boss_skills','boss_skills'],['tribulation','tribulation_config']]) good('content_configs',[{id,payload:read(file)}]);
 assert.equal(JSON.parse(api.seedGameData(ctx,logger,nk,JSON.stringify({table:'config',config_key:'progression',config_value:read('progression')}))).success,true);
 assert.equal(JSON.parse(api.publishConfigRelease(ctx,logger,nk,'{}')).code,403);
 good('remote_settings',[{module:'system',key:'payment_enabled',value_type:'bool',value:'true'}]);
@@ -98,5 +98,13 @@ const published=JSON.parse(api.publishConfigRelease({...ctx,userId:'admin'},logg
 assert.equal(published.status,'ok');
 assert.equal(published.config_version,versions+1);
 assert.equal(nk.sqlQuery("SELECT snapshot->'system'->>'payment_enabled' AS value FROM remote_config_releases ORDER BY config_version DESC LIMIT 1",[])[0].value,'true');
+const content=JSON.parse(api.getGameConfig({...ctx,userId:'admin'},logger,nk,JSON.stringify({table:'all'})));
+assert.equal(content.schema_version,2);
+assert.deepEqual(content.enemy_skills,read('enemy_skills'));
+assert.deepEqual(content.boss_skills,read('boss_skills'));
+assert.deepEqual(content.tribulation,read('tribulation_config'));
+assert.deepEqual(content.vip,read('vip_config'));
+assert.deepEqual(content.rewarded_ads,read('rewarded_ads'));
+if (process.env.SEED_TEST_CONFIG_OUT) fs.writeFileSync(process.env.SEED_TEST_CONFIG_OUT,JSON.stringify(content));
 console.log('PASS PostgreSQL schema, config roundtrips, permissions, validation, zero values, injection, explicit replacement, wave/catalog rollback, draft isolation and admin publication');
 sql('DROP SCHEMA '+testSchema+' CASCADE');

@@ -1,1 +1,17 @@
-{"contracts":[{"id":"C119_CONFIG_SEED_INTEGRITY","version":"1.0.0","status":"ACTIVE","contract_file":"docs/contracts/C119_CONFIG_SEED_INTEGRITY.md"}]}
+{
+  "contracts": [
+    {
+      "id": "C121_ONLINE_ONLY_CONFIG",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "contract_file": "docs/contracts/C121_ONLINE_ONLY_CONFIG.md",
+      "updated_at": "2026-10-16"
+    },
+    {
+      "id": "C119_CONFIG_SEED_INTEGRITY",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "contract_file": "docs/contracts/C119_CONFIG_SEED_INTEGRITY.md"
+    }
+  ]
+}

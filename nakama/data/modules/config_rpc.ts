@@ -254,9 +254,9 @@ const getGameConfig: nkruntime.RpcFunction = (
         case "first_topup": return JSON.stringify(buildStoreConfigs(nk).first_topup);
         case "daily_checkin": return JSON.stringify(readContentConfig(nk, "daily_checkin"));
         case "events": return JSON.stringify(readContentConfig(nk, "events"));
-        case "tribulation": return JSON.stringify(cultivationConfig());
+        case "tribulation": return JSON.stringify(readContentConfig(nk, "tribulation"));
         case "all": {
-            const result: any = {};
+            const result: any = {schema_version: 2};
             result.heroes = nk.sqlQuery("SELECT * FROM game_heroes ORDER BY id", []).map(processHero);
             result.enemies = nk.sqlQuery("SELECT * FROM game_enemies ORDER BY id", []).map(processEnemy);
             result.items = nk.sqlQuery("SELECT * FROM game_items ORDER BY sort_order, id", []).map(processItem);
@@ -278,7 +278,11 @@ const getGameConfig: nkruntime.RpcFunction = (
             result.daily_checkin = readContentConfig(nk, "daily_checkin");
             result.events = readContentConfig(nk, "events");
             result.stamina = readContentConfig(nk, "stamina");
-            result.tribulation = cultivationConfig();
+            result.tribulation = readContentConfig(nk, "tribulation");
+            result.enemy_skills = readContentConfig(nk, "enemy_skills");
+            result.boss_skills = readContentConfig(nk, "boss_skills");
+            result.vip = readContentConfig(nk, "vip");
+            result.rewarded_ads = readContentConfig(nk, "rewarded_ads");
             result.talismans = nk.sqlQuery("SELECT * FROM game_talismans ORDER BY id", []).map(processTalisman);
 
 

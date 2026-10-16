@@ -575,7 +575,7 @@ function validateSeedRequest(data) {
       if (["fragment_drop", "stage_rules", "stat_growth", "metadata"].indexOf(key) >= 0 && Array.isArray(row[key])) return "Expected object: " + key;
     }
     if (row.waves !== void 0 && (!Array.isArray(row.waves) || row.waves.some((wave) => !wave || typeof wave !== "object" || wave.entries !== void 0 && !Array.isArray(wave.entries)))) return "Invalid waves";
-    if (data.table === "content_configs" && (!row.payload || typeof row.payload !== "object" || Array.isArray(row.payload))) return "Invalid content config";
+    if (data.table === "content_configs" && (!row.payload || typeof row.payload !== "object" || Array.isArray(row.payload) && ["enemy_skills", "boss_skills"].indexOf(String(row.id)) < 0)) return "Invalid content config";
     if (data.table === "remote_settings") {
       if (["system", "game_play"].indexOf(row.module) < 0 || typeof row.key !== "string" || !row.key || typeof row.value !== "string") return "Invalid setting";
       try {
@@ -1824,9 +1824,9 @@ const getGameConfig = (ctx, logger, nk, payload) => {
     case "events":
       return JSON.stringify(readContentConfig(nk, "events"));
     case "tribulation":
-      return JSON.stringify(cultivationConfig());
+      return JSON.stringify(readContentConfig(nk, "tribulation"));
     case "all": {
-      const result = {};
+      const result = { schema_version: 2 };
       result.heroes = nk.sqlQuery("SELECT * FROM game_heroes ORDER BY id", []).map(processHero);
       result.enemies = nk.sqlQuery("SELECT * FROM game_enemies ORDER BY id", []).map(processEnemy);
       result.items = nk.sqlQuery("SELECT * FROM game_items ORDER BY sort_order, id", []).map(processItem);
@@ -1845,7 +1845,11 @@ const getGameConfig = (ctx, logger, nk, payload) => {
       result.daily_checkin = readContentConfig(nk, "daily_checkin");
       result.events = readContentConfig(nk, "events");
       result.stamina = readContentConfig(nk, "stamina");
-      result.tribulation = cultivationConfig();
+      result.tribulation = readContentConfig(nk, "tribulation");
+      result.enemy_skills = readContentConfig(nk, "enemy_skills");
+      result.boss_skills = readContentConfig(nk, "boss_skills");
+      result.vip = readContentConfig(nk, "vip");
+      result.rewarded_ads = readContentConfig(nk, "rewarded_ads");
       result.talismans = nk.sqlQuery("SELECT * FROM game_talismans ORDER BY id", []).map(processTalisman);
       return JSON.stringify(result);
     }

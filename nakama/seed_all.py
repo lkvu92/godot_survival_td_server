@@ -83,8 +83,13 @@ def seed_commerce(replace_all=False):
                  "icon_key": "first_purchase_pack", "price": first.get("display_price", ""),
                  "presentation_rewards": first.get("rewards", []), "rewards": first.get("grant_lines", [])})
     invoke_seed("store_catalog", {"rows": rows, "replace_all": replace_all})
+    seed_content_configs()
+
+
+def seed_content_configs():
     configs = [("daily_checkin", "daily_checkin.json"), ("events", "events.json"),
-               ("stamina", "stamina_config.json"), ("vip", "vip_config.json"), ("rewarded_ads", "rewarded_ads.json")]
+               ("stamina", "stamina_config.json"), ("vip", "vip_config.json"), ("rewarded_ads", "rewarded_ads.json"),
+               ("enemy_skills", "enemy_skills.json"), ("boss_skills", "boss_skills.json"), ("tribulation", "tribulation_config.json")]
     invoke_seed("content_configs", {"rows": [{"id": key, "payload": read_json(filename), "active": True} for key, filename in configs]})
 
 
@@ -92,12 +97,15 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--replace-all", action="store_true", help="Prune absent heroes and deactivate absent products; full catalogs only")
     parser.add_argument("--settings", type=Path, help="Remote settings JSON array; updates draft only")
+    parser.add_argument("--content-only", action="store_true", help="Seed only the eight supplemental content configs")
     parser.add_argument("--settings-only", action="store_true", help="Skip content seed; requires --settings")
     parser.add_argument("--publish", action="store_true", help="Publish using NAKAMA_CONFIG_ADMIN_TOKEN after successful seed")
     parser.add_argument("--app-version", default="1.0.0")
     parser.add_argument("--store-url", default="")
     args = parser.parse_args(argv)
     try:
+        if args.content_only and args.settings_only:
+            raise SeedError("Choose either --content-only or --settings-only")
         if args.settings_only and not args.settings:
             raise SeedError("--settings-only requires --settings")
         admin = os.environ.get("NAKAMA_CONFIG_ADMIN_TOKEN")
@@ -108,7 +116,9 @@ def main(argv=None):
             settings = json.loads(args.settings.read_text(encoding="utf-8-sig"))
             if not isinstance(settings, list) or not settings:
                 raise SeedError("Settings must be a nonempty JSON array")
-        if not args.settings_only:
+        if args.content_only:
+            seed_content_configs()
+        if not args.settings_only and not args.content_only:
             for table in ("heroes", "enemies", "items", "skills", "arcs", "cards", "effects", "talismans"):
                 seed_file(table, table + ".json", args.replace_all and table == "heroes")
             seed_file("stages", "stages.json", batch_size=5)

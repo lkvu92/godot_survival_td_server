@@ -56,7 +56,7 @@ function validateSeedRequest(data: any): string {
             if (["fragment_drop","stage_rules","stat_growth","metadata"].indexOf(key) >= 0 && Array.isArray(row[key])) return "Expected object: " + key;
         }
         if (row.waves !== undefined && (!Array.isArray(row.waves) || row.waves.some((wave: any) => !wave || typeof wave !== "object" || (wave.entries !== undefined && !Array.isArray(wave.entries))))) return "Invalid waves";
-        if (data.table === "content_configs" && (!row.payload || typeof row.payload !== "object" || Array.isArray(row.payload))) return "Invalid content config";
+        if (data.table === "content_configs" && (!row.payload || typeof row.payload !== "object" || (Array.isArray(row.payload) && ["enemy_skills","boss_skills"].indexOf(String(row.id)) < 0))) return "Invalid content config";
         if (data.table === "remote_settings") {
             if (["system","game_play"].indexOf(row.module) < 0 || typeof row.key !== "string" || !row.key || typeof row.value !== "string") return "Invalid setting";
             try { parseRemoteSetting(row.value_type, row.value); } catch (_e) { return "Invalid setting type/value"; }

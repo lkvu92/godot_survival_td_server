@@ -12,9 +12,9 @@ Hệ thống MAS chuẩn hóa cho dự án **Survival TD (Godot 4.x + Nakama Bac
 |---|---|---|
 | **The Architect** | Toàn bộ dự án (`docs/`, `data/`, `contracts/`) | Thiết kế giải pháp, tạo & cập nhật Contract (SemVer + Changelog), phân rã nhiệm vụ $\rightarrow$ **GATE 1** |
 | **Senior Nakama Backend Dev** | `nakama/` (Docker, TS modules, RPCs, Storage) | Triển khai RPC, Data Seeding, Storage Collections, build runtime với esbuild $\rightarrow$ **GATE 2A** |
-| **Senior Godot Gameplay Dev** | `data/`, `src/services/`, `src/managers/`, `src/combat/` | Triển khai Gameplay balance, Math/Formulas, Combat logic, Offline-first fallback $\rightarrow$ **GATE 2B** |
+| **Senior Godot Gameplay Dev** | `data/`, `src/services/`, `src/managers/`, `src/combat/` | Triển khai Gameplay balance, Math/Formulas, Combat logic, Online-only validation $\rightarrow$ **GATE 2B** |
 | **Presentation & UI/VFX Dev** | `assets/`, `scenes/`, `src/ui/`, `src/effects/` | Đăng ký asset vào `AtlasRegistry`, style qua `UiSkin`, thiết kế Scene, VFX frames, Audio $\rightarrow$ **GATE 3** |
-| **Principal Game Tester** | Toàn bộ dự án | Chạy static tests, test container Nakama, test offline fallback, đối soát Contract (Score $\ge 8/10$) $\rightarrow$ **GATE 4** |
+| **Principal Game Tester** | Toàn bộ dự án | Chạy static tests, test container Nakama, test online-only failure handling, đối soát Contract (Score $\ge 8/10$) $\rightarrow$ **GATE 4** |
 
 ---
 
@@ -34,7 +34,7 @@ Mọi tính năng/nhiệm vụ đều phải vượt qua **GATE** trước khi c
 - **GATE 2 (Implementation Green)**:
   - Nếu có Backend: TypeScript runtime compile sạch qua `npm run build` trong `nakama/`.
   - Phía Godot: Script không có lỗi syntax/parser, data nạp thành công qua `DataRegistry`.
-  - Đảm bảo cơ chế Offline-First Fallback: Mất mạng vẫn đọc được file `res://data/*.json` và chạy game bình thường.
+  - Online-only: missing/invalid config or network blocks gameplay and mutations; no local gameplay JSON fallback.
 - **GATE 3 (Visual & Integration Bound)**:
   - Assets và Sprite frames đăng ký đủ trong `AtlasRegistry.gd`.
   - Giao diện tuân thủ tiêu chuẩn `UiSkin.gd`, 9-patch frame, không custom stylebox tùy tiện.
@@ -49,10 +49,10 @@ Mọi tính năng/nhiệm vụ đều phải vượt qua **GATE** trước khi c
 ## 📜 5 Quy tắc Bất Khả Xâm Phạm (Golden Rules)
 
 1. **"No Code Without Contract"**: Tuyệt đối không viết mã nguồn (GDScript hoặc TypeScript) khi chưa đọc docs hoặc chưa có Contract và Changelog tương ứng.
-2. **"Single Source of Truth for Data"**: Mọi balance, chỉ số gameplay phải nằm trong `data/*.json` hoặc Nakama Storage config. Tuyệt đối không hard-code số liệu vào script.
+2. **"Server Data Authority"**: Gameplay balance is authoritative in Nakama DB. Only server/data JSON provides versioned seed input; client may keep presentation manifests, never gameplay JSON or local overrides.
 3. **"Asset Access via AtlasRegistry Only"**: Không dùng `load("res://assets/...")` trực tiếp rải rác trong gameplay code. 100% texture, icon, frame phải qua `AtlasRegistry`.
 4. **"UI via UiSkin Only"**: Không tạo stylebox cục bộ rời rạc trong Scene. Mọi Button, LineEdit, Dialog phải áp dụng qua `UiSkin` hoặc Theme tập trung.
-5. **"Offline-First Resilience"**: Hệ thống Nakama là tầng tăng cường (Online sync). Khi mất kết nối hoặc không có internet, game client PHẢI tự động fallback về dữ liệu local, không được crash hay chặn người chơi.
+5. **"Online-Only Resilience (C121)"**: Authenticated server bootstrap and a complete validated config snapshot are mandatory. Disconnects block actions and return to retry/login; no local rewards, profiles or gameplay fallback. This supersedes every older offline-first rule per the user instruction.
 
 ---
 

@@ -112,3 +112,7 @@ Agent luôn phản hồi theo định dạng chuẩn:
 
 **Trạng thái**: DONE
 ```
+
+
+## C121 online-only override
+User instruction supersedes every offline fallback requirement above. Gameplay catalogs come only from authenticated Nakama DB snapshots. No packaged gameplay JSON, local merge, local reward settlement or offline profile persistence. Disconnect tests must verify blocked actions and retry/login. Client atlas/UI manifests remain local; seed JSON belongs only to the server.

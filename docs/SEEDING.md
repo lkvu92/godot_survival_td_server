@@ -53,3 +53,13 @@ For integration tests, initialize an isolated disposable PostgreSQL database;
 set SEED_TEST_PSQL to the psql binary and SEED_TEST_PORT to its localhost port,
 then run the same script. Integration tests create tables and triggers; never
 point these variables at production or a database containing real data.
+
+## Online-only client rollout (C121)
+
+Build/restart Nakama, then use `python3 seed_all.py --content-only` with the
+correct NAKAMA_URL/NAKAMA_HTTP_KEY. This atomically seeds each supplemental
+content-config request (eight entries), including enemy_skills, boss_skills and
+full tribulation_config. It does not touch player profiles or base catalogs.
+Verify get_game_config table=all returns schema_version=2 and all required
+catalogs before releasing the new client. Older/incomplete backends are blocked
+at the client loading screen. No client balance JSON synchronization is required.
