@@ -139,9 +139,10 @@
           {
             "enemy_id": "snow_skeleton",
             "count": 2,
-            "interval": 0.77,
-            "start_delay": 0.2,
+            "interval": 1.0183,
+            "start_delay": 0.2645,
             "modifiers": {
+              "def_mul": 0.8,
               "exp": 4,
               "hp_mul": 1.0,
               "atk_mul": 1.0
@@ -150,9 +151,10 @@
           {
             "enemy_id": "horn_cactus",
             "count": 1,
-            "interval": 1.75,
-            "start_delay": 4.0,
+            "interval": 2.3144,
+            "start_delay": 5.29,
             "modifiers": {
+              "def_mul": 0.8,
               "exp": 8,
               "hp_mul": 1.0,
               "atk_mul": 1.0
@@ -168,33 +170,36 @@
           {
             "enemy_id": "frost_lancer",
             "count": 2,
-            "interval": 0.672,
-            "start_delay": 0.0,
+            "interval": 0.8887,
+            "start_delay": 0,
             "modifiers": {
+              "def_mul": 0.8,
               "exp": 6,
               "hp_mul": 0.3011,
               "atk_mul": 0.51,
-              "def_add": -6.0
+              "def_add": -4.8
             }
           },
           {
             "enemy_id": "snow_skeleton",
             "count": 1,
-            "interval": 0.672,
-            "start_delay": 0.35,
+            "interval": 0.8887,
+            "start_delay": 0.4629,
             "modifiers": {
+              "def_mul": 0.8,
               "exp": 6,
               "hp_mul": 1.04,
               "atk_mul": 1.02,
-              "def_add": 0.0
+              "def_add": 0
             }
           },
           {
             "enemy_id": "crystal_bat",
             "count": 2,
-            "interval": 0.728,
-            "start_delay": 2.4,
+            "interval": 0.9628,
+            "start_delay": 3.174,
             "modifiers": {
+              "def_mul": 0.8,
               "exp": 4,
               "hp_mul": 1.04,
               "atk_mul": 1.02
@@ -210,9 +215,10 @@
           {
             "enemy_id": "frost_wolf",
             "count": 2,
-            "interval": 0.896,
-            "start_delay": 0.0,
+            "interval": 1.185,
+            "start_delay": 0,
             "modifiers": {
+              "def_mul": 0.8,
               "exp": 7,
               "hp_mul": 1.08,
               "atk_mul": 1.05
@@ -221,9 +227,10 @@
           {
             "enemy_id": "snow_mage",
             "count": 1,
-            "interval": 1.61,
-            "start_delay": 2.2,
+            "interval": 2.1292,
+            "start_delay": 2.9095,
             "modifiers": {
+              "def_mul": 0.8,
               "exp": 7,
               "hp_mul": 1.08,
               "atk_mul": 1.05
@@ -232,25 +239,27 @@
           {
             "enemy_id": "snow_mage",
             "count": 3,
-            "interval": 0.63,
-            "start_delay": 3.8,
+            "interval": 0.8332,
+            "start_delay": 5.0255,
             "modifiers": {
+              "def_mul": 0.8,
               "exp": 4,
               "hp_mul": 0.9138,
               "atk_mul": 0.7875,
-              "def_add": 0.0
+              "def_add": 0
             }
           },
           {
             "enemy_id": "crystal_bat",
             "count": 1,
-            "interval": 0.63,
-            "start_delay": 4.15,
+            "interval": 0.8332,
+            "start_delay": 5.4884,
             "modifiers": {
+              "def_mul": 0.8,
               "exp": 4,
               "hp_mul": 1.485,
               "atk_mul": 1.26,
-              "def_add": 1.0
+              "def_add": 0.8
             }
           }
         ]
@@ -263,33 +272,36 @@
           {
             "enemy_id": "snow_mage",
             "count": 3,
-            "interval": 0.56,
-            "start_delay": 0.0,
+            "interval": 0.7406,
+            "start_delay": 0,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 0.9477,
               "exp": 5,
               "atk_mul": 0.8025,
-              "def_add": 0.0
+              "def_add": 0
             }
           },
           {
             "enemy_id": "horn_cactus",
             "count": 1,
-            "interval": 0.56,
-            "start_delay": 0.35,
+            "interval": 0.7406,
+            "start_delay": 0.4629,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 0.56,
               "exp": 5,
               "atk_mul": 0.856,
-              "def_add": -4.0
+              "def_add": -3.2
             }
           },
           {
             "enemy_id": "horn_cactus",
             "count": 2,
-            "interval": 1.26,
-            "start_delay": 2.4,
+            "interval": 1.6663,
+            "start_delay": 3.174,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 1.12,
               "exp": 9,
               "atk_mul": 1.07
@@ -298,9 +310,10 @@
           {
             "enemy_id": "crystal_bat",
             "count": 2,
-            "interval": 0.672,
-            "start_delay": 5.0,
+            "interval": 0.8887,
+            "start_delay": 6.6125,
             "modifiers": {
+              "def_mul": 0.8,
               "exp": 6,
               "hp_mul": 1.12,
               "atk_mul": 1.07
@@ -316,49 +329,53 @@
           {
             "enemy_id": "frost_wolf",
             "count": 3,
-            "interval": 0.7,
-            "start_delay": 0.0,
+            "interval": 0.9257,
+            "start_delay": 0,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 1.16,
               "exp": 3,
               "atk_mul": 1.09,
-              "def_add": 0.0
+              "def_add": 0
             }
           },
           {
             "enemy_id": "horn_cactus",
             "count": 1,
-            "interval": 0.7,
-            "start_delay": 0.35,
+            "interval": 0.9257,
+            "start_delay": 0.4629,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 0.7382,
               "exp": 3,
               "atk_mul": 1.0173,
-              "def_add": -3.0
+              "def_add": -2.4
             }
           },
           {
             "enemy_id": "frost_lancer",
             "count": 5,
-            "interval": 0.56,
-            "start_delay": 2.0,
+            "interval": 0.7406,
+            "start_delay": 2.645,
             "modifiers": {
+              "def_mul": 0.8,
               "exp": 4,
               "hp_mul": 0.3358,
               "atk_mul": 0.545,
-              "def_add": -6.0
+              "def_add": -4.8
             }
           },
           {
             "enemy_id": "snow_skeleton",
             "count": 1,
-            "interval": 0.56,
-            "start_delay": 2.35,
+            "interval": 0.7406,
+            "start_delay": 3.1079,
             "modifiers": {
+              "def_mul": 0.8,
               "exp": 4,
               "hp_mul": 1.16,
               "atk_mul": 1.09,
-              "def_add": 0.0
+              "def_add": 0
             }
           },
           {
@@ -368,6 +385,8 @@
             "start_delay": 7.5,
             "boss": true,
             "modifiers": {
+              "speed_mul": 1.5,
+              "def_mul": 0.8,
               "exp": 116
             }
           }
@@ -381,73 +400,79 @@
           {
             "enemy_id": "frost_lancer",
             "count": 5,
-            "interval": 0.504,
-            "start_delay": 0.0,
+            "interval": 0.6665,
+            "start_delay": 0,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 0.3474,
               "exp": 6,
               "atk_mul": 0.56,
-              "def_add": -6.0
+              "def_add": -4.8
             }
           },
           {
             "enemy_id": "frost_giant",
             "count": 1,
-            "interval": 0.504,
-            "start_delay": 0.35,
+            "interval": 0.6665,
+            "start_delay": 0.4629,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 0.1553,
               "exp": 6,
               "atk_mul": 0.3537,
-              "def_add": -14.0
+              "def_add": -11.2
             }
           },
           {
             "enemy_id": "snow_mage",
             "count": 2,
-            "interval": 1.33,
-            "start_delay": 2.0,
+            "interval": 1.7589,
+            "start_delay": 2.645,
             "modifiers": {
+              "def_mul": 0.8,
               "exp": 10,
               "hp_mul": 1.2,
               "atk_mul": 1.12,
-              "def_add": 0.0
+              "def_add": 0
             }
           },
           {
             "enemy_id": "snow_skeleton",
             "count": 1,
-            "interval": 1.33,
-            "start_delay": 2.35,
+            "interval": 1.7589,
+            "start_delay": 3.1079,
             "modifiers": {
+              "def_mul": 0.8,
               "exp": 10,
               "hp_mul": 1.4182,
               "atk_mul": 1.4933,
-              "def_add": 0.0
+              "def_add": 0
             }
           },
           {
             "enemy_id": "frost_lancer",
             "count": 2,
-            "interval": 1.19,
-            "start_delay": 4.8,
+            "interval": 1.5738,
+            "start_delay": 6.348,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 0.6947,
               "exp": 10,
               "atk_mul": 0.7,
-              "def_add": -2.0
+              "def_add": -1.6
             }
           },
           {
             "enemy_id": "frost_knight",
             "count": 1,
-            "interval": 1.19,
-            "start_delay": 5.15,
+            "interval": 1.5738,
+            "start_delay": 6.8109,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 0.55,
               "exp": 10,
               "atk_mul": 0.6462,
-              "def_add": -6.0
+              "def_add": -4.8
             }
           }
         ]
@@ -460,75 +485,81 @@
           {
             "enemy_id": "snow_mage",
             "count": 5,
-            "interval": 0.448,
-            "start_delay": 0.0,
+            "interval": 0.5925,
+            "start_delay": 0,
             "modifiers": {
+              "def_mul": 0.8,
               "speed_mul": 1.06,
               "exp": 6,
               "hp_mul": 0.7631,
               "atk_mul": 0.7125,
-              "def_add": -1.0
+              "def_add": -0.8
             }
           },
           {
             "enemy_id": "snow_skeleton",
             "count": 1,
-            "interval": 0.448,
-            "start_delay": 0.35,
+            "interval": 0.5925,
+            "start_delay": 0.4629,
             "modifiers": {
+              "def_mul": 0.8,
               "speed_mul": 1.06,
               "exp": 6,
               "hp_mul": 0.9018,
               "atk_mul": 0.95,
-              "def_add": -1.0
+              "def_add": -0.8
             }
           },
           {
             "enemy_id": "frost_wolf",
             "count": 3,
-            "interval": 0.616,
-            "start_delay": 1.4,
+            "interval": 0.8147,
+            "start_delay": 1.8515,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 1.24,
               "exp": 9,
               "atk_mul": 1.14,
-              "def_add": 0.0
+              "def_add": 0
             }
           },
           {
             "enemy_id": "snow_skeleton",
             "count": 1,
-            "interval": 0.616,
-            "start_delay": 1.75,
+            "interval": 0.8147,
+            "start_delay": 2.3144,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 1.5782,
               "exp": 9,
               "atk_mul": 1.33,
-              "def_add": 1.0
+              "def_add": 0.8
             }
           },
           {
             "enemy_id": "snow_mage",
             "count": 3,
-            "interval": 1.33,
-            "start_delay": 5.0,
+            "interval": 1.7589,
+            "start_delay": 6.6125,
             "modifiers": {
+              "def_mul": 0.8,
               "exp": 9,
               "hp_mul": 2.0985,
               "atk_mul": 1.0687,
-              "def_add": 4.0
+              "def_add": 3.2
             }
           },
           {
             "enemy_id": "horn_cactus",
             "count": 1,
-            "interval": 1.33,
-            "start_delay": 5.35,
+            "interval": 1.7589,
+            "start_delay": 7.0754,
             "modifiers": {
+              "def_mul": 0.8,
               "exp": 9,
               "hp_mul": 1.24,
               "atk_mul": 1.14,
-              "def_add": 0.0
+              "def_add": 0
             }
           }
         ]
@@ -541,73 +572,79 @@
           {
             "enemy_id": "frost_lancer",
             "count": 5,
-            "interval": 0.448,
-            "start_delay": 0.0,
+            "interval": 0.5925,
+            "start_delay": 0,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 0.3705,
               "exp": 8,
               "atk_mul": 0.585,
-              "def_add": -6.0
+              "def_add": -4.8
             }
           },
           {
             "enemy_id": "frost_giant",
             "count": 2,
-            "interval": 0.448,
-            "start_delay": 0.35,
+            "interval": 0.5925,
+            "start_delay": 0.4629,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 0.1656,
               "exp": 8,
               "atk_mul": 0.3695,
-              "def_add": -14.0
+              "def_add": -11.2
             }
           },
           {
             "enemy_id": "snow_mage",
             "count": 3,
-            "interval": 1.092,
-            "start_delay": 2.2,
+            "interval": 1.4442,
+            "start_delay": 2.9095,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 2.1662,
               "exp": 9,
               "atk_mul": 1.0969,
-              "def_add": 4.0
+              "def_add": 3.2
             }
           },
           {
             "enemy_id": "frost_giant",
             "count": 1,
-            "interval": 1.092,
-            "start_delay": 2.55,
+            "interval": 1.4442,
+            "start_delay": 3.3724,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 0.3313,
               "exp": 9,
               "atk_mul": 0.4618,
-              "def_add": -10.0
+              "def_add": -8
             }
           },
           {
             "enemy_id": "snow_mage",
             "count": 3,
-            "interval": 1.092,
-            "start_delay": 5.4,
+            "interval": 1.4442,
+            "start_delay": 7.1415,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 1.28,
               "exp": 9,
               "atk_mul": 1.17,
-              "def_add": 0.0
+              "def_add": 0
             }
           },
           {
             "enemy_id": "horn_cactus",
             "count": 1,
-            "interval": 1.092,
-            "start_delay": 5.75,
+            "interval": 1.4442,
+            "start_delay": 7.6044,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 0.7564,
               "exp": 9,
               "atk_mul": 1.248,
-              "def_add": -4.0
+              "def_add": -3.2
             }
           }
         ]
@@ -620,75 +657,81 @@
           {
             "enemy_id": "frost_wolf",
             "count": 6,
-            "interval": 0.532,
-            "start_delay": 0.0,
+            "interval": 0.7036,
+            "start_delay": 0,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 1.32,
               "speed_mul": 1.08,
               "exp": 8,
               "atk_mul": 1.19,
-              "def_add": 0.0
+              "def_add": 0
             }
           },
           {
             "enemy_id": "frost_giant",
             "count": 2,
-            "interval": 0.532,
-            "start_delay": 0.35,
+            "interval": 0.7036,
+            "start_delay": 0.4629,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 0.2174,
               "speed_mul": 1.08,
               "exp": 8,
               "atk_mul": 0.4384,
-              "def_add": -13.0
+              "def_add": -10.4
             }
           },
           {
             "enemy_id": "snow_mage",
             "count": 4,
-            "interval": 1.092,
-            "start_delay": 1.2,
+            "interval": 1.4442,
+            "start_delay": 1.587,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 1.32,
               "exp": 10,
               "atk_mul": 1.19,
-              "def_add": 0.0
+              "def_add": 0
             }
           },
           {
             "enemy_id": "frost_knight",
             "count": 1,
-            "interval": 1.092,
-            "start_delay": 1.55,
+            "interval": 1.4442,
+            "start_delay": 2.0499,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 0.3575,
               "exp": 10,
               "atk_mul": 0.7323,
-              "def_add": -10.0
+              "def_add": -8
             }
           },
           {
             "enemy_id": "snow_mage",
             "count": 3,
-            "interval": 2.24,
-            "start_delay": 4.5,
+            "interval": 2.9624,
+            "start_delay": 5.9512,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 4.8738,
               "exp": 16,
               "atk_mul": 1.9337,
-              "def_add": 10.0
+              "def_add": 8
             }
           },
           {
             "enemy_id": "frost_knight",
             "count": 1,
-            "interval": 2.24,
-            "start_delay": 4.85,
+            "interval": 2.9624,
+            "start_delay": 6.4141,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 1.32,
               "exp": 16,
               "atk_mul": 1.19,
-              "def_add": 0.0
+              "def_add": 0
             }
           }
         ]
@@ -701,77 +744,83 @@
           {
             "enemy_id": "frost_lancer",
             "count": 5,
-            "interval": 0.42,
-            "start_delay": 0.0,
+            "interval": 0.5554,
+            "start_delay": 0,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 0.3937,
               "exp": 2,
               "atk_mul": 0.605,
-              "def_add": -6.0
+              "def_add": -4.8
             }
           },
           {
             "enemy_id": "crystal_bat",
             "count": 1,
-            "interval": 0.42,
-            "start_delay": 0.35,
+            "interval": 0.5554,
+            "start_delay": 0.4629,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 1.87,
               "exp": 2,
               "atk_mul": 1.452,
-              "def_add": 1.0
+              "def_add": 0.8
             }
           },
           {
             "enemy_id": "snow_mage",
             "count": 5,
-            "interval": 0.49,
-            "start_delay": 2.4,
+            "interval": 0.648,
+            "start_delay": 3.174,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 0.8369,
               "speed_mul": 1.08,
               "exp": 4,
               "atk_mul": 0.7562,
-              "def_add": -1.0
+              "def_add": -0.8
             }
           },
           {
             "enemy_id": "horn_cactus",
             "count": 1,
-            "interval": 0.49,
-            "start_delay": 2.75,
+            "interval": 0.648,
+            "start_delay": 3.6369,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 0.4945,
               "speed_mul": 1.08,
               "exp": 4,
               "atk_mul": 0.8067,
-              "def_add": -5.0
+              "def_add": -4
             }
           },
           {
             "enemy_id": "frost_wolf",
             "count": 4,
-            "interval": 0.672,
-            "start_delay": 5.0,
+            "interval": 0.8887,
+            "start_delay": 6.6125,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 1.36,
               "speed_mul": 1.08,
               "exp": 4,
               "atk_mul": 1.21,
-              "def_add": 0.0
+              "def_add": 0
             }
           },
           {
             "enemy_id": "frost_knight",
             "count": 1,
-            "interval": 0.672,
-            "start_delay": 5.35,
+            "interval": 0.8887,
+            "start_delay": 7.0754,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 0.3967,
               "speed_mul": 1.08,
               "exp": 4,
               "atk_mul": 0.6515,
-              "def_add": -9.0
+              "def_add": -7.2
             }
           },
           {
@@ -781,6 +830,8 @@
             "start_delay": 9.5,
             "boss": true,
             "modifiers": {
+              "speed_mul": 1.5,
+              "def_mul": 0.8,
               "exp": 226
             }
           }
@@ -794,49 +845,53 @@
           {
             "enemy_id": "frost_wolf",
             "count": 11,
-            "interval": 0.42,
-            "start_delay": 0.0,
+            "interval": 0.5554,
+            "start_delay": 0,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 1.0921,
               "atk_mul": 1.0629,
               "exp": 9,
-              "def_add": -1.0
+              "def_add": -0.8
             }
           },
           {
             "enemy_id": "crystal_bat",
             "count": 3,
-            "interval": 0.42,
-            "start_delay": 0.35,
+            "interval": 0.5554,
+            "start_delay": 0.4629,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 1.9112,
               "atk_mul": 1.488,
               "exp": 9,
-              "def_add": 1.0
+              "def_add": 0.8
             }
           },
           {
             "enemy_id": "snow_mage",
             "count": 5,
-            "interval": 1.148,
-            "start_delay": 3.0,
+            "interval": 1.5182,
+            "start_delay": 3.9675,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 2.3523,
               "exp": 11,
               "atk_mul": 1.1625,
-              "def_add": 4.0
+              "def_add": 3.2
             }
           },
           {
             "enemy_id": "horn_cactus",
             "count": 1,
-            "interval": 1.148,
-            "start_delay": 3.35,
+            "interval": 1.5182,
+            "start_delay": 4.4304,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 1.39,
               "exp": 11,
               "atk_mul": 1.24,
-              "def_add": 0.0
+              "def_add": 0
             }
           }
         ]
@@ -849,85 +904,92 @@
           {
             "enemy_id": "frost_wolf",
             "count": 7,
-            "interval": 0.476,
-            "start_delay": 0.0,
+            "interval": 0.6295,
+            "start_delay": 0,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 1.43,
               "speed_mul": 1.1,
               "exp": 10,
               "atk_mul": 1.26,
-              "def_add": 0.0
+              "def_add": 0
             }
           },
           {
             "enemy_id": "crystal_bat",
             "count": 2,
-            "interval": 0.476,
-            "start_delay": 0.35,
+            "interval": 0.6295,
+            "start_delay": 0.4629,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 2.5025,
               "speed_mul": 1.1,
               "exp": 10,
               "atk_mul": 1.764,
-              "def_add": 2.0
+              "def_add": 1.6
             }
           },
           {
             "enemy_id": "snow_mage",
             "count": 3,
-            "interval": 1.05,
-            "start_delay": 2.0,
+            "interval": 1.3886,
+            "start_delay": 2.645,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 1.43,
               "exp": 12,
               "atk_mul": 1.26,
-              "def_add": 0.0
+              "def_add": 0
             }
           },
           {
             "enemy_id": "snow_skeleton",
             "count": 1,
-            "interval": 1.05,
-            "start_delay": 2.35,
+            "interval": 1.3886,
+            "start_delay": 3.1079,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 1.69,
               "exp": 12,
               "atk_mul": 1.68,
-              "def_add": 0.0
+              "def_add": 0
             }
           },
           {
             "enemy_id": "snow_mage",
             "count": 5,
-            "interval": 0.476,
-            "start_delay": 5.2,
+            "interval": 0.6295,
+            "start_delay": 6.877,
             "modifiers": {
+              "def_mul": 0.8,
               "speed_mul": 1.08,
               "exp": 8,
               "hp_mul": 0.88,
               "atk_mul": 0.7875,
-              "def_add": -1.0
+              "def_add": -0.8
             }
           },
           {
             "enemy_id": "frost_knight",
             "count": 2,
-            "interval": 0.476,
-            "start_delay": 5.55,
+            "interval": 0.6295,
+            "start_delay": 7.3399,
             "modifiers": {
+              "def_mul": 0.8,
               "speed_mul": 1.08,
               "exp": 8,
               "hp_mul": 0.2383,
               "atk_mul": 0.4846,
-              "def_add": -11.0
+              "def_add": -8.8
             }
           },
           {
             "enemy_id": "frost_lancer",
             "count": 2,
-            "interval": 1.68,
-            "start_delay": 3.0,
+            "interval": 2.2218,
+            "start_delay": 3.9675,
             "modifiers": {
+              "def_mul": 0.8,
               "exp": 21,
               "hp_mul": 1.43,
               "atk_mul": 1.26
@@ -943,81 +1005,88 @@
           {
             "enemy_id": "snow_mage",
             "count": 6,
-            "interval": 0.812,
-            "start_delay": 0.0,
+            "interval": 1.0739,
+            "start_delay": 0,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 2.4877,
               "atk_mul": 1.2,
               "exp": 11,
-              "def_add": 4.0
+              "def_add": 3.2
             }
           },
           {
             "enemy_id": "crystal_bat",
             "count": 2,
-            "interval": 0.812,
-            "start_delay": 0.35,
+            "interval": 1.0739,
+            "start_delay": 0.4629,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 4.0425,
               "atk_mul": 1.92,
               "exp": 11,
-              "def_add": 5.0
+              "def_add": 4
             }
           },
           {
             "enemy_id": "frost_wolf",
             "count": 2,
-            "interval": 1.96,
-            "start_delay": 1.8,
+            "interval": 2.5921,
+            "start_delay": 2.3805,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 5.04,
               "exp": 20,
               "atk_mul": 2.3771,
-              "def_add": 9.0
+              "def_add": 7.2
             }
           },
           {
             "enemy_id": "frost_giant",
             "count": 1,
-            "interval": 1.96,
-            "start_delay": 2.15,
+            "interval": 2.5921,
+            "start_delay": 2.8434,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 0.8301,
               "exp": 20,
               "atk_mul": 0.8758,
-              "def_add": -4.0
+              "def_add": -3.2
             }
           },
           {
             "enemy_id": "frost_wolf",
             "count": 9,
-            "interval": 0.42,
-            "start_delay": 4.5,
+            "interval": 0.5554,
+            "start_delay": 5.9512,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 1.155,
               "exp": 6,
               "atk_mul": 1.0971,
-              "def_add": -1.0
+              "def_add": -0.8
             }
           },
           {
             "enemy_id": "snow_skeleton",
             "count": 3,
-            "interval": 0.42,
-            "start_delay": 4.85,
+            "interval": 0.5554,
+            "start_delay": 6.4141,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 1.47,
               "exp": 6,
               "atk_mul": 1.28,
-              "def_add": 0.0
+              "def_add": 0
             }
           },
           {
             "enemy_id": "frost_giant",
             "count": 1,
-            "interval": 2.8,
-            "start_delay": 2.5,
+            "interval": 3.703,
+            "start_delay": 3.3062,
             "modifiers": {
+              "def_mul": 0.8,
               "exp": 29,
               "hp_mul": 1.47,
               "atk_mul": 1.28
@@ -1033,85 +1102,92 @@
           {
             "enemy_id": "frost_lancer",
             "count": 8,
-            "interval": 0.364,
-            "start_delay": 0.0,
+            "interval": 0.4814,
+            "start_delay": 0,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 0.3179,
               "speed_mul": 1.14,
               "exp": 9,
               "atk_mul": 0.5458,
-              "def_add": -7.0
+              "def_add": -5.6
             }
           },
           {
             "enemy_id": "frost_knight",
             "count": 3,
-            "interval": 0.364,
-            "start_delay": 0.35,
+            "interval": 0.4814,
+            "start_delay": 0.4629,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 0.2517,
               "speed_mul": 1.14,
               "exp": 9,
               "atk_mul": 0.5038,
-              "def_add": -11.0
+              "def_add": -8.8
             }
           },
           {
             "enemy_id": "frost_wolf",
             "count": 7,
-            "interval": 0.476,
-            "start_delay": 2.8,
+            "interval": 0.6295,
+            "start_delay": 3.703,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 1.51,
               "speed_mul": 1.12,
               "exp": 10,
               "atk_mul": 1.31,
-              "def_add": 0.0
+              "def_add": 0
             }
           },
           {
             "enemy_id": "frost_giant",
             "count": 2,
-            "interval": 0.476,
-            "start_delay": 3.15,
+            "interval": 0.6295,
+            "start_delay": 4.1659,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 0.2487,
               "speed_mul": 1.12,
               "exp": 10,
               "atk_mul": 0.4826,
-              "def_add": -13.0
+              "def_add": -10.4
             }
           },
           {
             "enemy_id": "snow_mage",
             "count": 3,
-            "interval": 1.092,
-            "start_delay": 5.8,
+            "interval": 1.4442,
+            "start_delay": 7.6705,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 2.5554,
               "exp": 12,
               "atk_mul": 1.2281,
-              "def_add": 4.0
+              "def_add": 3.2
             }
           },
           {
             "enemy_id": "frost_knight",
             "count": 1,
-            "interval": 1.092,
-            "start_delay": 6.15,
+            "interval": 1.4442,
+            "start_delay": 8.1334,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 0.6921,
               "exp": 12,
               "atk_mul": 0.7558,
-              "def_add": -6.0
+              "def_add": -4.8
             }
           },
           {
             "enemy_id": "frost_lancer",
             "count": 2,
-            "interval": 1.4,
-            "start_delay": 4.0,
+            "interval": 1.8515,
+            "start_delay": 5.29,
             "modifiers": {
+              "def_mul": 0.8,
               "exp": 22,
               "hp_mul": 1.51,
               "atk_mul": 1.31
@@ -1127,81 +1203,88 @@
           {
             "enemy_id": "snow_mage",
             "count": 12,
-            "interval": 0.35,
-            "start_delay": 0.0,
+            "interval": 0.4629,
+            "start_delay": 0,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 1.3115,
               "atk_mul": 0.9975,
               "exp": 8,
-              "def_add": 0.0
+              "def_add": 0
             }
           },
           {
             "enemy_id": "frost_giant",
             "count": 4,
-            "interval": 0.35,
-            "start_delay": 0.35,
+            "interval": 0.4629,
+            "start_delay": 0.4629,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 0.2006,
               "atk_mul": 0.42,
               "exp": 8,
-              "def_add": -14.0
+              "def_add": -11.2
             }
           },
           {
             "enemy_id": "snow_mage",
             "count": 5,
-            "interval": 0.952,
-            "start_delay": 2.5,
+            "interval": 1.259,
+            "start_delay": 3.3062,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 1.55,
               "atk_mul": 1.33,
               "exp": 10,
-              "def_add": 0.0
+              "def_add": 0
             }
           },
           {
             "enemy_id": "crystal_bat",
             "count": 1,
-            "interval": 0.952,
-            "start_delay": 2.85,
+            "interval": 1.259,
+            "start_delay": 3.7691,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 2.5187,
               "atk_mul": 2.128,
               "exp": 10,
-              "def_add": 1.0
+              "def_add": 0.8
             }
           },
           {
             "enemy_id": "frost_lancer",
             "count": 3,
-            "interval": 1.75,
-            "start_delay": 5.5,
+            "interval": 2.3144,
+            "start_delay": 7.2737,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 1.9579,
               "exp": 21,
               "atk_mul": 1.4408,
-              "def_add": 4.0
+              "def_add": 3.2
             }
           },
           {
             "enemy_id": "frost_giant",
             "count": 1,
-            "interval": 1.75,
-            "start_delay": 5.85,
+            "interval": 2.3144,
+            "start_delay": 7.7366,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 0.8753,
               "exp": 21,
               "atk_mul": 0.91,
-              "def_add": -4.0
+              "def_add": -3.2
             }
           },
           {
             "enemy_id": "frost_giant",
             "count": 1,
-            "interval": 2.52,
-            "start_delay": 3.0,
+            "interval": 3.3327,
+            "start_delay": 3.9675,
             "modifiers": {
+              "def_mul": 0.8,
               "exp": 31,
               "hp_mul": 1.55,
               "atk_mul": 1.33
@@ -1217,73 +1300,79 @@
           {
             "enemy_id": "frost_wolf",
             "count": 10,
-            "interval": 0.784,
-            "start_delay": 0.0,
+            "interval": 1.0368,
+            "start_delay": 0,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 2.4986,
               "atk_mul": 1.4571,
               "exp": 11,
-              "def_add": 3.0
+              "def_add": 2.4
             }
           },
           {
             "enemy_id": "frost_giant",
             "count": 3,
-            "interval": 0.784,
-            "start_delay": 0.35,
+            "interval": 1.0368,
+            "start_delay": 0.4629,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 0.4115,
               "atk_mul": 0.5368,
               "exp": 11,
-              "def_add": -10.0
+              "def_add": -8
             }
           },
           {
             "enemy_id": "snow_mage",
             "count": 3,
-            "interval": 1.68,
-            "start_delay": 1.6,
+            "interval": 2.2218,
+            "start_delay": 2.116,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 5.8708,
               "atk_mul": 2.21,
               "exp": 19,
-              "def_add": 10.0
+              "def_add": 8
             }
           },
           {
             "enemy_id": "snow_skeleton",
             "count": 1,
-            "interval": 1.68,
-            "start_delay": 1.95,
+            "interval": 2.2218,
+            "start_delay": 2.5789,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 6.9382,
               "atk_mul": 2.9467,
               "exp": 19,
-              "def_add": 10.0
+              "def_add": 8
             }
           },
           {
             "enemy_id": "frost_wolf",
             "count": 10,
-            "interval": 0.56,
-            "start_delay": 5.5,
+            "interval": 0.7406,
+            "start_delay": 7.2737,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 1.59,
               "exp": 9,
               "atk_mul": 1.36,
-              "def_add": 0.0
+              "def_add": 0
             }
           },
           {
             "enemy_id": "snow_skeleton",
             "count": 3,
-            "interval": 0.56,
-            "start_delay": 5.85,
+            "interval": 0.7406,
+            "start_delay": 7.7366,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 2.0236,
               "exp": 9,
               "atk_mul": 1.5867,
-              "def_add": 1.0
+              "def_add": 0.8
             }
           }
         ]
@@ -1296,101 +1385,109 @@
           {
             "enemy_id": "frost_wolf",
             "count": 10,
-            "interval": 0.392,
-            "start_delay": 0.0,
+            "interval": 0.5184,
+            "start_delay": 0,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 1.63,
               "speed_mul": 1.14,
               "atk_mul": 1.38,
               "exp": 11,
-              "def_add": 0.0
+              "def_add": 0
             }
           },
           {
             "enemy_id": "horn_cactus",
             "count": 3,
-            "interval": 0.392,
-            "start_delay": 0.35,
+            "interval": 0.5184,
+            "start_delay": 0.4629,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 1.0373,
               "speed_mul": 1.14,
               "atk_mul": 1.288,
               "exp": 11,
-              "def_add": -3.0
+              "def_add": -2.4
             }
           },
           {
             "enemy_id": "frost_wolf",
             "count": 8,
-            "interval": 0.378,
-            "start_delay": 2.5,
+            "interval": 0.4999,
+            "start_delay": 3.3062,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 0.9314,
               "speed_mul": 1.16,
               "exp": 9,
               "atk_mul": 0.9857,
-              "def_add": -2.0
+              "def_add": -1.6
             }
           },
           {
             "enemy_id": "snow_skeleton",
             "count": 3,
-            "interval": 0.378,
-            "start_delay": 2.85,
+            "interval": 0.4999,
+            "start_delay": 3.7691,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 1.1855,
               "speed_mul": 1.16,
               "exp": 9,
               "atk_mul": 1.15,
-              "def_add": -1.0
+              "def_add": -0.8
             }
           },
           {
             "enemy_id": "snow_mage",
             "count": 3,
-            "interval": 1.008,
-            "start_delay": 5.0,
+            "interval": 1.3331,
+            "start_delay": 6.6125,
             "modifiers": {
+              "def_mul": 0.8,
               "atk_mul": 1.38,
               "exp": 11,
               "hp_mul": 1.63,
-              "def_add": 0.0
+              "def_add": 0
             }
           },
           {
             "enemy_id": "horn_cactus",
             "count": 1,
-            "interval": 1.008,
-            "start_delay": 5.35,
+            "interval": 1.3331,
+            "start_delay": 7.0754,
             "modifiers": {
+              "def_mul": 0.8,
               "atk_mul": 1.472,
               "exp": 11,
               "hp_mul": 0.9632,
-              "def_add": -4.0
+              "def_add": -3.2
             }
           },
           {
             "enemy_id": "frost_lancer",
             "count": 2,
-            "interval": 1.12,
-            "start_delay": 3.5,
+            "interval": 1.4812,
+            "start_delay": 4.6288,
             "modifiers": {
+              "def_mul": 0.8,
               "exp": 22,
               "hp_mul": 1.63,
               "atk_mul": 1.38,
-              "def_add": 0.0
+              "def_add": 0
             }
           },
           {
             "enemy_id": "snow_skeleton",
             "count": 1,
-            "interval": 1.12,
-            "start_delay": 3.85,
+            "interval": 1.4812,
+            "start_delay": 5.0916,
             "modifiers": {
+              "def_mul": 0.8,
               "exp": 22,
               "hp_mul": 5.6309,
               "atk_mul": 2.76,
-              "def_add": 6.0
+              "def_add": 4.8
             }
           }
         ]
@@ -1403,97 +1500,105 @@
           {
             "enemy_id": "frost_wolf",
             "count": 13,
-            "interval": 0.35,
-            "start_delay": 0.0,
+            "interval": 0.4629,
+            "start_delay": 0,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 1.3121,
               "atk_mul": 1.2,
               "exp": 7,
-              "def_add": -1.0
+              "def_add": -0.8
             }
           },
           {
             "enemy_id": "crystal_bat",
             "count": 4,
-            "interval": 0.35,
-            "start_delay": 0.35,
+            "interval": 0.4629,
+            "start_delay": 0.4629,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 2.2962,
               "atk_mul": 1.68,
               "exp": 7,
-              "def_add": 1.0
+              "def_add": 0.8
             }
           },
           {
             "enemy_id": "frost_wolf",
             "count": 7,
-            "interval": 0.812,
-            "start_delay": 2.0,
+            "interval": 1.0739,
+            "start_delay": 2.645,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 2.6243,
               "atk_mul": 1.5,
               "exp": 11,
-              "def_add": 3.0
+              "def_add": 2.4
             }
           },
           {
             "enemy_id": "crystal_bat",
             "count": 2,
-            "interval": 0.812,
-            "start_delay": 2.35,
+            "interval": 1.0739,
+            "start_delay": 3.1079,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 4.5925,
               "atk_mul": 2.1,
               "exp": 11,
-              "def_add": 5.0
+              "def_add": 4
             }
           },
           {
             "enemy_id": "snow_mage",
             "count": 3,
-            "interval": 1.47,
-            "start_delay": 5.0,
+            "interval": 1.9441,
+            "start_delay": 6.6125,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 6.1662,
               "atk_mul": 2.275,
               "exp": 21,
-              "def_add": 10.0
+              "def_add": 8
             }
           },
           {
             "enemy_id": "crystal_bat",
             "count": 1,
-            "interval": 1.47,
-            "start_delay": 5.35,
+            "interval": 1.9441,
+            "start_delay": 7.0754,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 10.02,
               "atk_mul": 3.64,
               "exp": 21,
-              "def_add": 11.0
+              "def_add": 8.8
             }
           },
           {
             "enemy_id": "frost_wolf",
             "count": 2,
-            "interval": 2.1,
-            "start_delay": 3.5,
+            "interval": 2.7772,
+            "start_delay": 4.6288,
             "modifiers": {
+              "def_mul": 0.8,
               "exp": 29,
               "hp_mul": 10.1393,
               "atk_mul": 3.8,
-              "def_add": 13.0
+              "def_add": 10.4
             }
           },
           {
             "enemy_id": "horn_cactus",
             "count": 1,
-            "interval": 2.1,
-            "start_delay": 3.85,
+            "interval": 2.7772,
+            "start_delay": 5.0916,
             "modifiers": {
+              "def_mul": 0.8,
               "exp": 29,
               "hp_mul": 6.4523,
               "atk_mul": 3.5467,
-              "def_add": 10.0
+              "def_add": 8
             }
           }
         ]
@@ -1506,109 +1611,118 @@
           {
             "enemy_id": "frost_wolf",
             "count": 10,
-            "interval": 0.364,
-            "start_delay": 0.0,
+            "interval": 0.4814,
+            "start_delay": 0,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 1.71,
               "speed_mul": 1.15,
               "atk_mul": 1.43,
               "exp": 12,
-              "def_add": 0.0
+              "def_add": 0
             }
           },
           {
             "enemy_id": "crystal_bat",
             "count": 3,
-            "interval": 0.364,
-            "start_delay": 0.35,
+            "interval": 0.4814,
+            "start_delay": 0.4629,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 2.9925,
               "speed_mul": 1.15,
               "atk_mul": 2.002,
               "exp": 12,
-              "def_add": 2.0
+              "def_add": 1.6
             }
           },
           {
             "enemy_id": "frost_lancer",
             "count": 7,
-            "interval": 0.336,
-            "start_delay": 1.5,
+            "interval": 0.4444,
+            "start_delay": 1.9837,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 0.36,
               "speed_mul": 1.16,
               "atk_mul": 0.5958,
               "exp": 7,
-              "def_add": -7.0
+              "def_add": -5.6
             }
           },
           {
             "enemy_id": "snow_skeleton",
             "count": 3,
-            "interval": 0.336,
-            "start_delay": 1.85,
+            "interval": 0.4444,
+            "start_delay": 2.4466,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 1.2436,
               "speed_mul": 1.16,
               "atk_mul": 1.1917,
               "exp": 7,
-              "def_add": -1.0
+              "def_add": -0.8
             }
           },
           {
             "enemy_id": "snow_mage",
             "count": 3,
-            "interval": 0.812,
-            "start_delay": 4.6,
+            "interval": 1.0739,
+            "start_delay": 6.0835,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 1.71,
               "atk_mul": 1.43,
               "exp": 10,
-              "def_add": 0.0
+              "def_add": 0
             }
           },
           {
             "enemy_id": "frost_giant",
             "count": 1,
-            "interval": 0.812,
-            "start_delay": 4.95,
+            "interval": 1.0739,
+            "start_delay": 6.5464,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 0.2615,
               "atk_mul": 0.6021,
               "exp": 10,
-              "def_add": -14.0
+              "def_add": -11.2
             }
           },
           {
             "enemy_id": "frost_lancer",
             "count": 3,
-            "interval": 1.4,
-            "start_delay": 6.0,
+            "interval": 1.8515,
+            "start_delay": 7.935,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 2.16,
               "atk_mul": 1.5492,
               "exp": 24,
-              "def_add": 4.0
+              "def_add": 3.2
             }
           },
           {
             "enemy_id": "horn_cactus",
             "count": 1,
-            "interval": 1.4,
-            "start_delay": 6.35,
+            "interval": 1.8515,
+            "start_delay": 8.3979,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 3.7309,
               "atk_mul": 2.4787,
               "exp": 24,
-              "def_add": 6.0
+              "def_add": 4.8
             }
           },
           {
             "enemy_id": "frost_giant",
             "count": 1,
-            "interval": 2.24,
-            "start_delay": 4.0,
+            "interval": 2.9624,
+            "start_delay": 5.29,
             "modifiers": {
+              "def_mul": 0.8,
               "exp": 30,
               "hp_mul": 1.71,
               "atk_mul": 1.43
@@ -1617,9 +1731,10 @@
           {
             "enemy_id": "frost_lancer",
             "count": 2,
-            "interval": 1.26,
-            "start_delay": 2.0,
+            "interval": 1.6663,
+            "start_delay": 2.645,
             "modifiers": {
+              "def_mul": 0.8,
               "exp": 23,
               "hp_mul": 1.71,
               "atk_mul": 1.43
@@ -1635,99 +1750,107 @@
           {
             "enemy_id": "frost_lancer",
             "count": 10,
-            "interval": 0.336,
-            "start_delay": 0.0,
+            "interval": 0.4444,
+            "start_delay": 0,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 0.5066,
               "atk_mul": 0.725,
               "exp": 3,
-              "def_add": -6.0
+              "def_add": -4.8
             }
           },
           {
             "enemy_id": "horn_cactus",
             "count": 3,
-            "interval": 0.336,
-            "start_delay": 0.35,
+            "interval": 0.4444,
+            "start_delay": 0.4629,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 0.875,
               "atk_mul": 1.16,
               "exp": 3,
-              "def_add": -4.0
+              "def_add": -3.2
             }
           },
           {
             "enemy_id": "snow_mage",
             "count": 5,
-            "interval": 0.77,
-            "start_delay": 2.0,
+            "interval": 1.0183,
+            "start_delay": 2.645,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 2.9615,
               "atk_mul": 1.3594,
               "exp": 7,
-              "def_add": 4.0
+              "def_add": 3.2
             }
           },
           {
             "enemy_id": "frost_knight",
             "count": 2,
-            "interval": 0.77,
-            "start_delay": 2.35,
+            "interval": 1.0183,
+            "start_delay": 3.1079,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 0.8021,
               "atk_mul": 0.8365,
               "exp": 7,
-              "def_add": -6.0
+              "def_add": -4.8
             }
           },
           {
             "enemy_id": "frost_wolf",
             "count": 7,
-            "interval": 0.448,
-            "start_delay": 5.0,
+            "interval": 0.5925,
+            "start_delay": 6.6125,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 1.75,
               "speed_mul": 1.15,
               "atk_mul": 1.45,
               "exp": 7,
-              "def_add": 0.0
+              "def_add": 0
             }
           },
           {
             "enemy_id": "frost_knight",
             "count": 2,
-            "interval": 0.448,
-            "start_delay": 5.35,
+            "interval": 0.5925,
+            "start_delay": 7.0754,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 0.5104,
               "speed_mul": 1.15,
               "atk_mul": 0.7808,
               "exp": 7,
-              "def_add": -9.0
+              "def_add": -7.2
             }
           },
           {
             "enemy_id": "frost_wolf",
             "count": 3,
-            "interval": 1.33,
-            "start_delay": 6.5,
+            "interval": 1.7589,
+            "start_delay": 8.5962,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 6.0,
               "atk_mul": 2.6929,
               "exp": 10,
-              "def_add": 9.0
+              "def_add": 7.2
             }
           },
           {
             "enemy_id": "frost_giant",
             "count": 1,
-            "interval": 1.33,
-            "start_delay": 6.85,
+            "interval": 1.7589,
+            "start_delay": 9.0591,
             "modifiers": {
+              "def_mul": 0.8,
               "hp_mul": 0.9882,
               "atk_mul": 0.9921,
               "exp": 10,
-              "def_add": -4.0
+              "def_add": -3.2
             }
           },
           {
@@ -1737,15 +1860,18 @@
             "start_delay": 11.0,
             "boss": true,
             "modifiers": {
+              "speed_mul": 1.5,
+              "def_mul": 0.8,
               "exp": 479
             }
           },
           {
             "enemy_id": "frost_giant",
             "count": 1,
-            "interval": 2.1,
-            "start_delay": 5.0,
+            "interval": 2.7772,
+            "start_delay": 6.6125,
             "modifiers": {
+              "def_mul": 0.8,
               "exp": 14,
               "hp_mul": 1.75,
               "atk_mul": 1.45
@@ -1754,9 +1880,10 @@
           {
             "enemy_id": "frost_lancer",
             "count": 2,
-            "interval": 1.4,
-            "start_delay": 3.0,
+            "interval": 1.8515,
+            "start_delay": 3.9675,
             "modifiers": {
+              "def_mul": 0.8,
               "exp": 10,
               "hp_mul": 1.75,
               "atk_mul": 1.45

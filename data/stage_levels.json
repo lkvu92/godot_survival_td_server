@@ -187,8 +187,8 @@
     "exp_multiplier": 1,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 0.72,
-      "atk_mul": 0.72,
+      "hp_mul": 0.504,
+      "atk_mul": 0.576,
       "speed_mul": 0.95
     },
     "loot_table": [
@@ -306,8 +306,8 @@
     "exp_multiplier": 1.25,
     "stamina_cost": 2,
     "enemy_modifiers": {
-      "hp_mul": 1.08,
-      "atk_mul": 1.08,
+      "hp_mul": 0.756,
+      "atk_mul": 0.864,
       "speed_mul": 1.14
     },
     "loot_table": [
@@ -431,8 +431,8 @@
     "exp_multiplier": 1.6,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 1.44,
-      "atk_mul": 1.44,
+      "hp_mul": 1.008,
+      "atk_mul": 1.152,
       "speed_mul": 1.33
     },
     "loot_table": [
