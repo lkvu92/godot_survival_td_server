@@ -1,6 +1,13 @@
 {
   "contracts": [
     {
+      "id": "C123_ACCOUNT_PASSWORD",
+      "version": "1.0.0",
+      "status": "IN_PROGRESS",
+      "updated_at": "2026-10-16",
+      "contract_file": "docs/contracts/C123_ACCOUNT_PASSWORD.md"
+    },
+    {
       "id": "C124_PUBLIC_PROXY_NETWORK",
       "version": "1.0.0",
       "status": "ACTIVE",
@@ -27,5 +34,6 @@
       "status": "ACTIVE",
       "contract_file": "docs/contracts/C119_CONFIG_SEED_INTEGRITY.md"
     }
-  ]
+  ],
+  "updated_at": "2026-10-16"
 }

@@ -2633,6 +2633,64 @@ function isLinkedReceiptOwner(nk, receiptOwner, userId) {
   if (receiptOwner === userId) return true;
   return nk.sqlQuery("SELECT 1 FROM account_link_archives WHERE loser_id=$1::UUID AND winner_id=$2::UUID", [receiptOwner, userId]).length > 0;
 }
+const accountPasswordStatus = (ctx, _logger, nk) => {
+  if (!ctx.userId) return JSON.stringify({ success: false, code: 401, message: "C\u1EA7n \u0111\u0103ng nh\u1EADp l\u1EA1i." });
+  const rows = nk.sqlQuery(`SELECT email, COALESCE(octet_length(password),0)>0 AS has_password,
+        COALESCE(google_id,'')<>'' AS google_linked FROM users
+        WHERE id=$1::UUID AND COALESCE(EXTRACT(EPOCH FROM disable_time),0)=0`, [ctx.userId]);
+  if (!rows.length) return JSON.stringify({ success: false, code: 403, message: "T\xE0i kho\u1EA3n kh\xF4ng kh\u1EA3 d\u1EE5ng." });
+  const row = rows[0];
+  return JSON.stringify({
+    success: true,
+    email: String(row.email || ""),
+    has_password: !!row.has_password,
+    can_setup: !!row.google_linked && !!row.email && !row.has_password
+  });
+};
+const setupAccountPassword = (ctx, _logger, nk, payload) => {
+  const fail = (code, message) => JSON.stringify({ success: false, code, message });
+  if (!ctx.userId) return fail(401, "C\u1EA7n \u0111\u0103ng nh\u1EADp l\u1EA1i.");
+  if (!payload || payload.length > 2e4) return fail(400, "Th\xF4ng tin c\xE0i \u0111\u1EB7t kh\xF4ng h\u1EE3p l\u1EC7.");
+  let req;
+  try {
+    req = JSON.parse(payload);
+  } catch (_e) {
+    return fail(400, "Th\xF4ng tin c\xE0i \u0111\u1EB7t kh\xF4ng h\u1EE3p l\u1EC7.");
+  }
+  if (!req || typeof req !== "object" || Array.isArray(req) || typeof req.password !== "string" || typeof req.id_token !== "string") return fail(400, "Th\xF4ng tin c\xE0i \u0111\u1EB7t kh\xF4ng h\u1EE3p l\u1EC7.");
+  const password = req.password, token = req.id_token;
+  let bytes = 0;
+  try {
+    bytes = encodeURIComponent(password).replace(/%[0-9A-F]{2}|./g, "x").length;
+  } catch (_e) {
+    return fail(400, "M\u1EADt kh\u1EA9u ch\u1EE9a k\xFD t\u1EF1 kh\xF4ng h\u1EE3p l\u1EC7.");
+  }
+  if (Array.from(password).length < 8 || bytes > 72) return fail(400, "M\u1EADt kh\u1EA9u c\u1EA7n \xEDt nh\u1EA5t 8 k\xFD t\u1EF1 v\xE0 t\u1ED1i \u0111a 72 byte UTF-8.");
+  if (!token || token.length > 16384) return fail(400, "H\xE3y x\xE1c nh\u1EADn l\u1EA1i t\xE0i kho\u1EA3n Google.");
+  const rows = nk.sqlQuery(`SELECT email,google_id,COALESCE(octet_length(password),0)>0 AS has_password
+        FROM users WHERE id=$1::UUID AND COALESCE(EXTRACT(EPOCH FROM disable_time),0)=0`, [ctx.userId]);
+  if (!rows.length) return fail(403, "T\xE0i kho\u1EA3n kh\xF4ng kh\u1EA3 d\u1EE5ng.");
+  const row = rows[0];
+  if (row.has_password) return fail(409, "T\xE0i kho\u1EA3n \u0111\xE3 c\xF3 m\u1EADt kh\u1EA9u. H\xE3y \u0111\u0103ng nh\u1EADp b\u1EB1ng m\u1EADt kh\u1EA9u \u0111\xE3 t\u1EA1o.");
+  if (!row.email || !row.google_id) return fail(409, "T\xE0i kho\u1EA3n c\u1EA7n c\xF3 email v\xE0 li\xEAn k\u1EBFt Google tr\u01B0\u1EDBc khi c\xE0i \u0111\u1EB7t m\u1EADt kh\u1EA9u.");
+  let google;
+  try {
+    google = nk.authenticateGoogle(token, "", false);
+  } catch (_e) {
+    return fail(403, "Kh\xF4ng th\u1EC3 x\xE1c th\u1EF1c Google. H\xE3y ch\u1ECDn l\u1EA1i t\xE0i kho\u1EA3n Google.");
+  }
+  if (google.userId !== ctx.userId) return fail(403, "H\xE3y ch\u1ECDn \u0111\xFAng Google \u0111\xE3 li\xEAn k\u1EBFt v\u1EDBi t\xE0i kho\u1EA3n hi\u1EC7n t\u1EA1i.");
+  try {
+    const hash = nk.bcryptHash(password);
+    const updated = nk.sqlQuery(`UPDATE users SET password=convert_to($4,'UTF8'),update_time=NOW()
+            WHERE id=$1::UUID AND email=$2 AND google_id=$3 AND COALESCE(octet_length(password),0)=0
+            AND COALESCE(EXTRACT(EPOCH FROM disable_time),0)=0 RETURNING id`, [ctx.userId, row.email, row.google_id, hash]);
+    if (!updated.length) return fail(409, "Th\xF4ng tin t\xE0i kho\u1EA3n \u0111\xE3 thay \u0111\u1ED5i. H\xE3y m\u1EDF l\u1EA1i c\xE0i \u0111\u1EB7t m\u1EADt kh\u1EA9u.");
+  } catch (_e) {
+    return fail(500, "Ch\u01B0a th\u1EC3 l\u01B0u m\u1EADt kh\u1EA9u. H\xE3y ki\u1EC3m tra tr\u1EA1ng th\xE1i t\xE0i kho\u1EA3n r\u1ED3i th\u1EED l\u1EA1i.");
+  }
+  return JSON.stringify({ success: true, message: "\u0110\xE3 c\xE0i \u0111\u1EB7t m\u1EADt kh\u1EA9u. B\u1EA1n c\xF3 th\u1EC3 \u0111\u0103ng nh\u1EADp b\u1EB1ng email ho\u1EB7c Google v\xE0o c\xF9ng t\xE0i kho\u1EA3n." });
+};
 const googleLinkStatus = (ctx, _logger, nk) => {
   if (!ctx.userId) return JSON.stringify({ success: false, code: 401 });
   return JSON.stringify({ success: true, linked: !!nk.accountGetId(ctx.userId).user.googleId });
@@ -6248,6 +6306,12 @@ function createLeaderboards(nk, logger) {
   }
 }
 
+function linkedRpc_account_password_status(ctx, logger, nk, payload) {
+  return accountGuardedRpc("account_password_status", accountPasswordStatus)(ctx, logger, nk, payload);
+}
+function linkedRpc_setup_account_password(ctx, logger, nk, payload) {
+  return accountGuardedRpc("setup_account_password", setupAccountPassword)(ctx, logger, nk, payload);
+}
 function linkedRpc_google_link_status(ctx, logger, nk, payload) {
   return accountGuardedRpc("google_link_status", googleLinkStatus)(ctx, logger, nk, payload);
 }
@@ -6369,6 +6433,8 @@ function InitModule(ctx, logger, nk, initializer) {
   createGameConfigTables(nk, logger);
   createMonetizationTables(nk, logger);
   createAccountLinkTables(nk);
+  initializer.registerRpc("account_password_status", linkedRpc_account_password_status);
+  initializer.registerRpc("setup_account_password", linkedRpc_setup_account_password);
   initializer.registerRpc("google_link_status", linkedRpc_google_link_status);
   initializer.registerRpc("prepare_google_link", linkedRpc_prepare_google_link);
   initializer.registerRpc("confirm_google_link", linkedRpc_confirm_google_link);

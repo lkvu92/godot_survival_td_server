@@ -174,6 +174,52 @@ function isLinkedReceiptOwner(nk: nkruntime.Nakama, receiptOwner: string, userId
     return nk.sqlQuery("SELECT 1 FROM account_link_archives WHERE loser_id=$1::UUID AND winner_id=$2::UUID", [receiptOwner,userId]).length > 0;
 }
 
+const accountPasswordStatus: nkruntime.RpcFunction = (ctx, _logger, nk) => {
+    if (!ctx.userId) return JSON.stringify({success:false,code:401,message:"Cần đăng nhập lại."});
+    const rows = nk.sqlQuery(`SELECT email, COALESCE(octet_length(password),0)>0 AS has_password,
+        COALESCE(google_id,'')<>'' AS google_linked FROM users
+        WHERE id=$1::UUID AND COALESCE(EXTRACT(EPOCH FROM disable_time),0)=0`, [ctx.userId]);
+    if (!rows.length) return JSON.stringify({success:false,code:403,message:"Tài khoản không khả dụng."});
+    const row=rows[0];
+    return JSON.stringify({success:true,email:String(row.email||""),has_password:!!row.has_password,
+        can_setup:!!row.google_linked && !!row.email && !row.has_password});
+};
+
+const setupAccountPassword: nkruntime.RpcFunction = (ctx, _logger, nk, payload) => {
+    const fail=(code:number,message:string)=>JSON.stringify({success:false,code,message});
+    if (!ctx.userId) return fail(401,"Cần đăng nhập lại.");
+    if (!payload || payload.length>20000) return fail(400,"Thông tin cài đặt không hợp lệ.");
+    let req:any;
+    try { req=JSON.parse(payload); } catch (_e) { return fail(400,"Thông tin cài đặt không hợp lệ."); }
+    if (!req || typeof req!=="object" || Array.isArray(req) || typeof req.password!=="string"
+        || typeof req.id_token!=="string") return fail(400,"Thông tin cài đặt không hợp lệ.");
+    const password=req.password,token=req.id_token;
+    // bcrypt accepts at most 72 UTF-8 bytes. Reject invalid surrogate sequences too.
+    let bytes=0;
+    try { bytes=encodeURIComponent(password).replace(/%[0-9A-F]{2}|./g,"x").length; }
+    catch (_e) { return fail(400,"Mật khẩu chứa ký tự không hợp lệ."); }
+    if (Array.from(password).length<8 || bytes>72) return fail(400,"Mật khẩu cần ít nhất 8 ký tự và tối đa 72 byte UTF-8.");
+    if (!token || token.length>16384) return fail(400,"Hãy xác nhận lại tài khoản Google.");
+    const rows=nk.sqlQuery(`SELECT email,google_id,COALESCE(octet_length(password),0)>0 AS has_password
+        FROM users WHERE id=$1::UUID AND COALESCE(EXTRACT(EPOCH FROM disable_time),0)=0`,[ctx.userId]);
+    if (!rows.length) return fail(403,"Tài khoản không khả dụng.");
+    const row=rows[0];
+    if (row.has_password) return fail(409,"Tài khoản đã có mật khẩu. Hãy đăng nhập bằng mật khẩu đã tạo.");
+    if (!row.email || !row.google_id) return fail(409,"Tài khoản cần có email và liên kết Google trước khi cài đặt mật khẩu.");
+    let google:any;
+    try { google=nk.authenticateGoogle(token,"",false); }
+    catch (_e) { return fail(403,"Không thể xác thực Google. Hãy chọn lại tài khoản Google."); }
+    if (google.userId!==ctx.userId) return fail(403,"Hãy chọn đúng Google đã liên kết với tài khoản hiện tại.");
+    try {
+        const hash=nk.bcryptHash(password);
+        const updated=nk.sqlQuery(`UPDATE users SET password=convert_to($4,'UTF8'),update_time=NOW()
+            WHERE id=$1::UUID AND email=$2 AND google_id=$3 AND COALESCE(octet_length(password),0)=0
+            AND COALESCE(EXTRACT(EPOCH FROM disable_time),0)=0 RETURNING id`,[ctx.userId,row.email,row.google_id,hash]);
+        if (!updated.length) return fail(409,"Thông tin tài khoản đã thay đổi. Hãy mở lại cài đặt mật khẩu.");
+    } catch (_e) { return fail(500,"Chưa thể lưu mật khẩu. Hãy kiểm tra trạng thái tài khoản rồi thử lại."); }
+    return JSON.stringify({success:true,message:"Đã cài đặt mật khẩu. Bạn có thể đăng nhập bằng email hoặc Google vào cùng tài khoản."});
+};
+
 const googleLinkStatus: nkruntime.RpcFunction = (ctx, _logger, nk) => {
     if (!ctx.userId) return JSON.stringify({success:false,code:401});
     return JSON.stringify({success:true,linked:!!nk.accountGetId(ctx.userId).user.googleId});

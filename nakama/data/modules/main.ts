@@ -2,6 +2,12 @@
 // Phase 2: Config Tables + Seed + Config RPC
 // Build: npx esbuild data/modules/main.ts --bundle --platform=node --target=es5 --outfile=data/build/index.js
 
+function linkedRpc_account_password_status(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("account_password_status", accountPasswordStatus)(ctx, logger, nk, payload);
+}
+function linkedRpc_setup_account_password(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("setup_account_password", setupAccountPassword)(ctx, logger, nk, payload);
+}
 function linkedRpc_google_link_status(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
     return accountGuardedRpc("google_link_status", googleLinkStatus)(ctx, logger, nk, payload);
 }
@@ -130,6 +136,8 @@ function InitModule(
     createGameConfigTables(nk, logger);
     createMonetizationTables(nk, logger);
     createAccountLinkTables(nk);
+    initializer.registerRpc("account_password_status", linkedRpc_account_password_status);
+    initializer.registerRpc("setup_account_password", linkedRpc_setup_account_password);
     initializer.registerRpc("google_link_status", linkedRpc_google_link_status);
     initializer.registerRpc("prepare_google_link", linkedRpc_prepare_google_link);
     initializer.registerRpc("confirm_google_link", linkedRpc_confirm_google_link);
