@@ -1,0 +1,182 @@
+{
+  "progression_version": 2,
+  "combat_power": {
+    "version": 2,
+    "horizon_seconds": 30.0,
+    "offense_weight": 10.0,
+    "survival_weight": 0.5,
+    "movement_weight": 0.1,
+    "range_weight": 0.05,
+    "basic_damage_multiplier": 0.75,
+    "min_defense_multiplier": 0.1,
+    "crit_damage_cap": 10.0,
+    "regen_cap": 0.1,
+    "dodge_cap": 0.6,
+    "cooldown_multiplier_floor": 0.35,
+    "minimum_cooldown": 0.1,
+    "durability_tiers": [{"max": 0, "factor": 0.0}, {"max": 20, "factor": 0.6}, {"max": 50, "factor": 0.85}, {"max": 100, "factor": 1.0}],
+    "skill_hit_weights": {
+      "damage_pct": 1.0,
+      "second_damage_pct": 1.0,
+      "explosion_damage_pct": 1.0
+    },
+    "skill_overrides": {
+      "skill_talisman_1": {"projectile_base": 3, "projectile_level_interval": 3},
+      "skill_talisman_2": {"center_hit_weight": 0.5},
+      "skill_talisman_8": {"projectile_factor": 0.5}
+    }
+  },
+  "persistent_leveling": {
+    "max_user_level": 50,
+    "max_hero_level": 50,
+    "hero_base_next_level_exp": 1000,
+    "growth_multiplier": 1.25,
+    "user_to_hero_exp_ratio": 10,
+    "hero_level_capped_by_user_level": true,
+    "stage_exp_award": "Both user and selected persistent hero receive the same final stage EXP. Hero EXP above its current account-level cap is banked until the account levels up."
+  },
+  "element_upgrade": {
+    "max_level": 30,
+    "tiers": [
+      {
+        "target_level_min": 1,
+        "target_level_max": 10,
+        "stone_tier": "low",
+        "base_stones": 2,
+        "stone_growth_multiplier": 2
+      },
+      {
+        "target_level_min": 11,
+        "target_level_max": 20,
+        "stone_tier": "medium",
+        "base_stones": 2,
+        "stone_growth_multiplier": 2
+      },
+      {
+        "target_level_min": 21,
+        "target_level_max": 30,
+        "stone_tier": "high",
+        "base_stones": 2,
+        "stone_growth_multiplier": 2
+      }
+    ],
+    "gold_cost": "Existing gold formulas are unchanged.",
+    "success_rate": "Existing success-rate formulas are unchanged; resources are consumed on failure."
+  },
+  "element_combat": {
+    "ruleset_version": 2,
+    "supported_elements": ["metal", "wood", "water", "fire", "earth"],
+    "affinity_resistance_ratio": 0.5,
+    "modifier_floor_pct": -80.0,
+    "defense_divisor": 1000.0,
+    "talisman_resistance_cap_pct": 75.0,
+    "level_amplification_tiers": [
+      {"level_min": 0, "level_max": 0, "base_pct": 0.0, "base_level": 0, "per_level_pct": 0.0},
+      {"level_min": 1, "level_max": 10, "base_pct": 0.0, "base_level": 0, "per_level_pct": 5.0},
+      {"level_min": 11, "level_max": 20, "base_pct": 50.0, "base_level": 10, "per_level_pct": 10.0},
+      {"level_min": 21, "level_max": 30, "base_pct": 150.0, "base_level": 20, "per_level_pct": 20.0}
+    ],
+    "matchup_modifier_pct": {
+      "metal": {"metal": 0.0, "wood": 0.0, "water": 50.0, "fire": 0.0, "earth": -50.0},
+      "wood": {"metal": 0.0, "wood": 0.0, "water": 0.0, "fire": -50.0, "earth": 50.0},
+      "water": {"metal": -50.0, "wood": 0.0, "water": 0.0, "fire": 50.0, "earth": 0.0},
+      "fire": {"metal": 0.0, "wood": 50.0, "water": -50.0, "fire": 0.0, "earth": 0.0},
+      "earth": {"metal": 50.0, "wood": -50.0, "water": 0.0, "fire": 0.0, "earth": 0.0}
+    }
+  },
+  "default_save": {
+    "unlocked_heroes": [
+      "hero_1"
+    ],
+    "unlocked_skills": [
+      "hero_1_skill_1",
+      "frost_orb",
+      "fire_arrow"
+    ],
+    "meta_upgrades": {},
+    "users": [],
+    "active_run": {},
+    "best_wave": 0,
+    "best_stage": "",
+    "settings": {
+      "master_volume": 1,
+      "music": 1,
+      "sfx": 1,
+      "show_damage": true,
+      "show_enemy_hp": true
+    }
+  },
+  "talisman_system": {
+    "max_equipped_talismans": 1,
+    "random_stat_variance_pct": 20,
+    "default_durability_loss_win": 3,
+    "default_durability_loss_loss": 6,
+    "severe_break_gem_cost": 10,
+    "severe_break_gold_multiplier": 2,
+    "qualities": {
+      "low": { "name": "Hạ phẩm", "count": 15, "craft_fragments": 100, "craft_gold": 100000 },
+      "mid": { "name": "Trung phẩm", "count": 10, "craft_fragments": 100, "craft_gold": 200000 },
+      "high": { "name": "Thượng phẩm", "count": 5, "craft_fragments": 100, "craft_gold": 500000 },
+      "ancient": { "name": "Thượng cổ", "count": 0, "enabled": false },
+      "law": { "name": "Pháp tắc", "count": 0, "enabled": false }
+    },
+    "fragment_drop": {
+      "eligible_stages": ["stage_1_10", "stage_2_10", "stage_3_10", "stage_4_10", "stage_5_10"],
+      "quantity_weights": { "0": 30, "1": 50, "2": 15, "3": 5 },
+      "quality_weights": { "low": 85, "mid": 15 },
+      "matching_element_weight": 75,
+      "other_element_weight": 25
+    },
+    "store": {
+      "materials": [
+        {
+          "item_id": "talisman_enhance_charm",
+          "category": "charms",
+          "currency": "gold",
+          "price": 20000,
+          "quantity": 1
+        },
+        {
+          "item_id": "element_enlightenment_charm",
+          "category": "charms",
+          "currency": "gold",
+          "price": 20000,
+          "quantity": 1
+        }
+      ]
+    },
+    "upgrade": {
+      "material_quantity_per_level": 4,
+      "max_level": 30,
+      "level_up_mode": "chance",
+      "success_rates_by_current_level": [100, 100, 100, 100, 100, 80, 75, 70, 65, 60, 50, 48, 46, 44, 42, 40, 38, 36, 34, 32, 25, 23, 21, 19, 17, 15, 12, 9, 6, 3],
+      "fragment_milestones": { "10": 10, "20": 20, "30": 30 },
+      "tiers": [
+        {
+          "current_level_min": 1,
+          "current_level_max": 10,
+          "material_id": "talisman_heavenly_crystal"
+        },
+        {
+          "current_level_min": 11,
+          "current_level_max": 20,
+          "material_id": "talisman_heavenly_crystal_medium"
+        },
+        {
+          "current_level_min": 21,
+          "current_level_max": 30,
+          "material_id": "talisman_heavenly_crystal_high"
+        }
+      ],
+      "gold": {
+        "low_base": 10,
+        "low_growth": 4,
+        "medium_base": 50,
+        "medium_growth": 10,
+        "high_base": 200,
+        "high_growth": 20
+      }
+    }
+  },
+  "upgrades": []
+}

@@ -1,0 +1,52 @@
+{
+  "title": "GÓI TÂN THỦ",
+  "subtitle": "Vạn Tượng Quán Âm • 500 Đá Quý • 100.000 Vàng • 3 ngày bỏ quảng cáo",
+  "product_id": "first_topup_pack",
+  "active": true,
+  "unique_purchase": true,
+  "fulfillment_type": "non_consumable",
+  "price_usd": 9.99,
+  "display_price": "$9.99",
+  "hero_id": "hero_5",
+  "hero_name": "Vạn Tượng Quán Âm",
+  "hero_role": "Đại Thừa Cảnh • Trợ Chiến & Trị Liệu",
+  "gems": 500,
+  "gold": 100000,
+  "no_ads_days": 3,
+  "grant_lines": [
+    {"reward_type": "hero", "reward_id": "hero_5", "quantity": 1},
+    {"reward_type": "currency", "reward_id": "gems", "quantity": 500},
+    {"reward_type": "currency", "reward_id": "gold", "quantity": 100000},
+    {"reward_type": "entitlement", "reward_id": "no_ads_seconds", "quantity": 259200}
+  ],
+  "rewards": [
+    {
+      "id": "hero_5",
+      "name": "Tướng 5★: Vạn Tượng Quán Âm",
+      "icon_type": "hero",
+      "icon_key": "hero_5",
+      "desc": "Sở hữu ngay nhân vật hỗ trợ tối thượng"
+    },
+    {
+      "id": "gems_500",
+      "name": "500 Đá Quý",
+      "icon_type": "pack",
+      "icon_key": "gem_sack",
+      "desc": "Tài nguyên triệu hồi và mua sắm quý giá"
+    },
+    {
+      "id": "gold_100k",
+      "name": "100.000 Vàng",
+      "icon_type": "pack",
+      "icon_key": "gold_chest",
+      "desc": "Nâng cấp kỹ năng và cường hóa ngũ hành"
+    },
+    {
+      "id": "no_ads_3d",
+      "name": "3 Ngày Bỏ Quảng Cáo",
+      "icon_type": "extra",
+      "icon_key": "no_ads",
+      "desc": "Trải nghiệm mượt mà không bị làm phiền"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "title": "MUA THỂ LỰC",
+  "subtitle": "Bổ sung năng lượng để tiếp tục tu tiên trừ ma",
+  "gem_purchase": {
+    "stamina_amount": 15,
+    "cost_gems": 30,
+    "max_daily_purchases": 3
+  },
+  "ad_reward": {
+    "stamina_amount": 5,
+    "max_daily_views": 5,
+    "placement_id": "main_menu_stamina",
+    "icon_key": "ad_watch"
+  }
+}

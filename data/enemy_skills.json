@@ -1,0 +1,12 @@
+[
+  {"id":"haste","display_name":"Tăng Tốc","description":"Tăng tốc di chuyển khi thỏa điều kiện HP.","params":{"hp_below_pct":0.5,"move_speed_multiplier":1.4}},
+  {"id":"damage_shield","display_name":"Lá Chắn Hộ Thể","description":"Lá chắn hấp thụ sát thương sau phòng thủ.","params":{"shield_percent_max_hp":0.25,"shield_flat_hp":0.0,"duration_seconds":6.0,"cooldown_seconds":10.0,"initial_delay_seconds":1.5}},
+  {"id":"defense_aura","display_name":"Hào Quang Phòng Thủ","description":"Tăng DEF đồng minh trong bán kính; chỉ lấy buff mạnh nhất.","params":{"radius":180.0,"def_multiplier":1.35}},
+  {"id":"max_hp_buff","display_name":"Cường Hóa Sinh Lực","description":"Tăng máu tối đa khi spawn.","params":{"max_hp_multiplier":1.25}},
+  {"id":"pierce_guard","display_name":"Hộ Thể Giảm Xuyên","description":"Giảm sát thương xuyên.","params":{"damage_multiplier":0.4}},
+  {"id":"debuff_resistance","display_name":"Kháng Hiệu Ứng","description":"Giảm thời lượng hiệu ứng bất lợi.","params":{"duration_multiplier":0.55,"effect_ids":["slow","freeze","stun","holy_stun","knockback","knockback_light"],"duration_seconds":null}},
+  {"id":"defense_buff","display_name":"Gia Cố Giáp","description":"Tăng phòng thủ theo điểm hoặc hệ số trong thời gian hiệu lực.","params":{"def_flat":0.0,"def_multiplier":1.25,"duration_seconds":null}},
+  {"id":"damage_reflect","display_name":"Phản Sát Thương","description":"Phản sát thương điểm hoặc phần trăm sát thương đã nhận.","params":{"reflect_flat_damage":0.0,"reflect_percent_received":0.25,"duration_seconds":4.0,"cooldown_seconds":10.0,"initial_delay_seconds":0.0}},
+  {"id":"invincible","display_name":"Bất Tử","description":"Miễn toàn bộ sát thương trong thời gian hiệu lực.","params":{"duration_seconds":2.0,"cooldown_seconds":14.0,"initial_delay_seconds":0.0}},
+  {"id":"regeneration","display_name":"Hồi Phục","description":"Hồi phần trăm máu tối đa mỗi giây.","params":{"percent_max_hp_per_sec":0.02}}
+]

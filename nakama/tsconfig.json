@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES5",
+    "lib": ["ES5", "ES6", "ES2015"],
+    "strict": false,
+    "noImplicitAny": false,
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "outDir": "data/build",
+    "rootDir": "data/modules",
+    "skipLibCheck": true,
+    "typeRoots": ["node_modules/@types"]
+  },
+  "include": ["data/modules/**/*.ts"],
+  "exclude": ["node_modules"]
+}

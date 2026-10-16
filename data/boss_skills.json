@@ -1,0 +1,24 @@
+[
+  {
+    "id": "control_resistance_growth",
+    "display_name": "Ý Chí Bất Khuất",
+    "type": "control_resistance_over_time",
+    "start_after_seconds": 60.0,
+    "activation_resistance": 1.0,
+    "interval_seconds": 1.0,
+    "resistance_per_tick": 0.0,
+    "max_resistance": 1.0,
+    "activation_flash_color": [1.0, 0.22, 0.18, 0.16],
+    "activation_flash_duration": 0.9,
+    "activation_flash_pulses": 3,
+    "resisted_effect_ids": [
+      "slow",
+      "freeze",
+      "stun",
+      "holy_stun",
+      "sleep",
+      "knockback",
+      "knockback_light"
+    ]
+  }
+]

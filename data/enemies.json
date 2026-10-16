@@ -1,0 +1,1734 @@
+[
+  {
+    "id": "snow_skeleton",
+    "display_name": "Snow Skeleton",
+    "element": "earth",
+    "attack_type": "melee",
+    "visual_scale": 0.4095,
+    "exp": 2,
+    "attributes": {
+      "hp": 110,
+      "atk": 12,
+      "def": 2,
+      "move_speed": 55,
+      "attack_speed": 0.75,
+      "attack_range": 36,
+      "crit_rate": 0.02,
+      "crit_damage": 1.3,
+      "regen_percent_per_10s": 0.0
+    },
+    "skills": [
+      "melee_hit"
+    ],
+    "generic_skills": [
+      {
+        "id": "haste",
+        "display_name": "Bone Rush",
+        "params": {
+          "hp_below_pct": 0.5,
+          "move_speed_multiplier": 1.45
+        }
+      }
+    ],
+    "reward": {
+      "gold": 1,
+      "exp": 2
+    }
+  },
+  {
+    "id": "horn_cactus",
+    "display_name": "Horn Cactus",
+    "element": "wood",
+    "attack_type": "melee",
+    "visual_scale": 0.4095,
+    "exp": 3,
+    "attributes": {
+      "hp": 220,
+      "atk": 15,
+      "def": 6,
+      "move_speed": 42,
+      "attack_speed": 0.55,
+      "attack_range": 42,
+      "crit_rate": 0.03,
+      "crit_damage": 1.35,
+      "regen_percent_per_10s": 0.0
+    },
+    "skills": [
+      "melee_hit"
+    ],
+    "generic_skills": [
+      {
+        "id": "damage_shield",
+        "display_name": "Thorn Bulwark",
+        "params": {
+          "shield_percent_max_hp": 0.25,
+          "cooldown_seconds": 10.0,
+          "initial_delay_seconds": 2.0
+        }
+      }
+    ],
+    "reward": {
+      "gold": 2,
+      "exp": 3
+    }
+  },
+  {
+    "id": "snow_mage",
+    "display_name": "Snow Mage",
+    "element": "water",
+    "attack_type": "ranged",
+    "visual_scale": 0.4095,
+    "exp": 3,
+    "attributes": {
+      "hp": 130,
+      "atk": 16,
+      "def": 2,
+      "move_speed": 45,
+      "attack_speed": 0.55,
+      "attack_range": 280,
+      "projectile_speed": 300,
+      "crit_rate": 0.04,
+      "crit_damage": 1.4,
+      "regen_percent_per_10s": 0.0
+    },
+    "skills": [
+      "ranged_bolt"
+    ],
+    "generic_skills": [
+      {
+        "id": "damage_shield",
+        "display_name": "Frozen Ward",
+        "params": {
+          "shield_percent_max_hp": 0.2,
+          "cooldown_seconds": 9.0,
+          "initial_delay_seconds": 1.5
+        }
+      }
+    ],
+    "reward": {
+      "gold": 2,
+      "exp": 3
+    }
+  },
+  {
+    "id": "frost_wolf",
+    "display_name": "Frost Wolf",
+    "element": "water",
+    "attack_type": "melee",
+    "visual_scale": 0.4095,
+    "exp": 3,
+    "attributes": {
+      "hp": 140,
+      "atk": 14,
+      "def": 3,
+      "move_speed": 70,
+      "attack_speed": 0.9,
+      "attack_range": 34,
+      "crit_rate": 0.06,
+      "crit_damage": 1.45,
+      "regen_percent_per_10s": 0.0
+    },
+    "skills": [
+      "melee_hit"
+    ],
+    "generic_skills": [
+      {
+        "id": "haste",
+        "display_name": "Pack Hunt",
+        "params": {
+          "hp_below_pct": 1.01,
+          "move_speed_multiplier": 1.25
+        }
+      }
+    ],
+    "reward": {
+      "gold": 2,
+      "exp": 3
+    }
+  },
+  {
+    "id": "crystal_bat",
+    "display_name": "Crystal Bat",
+    "element": "metal",
+    "attack_type": "melee",
+    "visual_scale": 0.4095,
+    "exp": 2,
+    "attributes": {
+      "hp": 80,
+      "atk": 10,
+      "def": 1,
+      "move_speed": 80,
+      "attack_speed": 1.05,
+      "attack_range": 30,
+      "crit_rate": 0.05,
+      "crit_damage": 1.35,
+      "regen_percent_per_10s": 0.0
+    },
+    "skills": [
+      "melee_hit"
+    ],
+    "generic_skills": [
+      {
+        "id": "pierce_guard",
+        "display_name": "Phase Glide",
+        "params": {
+          "damage_multiplier": 0.35
+        }
+      }
+    ],
+    "reward": {
+      "gold": 1,
+      "exp": 2
+    }
+  },
+  {
+    "id": "frost_knight",
+    "display_name": "Frost Knight",
+    "element": "metal",
+    "attack_type": "melee",
+    "visual_scale": 0.4095,
+    "exp": 6,
+    "attributes": {
+      "hp": 480,
+      "atk": 26,
+      "def": 12,
+      "move_speed": 40,
+      "attack_speed": 0.5,
+      "attack_range": 52,
+      "crit_rate": 0.04,
+      "crit_damage": 1.55,
+      "regen_percent_per_10s": 0.0
+    },
+    "skills": [
+      "melee_hit"
+    ],
+    "generic_skills": [
+      {
+        "id": "defense_aura",
+        "display_name": "Iron Formation",
+        "params": {
+          "radius": 180.0,
+          "def_multiplier": 1.35
+        }
+      }
+    ],
+    "reward": {
+      "gold": 6,
+      "exp": 6
+    }
+  },
+  {
+    "id": "ice_golem",
+    "display_name": "Ice Golem",
+    "element": "earth",
+    "attack_type": "melee",
+    "exp": 35,
+    "is_boss": true,
+    "boss_scale": 2.4,
+    "attributes": {
+      "hp": 4500,
+      "atk": 75,
+      "def": 16,
+      "move_speed": 14,
+      "attack_speed": 0.8,
+      "attack_range": 70,
+      "crit_rate": 0.03,
+      "crit_damage": 1.6,
+      "regen_percent_per_10s": 0.008
+    },
+    "skills": [
+      "heavy_slam"
+    ],
+    "generic_skills": [
+      {
+        "id": "damage_shield",
+        "display_name": "Permafrost Core",
+        "params": {
+          "shield_percent_max_hp": 0.2,
+          "cooldown_seconds": 20.0,
+          "initial_delay_seconds": 6.0
+        }
+      },
+      {
+        "id": "debuff_resistance",
+        "display_name": "Frozen Will",
+        "params": {
+          "duration_multiplier": 0.4,
+          "effect_ids": [
+            "slow",
+            "freeze",
+            "stun",
+            "holy_stun",
+            "knockback"
+          ]
+        }
+      }
+    ],
+    "boss_skills": [
+      {
+        "id": "heavy_slam",
+        "type": "slam_aoe",
+        "damage": 45,
+        "radius": 120,
+        "range": 160,
+        "warning_time": 0.9,
+        "cooldown": 5.0,
+        "initial_cooldown": 2.0
+      }
+    ],
+    "reward": {
+      "gold": 26,
+      "level_up": 1,
+      "exp": 35
+    }
+  },
+  {
+    "id": "ghost_low",
+    "display_name": "Ghost Low",
+    "element": "fire",
+    "attack_type": "melee",
+    "exp": 60,
+    "is_boss": true,
+    "boss_scale": 1.85,
+    "attributes": {
+      "hp": 9000,
+      "atk": 110,
+      "def": 22,
+      "move_speed": 50,
+      "attack_speed": 0.7,
+      "attack_range": 100,
+      "crit_rate": 0.05,
+      "crit_damage": 1.65,
+      "regen_percent_per_10s": 0.01
+    },
+    "skills": [
+      "ghost_slam"
+    ],
+    "boss_skills": [
+      {
+        "id": "ghost_slam",
+        "type": "slam_aoe",
+        "damage": 65,
+        "radius": 135,
+        "range": 180,
+        "warning_time": 0.85,
+        "cooldown": 4.5,
+        "initial_cooldown": 1.8
+      }
+    ],
+    "reward": {
+      "gold": 42,
+      "level_up": 1,
+      "exp": 60
+    }
+  },
+  {
+    "id": "ghost_medium",
+    "display_name": "Ghost Medium",
+    "element": "metal",
+    "attack_type": "melee",
+    "exp": 100,
+    "is_boss": true,
+    "boss_scale": 2.05,
+    "attributes": {
+      "hp": 18000,
+      "atk": 160,
+      "def": 30,
+      "move_speed": 35,
+      "attack_speed": 0.5,
+      "attack_range": 150,
+      "crit_rate": 0.06,
+      "crit_damage": 1.8,
+      "regen_percent_per_10s": 0.02
+    },
+    "skills": [
+      "medium_ghost_slam"
+    ],
+    "generic_skills": [
+      {
+        "id": "defense_aura",
+        "display_name": "Commanding Presence",
+        "params": {
+          "radius": 220.0,
+          "def_multiplier": 1.35
+        }
+      },
+      {
+        "id": "max_hp_buff",
+        "display_name": "Spectral Vitality",
+        "params": {
+          "max_hp_multiplier": 1.25
+        }
+      }
+    ],
+    "boss_skills": [
+      {
+        "id": "medium_ghost_slam",
+        "type": "slam_aoe",
+        "damage": 90,
+        "radius": 160,
+        "range": 205,
+        "warning_time": 1.0,
+        "cooldown": 4.2,
+        "initial_cooldown": 1.5
+      }
+    ],
+    "reward": {
+      "gold": 80,
+      "level_up": 1,
+      "exp": 100
+    }
+  },
+  {
+    "id": "frost_giant",
+    "display_name": "Frost Giant",
+    "element": "earth",
+    "attack_type": "melee",
+    "visual_scale": 0.4095,
+    "exp": 8,
+    "attributes": {
+      "hp": 850,
+      "atk": 38,
+      "def": 16,
+      "move_speed": 32,
+      "attack_speed": 0.4,
+      "attack_range": 65,
+      "crit_rate": 0.03,
+      "crit_damage": 1.5,
+      "regen_percent_per_10s": 0.0
+    },
+    "skills": [
+      "melee_hit"
+    ],
+    "generic_skills": [
+      {
+        "id": "regeneration",
+        "display_name": "Glacial Endurance",
+        "params": {
+          "percent_max_hp_per_sec": 0.02
+        }
+      },
+      {
+        "id": "debuff_resistance",
+        "display_name": "Heavy Resolve",
+        "params": {
+          "duration_multiplier": 0.6,
+          "effect_ids": [
+            "slow",
+            "freeze",
+            "stun",
+            "holy_stun"
+          ]
+        }
+      }
+    ],
+    "reward": {
+      "gold": 8,
+      "exp": 8
+    }
+  },
+  {
+    "id": "frost_lancer",
+    "display_name": "Frost Lancer",
+    "element": "water",
+    "attack_type": "melee",
+    "visual_scale": 0.4095,
+    "exp": 6,
+    "attributes": {
+      "hp": 380,
+      "atk": 24,
+      "def": 8,
+      "move_speed": 65,
+      "attack_speed": 0.8,
+      "attack_range": 85,
+      "crit_rate": 0.05,
+      "crit_damage": 1.45,
+      "regen_percent_per_10s": 0.0
+    },
+    "skills": [
+      "melee_hit"
+    ],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Lancer Momentum",
+        "params": {
+          "duration_multiplier": 0.5,
+          "effect_ids": [
+            "slow",
+            "freeze",
+            "knockback",
+            "knockback_light"
+          ]
+        }
+      }
+    ],
+    "reward": {
+      "gold": 7,
+      "exp": 6
+    }
+  },
+  {
+    "id": "flame_imp",
+    "display_name": "Quỷ Lửa Tro Tàn",
+    "element": "fire",
+    "attack_type": "melee",
+    "visual_scale": 0.14,
+    "exp": 10,
+    "attributes": {
+      "hp": 220,
+      "atk": 29,
+      "def": 8,
+      "move_speed": 76,
+      "attack_speed": 1.05,
+      "attack_range": 34,
+      "crit_rate": 0.06,
+      "crit_damage": 1.45,
+      "regen_percent_per_10s": 0.0
+    },
+    "skills": [
+      "melee_hit"
+    ],
+    "generic_skills": [
+      {
+        "id": "haste",
+        "display_name": "Tro Tàn Bùng Cháy",
+        "params": {
+          "hp_below_pct": 0.5,
+          "move_speed_multiplier": 1.45
+        }
+      }
+    ],
+    "reward": {
+      "gold": 10,
+      "exp": 10
+    }
+  },
+  {
+    "id": "magma_hound",
+    "display_name": "Chó Săn Nham Thạch",
+    "element": "fire",
+    "attack_type": "melee",
+    "visual_scale": 0.14,
+    "exp": 13,
+    "attributes": {
+      "hp": 340,
+      "atk": 36,
+      "def": 14,
+      "move_speed": 92,
+      "attack_speed": 1.0,
+      "attack_range": 38,
+      "crit_rate": 0.07,
+      "crit_damage": 1.5,
+      "regen_percent_per_10s": 0.0
+    },
+    "skills": [
+      "melee_hit"
+    ],
+    "generic_skills": [
+      {
+        "id": "haste",
+        "display_name": "Săn Đuổi Dung Nham",
+        "params": {
+          "hp_below_pct": 1.01,
+          "move_speed_multiplier": 1.25
+        }
+      }
+    ],
+    "reward": {
+      "gold": 13,
+      "exp": 13
+    }
+  },
+  {
+    "id": "pyromancer",
+    "display_name": "Pháp Sư Hỏa Ngục",
+    "element": "fire",
+    "attack_type": "ranged",
+    "visual_scale": 0.145,
+    "exp": 16,
+    "attributes": {
+      "hp": 270,
+      "atk": 42,
+      "def": 9,
+      "move_speed": 48,
+      "attack_speed": 0.65,
+      "attack_range": 320,
+      "projectile_speed": 340,
+      "crit_rate": 0.05,
+      "crit_damage": 1.45,
+      "regen_percent_per_10s": 0.0
+    },
+    "skills": [
+      "ranged_bolt"
+    ],
+    "attack_effects": [
+      {
+        "id": "burn",
+        "duration": 3.0,
+        "dps": 12.0,
+        "tick_interval": 0.5
+      }
+    ],
+    "generic_skills": [
+      {
+        "id": "damage_shield",
+        "display_name": "Hỏa Thuẫn",
+        "params": {
+          "shield_percent_max_hp": 0.2,
+          "duration_seconds": 6.0,
+          "cooldown_seconds": 10.0,
+          "initial_delay_seconds": 1.5
+        }
+      }
+    ],
+    "reward": {
+      "gold": 16,
+      "exp": 16
+    }
+  },
+  {
+    "id": "lava_brute",
+    "display_name": "Đao Phủ Dung Nham",
+    "element": "fire",
+    "attack_type": "melee",
+    "visual_scale": 0.155,
+    "exp": 22,
+    "attributes": {
+      "hp": 720,
+      "atk": 55,
+      "def": 28,
+      "move_speed": 35,
+      "attack_speed": 0.45,
+      "attack_range": 60,
+      "crit_rate": 0.03,
+      "crit_damage": 1.55,
+      "regen_percent_per_10s": 0.0
+    },
+    "skills": [
+      "melee_hit"
+    ],
+    "generic_skills": [
+      {
+        "id": "defense_buff",
+        "display_name": "Giáp Nham Thạch",
+        "params": {
+          "def_multiplier": 1.3,
+          "duration_seconds": null
+        }
+      }
+    ],
+    "reward": {
+      "gold": 22,
+      "exp": 22
+    }
+  },
+  {
+    "id": "spore_crawler",
+    "display_name": "Bọ Bào Tử Độc",
+    "element": "wood",
+    "attack_type": "melee",
+    "visual_scale": 0.14,
+    "exp": 28,
+    "attributes": {
+      "hp": 780,
+      "atk": 68,
+      "def": 25,
+      "move_speed": 54,
+      "attack_speed": 0.7,
+      "attack_range": 42,
+      "crit_rate": 0.04,
+      "crit_damage": 1.45,
+      "regen_percent_per_10s": 0.0
+    },
+    "skills": [
+      "melee_hit"
+    ],
+    "generic_skills": [
+      {
+        "id": "damage_reflect",
+        "display_name": "Giáp Bào Tử",
+        "params": {
+          "reflect_percent_received": 0.15,
+          "duration_seconds": 4.0,
+          "cooldown_seconds": 10.0
+        }
+      }
+    ],
+    "reward": {
+      "gold": 28,
+      "exp": 28
+    }
+  },
+  {
+    "id": "thorn_spitter",
+    "display_name": "Cây Bắn Gai",
+    "element": "wood",
+    "attack_type": "ranged",
+    "visual_scale": 0.145,
+    "exp": 31,
+    "attributes": {
+      "hp": 680,
+      "atk": 72,
+      "def": 22,
+      "move_speed": 46,
+      "attack_speed": 0.62,
+      "attack_range": 340,
+      "projectile_speed": 320,
+      "crit_rate": 0.04,
+      "crit_damage": 1.45,
+      "regen_percent_per_10s": 0.0
+    },
+    "skills": [
+      "ranged_bolt"
+    ],
+    "attack_effects": [
+      {
+        "id": "poison",
+        "duration": 4.0,
+        "dps": 10.0,
+        "tick_interval": 0.5
+      }
+    ],
+    "generic_skills": [
+      {
+        "id": "damage_shield",
+        "display_name": "Vỏ Gai",
+        "params": {
+          "shield_percent_max_hp": 0.18,
+          "duration_seconds": 6.0,
+          "cooldown_seconds": 10.0,
+          "initial_delay_seconds": 2.0
+        }
+      }
+    ],
+    "reward": {
+      "gold": 31,
+      "exp": 31
+    }
+  },
+  {
+    "id": "venom_spider",
+    "display_name": "Nhện Độc Đầm Lầy",
+    "element": "wood",
+    "attack_type": "melee",
+    "visual_scale": 0.135,
+    "exp": 35,
+    "attributes": {
+      "hp": 880,
+      "atk": 83,
+      "def": 28,
+      "move_speed": 65,
+      "attack_speed": 0.9,
+      "attack_range": 44,
+      "crit_rate": 0.05,
+      "crit_damage": 1.5,
+      "regen_percent_per_10s": 0.0
+    },
+    "skills": [
+      "melee_hit"
+    ],
+    "generic_skills": [
+      {
+        "id": "haste",
+        "display_name": "Thợ Săn Đầm Lầy",
+        "params": {
+          "hp_below_pct": 0.6,
+          "move_speed_multiplier": 1.35
+        }
+      }
+    ],
+    "reward": {
+      "gold": 35,
+      "exp": 35
+    }
+  },
+  {
+    "id": "ent_protector",
+    "display_name": "Cây Cổ Thụ Hộ Vệ",
+    "element": "wood",
+    "attack_type": "melee",
+    "visual_scale": 0.155,
+    "exp": 42,
+    "attributes": {
+      "hp": 1450,
+      "atk": 96,
+      "def": 45,
+      "move_speed": 28,
+      "attack_speed": 0.4,
+      "attack_range": 72,
+      "crit_rate": 0.02,
+      "crit_damage": 1.55,
+      "regen_percent_per_10s": 0.0
+    },
+    "skills": [
+      "melee_hit"
+    ],
+    "generic_skills": [
+      {
+        "id": "defense_aura",
+        "display_name": "Vỏ Cây Cộng Sinh",
+        "params": {
+          "radius": 180.0,
+          "def_multiplier": 1.3
+        }
+      },
+      {
+        "id": "regeneration",
+        "display_name": "Nhựa Cổ Thụ",
+        "params": {
+          "percent_max_hp_per_sec": 0.015
+        }
+      }
+    ],
+    "reward": {
+      "gold": 42,
+      "exp": 42
+    }
+  },
+  {
+    "id": "clockwork_spider",
+    "display_name": "Nhện Cơ Khí Giáp Sắt",
+    "element": "metal",
+    "attack_type": "melee",
+    "visual_scale": 0.14,
+    "exp": 52,
+    "attributes": {
+      "hp": 2300,
+      "atk": 115,
+      "def": 165,
+      "move_speed": 48,
+      "attack_speed": 0.72,
+      "attack_range": 46,
+      "crit_rate": 0.04,
+      "crit_damage": 1.5,
+      "regen_percent_per_10s": 0.0
+    },
+    "skills": [
+      "melee_hit"
+    ],
+    "generic_skills": [
+      {
+        "id": "defense_buff",
+        "display_name": "Giáp Bánh Răng",
+        "params": {
+          "def_multiplier": 1.2,
+          "duration_seconds": null
+        }
+      }
+    ],
+    "reward": {
+      "gold": 52,
+      "exp": 52
+    }
+  },
+  {
+    "id": "iron_crossbowman",
+    "display_name": "Xạ Thủ Nỏ Sắt",
+    "element": "metal",
+    "attack_type": "ranged",
+    "visual_scale": 0.145,
+    "exp": 58,
+    "attributes": {
+      "hp": 1950,
+      "atk": 142,
+      "def": 150,
+      "move_speed": 40,
+      "attack_speed": 0.68,
+      "attack_range": 360,
+      "projectile_speed": 430,
+      "crit_rate": 0.08,
+      "crit_damage": 1.65,
+      "regen_percent_per_10s": 0.0
+    },
+    "skills": [
+      "ranged_bolt"
+    ],
+    "attack_effects": [
+      {
+        "id": "armor_break",
+        "duration": 2.0,
+        "defense_percent": 0.2
+      }
+    ],
+    "generic_skills": [
+      {
+        "id": "pierce_guard",
+        "display_name": "Giáp Tấm Đan Xen",
+        "params": {
+          "damage_multiplier": 0.55
+        }
+      }
+    ],
+    "reward": {
+      "gold": 58,
+      "exp": 58
+    }
+  },
+  {
+    "id": "steam_automaton",
+    "display_name": "Người Máy Hơi Nước",
+    "element": "metal",
+    "attack_type": "melee",
+    "visual_scale": 0.15,
+    "exp": 65,
+    "attributes": {
+      "hp": 3000,
+      "atk": 130,
+      "def": 210,
+      "move_speed": 34,
+      "attack_speed": 0.55,
+      "attack_range": 56,
+      "crit_rate": 0.03,
+      "crit_damage": 1.55,
+      "regen_percent_per_10s": 0.0
+    },
+    "skills": [
+      "melee_hit"
+    ],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Van Xả Áp",
+        "params": {
+          "duration_multiplier": 0.25,
+          "effect_ids": [
+            "slow",
+            "freeze",
+            "stun",
+            "holy_stun",
+            "knockback",
+            "knockback_light"
+          ],
+          "duration_seconds": null
+        }
+      }
+    ],
+    "reward": {
+      "gold": 65,
+      "exp": 65
+    }
+  },
+  {
+    "id": "shield_sentinel",
+    "display_name": "Hiệp Sĩ Khiên Tháp",
+    "element": "metal",
+    "attack_type": "melee",
+    "visual_scale": 0.155,
+    "exp": 74,
+    "attributes": {
+      "hp": 4200,
+      "atk": 150,
+      "def": 285,
+      "move_speed": 27,
+      "attack_speed": 0.42,
+      "attack_range": 62,
+      "crit_rate": 0.02,
+      "crit_damage": 1.6,
+      "regen_percent_per_10s": 0.0
+    },
+    "skills": [
+      "melee_hit"
+    ],
+    "generic_skills": [
+      {
+        "id": "damage_reflect",
+        "display_name": "Phản Kích Khiên Tháp",
+        "params": {
+          "reflect_percent_received": 0.28,
+          "duration_seconds": 4.0,
+          "cooldown_seconds": 10.0
+        }
+      }
+    ],
+    "reward": {
+      "gold": 74,
+      "exp": 74
+    }
+  },
+  {
+    "id": "granite_colossus",
+    "display_name": "Khổng Lồ Đá Hoa Cương",
+    "element": "earth",
+    "attack_type": "melee",
+    "visual_scale": 0.155,
+    "exp": 95,
+    "attributes": {
+      "hp": 9000,
+      "atk": 240,
+      "def": 190,
+      "move_speed": 22,
+      "attack_speed": 0.35,
+      "attack_range": 78,
+      "crit_rate": 0.02,
+      "crit_damage": 1.65,
+      "regen_percent_per_10s": 0.0
+    },
+    "skills": [
+      "melee_hit"
+    ],
+    "generic_skills": [
+      {
+        "id": "max_hp_buff",
+        "display_name": "Lõi Hoa Cương",
+        "params": {
+          "max_hp_multiplier": 1.3
+        }
+      },
+      {
+        "id": "regeneration",
+        "display_name": "Tái Tạo Địa Mạch",
+        "params": {
+          "percent_max_hp_per_sec": 0.012
+        }
+      }
+    ],
+    "reward": {
+      "gold": 95,
+      "exp": 95
+    }
+  },
+  {
+    "id": "sand_stalker",
+    "display_name": "Bọ Cát Sa Mạc",
+    "element": "earth",
+    "attack_type": "melee",
+    "visual_scale": 0.135,
+    "exp": 85,
+    "attributes": {
+      "hp": 5400,
+      "atk": 265,
+      "def": 145,
+      "move_speed": 88,
+      "attack_speed": 1.05,
+      "attack_range": 46,
+      "crit_rate": 0.07,
+      "crit_damage": 1.65,
+      "regen_percent_per_10s": 0.0
+    },
+    "skills": [
+      "melee_hit"
+    ],
+    "generic_skills": [
+      {
+        "id": "haste",
+        "display_name": "Lẩn Cát",
+        "params": {
+          "hp_below_pct": 0.65,
+          "move_speed_multiplier": 1.4
+        }
+      }
+    ],
+    "reward": {
+      "gold": 85,
+      "exp": 85
+    }
+  },
+  {
+    "id": "seismic_shaman",
+    "display_name": "Pháp Sư Địa Chấn",
+    "element": "earth",
+    "attack_type": "ranged",
+    "visual_scale": 0.145,
+    "exp": 105,
+    "attributes": {
+      "hp": 6500,
+      "atk": 310,
+      "def": 160,
+      "move_speed": 32,
+      "attack_speed": 0.52,
+      "attack_range": 380,
+      "projectile_speed": 300,
+      "crit_rate": 0.04,
+      "crit_damage": 1.7,
+      "regen_percent_per_10s": 0.0
+    },
+    "skills": [
+      "ranged_bolt"
+    ],
+    "attack_effects": [
+      {
+        "id": "slow",
+        "duration": 2.0,
+        "slow_percent": 0.4
+      }
+    ],
+    "generic_skills": [
+      {
+        "id": "damage_shield",
+        "display_name": "Trụ Đá Hộ Thân",
+        "params": {
+          "shield_percent_max_hp": 0.22,
+          "duration_seconds": 6.0,
+          "cooldown_seconds": 11.0,
+          "initial_delay_seconds": 2.0
+        }
+      }
+    ],
+    "reward": {
+      "gold": 105,
+      "exp": 105
+    }
+  },
+  {
+    "id": "primordial_wraith",
+    "display_name": "Bóng Ma Hỗn Mang",
+    "element": "earth",
+    "attack_type": "ranged",
+    "visual_scale": 0.145,
+    "exp": 120,
+    "attributes": {
+      "hp": 7800,
+      "atk": 340,
+      "def": 175,
+      "move_speed": 50,
+      "attack_speed": 0.62,
+      "attack_range": 400,
+      "projectile_speed": 350,
+      "crit_rate": 0.08,
+      "crit_damage": 1.8,
+      "regen_percent_per_10s": 0.0
+    },
+    "skills": [
+      "ranged_bolt"
+    ],
+    "attack_effects": [
+      {
+        "id": "burn",
+        "duration": 3.0,
+        "dps": 28.0,
+        "tick_interval": 0.5
+      },
+      {
+        "id": "weaken",
+        "duration": 2.5,
+        "attack_percent": 0.2
+      }
+    ],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Hỗn Mang Vô Tướng",
+        "params": {
+          "duration_multiplier": 0.5,
+          "effect_ids": [
+            "slow",
+            "freeze",
+            "stun",
+            "holy_stun",
+            "knockback",
+            "knockback_light"
+          ],
+          "duration_seconds": null
+        }
+      }
+    ],
+    "reward": {
+      "gold": 120,
+      "exp": 120
+    }
+  },
+  {
+    "id": "magma_golem",
+    "display_name": "Golem Nham Thạch",
+    "element": "fire",
+    "attack_type": "melee",
+    "exp": 180,
+    "is_boss": true,
+    "boss_scale": 1.8,
+    "boss_visual_scale": 0.365,
+    "attributes": {
+      "hp": 9000,
+      "atk": 110,
+      "def": 22,
+      "move_speed": 24,
+      "attack_speed": 0.55,
+      "attack_range": 72,
+      "crit_rate": 0.04,
+      "crit_damage": 1.65,
+      "regen_percent_per_10s": 0.006
+    },
+    "skills": [
+      "magma_eruption_mock"
+    ],
+    "generic_skills": [
+      {
+        "id": "defense_buff",
+        "display_name": "Giáp Dung Nham",
+        "params": {
+          "def_multiplier": 1.2,
+          "duration_seconds": null
+        }
+      }
+    ],
+    "boss_skills": [
+      {
+        "id": "magma_eruption_mock",
+        "display_name": "Dậm Nham Thạch",
+        "type": "slam_aoe",
+        "mock_source_skill_id": "hero_2_skill_2",
+        "damage_multiplier": 1.15,
+        "radius": 145,
+        "range": 190,
+        "warning_time": 0.9,
+        "cooldown": 5.5,
+        "effects": [
+          {
+            "id": "burn",
+            "duration": 3.0,
+            "dps": 18.0,
+            "tick_interval": 0.5
+          }
+        ]
+      }
+    ],
+    "reward": {
+      "gold": 120,
+      "exp": 180,
+      "level_up": 1
+    }
+  },
+  {
+    "id": "infernal_dragon",
+    "display_name": "Hỏa Long Diệt Thế",
+    "element": "fire",
+    "attack_type": "ranged",
+    "exp": 260,
+    "is_boss": true,
+    "boss_scale": 2.05,
+    "boss_visual_scale": 0.36,
+    "attributes": {
+      "hp": 18000,
+      "atk": 160,
+      "def": 30,
+      "move_speed": 38,
+      "attack_speed": 0.62,
+      "attack_range": 360,
+      "projectile_speed": 360,
+      "crit_rate": 0.07,
+      "crit_damage": 1.8,
+      "regen_percent_per_10s": 0.008
+    },
+    "skills": [
+      "infernal_barrage_mock"
+    ],
+    "attack_effects": [
+      {
+        "id": "burn",
+        "duration": 3.0,
+        "dps": 24.0,
+        "tick_interval": 0.5
+      }
+    ],
+    "generic_skills": [
+      {
+        "id": "damage_shield",
+        "display_name": "Long Lân Hỏa Ngục",
+        "params": {
+          "shield_percent_max_hp": 0.18,
+          "duration_seconds": 6.0,
+          "cooldown_seconds": 14.0,
+          "initial_delay_seconds": 4.0
+        }
+      }
+    ],
+    "boss_skills": [
+      {
+        "id": "infernal_barrage_mock",
+        "display_name": "Tam Tài Diệt Thế Hỏa",
+        "type": "slam_aoe",
+        "mock_source_skill_id": "hero_2_skill_4",
+        "damage_multiplier": 1.3,
+        "radius": 180,
+        "range": 400,
+        "warning_time": 1.0,
+        "cooldown": 5.0,
+        "effects": [
+          {
+            "id": "burn",
+            "duration": 4.0,
+            "dps": 28.0,
+            "tick_interval": 0.5
+          }
+        ]
+      }
+    ],
+    "reward": {
+      "gold": 180,
+      "exp": 260,
+      "level_up": 1
+    }
+  },
+  {
+    "id": "ancient_treant",
+    "display_name": "Mộc Thần Rừng Già",
+    "element": "wood",
+    "attack_type": "melee",
+    "exp": 340,
+    "is_boss": true,
+    "boss_scale": 1.8,
+    "boss_visual_scale": 0.365,
+    "attributes": {
+      "hp": 12500,
+      "atk": 135,
+      "def": 30,
+      "move_speed": 20,
+      "attack_speed": 0.45,
+      "attack_range": 88,
+      "crit_rate": 0.03,
+      "crit_damage": 1.7,
+      "regen_percent_per_10s": 0.012
+    },
+    "skills": [
+      "ancient_roots_mock"
+    ],
+    "generic_skills": [
+      {
+        "id": "regeneration",
+        "display_name": "Nhựa Sống Cổ Thụ",
+        "params": {
+          "percent_max_hp_per_sec": 0.015
+        }
+      },
+      {
+        "id": "defense_aura",
+        "display_name": "Tán Rừng Hộ Mệnh",
+        "params": {
+          "radius": 240.0,
+          "def_multiplier": 1.25
+        }
+      }
+    ],
+    "boss_skills": [
+      {
+        "id": "ancient_roots_mock",
+        "display_name": "Hủ Cốt Độc Cạm",
+        "type": "slam_aoe",
+        "mock_source_skill_id": "hero_4_skill_3",
+        "damage_multiplier": 1.05,
+        "radius": 165,
+        "range": 230,
+        "warning_time": 1.1,
+        "cooldown": 6.0,
+        "effects": [
+          {
+            "id": "root",
+            "duration": 1.4
+          }
+        ]
+      }
+    ],
+    "reward": {
+      "gold": 240,
+      "exp": 340,
+      "level_up": 1
+    }
+  },
+  {
+    "id": "poison_hydra",
+    "display_name": "Thủy Quái Ba Đầu",
+    "element": "wood",
+    "attack_type": "ranged",
+    "exp": 440,
+    "is_boss": true,
+    "boss_scale": 2.05,
+    "boss_visual_scale": 0.44,
+    "attributes": {
+      "hp": 27000,
+      "atk": 200,
+      "def": 45,
+      "move_speed": 28,
+      "attack_speed": 0.58,
+      "attack_range": 380,
+      "projectile_speed": 320,
+      "crit_rate": 0.06,
+      "crit_damage": 1.8,
+      "regen_percent_per_10s": 0.01
+    },
+    "skills": [
+      "hydra_venom_storm_mock"
+    ],
+    "attack_effects": [
+      {
+        "id": "poison",
+        "duration": 4.0,
+        "dps": 26.0,
+        "tick_interval": 0.5
+      }
+    ],
+    "generic_skills": [
+      {
+        "id": "regeneration",
+        "display_name": "Tam Thủ Tái Sinh",
+        "params": {
+          "percent_max_hp_per_sec": 0.01
+        }
+      }
+    ],
+    "boss_skills": [
+      {
+        "id": "hydra_venom_storm_mock",
+        "display_name": "Vạn Độc Thần Phong",
+        "type": "slam_aoe",
+        "mock_source_skill_id": "hero_4_skill_4",
+        "damage_multiplier": 1.2,
+        "radius": 195,
+        "range": 420,
+        "warning_time": 1.0,
+        "cooldown": 5.2,
+        "effects": [
+          {
+            "id": "poison",
+            "duration": 5.0,
+            "dps": 34.0,
+            "tick_interval": 0.5
+          },
+          {
+            "id": "slow",
+            "duration": 2.0,
+            "slow_percent": 0.35
+          }
+        ]
+      }
+    ],
+    "reward": {
+      "gold": 320,
+      "exp": 440,
+      "level_up": 1
+    }
+  },
+  {
+    "id": "dreadnought_tank",
+    "display_name": "Thiết Hạm Mặt Đất",
+    "element": "metal",
+    "attack_type": "melee",
+    "exp": 560,
+    "is_boss": true,
+    "boss_scale": 1.8,
+    "boss_visual_scale": 0.32,
+    "attributes": {
+      "hp": 28000,
+      "atk": 200,
+      "def": 180,
+      "move_speed": 32,
+      "attack_speed": 0.48,
+      "attack_range": 90,
+      "crit_rate": 0.04,
+      "crit_damage": 1.75,
+      "regen_percent_per_10s": 0.004
+    },
+    "skills": [
+      "dreadnought_charge_mock"
+    ],
+    "generic_skills": [
+      {
+        "id": "pierce_guard",
+        "display_name": "Giáp Thiết Hạm",
+        "params": {
+          "damage_multiplier": 0.35
+        }
+      },
+      {
+        "id": "damage_reflect",
+        "display_name": "Phản Chấn Thép",
+        "params": {
+          "reflect_percent_received": 0.18,
+          "duration_seconds": 4.0,
+          "cooldown_seconds": 11.0
+        }
+      }
+    ],
+    "boss_skills": [
+      {
+        "id": "dreadnought_charge_mock",
+        "display_name": "Kiếm Phiến Xung Kích",
+        "type": "slam_aoe",
+        "mock_source_skill_id": "hero_3_skill_1",
+        "damage_multiplier": 1.15,
+        "radius": 175,
+        "range": 240,
+        "warning_time": 0.8,
+        "cooldown": 5.0,
+        "effects": [
+          {
+            "id": "knockback",
+            "distance": 95.0,
+            "duration": 0.2
+          }
+        ]
+      }
+    ],
+    "reward": {
+      "gold": 420,
+      "exp": 560,
+      "level_up": 1
+    }
+  },
+  {
+    "id": "mecha_overlord",
+    "display_name": "Chúa Tể Cơ Khí",
+    "element": "metal",
+    "attack_type": "ranged",
+    "exp": 720,
+    "is_boss": true,
+    "boss_scale": 2.05,
+    "boss_visual_scale": 0.32,
+    "attributes": {
+      "hp": 48000,
+      "atk": 300,
+      "def": 240,
+      "move_speed": 26,
+      "attack_speed": 0.55,
+      "attack_range": 390,
+      "projectile_speed": 420,
+      "crit_rate": 0.08,
+      "crit_damage": 1.9,
+      "regen_percent_per_10s": 0.006
+    },
+    "skills": [
+      "mecha_seal_mock"
+    ],
+    "generic_skills": [
+      {
+        "id": "damage_shield",
+        "display_name": "Khiên Năng Lượng",
+        "params": {
+          "shield_percent_max_hp": 0.3,
+          "duration_seconds": 7.0,
+          "cooldown_seconds": 14.0,
+          "initial_delay_seconds": 3.0
+        }
+      },
+      {
+        "id": "debuff_resistance",
+        "display_name": "Bộ Lõi Ổn Định",
+        "params": {
+          "duration_multiplier": 0.35,
+          "effect_ids": [
+            "slow",
+            "freeze",
+            "stun",
+            "holy_stun",
+            "knockback",
+            "knockback_light"
+          ],
+          "duration_seconds": null
+        }
+      }
+    ],
+    "boss_skills": [
+      {
+        "id": "mecha_seal_mock",
+        "display_name": "Lục Tự Đại Minh Ấn",
+        "type": "slam_aoe",
+        "mock_source_skill_id": "hero_5_skill_2",
+        "damage_multiplier": 1.25,
+        "radius": 205,
+        "range": 430,
+        "warning_time": 1.0,
+        "cooldown": 5.3,
+        "effects": [
+          {
+            "id": "holy_stun",
+            "duration": 0.45
+          }
+        ]
+      }
+    ],
+    "reward": {
+      "gold": 560,
+      "exp": 720,
+      "level_up": 1
+    }
+  },
+  {
+    "id": "earth_titan",
+    "display_name": "Titan Đất Mẹ",
+    "element": "earth",
+    "attack_type": "melee",
+    "exp": 900,
+    "is_boss": true,
+    "boss_scale": 1.8,
+    "boss_visual_scale": 0.32,
+    "attributes": {
+      "hp": 67500,
+      "atk": 375,
+      "def": 220,
+      "move_speed": 18,
+      "attack_speed": 0.38,
+      "attack_range": 105,
+      "crit_rate": 0.03,
+      "crit_damage": 1.9,
+      "regen_percent_per_10s": 0.01
+    },
+    "skills": [
+      "earthquake_mock"
+    ],
+    "generic_skills": [
+      {
+        "id": "max_hp_buff",
+        "display_name": "Thân Thể Địa Mạch",
+        "params": {
+          "max_hp_multiplier": 1.2
+        }
+      },
+      {
+        "id": "defense_buff",
+        "display_name": "Da Đá Titan",
+        "params": {
+          "def_multiplier": 1.2,
+          "duration_seconds": null
+        }
+      }
+    ],
+    "boss_skills": [
+      {
+        "id": "earthquake_mock",
+        "display_name": "Kiếm Ấn Địa Chấn",
+        "type": "slam_aoe",
+        "mock_source_skill_id": "hero_3_skill_2",
+        "damage_multiplier": 1.2,
+        "radius": 220,
+        "range": 270,
+        "warning_time": 1.15,
+        "cooldown": 5.8,
+        "effects": [
+          {
+            "id": "stun",
+            "duration": 0.8
+          }
+        ]
+      }
+    ],
+    "reward": {
+      "gold": 720,
+      "exp": 900,
+      "level_up": 1
+    }
+  },
+  {
+    "id": "primordial_god",
+    "display_name": "Thần Nguyên Thủy",
+    "element": "earth",
+    "attack_type": "ranged",
+    "exp": 1200,
+    "is_boss": true,
+    "boss_scale": 2.05,
+    "boss_visual_scale": 0.36,
+    "attributes": {
+      "hp": 125000,
+      "atk": 680,
+      "def": 280,
+      "move_speed": 34,
+      "attack_speed": 0.65,
+      "attack_range": 430,
+      "projectile_speed": 380,
+      "crit_rate": 0.1,
+      "crit_damage": 2.0,
+      "regen_percent_per_10s": 0.012
+    },
+    "skills": [
+      "primordial_palm_mock"
+    ],
+    "attack_effects": [
+      {
+        "id": "weaken",
+        "duration": 2.5,
+        "attack_percent": 0.22
+      }
+    ],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Thần Thể Nguyên Sơ",
+        "params": {
+          "duration_multiplier": 0.25,
+          "effect_ids": [
+            "slow",
+            "freeze",
+            "stun",
+            "holy_stun",
+            "knockback",
+            "knockback_light"
+          ],
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "regeneration",
+        "display_name": "Hỗn Nguyên Tái Sinh",
+        "params": {
+          "percent_max_hp_per_sec": 0.008
+        }
+      }
+    ],
+    "boss_skills": [
+      {
+        "id": "primordial_palm_mock",
+        "display_name": "Như Lai Thần Chưởng",
+        "type": "slam_aoe",
+        "mock_source_skill_id": "hero_5_skill_3",
+        "damage_multiplier": 1.35,
+        "radius": 245,
+        "range": 470,
+        "warning_time": 1.2,
+        "cooldown": 5.5,
+        "effects": [
+          {
+            "id": "holy_stun",
+            "duration": 0.5
+          },
+          {
+            "id": "burn",
+            "duration": 3.0,
+            "dps": 45.0,
+            "tick_interval": 0.5
+          }
+        ]
+      }
+    ],
+    "reward": {
+      "gold": 1000,
+      "exp": 1200,
+      "level_up": 1
+    }
+  },
+  {
+    "id": "dummy_boss",
+    "display_name": "Hình Nộm Thử Nghiệm",
+    "element": "water",
+    "attack_type": "melee",
+    "exp": 100,
+    "is_boss": true,
+    "boss_scale": 2.4,
+    "attributes": {
+      "hp": 1000000,
+      "atk": 1,
+      "def": 10,
+      "move_speed": 15,
+      "attack_speed": 0.5,
+      "attack_range": 420,
+      "crit_rate": 0.0,
+      "crit_damage": 1.0,
+      "regen_percent_per_10s": 0.0
+    },
+    "skills": [
+      "melee_hit"
+    ],
+    "boss_skills": [
+      {
+        "id": "dummy_strike",
+        "display_name": "Cú Đập Hình Nộm",
+        "type": "slam_aoe",
+        "damage": 1,
+        "radius": 40,
+        "cooldown": 15.0
+      }
+    ],
+    "reward": {
+      "gold": 50,
+      "exp": 100,
+      "level_up": 1
+    }
+  }
+]

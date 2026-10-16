@@ -1,0 +1,185 @@
+// Survival TD — Nakama Server Modules
+// Phase 2: Config Tables + Seed + Config RPC
+// Build: npx esbuild data/modules/main.ts --bundle --platform=node --target=es5 --outfile=data/build/index.js
+
+function linkedRpc_google_link_status(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("google_link_status", googleLinkStatus)(ctx, logger, nk, payload);
+}
+function linkedRpc_prepare_google_link(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("prepare_google_link", prepareGoogleLink)(ctx, logger, nk, payload);
+}
+function linkedRpc_confirm_google_link(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("confirm_google_link", confirmGoogleLink)(ctx, logger, nk, payload);
+}
+function linkedRpc_seed_game_data(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("seed_game_data", seedGameData)(ctx, logger, nk, payload);
+}
+function linkedRpc_get_game_config(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("get_game_config", gatedGetGameConfig)(ctx, logger, nk, payload);
+}
+function linkedRpc_get_config_bootstrap(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("get_config_bootstrap", getConfigBootstrap)(ctx, logger, nk, payload);
+}
+function linkedRpc_publish_config_release(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("publish_config_release", gatedPublishConfigRelease)(ctx, logger, nk, payload);
+}
+function linkedRpc_save_player_profile(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("save_player_profile", gatedSavePlayerProfile)(ctx, logger, nk, payload);
+}
+function linkedRpc_load_player_profile(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("load_player_profile", gatedLoadPlayerProfile)(ctx, logger, nk, payload);
+}
+function linkedRpc_set_player_avatar(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("set_player_avatar", setPlayerAvatar)(ctx, logger, nk, payload);
+}
+function linkedRpc_get_player_avatars(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("get_player_avatars", getPlayerAvatars)(ctx, logger, nk, payload);
+}
+function linkedRpc_save_compliance_profile(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("save_compliance_profile", gatedSaveComplianceProfile)(ctx, logger, nk, payload);
+}
+function linkedRpc_get_compliance_profile(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("get_compliance_profile", gatedGetComplianceProfile)(ctx, logger, nk, payload);
+}
+function linkedRpc_update_inventory(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("update_inventory", gatedUpdateInventory)(ctx, logger, nk, payload);
+}
+function linkedRpc_talisman_action(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("talisman_action", gatedTalismanAction)(ctx, logger, nk, payload);
+}
+function linkedRpc_talisman_cast(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("talisman_cast", gatedTalismanCast)(ctx, logger, nk, payload);
+}
+function linkedRpc_spend_resource(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("spend_resource", gatedSpendResource)(ctx, logger, nk, payload);
+}
+function linkedRpc_purchase_stamina(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("purchase_stamina", gatedPurchaseStamina)(ctx, logger, nk, payload);
+}
+function linkedRpc_purchase_hero(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("purchase_hero", gatedPurchaseHero)(ctx, logger, nk, payload);
+}
+function linkedRpc_daily_checkin_status(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("daily_checkin_status", gatedDailyCheckinStatus)(ctx, logger, nk, payload);
+}
+function linkedRpc_daily_checkin_claim(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("daily_checkin_claim", gatedDailyCheckinClaim)(ctx, logger, nk, payload);
+}
+function linkedRpc_event_list(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("event_list", gatedEventList)(ctx, logger, nk, payload);
+}
+function linkedRpc_event_claim(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("event_claim", gatedEventClaim)(ctx, logger, nk, payload);
+}
+function linkedRpc_start_stage(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("start_stage", gatedStartStage)(ctx, logger, nk, payload);
+}
+function linkedRpc_upgrade_element(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("upgrade_element", gatedUpgradeElement)(ctx, logger, nk, payload);
+}
+function linkedRpc_award_stage_progression(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("award_stage_progression", gatedAwardStageProgression)(ctx, logger, nk, payload);
+}
+function linkedRpc_tribulation_action(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("tribulation_action", gatedTribulationAction)(ctx, logger, nk, payload);
+}
+function linkedRpc_get_monetization_status(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("get_monetization_status", gatedGetMonetizationStatus)(ctx, logger, nk, payload);
+}
+function linkedRpc_create_purchase_order(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("create_purchase_order", gatedCreatePurchaseOrder)(ctx, logger, nk, payload);
+}
+function linkedRpc_sync_play_purchase(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("sync_play_purchase", gatedSyncPlayPurchase)(ctx, logger, nk, payload);
+}
+function linkedRpc_iap_google_claim(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("iap_google_claim", gatedIapGoogleClaim)(ctx, logger, nk, payload);
+}
+function linkedRpc_prepare_rewarded_ad(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("prepare_rewarded_ad", gatedPrepareRewardedAd)(ctx, logger, nk, payload);
+}
+function linkedRpc_confirm_rewarded_ad(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("confirm_rewarded_ad", gatedConfirmRewardedAd)(ctx, logger, nk, payload);
+}
+function linkedRpc_consume_ad_gameplay_reward(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("consume_ad_gameplay_reward", gatedConsumeAdGameplayReward)(ctx, logger, nk, payload);
+}
+function linkedRpc_admob_ssv_confirm(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("admob_ssv_confirm", admobSsvConfirm)(ctx, logger, nk, payload);
+}
+function linkedRpc_google_play_rtdn_confirm(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("google_play_rtdn_confirm", googlePlayRtdnConfirm)(ctx, logger, nk, payload);
+}
+function linkedRpc_sync_player_leaderboards(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("sync_player_leaderboards", gatedSyncPlayerLeaderboards)(ctx, logger, nk, payload);
+}
+function linkedRpc_get_leaderboard_records(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("get_leaderboard_records", gatedGetLeaderboardRecords)(ctx, logger, nk, payload);
+}
+function linkedRpc_sync_all_leaderboards(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("sync_all_leaderboards", rpcSyncAllLeaderboards)(ctx, logger, nk, payload);
+}
+
+function InitModule(
+    ctx: nkruntime.Context,
+    logger: nkruntime.Logger,
+    nk: nkruntime.Nakama,
+    initializer: nkruntime.Initializer
+): void {
+    // Phase 2: Create tables on startup
+    createGameConfigTables(nk, logger);
+    createMonetizationTables(nk, logger);
+    createAccountLinkTables(nk);
+    initializer.registerRpc("google_link_status", linkedRpc_google_link_status);
+    initializer.registerRpc("prepare_google_link", linkedRpc_prepare_google_link);
+    initializer.registerRpc("confirm_google_link", linkedRpc_confirm_google_link);
+    vipRuntimeMode = monetizationMode(ctx);
+
+    // Phase 2: Seed RPC (call once from console/curl)
+    initializer.registerRpc("seed_game_data", linkedRpc_seed_game_data);
+
+    // Phase 2: Config query RPC
+    initializer.registerRpc("get_game_config", linkedRpc_get_game_config);
+    initializer.registerRpc("get_config_bootstrap", linkedRpc_get_config_bootstrap);
+    initializer.registerRpc("publish_config_release", linkedRpc_publish_config_release);
+
+    // Phase 4: Player RPCs
+    initializer.registerRpc("save_player_profile", linkedRpc_save_player_profile);
+    initializer.registerRpc("load_player_profile", linkedRpc_load_player_profile);
+    initializer.registerRpc("set_player_avatar", linkedRpc_set_player_avatar);
+    initializer.registerRpc("get_player_avatars", linkedRpc_get_player_avatars);
+    initializer.registerRpc("save_compliance_profile", linkedRpc_save_compliance_profile);
+    initializer.registerRpc("get_compliance_profile", linkedRpc_get_compliance_profile);
+    initializer.registerRpc("update_inventory", linkedRpc_update_inventory);
+    initializer.registerRpc("talisman_action", linkedRpc_talisman_action);
+    initializer.registerRpc("talisman_cast", linkedRpc_talisman_cast);
+    initializer.registerRpc("spend_resource", linkedRpc_spend_resource);
+    initializer.registerRpc("purchase_stamina", linkedRpc_purchase_stamina);
+    initializer.registerRpc("purchase_hero", linkedRpc_purchase_hero);
+    initializer.registerRpc("daily_checkin_status", linkedRpc_daily_checkin_status);
+    initializer.registerRpc("daily_checkin_claim", linkedRpc_daily_checkin_claim);
+    initializer.registerRpc("event_list", linkedRpc_event_list);
+    initializer.registerRpc("event_claim", linkedRpc_event_claim);
+    initializer.registerRpc("start_stage", linkedRpc_start_stage);
+    initializer.registerRpc("upgrade_element", linkedRpc_upgrade_element);
+    initializer.registerRpc("award_stage_progression", linkedRpc_award_stage_progression);
+    initializer.registerRpc("tribulation_action", linkedRpc_tribulation_action);
+    initializer.registerRpc("get_monetization_status", linkedRpc_get_monetization_status);
+    initializer.registerRpc("create_purchase_order", linkedRpc_create_purchase_order);
+    initializer.registerRpc("sync_play_purchase", linkedRpc_sync_play_purchase);
+    initializer.registerRpc("iap_google_claim", linkedRpc_iap_google_claim);
+    initializer.registerRpc("prepare_rewarded_ad", linkedRpc_prepare_rewarded_ad);
+    initializer.registerRpc("confirm_rewarded_ad", linkedRpc_confirm_rewarded_ad);
+    initializer.registerRpc("consume_ad_gameplay_reward", linkedRpc_consume_ad_gameplay_reward);
+    // These two callbacks are called by the verifier service, not game clients.
+    initializer.registerRpc("admob_ssv_confirm", linkedRpc_admob_ssv_confirm);
+    initializer.registerRpc("google_play_rtdn_confirm", linkedRpc_google_play_rtdn_confirm);
+
+    // Phase 5: Leaderboards
+    createLeaderboards(nk, logger);
+    initializer.registerRpc("sync_player_leaderboards", linkedRpc_sync_player_leaderboards);
+    initializer.registerRpc("get_leaderboard_records", linkedRpc_get_leaderboard_records);
+    initializer.registerRpc("sync_all_leaderboards", linkedRpc_sync_all_leaderboards);
+
+    logger.info("Survival TD — Server modules initialized.");
+}

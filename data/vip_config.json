@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "max_level": 12,
+  "levels": [
+    {"level": 1, "min_exp": 500},
+    {"level": 2, "min_exp": 1000},
+    {"level": 3, "min_exp": 2000},
+    {"level": 4, "min_exp": 4000},
+    {"level": 5, "min_exp": 8000},
+    {"level": 6, "min_exp": 16000},
+    {"level": 7, "min_exp": 32000},
+    {"level": 8, "min_exp": 64000},
+    {"level": 9, "min_exp": 128000},
+    {"level": 10, "min_exp": 256000},
+    {"level": 11, "min_exp": 512000},
+    {"level": 12, "min_exp": 1024000}
+  ],
+  "product_exp": {
+    "remove_ads_1d": 100,
+    "remove_ads_7d": 400,
+    "remove_ads_3d": 200,
+    "remove_ads_30d": 1500,
+    "remove_ads_permanent": 3000,
+    "privilege_card": 1000,
+    "monthly_card": 500,
+    "growth_fund": 2000,
+    "weekly_card": 200,
+    "daily_deal": 100,
+    "flash_sale": 300,
+    "gem_sack": 500,
+    "gem_chest": 2000,
+    "gold_vault": 1000,
+    "first_topup_pack": 1000
+  }
+}

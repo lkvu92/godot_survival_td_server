@@ -1,0 +1,34 @@
+function InitModule(ctx, logger, nk, initializer) {
+  createGameConfigTables(nk, logger);
+  createMonetizationTables(nk, logger);
+  initializer.registerRpc("seed_game_data", seedGameData);
+  initializer.registerRpc("get_game_config", gatedGetGameConfig);
+  initializer.registerRpc("get_config_bootstrap", getConfigBootstrap);
+  initializer.registerRpc("publish_config_release", gatedPublishConfigRelease);
+  initializer.registerRpc("save_player_profile", gatedSavePlayerProfile);
+  initializer.registerRpc("load_player_profile", gatedLoadPlayerProfile);
+  initializer.registerRpc("save_compliance_profile", gatedSaveComplianceProfile);
+  initializer.registerRpc("get_compliance_profile", gatedGetComplianceProfile);
+  initializer.registerRpc("update_inventory", gatedUpdateInventory);
+  initializer.registerRpc("talisman_action", gatedTalismanAction);
+  initializer.registerRpc("talisman_cast", gatedTalismanCast);
+  initializer.registerRpc("spend_resource", gatedSpendResource);
+  initializer.registerRpc("purchase_stamina", gatedPurchaseStamina);
+  initializer.registerRpc("purchase_hero", gatedPurchaseHero);
+  initializer.registerRpc("daily_checkin_status", gatedDailyCheckinStatus);
+  initializer.registerRpc("daily_checkin_claim", gatedDailyCheckinClaim);
+  initializer.registerRpc("start_stage", gatedStartStage);
+  initializer.registerRpc("upgrade_element", gatedUpgradeElement);
+  initializer.registerRpc("award_stage_progression", gatedAwardStageProgression);
+  initializer.registerRpc("tribulation_action", gatedTribulationAction);
+  initializer.registerRpc("get_monetization_status", gatedGetMonetizationStatus);
+  initializer.registerRpc("create_purchase_order", gatedCreatePurchaseOrder);
+  initializer.registerRpc("sync_play_purchase", gatedSyncPlayPurchase);
+  initializer.registerRpc("iap_google_claim", gatedIapGoogleClaim);
+  initializer.registerRpc("prepare_rewarded_ad", gatedPrepareRewardedAd);
+  initializer.registerRpc("confirm_rewarded_ad", gatedConfirmRewardedAd);
+  initializer.registerRpc("admob_ssv_confirm", admobSsvConfirm);
+  initializer.registerRpc("google_play_rtdn_confirm", googlePlayRtdnConfirm);
+  createLeaderboards(nk, logger);
+  logger.info("Survival TD \u2014 Server modules initialized.");
+}

@@ -1,0 +1,6 @@
+{
+  "source_of_truth": "../data/skills.json",
+  "nakama_target": "game_skills",
+  "sync_command": "python nakama/seed_all.py",
+  "agent_note": "Any balance, VFX, frame, range, timing, or behavior update in data/skills.json must be seeded to Nakama game_skills before online verification."
+}

@@ -1,0 +1,2871 @@
+[
+  {
+    "id": "reset_talisman",
+    "display_name": "Bùa Tẩy Điểm",
+    "description": "Hoàn trả điểm nâng cấp để phân bổ lại.",
+    "category": "consumable",
+    "rarity": "rare",
+    "icon_id": "dismantle",
+    "stackable": true,
+    "max_stack": 999,
+    "order": 50,
+    "expires_after_hours": 0,
+    "tags": [
+      "reset",
+      "consumable"
+    ],
+    "attributes": {}
+  },
+  {
+    "id": "stone_earth_low",
+    "display_name": "Đá Thổ Thô",
+    "description": "Khối đá phù chú thô sơ chứa nguyên khí Thổ.",
+    "category": "material",
+    "rarity": "common",
+    "icon_id": "rune_earth_low",
+    "stackable": true,
+    "max_stack": 999,
+    "order": 110,
+    "expires_after_hours": 0,
+    "tags": [
+      "rune",
+      "earth",
+      "material"
+    ],
+    "attributes": {}
+  },
+  {
+    "id": "stone_fire_low",
+    "display_name": "Đá Hỏa Thô",
+    "description": "Khối đá phù chú thô sơ chứa nguyên khí Hỏa.",
+    "category": "material",
+    "rarity": "common",
+    "icon_id": "rune_fire_low",
+    "stackable": true,
+    "max_stack": 999,
+    "order": 120,
+    "expires_after_hours": 0,
+    "tags": [
+      "rune",
+      "fire",
+      "material"
+    ],
+    "attributes": {}
+  },
+  {
+    "id": "stone_metal_low",
+    "display_name": "Đá Kim Thô",
+    "description": "Khối đá phù chú thô sơ chứa nguyên khí Kim.",
+    "category": "material",
+    "rarity": "common",
+    "icon_id": "rune_metal_low",
+    "stackable": true,
+    "max_stack": 999,
+    "order": 130,
+    "expires_after_hours": 0,
+    "tags": [
+      "rune",
+      "metal",
+      "material"
+    ],
+    "attributes": {}
+  },
+  {
+    "id": "stone_water_low",
+    "display_name": "Đá Thủy Thô",
+    "description": "Khối đá phù chú thô sơ chứa nguyên khí Thủy.",
+    "category": "material",
+    "rarity": "common",
+    "icon_id": "rune_water_low",
+    "stackable": true,
+    "max_stack": 999,
+    "order": 140,
+    "expires_after_hours": 0,
+    "tags": [
+      "rune",
+      "water",
+      "material"
+    ],
+    "attributes": {}
+  },
+  {
+    "id": "stone_wood_low",
+    "display_name": "Đá Mộc Thô",
+    "description": "Khối đá phù chú thô sơ chứa nguyên khí Mộc.",
+    "category": "material",
+    "rarity": "common",
+    "icon_id": "rune_wood_low",
+    "stackable": true,
+    "max_stack": 999,
+    "order": 150,
+    "expires_after_hours": 0,
+    "tags": [
+      "rune",
+      "wood",
+      "material"
+    ],
+    "attributes": {}
+  },
+  {
+    "id": "stone_earth_medium",
+    "display_name": "Đá Thổ Tinh Luyện",
+    "description": "Đá phù chú tinh luyện tụ hội nguyên khí Thổ thuần khiết.",
+    "category": "material",
+    "rarity": "rare",
+    "icon_id": "rune_earth_medium",
+    "stackable": true,
+    "max_stack": 999,
+    "order": 210,
+    "expires_after_hours": 720,
+    "tags": [
+      "rune",
+      "earth",
+      "material"
+    ],
+    "attributes": {}
+  },
+  {
+    "id": "stone_fire_medium",
+    "display_name": "Đá Hỏa Tinh Luyện",
+    "description": "Đá phù chú tinh luyện tụ hội nguyên khí Hỏa thuần khiết.",
+    "category": "material",
+    "rarity": "rare",
+    "icon_id": "rune_fire_medium",
+    "stackable": true,
+    "max_stack": 999,
+    "order": 220,
+    "expires_after_hours": 720,
+    "tags": [
+      "rune",
+      "fire",
+      "material"
+    ],
+    "attributes": {}
+  },
+  {
+    "id": "stone_metal_medium",
+    "display_name": "Đá Kim Tinh Luyện",
+    "description": "Đá phù chú tinh luyện tụ hội nguyên khí Kim thuần khiết.",
+    "category": "material",
+    "rarity": "rare",
+    "icon_id": "rune_metal_medium",
+    "stackable": true,
+    "max_stack": 999,
+    "order": 230,
+    "expires_after_hours": 0,
+    "tags": [
+      "rune",
+      "metal",
+      "material"
+    ],
+    "attributes": {}
+  },
+  {
+    "id": "stone_water_medium",
+    "display_name": "Đá Thủy Tinh Luyện",
+    "description": "Đá phù chú tinh luyện tụ hội nguyên khí Thủy thuần khiết.",
+    "category": "material",
+    "rarity": "rare",
+    "icon_id": "rune_water_medium",
+    "stackable": true,
+    "max_stack": 999,
+    "order": 240,
+    "expires_after_hours": 0,
+    "tags": [
+      "rune",
+      "water",
+      "material"
+    ],
+    "attributes": {}
+  },
+  {
+    "id": "stone_wood_medium",
+    "display_name": "Đá Mộc Tinh Luyện",
+    "description": "Đá phù chú tinh luyện tụ hội nguyên khí Mộc thuần khiết.",
+    "category": "material",
+    "rarity": "rare",
+    "icon_id": "rune_wood_medium",
+    "stackable": true,
+    "max_stack": 999,
+    "order": 250,
+    "expires_after_hours": 0,
+    "tags": [
+      "rune",
+      "wood",
+      "material"
+    ],
+    "attributes": {}
+  },
+  {
+    "id": "rune_earth_high",
+    "display_name": "Phù Văn Thổ Linh",
+    "description": "Phù văn tuyệt tác chứa linh lực Thổ dồi dào, độc bản không thể cộng dồn.",
+    "category": "rune",
+    "rarity": "epic",
+    "icon_id": "rune_earth_high",
+    "stackable": false,
+    "max_stack": 1,
+    "order": 310,
+    "expires_after_hours": 0,
+    "tags": [
+      "rune",
+      "earth"
+    ],
+    "attributes": {
+      "def": 12
+    }
+  },
+  {
+    "id": "rune_fire_high",
+    "display_name": "Phù Văn Hỏa Linh",
+    "description": "Phù văn tuyệt tác chứa linh lực Hỏa dồi dào, độc bản không thể cộng dồn.",
+    "category": "rune",
+    "rarity": "epic",
+    "icon_id": "rune_fire_high",
+    "stackable": false,
+    "max_stack": 1,
+    "order": 320,
+    "expires_after_hours": 168,
+    "tags": [
+      "rune",
+      "fire"
+    ],
+    "attributes": {
+      "atk": 18
+    }
+  },
+  {
+    "id": "rune_metal_high",
+    "display_name": "Phù Văn Kim Linh",
+    "description": "Phù văn tuyệt tác chứa linh lực Kim dồi dào, độc bản không thể cộng dồn.",
+    "category": "rune",
+    "rarity": "epic",
+    "icon_id": "rune_metal_high",
+    "stackable": false,
+    "max_stack": 1,
+    "order": 330,
+    "expires_after_hours": 0,
+    "tags": [
+      "rune",
+      "metal"
+    ],
+    "attributes": {
+      "crit_rate": 0.05
+    }
+  },
+  {
+    "id": "rune_water_high",
+    "display_name": "Phù Văn Thủy Linh",
+    "description": "Phù văn tuyệt tác chứa linh lực Thủy dồi dào, độc bản không thể cộng dồn.",
+    "category": "rune",
+    "rarity": "epic",
+    "icon_id": "rune_water_high",
+    "stackable": false,
+    "max_stack": 1,
+    "order": 340,
+    "expires_after_hours": 0,
+    "tags": [
+      "rune",
+      "water"
+    ],
+    "attributes": {
+      "hp": 120
+    }
+  },
+  {
+    "id": "rune_wood_high",
+    "display_name": "Phù Văn Mộc Linh",
+    "description": "Phù văn tuyệt tác chứa linh lực Mộc dồi dào, độc bản không thể cộng dồn.",
+    "category": "rune",
+    "rarity": "epic",
+    "icon_id": "rune_wood_high",
+    "stackable": false,
+    "max_stack": 1,
+    "order": 350,
+    "expires_after_hours": 0,
+    "tags": [
+      "rune",
+      "wood"
+    ],
+    "attributes": {
+      "regen_percent_per_10s": 0.02
+    }
+  },
+  {
+    "id": "talisman_heavenly_crystal",
+    "display_name": "Thiên Tinh Hạ Phẩm",
+    "description": "Tinh thể thiên ngoại chuyên dùng để cường hóa và trùng tu Pháp Bảo.",
+    "rarity": "rare",
+    "icon_id": "talisman_material_heavenly_crystal",
+    "order": 61,
+    "category": "material",
+    "stackable": true,
+    "max_stack": 999999,
+    "expires_after_hours": 0,
+    "tags": [
+      "talisman",
+      "upgrade",
+      "heavenly_crystal"
+    ],
+    "attributes": {"quality": "low"}
+  },
+  {
+    "id": "talisman_heavenly_crystal_medium",
+    "display_name": "Thiên Tinh Trung Phẩm",
+    "description": "Nguyên liệu cường hóa Pháp Bảo đang ở cấp 11–20.",
+    "rarity": "epic",
+    "icon_id": "talisman_material_heavenly_crystal_medium",
+    "order": 64,
+    "category": "material",
+    "stackable": true,
+    "max_stack": 999999,
+    "tags": ["talisman", "upgrade", "heavenly_crystal"],
+    "attributes": {"quality": "mid"}
+  },
+  {
+    "id": "talisman_heavenly_crystal_high",
+    "display_name": "Thiên Tinh Thượng Phẩm",
+    "description": "Nguyên liệu cường hóa Pháp Bảo đang ở cấp 21–30.",
+    "rarity": "legendary",
+    "icon_id": "talisman_material_heavenly_crystal_high",
+    "order": 65,
+    "category": "material",
+    "stackable": true,
+    "max_stack": 999999,
+    "tags": ["talisman", "upgrade", "heavenly_crystal"],
+    "attributes": {"quality": "high"}
+  },
+  {
+    "id": "element_enlightenment_charm",
+    "display_name": "Ngộ Đạo Phù",
+    "description": "Tăng thêm 50% tỷ lệ thành công hiện có cho một lần nâng cấp Linh Căn.",
+    "rarity": "rare",
+    "icon_id": "extra:merge",
+    "order": 62,
+    "category": "consumable",
+    "stackable": true,
+    "max_stack": 9999,
+    "expires_after_hours": 0,
+    "tags": ["element", "upgrade", "success_charm"],
+    "attributes": {
+      "upgrade_context": "element",
+      "success_rate_multiplier": 1.5
+    }
+  },
+  {
+    "id": "talisman_enhance_charm",
+    "display_name": "Cường Hóa Phù",
+    "description": "Tăng thêm 50% tỷ lệ thành công hiện có cho một lần cường hóa Pháp Bảo.",
+    "rarity": "rare",
+    "icon_id": "extra:banish",
+    "order": 63,
+    "category": "consumable",
+    "stackable": true,
+    "max_stack": 9999,
+    "expires_after_hours": 0,
+    "tags": ["talisman", "upgrade", "success_charm"],
+    "attributes": {
+      "upgrade_context": "talisman",
+      "success_rate_multiplier": 1.5
+    }
+  },
+  {
+    "id": "talisman_1",
+    "display_name": "Thanh Phong Kiếm",
+    "description": "Thanh kiếm rèn từ thép gió thông thường, nhẹ bén và dễ ngự khí.",
+    "category": "talisman",
+    "rarity": "rare",
+    "icon_id": "talisman_item_1",
+    "stackable": false,
+    "max_stack": 1,
+    "order": 501,
+    "expires_after_hours": 0,
+    "tags": [
+      "talisman",
+      "attack",
+      "metal",
+      "ha_pham"
+    ],
+    "attributes": {
+      "numeric_id": 1,
+      "talisman_type": "attack",
+      "tier_name": "Hạ phẩm",
+      "server_max_copies": 1,
+      "is_repairable": true,
+      "max_battle_uses": 3,
+      "durability_cost_per_cast": 1,
+      "durability_cost_per_battle": 3,
+      "base_durability": 100,
+      "max_durability": 100,
+      "repair_cost_per_point": 50,
+      "severe_repair_item_id": "talisman_heavenly_crystal",
+      "severe_repair_item_quantity": 2,
+      "max_level": 30,
+      "skill_id": "skill_talisman_1",
+      "skill_name": "Phong Nhận",
+      "skill_description": "Phong Nhận: Triệu hồi Thanh Phong Kiếm, phóng ra kiếm khí cuồng phong truy sát mục tiêu gần nhất.",
+      "base_stats": {
+        "atk": 180,
+        "speed_pct": 8,
+        "spirit": 60,
+        "hp": 120,
+        "def": 20
+      },
+      "stat_growth": {
+        "atk": 22,
+        "speed_pct": 0.8,
+        "spirit": 8,
+        "hp": 20,
+        "def": 4,
+        "skill_range_bonus_pct": 0.5,
+        "cooldown_reduction_pct": 0.2
+      },
+      "upgrade_materials": [],
+      "element": "metal",
+      "price": 10000,
+      "sell_price": 2000,
+      "quality": "low"
+    }
+  },
+  {
+    "id": "talisman_2",
+    "display_name": "Xích Đồng Đao",
+    "description": "Đao rèn bằng đồng đỏ vùng núi lửa, thân đao luôn ấm nóng tích tụ hỏa kình.",
+    "category": "talisman",
+    "rarity": "rare",
+    "icon_id": "talisman_item_2",
+    "stackable": false,
+    "max_stack": 1,
+    "order": 502,
+    "expires_after_hours": 0,
+    "tags": [
+      "talisman",
+      "attack",
+      "fire",
+      "ha_pham"
+    ],
+    "attributes": {
+      "numeric_id": 2,
+      "talisman_type": "attack",
+      "tier_name": "Hạ phẩm",
+      "server_max_copies": 1,
+      "is_repairable": true,
+      "max_battle_uses": 3,
+      "durability_cost_per_cast": 1,
+      "durability_cost_per_battle": 3,
+      "base_durability": 100,
+      "max_durability": 100,
+      "repair_cost_per_point": 50,
+      "severe_repair_item_id": "talisman_heavenly_crystal",
+      "severe_repair_item_quantity": 2,
+      "max_level": 30,
+      "skill_id": "skill_talisman_2",
+      "skill_name": "Xích Viêm Trảm",
+      "skill_description": "Xích Viêm Trảm: Vung đao chém ra luồng sóng lửa xuyên thẳng qua bầy quái, để lại vệt lửa thiêu đốt 3s.",
+      "base_stats": {
+        "atk": 200,
+        "speed_pct": 3,
+        "spirit": 50,
+        "hp": 180,
+        "def": 25
+      },
+      "stat_growth": {
+        "atk": 25,
+        "speed_pct": 0.4,
+        "spirit": 6,
+        "hp": 30,
+        "def": 5,
+        "skill_range_bonus_pct": 0.4,
+        "cooldown_reduction_pct": 0.2
+      },
+      "upgrade_materials": [],
+      "element": "fire",
+      "price": 10000,
+      "sell_price": 2000,
+      "quality": "low"
+    }
+  },
+  {
+    "id": "talisman_3",
+    "display_name": "Bách Luyện Thương",
+    "description": "Thương thép luyện qua trăm trận chiến, mũi thương sắc bén phá giáp hộ thân.",
+    "category": "talisman",
+    "rarity": "rare",
+    "icon_id": "talisman_item_3",
+    "stackable": false,
+    "max_stack": 1,
+    "order": 503,
+    "expires_after_hours": 0,
+    "tags": [
+      "talisman",
+      "attack",
+      "metal",
+      "ha_pham"
+    ],
+    "attributes": {
+      "numeric_id": 3,
+      "talisman_type": "attack",
+      "tier_name": "Hạ phẩm",
+      "server_max_copies": 1,
+      "is_repairable": true,
+      "max_battle_uses": 3,
+      "durability_cost_per_cast": 1,
+      "durability_cost_per_battle": 3,
+      "base_durability": 100,
+      "max_durability": 100,
+      "repair_cost_per_point": 50,
+      "severe_repair_item_id": "talisman_heavenly_crystal",
+      "severe_repair_item_quantity": 2,
+      "max_level": 30,
+      "skill_id": "skill_talisman_3",
+      "skill_name": "Bách Luyện Phá Giáp",
+      "skill_description": "Bách Luyện Phá Giáp: Đâm thẳng phá vỡ 25% phòng thủ của mục tiêu trên đường bay trong 4s.",
+      "base_stats": {
+        "atk": 210,
+        "speed_pct": 4,
+        "spirit": 40,
+        "hp": 140,
+        "def": 25
+      },
+      "stat_growth": {
+        "atk": 24,
+        "speed_pct": 0.5,
+        "spirit": 5,
+        "hp": 25,
+        "def": 5,
+        "skill_range_bonus_pct": 0.5,
+        "cooldown_reduction_pct": 0.2
+      },
+      "upgrade_materials": [],
+      "element": "metal",
+      "price": 10000,
+      "sell_price": 2000,
+      "quality": "low"
+    }
+  },
+  {
+    "id": "talisman_4",
+    "display_name": "Ô Thiết Thuẫn",
+    "description": "Khiên rèn từ sắt đen nguyên khối ngàn năm, kiên cố bất khả xâm phạm.",
+    "category": "talisman",
+    "rarity": "rare",
+    "icon_id": "talisman_item_4",
+    "stackable": false,
+    "max_stack": 1,
+    "order": 504,
+    "expires_after_hours": 0,
+    "tags": [
+      "talisman",
+      "defense",
+      "metal",
+      "ha_pham"
+    ],
+    "attributes": {
+      "numeric_id": 4,
+      "talisman_type": "defense",
+      "tier_name": "Hạ phẩm",
+      "server_max_copies": 1,
+      "is_repairable": true,
+      "max_battle_uses": 3,
+      "durability_cost_per_cast": 1,
+      "durability_cost_per_battle": 3,
+      "base_durability": 100,
+      "max_durability": 100,
+      "repair_cost_per_point": 50,
+      "severe_repair_item_id": "talisman_heavenly_crystal",
+      "severe_repair_item_quantity": 2,
+      "max_level": 30,
+      "skill_id": "skill_talisman_4",
+      "skill_name": "Ô Thiết Hộ Bích",
+      "skill_description": "Ô Thiết Hộ Bích: Tạo lá chắn hấp thụ sát thương bằng 25% HP tối đa trong 5s.",
+      "base_stats": {
+        "atk": 60,
+        "speed_pct": 2,
+        "spirit": 50,
+        "hp": 850,
+        "def": 120
+      },
+      "stat_growth": {
+        "atk": 8,
+        "speed_pct": 0.2,
+        "spirit": 8,
+        "hp": 110,
+        "def": 16,
+        "skill_range_bonus_pct": 0.2,
+        "cooldown_reduction_pct": 0.2
+      },
+      "upgrade_materials": [],
+      "element": "metal",
+      "price": 10000,
+      "sell_price": 2000,
+      "quality": "low"
+    }
+  },
+  {
+    "id": "talisman_5",
+    "display_name": "Lưu Thủy Hoàn",
+    "description": "Vòng ngọc ngưng tụ chân thủy uốn lượn, xua tan uế khí và gột rửa thân thể.",
+    "category": "talisman",
+    "rarity": "rare",
+    "icon_id": "talisman_item_5",
+    "stackable": false,
+    "max_stack": 1,
+    "order": 505,
+    "expires_after_hours": 0,
+    "tags": [
+      "talisman",
+      "speed",
+      "water",
+      "ha_pham"
+    ],
+    "attributes": {
+      "numeric_id": 5,
+      "talisman_type": "speed",
+      "tier_name": "Hạ phẩm",
+      "server_max_copies": 1,
+      "is_repairable": true,
+      "max_battle_uses": 3,
+      "durability_cost_per_cast": 1,
+      "durability_cost_per_battle": 3,
+      "base_durability": 100,
+      "max_durability": 100,
+      "repair_cost_per_point": 50,
+      "severe_repair_item_id": "talisman_heavenly_crystal",
+      "severe_repair_item_quantity": 2,
+      "max_level": 30,
+      "skill_id": "skill_talisman_5",
+      "skill_name": "Thủy Ba Tẩy Lễ",
+      "skill_description": "Thủy Ba Tẩy Lễ: Xóa sạch toàn bộ hiệu ứng xấu và nhận màng nước giảm 25% sát thương trong 3s.",
+      "base_stats": {
+        "atk": 80,
+        "speed_pct": 12,
+        "spirit": 90,
+        "hp": 280,
+        "def": 35
+      },
+      "stat_growth": {
+        "atk": 10,
+        "speed_pct": 1.2,
+        "spirit": 12,
+        "hp": 35,
+        "def": 6,
+        "skill_range_bonus_pct": 0.6,
+        "cooldown_reduction_pct": 0.3
+      },
+      "upgrade_materials": [],
+      "element": "water",
+      "price": 10000,
+      "sell_price": 2000,
+      "quality": "low"
+    }
+  },
+  {
+    "id": "talisman_6",
+    "display_name": "Huyền Mộc Trượng",
+    "description": "Trượng khắc từ linh mộc nghìn năm hút sinh cơ đất trời, hồi sinh dưỡng mệnh.",
+    "category": "talisman",
+    "rarity": "rare",
+    "icon_id": "talisman_item_6",
+    "stackable": false,
+    "max_stack": 1,
+    "order": 506,
+    "expires_after_hours": 0,
+    "tags": [
+      "talisman",
+      "magic",
+      "wood",
+      "ha_pham"
+    ],
+    "attributes": {
+      "numeric_id": 6,
+      "talisman_type": "magic",
+      "tier_name": "Hạ phẩm",
+      "server_max_copies": 1,
+      "is_repairable": true,
+      "max_battle_uses": 3,
+      "durability_cost_per_cast": 1,
+      "durability_cost_per_battle": 3,
+      "base_durability": 100,
+      "max_durability": 100,
+      "repair_cost_per_point": 50,
+      "severe_repair_item_id": "talisman_heavenly_crystal",
+      "severe_repair_item_quantity": 2,
+      "max_level": 30,
+      "skill_id": "skill_talisman_6",
+      "skill_name": "Hồi Xuân Quyết",
+      "skill_description": "Hồi Xuân Quyết: Trị liệu khẩn cấp hồi phục tức thì 25% HP và hồi thêm 3% HP/giây trong 5s.",
+      "base_stats": {
+        "atk": 90,
+        "speed_pct": 3,
+        "spirit": 120,
+        "hp": 420,
+        "def": 30
+      },
+      "stat_growth": {
+        "atk": 12,
+        "speed_pct": 0.3,
+        "spirit": 15,
+        "hp": 60,
+        "def": 6,
+        "skill_range_bonus_pct": 0.4,
+        "cooldown_reduction_pct": 0.3
+      },
+      "upgrade_materials": [],
+      "element": "wood",
+      "price": 10000,
+      "sell_price": 2000,
+      "quality": "low"
+    }
+  },
+  {
+    "id": "talisman_7",
+    "display_name": "Phá Nham Chùy",
+    "description": "Chùy nặng nghìn cân phá đá khai sơn, nện đất chấn động uy lực kinh người.",
+    "category": "talisman",
+    "rarity": "rare",
+    "icon_id": "talisman_item_7",
+    "stackable": false,
+    "max_stack": 1,
+    "order": 507,
+    "expires_after_hours": 0,
+    "tags": [
+      "talisman",
+      "attack",
+      "earth",
+      "ha_pham"
+    ],
+    "attributes": {
+      "numeric_id": 7,
+      "talisman_type": "attack",
+      "tier_name": "Hạ phẩm",
+      "server_max_copies": 1,
+      "is_repairable": true,
+      "max_battle_uses": 3,
+      "durability_cost_per_cast": 1,
+      "durability_cost_per_battle": 3,
+      "base_durability": 100,
+      "max_durability": 100,
+      "repair_cost_per_point": 50,
+      "severe_repair_item_id": "talisman_heavenly_crystal",
+      "severe_repair_item_quantity": 2,
+      "max_level": 30,
+      "skill_id": "skill_talisman_7",
+      "skill_name": "Liệt Địa Trọng Kích",
+      "skill_description": "Liệt Địa Trọng Kích: Nện mạnh chùy xuống đất tạo địa chấn bán kính 260px, đẩy dạt quái áp sát (không choáng).",
+      "base_stats": {
+        "atk": 190,
+        "speed_pct": 2,
+        "spirit": 45,
+        "hp": 350,
+        "def": 40
+      },
+      "stat_growth": {
+        "atk": 23,
+        "speed_pct": 0.3,
+        "spirit": 6,
+        "hp": 45,
+        "def": 7,
+        "skill_range_bonus_pct": 0.4,
+        "cooldown_reduction_pct": 0.2
+      },
+      "upgrade_materials": [],
+      "element": "earth",
+      "price": 10000,
+      "sell_price": 2000,
+      "quality": "low"
+    }
+  },
+  {
+    "id": "talisman_8",
+    "display_name": "Băng Tinh Châm",
+    "description": "Chùm kim băng tinh xảo ngưng tụ từ sương giá cửu hàn, xuyên thấu cản bước tà ma.",
+    "category": "talisman",
+    "rarity": "rare",
+    "icon_id": "talisman_item_8",
+    "stackable": false,
+    "max_stack": 1,
+    "order": 508,
+    "expires_after_hours": 0,
+    "tags": [
+      "talisman",
+      "speed",
+      "water",
+      "ha_pham"
+    ],
+    "attributes": {
+      "numeric_id": 8,
+      "talisman_type": "speed",
+      "tier_name": "Hạ phẩm",
+      "server_max_copies": 1,
+      "is_repairable": true,
+      "max_battle_uses": 3,
+      "durability_cost_per_cast": 1,
+      "durability_cost_per_battle": 3,
+      "base_durability": 100,
+      "max_durability": 100,
+      "repair_cost_per_point": 50,
+      "severe_repair_item_id": "talisman_heavenly_crystal",
+      "severe_repair_item_quantity": 2,
+      "max_level": 30,
+      "skill_id": "skill_talisman_8",
+      "skill_name": "Hàn Băng Thần Châm",
+      "skill_description": "Hàn Băng Thần Châm: Bắn chùm 6 kim băng tầm xa xuyên thấu, làm chậm 20% tốc chạy quái 2s (không đóng băng).",
+      "base_stats": {
+        "atk": 130,
+        "speed_pct": 7,
+        "spirit": 70,
+        "hp": 160,
+        "def": 20
+      },
+      "stat_growth": {
+        "atk": 16,
+        "speed_pct": 0.8,
+        "spirit": 8,
+        "hp": 22,
+        "def": 4,
+        "skill_range_bonus_pct": 0.6,
+        "cooldown_reduction_pct": 0.3
+      },
+      "upgrade_materials": [],
+      "element": "water",
+      "price": 10000,
+      "sell_price": 2000,
+      "quality": "low"
+    }
+  },
+  {
+    "id": "talisman_9",
+    "display_name": "Hỏa Vân Phiến",
+    "description": "Quạt lông dệt bằng tơ mây hỏa diệm, phẩy nhẹ sinh bão lửa thiêu rụi bầy yêu.",
+    "category": "talisman",
+    "rarity": "rare",
+    "icon_id": "talisman_item_9",
+    "stackable": false,
+    "max_stack": 1,
+    "order": 509,
+    "expires_after_hours": 0,
+    "tags": [
+      "talisman",
+      "magic",
+      "fire",
+      "ha_pham"
+    ],
+    "attributes": {
+      "numeric_id": 9,
+      "talisman_type": "magic",
+      "tier_name": "Hạ phẩm",
+      "server_max_copies": 1,
+      "is_repairable": true,
+      "max_battle_uses": 3,
+      "durability_cost_per_cast": 1,
+      "durability_cost_per_battle": 3,
+      "base_durability": 100,
+      "max_durability": 100,
+      "repair_cost_per_point": 50,
+      "severe_repair_item_id": "talisman_heavenly_crystal",
+      "severe_repair_item_quantity": 2,
+      "max_level": 30,
+      "skill_id": "skill_talisman_9",
+      "skill_name": "Hỏa Diễm Tản",
+      "skill_description": "Hỏa Diễm Tản: Quạt ra bão lửa góc 60 độ càn quét bầy quái, gây sát thương diện rộng và thiêu đốt liên tục 3s.",
+      "base_stats": {
+        "atk": 185,
+        "speed_pct": 3,
+        "spirit": 110,
+        "hp": 200,
+        "def": 25
+      },
+      "stat_growth": {
+        "atk": 22,
+        "speed_pct": 0.4,
+        "spirit": 14,
+        "hp": 28,
+        "def": 5,
+        "skill_range_bonus_pct": 0.5,
+        "cooldown_reduction_pct": 0.2
+      },
+      "upgrade_materials": [],
+      "element": "fire",
+      "price": 10000,
+      "sell_price": 2000,
+      "quality": "low"
+    }
+  },
+  {
+    "id": "talisman_10",
+    "display_name": "Tỏa Hồn Linh",
+    "description": "Chuông đồng trầm tích từ địa mạch hoàng tuyền, tiếng chuông tịnh hóa tâm thần trừ tà niệm.",
+    "category": "talisman",
+    "rarity": "rare",
+    "icon_id": "talisman_item_10",
+    "stackable": false,
+    "max_stack": 1,
+    "order": 510,
+    "expires_after_hours": 0,
+    "tags": [
+      "talisman",
+      "spirit",
+      "earth",
+      "ha_pham"
+    ],
+    "attributes": {
+      "numeric_id": 10,
+      "talisman_type": "spirit",
+      "tier_name": "Hạ phẩm",
+      "server_max_copies": 1,
+      "is_repairable": true,
+      "max_battle_uses": 3,
+      "durability_cost_per_cast": 1,
+      "durability_cost_per_battle": 3,
+      "base_durability": 100,
+      "max_durability": 100,
+      "repair_cost_per_point": 50,
+      "severe_repair_item_id": "talisman_heavenly_crystal",
+      "severe_repair_item_quantity": 2,
+      "max_level": 30,
+      "skill_id": "skill_talisman_10",
+      "skill_name": "Kim Cang Định Tâm",
+      "skill_description": "Kim Cang Định Tâm: Chuông vang tịnh hóa tâm thần, miễn nhiễm 100% mọi hiệu ứng khống chế trong 4s và tăng 35% DEF.",
+      "base_stats": {
+        "atk": 70,
+        "speed_pct": 3,
+        "spirit": 130,
+        "hp": 320,
+        "def": 50
+      },
+      "stat_growth": {
+        "atk": 10,
+        "speed_pct": 0.4,
+        "spirit": 16,
+        "hp": 45,
+        "def": 9,
+        "skill_range_bonus_pct": 0.4,
+        "cooldown_reduction_pct": 0.3
+      },
+      "upgrade_materials": [],
+      "element": "earth",
+      "price": 10000,
+      "sell_price": 2000,
+      "quality": "low"
+    }
+  },
+  {
+    "id": "talisman_11",
+    "display_name": "Tật Phong Tiễn",
+    "description": "Ống tên gió thần tốc, xuất tiễn tựa sao băng xé toạc tầng không săn đuổi đầu lĩnh quái.",
+    "category": "talisman",
+    "rarity": "rare",
+    "icon_id": "talisman_item_11",
+    "stackable": false,
+    "max_stack": 1,
+    "order": 511,
+    "expires_after_hours": 0,
+    "tags": [
+      "talisman",
+      "speed",
+      "wood",
+      "ha_pham"
+    ],
+    "attributes": {
+      "numeric_id": 11,
+      "talisman_type": "speed",
+      "tier_name": "Hạ phẩm",
+      "server_max_copies": 1,
+      "is_repairable": true,
+      "max_battle_uses": 3,
+      "durability_cost_per_cast": 1,
+      "durability_cost_per_battle": 3,
+      "base_durability": 100,
+      "max_durability": 100,
+      "repair_cost_per_point": 50,
+      "severe_repair_item_id": "talisman_heavenly_crystal",
+      "severe_repair_item_quantity": 2,
+      "max_level": 30,
+      "skill_id": "skill_talisman_11",
+      "skill_name": "Tật Phong Liên Hoàn Tiễn",
+      "skill_description": "Tật Phong Liên Hoàn Tiễn: Bắn liên thanh 5 mũi tên gió tự truy lùng kẻ địch có HP cao nhất để dồn sát thương.",
+      "base_stats": {
+        "atk": 140,
+        "speed_pct": 10,
+        "spirit": 60,
+        "hp": 220,
+        "def": 25
+      },
+      "stat_growth": {
+        "atk": 18,
+        "speed_pct": 1,
+        "spirit": 8,
+        "hp": 25,
+        "def": 5,
+        "skill_range_bonus_pct": 0.5,
+        "cooldown_reduction_pct": 0.3
+      },
+      "upgrade_materials": [],
+      "element": "wood",
+      "price": 10000,
+      "sell_price": 2000,
+      "quality": "low"
+    }
+  },
+  {
+    "id": "talisman_12",
+    "display_name": "Hoàng Thổ Ấn",
+    "description": "Ấn triện khắc từ đất hoàng thổ nguyên chất, nặng như thái sơn che chở chân thân.",
+    "category": "talisman",
+    "rarity": "rare",
+    "icon_id": "talisman_item_12",
+    "stackable": false,
+    "max_stack": 1,
+    "order": 512,
+    "expires_after_hours": 0,
+    "tags": [
+      "talisman",
+      "defense",
+      "earth",
+      "ha_pham"
+    ],
+    "attributes": {
+      "numeric_id": 12,
+      "talisman_type": "defense",
+      "tier_name": "Hạ phẩm",
+      "server_max_copies": 1,
+      "is_repairable": true,
+      "max_battle_uses": 3,
+      "durability_cost_per_cast": 1,
+      "durability_cost_per_battle": 3,
+      "base_durability": 100,
+      "max_durability": 100,
+      "repair_cost_per_point": 50,
+      "severe_repair_item_id": "talisman_heavenly_crystal",
+      "severe_repair_item_quantity": 2,
+      "max_level": 30,
+      "skill_id": "skill_talisman_12",
+      "skill_name": "Thái Sơn Hộ Thể",
+      "skill_description": "Thái Sơn Hộ Thể: Đại ấn bay quanh hộ thể, giảm 40% sát thương nhận vào trong 5s và phản lại 20% sát thương.",
+      "base_stats": {
+        "atk": 65,
+        "speed_pct": 2,
+        "spirit": 60,
+        "hp": 650,
+        "def": 90
+      },
+      "stat_growth": {
+        "atk": 9,
+        "speed_pct": 0.2,
+        "spirit": 9,
+        "hp": 85,
+        "def": 13,
+        "skill_range_bonus_pct": 0.3,
+        "cooldown_reduction_pct": 0.2
+      },
+      "upgrade_materials": [],
+      "element": "earth",
+      "price": 10000,
+      "sell_price": 2000,
+      "quality": "low"
+    }
+  },
+  {
+    "id": "talisman_13",
+    "display_name": "Lôi Lôi Châm",
+    "description": "Lôi châm dẫn lôi hỏa cửu thiên, kích phát điện quang bộc liệt truyền sát bầy yêu.",
+    "category": "talisman",
+    "rarity": "rare",
+    "icon_id": "talisman_item_13",
+    "stackable": false,
+    "max_stack": 1,
+    "order": 513,
+    "expires_after_hours": 0,
+    "tags": [
+      "talisman",
+      "magic",
+      "fire",
+      "ha_pham"
+    ],
+    "attributes": {
+      "numeric_id": 13,
+      "talisman_type": "magic",
+      "tier_name": "Hạ phẩm",
+      "server_max_copies": 1,
+      "is_repairable": true,
+      "max_battle_uses": 3,
+      "durability_cost_per_cast": 1,
+      "durability_cost_per_battle": 3,
+      "base_durability": 100,
+      "max_durability": 100,
+      "repair_cost_per_point": 50,
+      "severe_repair_item_id": "talisman_heavenly_crystal",
+      "severe_repair_item_quantity": 2,
+      "max_level": 30,
+      "skill_id": "skill_talisman_13",
+      "skill_name": "Cửu Thiên Lôi Giật",
+      "skill_description": "Cửu Thiên Lôi Giật: Phóng tia sét đánh trúng mục tiêu và nảy xích qua 5 kẻ địch xung quanh (thuần công, không gây tê liệt).",
+      "base_stats": {
+        "atk": 195,
+        "speed_pct": 4,
+        "spirit": 100,
+        "hp": 210,
+        "def": 28
+      },
+      "stat_growth": {
+        "atk": 23,
+        "speed_pct": 0.5,
+        "spirit": 12,
+        "hp": 26,
+        "def": 5,
+        "skill_range_bonus_pct": 0.5,
+        "cooldown_reduction_pct": 0.25
+      },
+      "upgrade_materials": [],
+      "element": "fire",
+      "price": 10000,
+      "sell_price": 2000,
+      "quality": "low"
+    }
+  },
+  {
+    "id": "talisman_14",
+    "display_name": "Hấp Huyết Thứ",
+    "description": "Cành gai đằng mộc quỷ dị hút máu sinh linh bồi dưỡng chủ nhân khi gặp hiểm cảnh.",
+    "category": "talisman",
+    "rarity": "rare",
+    "icon_id": "talisman_item_14",
+    "stackable": false,
+    "max_stack": 1,
+    "order": 514,
+    "expires_after_hours": 0,
+    "tags": [
+      "talisman",
+      "spirit",
+      "wood",
+      "ha_pham"
+    ],
+    "attributes": {
+      "numeric_id": 14,
+      "talisman_type": "spirit",
+      "tier_name": "Hạ phẩm",
+      "server_max_copies": 1,
+      "is_repairable": true,
+      "max_battle_uses": 3,
+      "durability_cost_per_cast": 1,
+      "durability_cost_per_battle": 3,
+      "base_durability": 100,
+      "max_durability": 100,
+      "repair_cost_per_point": 50,
+      "severe_repair_item_id": "talisman_heavenly_crystal",
+      "severe_repair_item_quantity": 2,
+      "max_level": 30,
+      "skill_id": "skill_talisman_14",
+      "skill_name": "Huyết Đằng Hộ Mệnh",
+      "skill_description": "Huyết Đằng Hộ Mệnh: Phóng gai mộc quấn lấy 3 quái áp sát, rút máu chuyển 50% sát thương thành sinh lực hồi phục.",
+      "base_stats": {
+        "atk": 120,
+        "speed_pct": 3,
+        "spirit": 90,
+        "hp": 300,
+        "def": 32
+      },
+      "stat_growth": {
+        "atk": 15,
+        "speed_pct": 0.4,
+        "spirit": 11,
+        "hp": 40,
+        "def": 6,
+        "skill_range_bonus_pct": 0.4,
+        "cooldown_reduction_pct": 0.25
+      },
+      "upgrade_materials": [],
+      "element": "wood",
+      "price": 10000,
+      "sell_price": 2000,
+      "quality": "low"
+    }
+  },
+  {
+    "id": "talisman_15",
+    "display_name": "Dạ Quang Châu",
+    "description": "Viên ngọc trai biển sâu ngưng tụ tinh hoa thủy linh phát ánh sáng huyền ảo lung linh.",
+    "category": "talisman",
+    "rarity": "rare",
+    "icon_id": "talisman_item_15",
+    "stackable": false,
+    "max_stack": 1,
+    "order": 515,
+    "expires_after_hours": 0,
+    "tags": [
+      "talisman",
+      "spirit",
+      "water",
+      "ha_pham"
+    ],
+    "attributes": {
+      "numeric_id": 15,
+      "talisman_type": "spirit",
+      "tier_name": "Hạ phẩm",
+      "server_max_copies": 1,
+      "is_repairable": true,
+      "max_battle_uses": 3,
+      "durability_cost_per_cast": 1,
+      "durability_cost_per_battle": 3,
+      "base_durability": 100,
+      "max_durability": 100,
+      "repair_cost_per_point": 50,
+      "severe_repair_item_id": "talisman_heavenly_crystal",
+      "severe_repair_item_quantity": 2,
+      "max_level": 30,
+      "skill_id": "skill_talisman_15",
+      "skill_name": "Mãng Quang Hộ Linh",
+      "skill_description": "Mãng Quang Hộ Linh: Ánh sáng huyền ảo bao bọc thân thể, tăng 60% tỉ lệ né tránh đòn đánh trong 4s giúp thoát khỏi vòng vây.",
+      "base_stats": {
+        "atk": 70,
+        "speed_pct": 6,
+        "spirit": 120,
+        "hp": 240,
+        "def": 35
+      },
+      "stat_growth": {
+        "atk": 9,
+        "speed_pct": 0.7,
+        "spirit": 15,
+        "hp": 35,
+        "def": 6,
+        "skill_range_bonus_pct": 0.4,
+        "cooldown_reduction_pct": 0.3
+      },
+      "upgrade_materials": [],
+      "element": "water",
+      "price": 10000,
+      "sell_price": 2000,
+      "quality": "low"
+    }
+  },
+  {
+    "id": "talisman_16",
+    "display_name": "Hàn Băng Phách Kiếm",
+    "description": "Thần kiếm đúc từ hàn ngọc ngàn năm nơi vực sâu Bắc Cực cực kỳ buốt giá.",
+    "category": "talisman",
+    "rarity": "epic",
+    "icon_id": "talisman_item_16",
+    "stackable": false,
+    "max_stack": 1,
+    "order": 516,
+    "expires_after_hours": 0,
+    "tags": [
+      "talisman",
+      "attack",
+      "uncommon"
+    ],
+    "attributes": {
+      "numeric_id": 16,
+      "talisman_type": "attack",
+      "tier_name": "Trung phẩm",
+      "server_max_copies": 1,
+      "is_repairable": true,
+      "max_battle_uses": 3,
+      "durability_cost_per_cast": 1,
+      "durability_cost_per_battle": 3,
+      "base_durability": 100,
+      "max_durability": 100,
+      "repair_cost_per_point": 50,
+      "severe_repair_item_id": "talisman_heavenly_crystal",
+      "severe_repair_item_quantity": 2,
+      "max_level": 30,
+      "skill_id": "skill_talisman_16",
+      "skill_name": "Tuyết Lạc Băng Phong",
+      "skill_description": "Tuyết Lạc Băng Phong: Ngưng tụ kiếm trận băng giá, đóng băng kẻ địch diện rộng trong 3 giây.",
+      "base_stats": {
+        "atk": 332,
+        "speed_pct": 3,
+        "spirit": 75,
+        "hp": 376,
+        "def": 52,
+        "skill_range_bonus_pct": 5,
+        "cooldown_reduction_pct": 4,
+        "dodge_rate": 0.02,
+        "element_resist_pct": 0
+      },
+      "stat_growth": {
+        "atk": 20,
+        "speed_pct": 1,
+        "spirit": 10,
+        "hp": 50,
+        "def": 8,
+        "skill_range_bonus_pct": 0.5,
+        "cooldown_reduction_pct": 0.2
+      },
+      "upgrade_materials": [],
+      "quality": "mid",
+      "element": "metal"
+    }
+  },
+  {
+    "id": "talisman_17",
+    "display_name": "Cửu U Ma Đao",
+    "description": "Đao chứa oán niệm và ma khí u ám thu thập từ chiến trường cổ xưa.",
+    "category": "talisman",
+    "rarity": "epic",
+    "icon_id": "talisman_item_17",
+    "stackable": false,
+    "max_stack": 1,
+    "order": 517,
+    "expires_after_hours": 0,
+    "tags": [
+      "talisman",
+      "attack",
+      "uncommon"
+    ],
+    "attributes": {
+      "numeric_id": 17,
+      "talisman_type": "attack",
+      "tier_name": "Trung phẩm",
+      "server_max_copies": 1,
+      "is_repairable": true,
+      "max_battle_uses": 3,
+      "durability_cost_per_cast": 1,
+      "durability_cost_per_battle": 3,
+      "base_durability": 100,
+      "max_durability": 100,
+      "repair_cost_per_point": 50,
+      "severe_repair_item_id": "talisman_heavenly_crystal",
+      "severe_repair_item_quantity": 2,
+      "max_level": 30,
+      "skill_id": "skill_talisman_17",
+      "skill_name": "Phệ Hồn Trảm",
+      "skill_description": "Phệ Hồn Trảm: Nhát chém gây vết thương sâu xé rách linh hồn, cấm hồi máu trong 6 giây.",
+      "base_stats": {
+        "atk": 256,
+        "speed_pct": 3,
+        "spirit": 56,
+        "hp": 280,
+        "def": 40,
+        "skill_range_bonus_pct": 5,
+        "cooldown_reduction_pct": 4,
+        "dodge_rate": 0.02,
+        "element_resist_pct": 0
+      },
+      "stat_growth": {
+        "atk": 20,
+        "speed_pct": 1,
+        "spirit": 10,
+        "hp": 50,
+        "def": 8,
+        "skill_range_bonus_pct": 0.5,
+        "cooldown_reduction_pct": 0.2
+      },
+      "upgrade_materials": [],
+      "quality": "mid",
+      "element": "wood"
+    }
+  },
+  {
+    "id": "talisman_18",
+    "display_name": "Tử Tiêu Lôi Kính",
+    "description": "Gương bát quái bằng đồng tím hấp thụ linh lôi tầng trời thứ chín.",
+    "category": "talisman",
+    "rarity": "epic",
+    "icon_id": "talisman_item_18",
+    "stackable": false,
+    "max_stack": 1,
+    "order": 518,
+    "expires_after_hours": 0,
+    "tags": [
+      "talisman",
+      "magic",
+      "uncommon"
+    ],
+    "attributes": {
+      "numeric_id": 18,
+      "talisman_type": "magic",
+      "tier_name": "Trung phẩm",
+      "server_max_copies": 1,
+      "is_repairable": true,
+      "max_battle_uses": 3,
+      "durability_cost_per_cast": 1,
+      "durability_cost_per_battle": 3,
+      "base_durability": 100,
+      "max_durability": 100,
+      "repair_cost_per_point": 50,
+      "severe_repair_item_id": "talisman_heavenly_crystal",
+      "severe_repair_item_quantity": 2,
+      "max_level": 30,
+      "skill_id": "skill_talisman_18",
+      "skill_name": "Tử Lôi Phá Diệt",
+      "skill_description": "Tử Lôi Phá Diệt: Phóng ra cột sét tím hủy diệt từ trên cao đánh thẳng vào mục tiêu chỉ định.",
+      "base_stats": {
+        "atk": 236,
+        "speed_pct": 2,
+        "spirit": 118,
+        "hp": 256,
+        "def": 36,
+        "skill_range_bonus_pct": 10,
+        "cooldown_reduction_pct": 4,
+        "dodge_rate": 0.02,
+        "element_resist_pct": 0
+      },
+      "stat_growth": {
+        "atk": 20,
+        "speed_pct": 1,
+        "spirit": 10,
+        "hp": 50,
+        "def": 8,
+        "skill_range_bonus_pct": 0.5,
+        "cooldown_reduction_pct": 0.2
+      },
+      "upgrade_materials": [],
+      "quality": "mid",
+      "element": "water"
+    }
+  },
+  {
+    "id": "talisman_19",
+    "display_name": "Liệt Hỏa Phần Thiên Lô",
+    "description": "Lò luyện thu nhỏ chứa địa hỏa hung hãn thiêu đốt vạn vật.",
+    "category": "talisman",
+    "rarity": "epic",
+    "icon_id": "talisman_item_19",
+    "stackable": false,
+    "max_stack": 1,
+    "order": 519,
+    "expires_after_hours": 0,
+    "tags": [
+      "talisman",
+      "magic",
+      "uncommon"
+    ],
+    "attributes": {
+      "numeric_id": 19,
+      "talisman_type": "magic",
+      "tier_name": "Trung phẩm",
+      "server_max_copies": 1,
+      "is_repairable": true,
+      "max_battle_uses": 3,
+      "durability_cost_per_cast": 1,
+      "durability_cost_per_battle": 3,
+      "base_durability": 100,
+      "max_durability": 100,
+      "repair_cost_per_point": 50,
+      "severe_repair_item_id": "talisman_heavenly_crystal",
+      "severe_repair_item_quantity": 2,
+      "max_level": 30,
+      "skill_id": "skill_talisman_19",
+      "skill_name": "Phần Thiên Chướng",
+      "skill_description": "Phần Thiên Chướng: Thổi ra biển lửa thiêu đốt toàn bộ kẻ địch xung quanh liên tục.",
+      "base_stats": {
+        "atk": 294,
+        "speed_pct": 3,
+        "spirit": 147,
+        "hp": 328,
+        "def": 46,
+        "skill_range_bonus_pct": 10,
+        "cooldown_reduction_pct": 4,
+        "dodge_rate": 0.02,
+        "element_resist_pct": 0
+      },
+      "stat_growth": {
+        "atk": 20,
+        "speed_pct": 1,
+        "spirit": 10,
+        "hp": 50,
+        "def": 8,
+        "skill_range_bonus_pct": 0.5,
+        "cooldown_reduction_pct": 0.2
+      },
+      "upgrade_materials": [],
+      "quality": "mid",
+      "element": "fire"
+    }
+  },
+  {
+    "id": "talisman_20",
+    "display_name": "Kim Cương Hộ Tâm Kính",
+    "description": "Kính hộ tâm đúc từ hợp kim bất hoại dát vàng ròng phù chú.",
+    "category": "talisman",
+    "rarity": "epic",
+    "icon_id": "talisman_item_20",
+    "stackable": false,
+    "max_stack": 1,
+    "order": 520,
+    "expires_after_hours": 0,
+    "tags": [
+      "talisman",
+      "defense",
+      "uncommon"
+    ],
+    "attributes": {
+      "numeric_id": 20,
+      "talisman_type": "defense",
+      "tier_name": "Trung phẩm",
+      "server_max_copies": 1,
+      "is_repairable": true,
+      "max_battle_uses": 3,
+      "durability_cost_per_cast": 1,
+      "durability_cost_per_battle": 3,
+      "base_durability": 100,
+      "max_durability": 100,
+      "repair_cost_per_point": 50,
+      "severe_repair_item_id": "talisman_heavenly_crystal",
+      "severe_repair_item_quantity": 2,
+      "max_level": 30,
+      "skill_id": "skill_talisman_20",
+      "skill_name": "Kim Thân Bất Diệt",
+      "skill_description": "Kim Thân Bất Diệt: Kháng toàn bộ sát thương khống chế và giảm 50% sát thương nhận vào trong 4 giây.",
+      "base_stats": {
+        "atk": 80,
+        "speed_pct": 2,
+        "spirit": 41,
+        "hp": 592,
+        "def": 99,
+        "skill_range_bonus_pct": 5,
+        "cooldown_reduction_pct": 4,
+        "dodge_rate": 0.02,
+        "element_resist_pct": 5
+      },
+      "stat_growth": {
+        "atk": 20,
+        "speed_pct": 1,
+        "spirit": 10,
+        "hp": 50,
+        "def": 8,
+        "skill_range_bonus_pct": 0.5,
+        "cooldown_reduction_pct": 0.2
+      },
+      "upgrade_materials": [],
+      "quality": "mid",
+      "element": "earth"
+    }
+  },
+  {
+    "id": "talisman_21",
+    "display_name": "Thực Cốt Phệ Hồn Phiên",
+    "description": "Cờ hiệu quấn vải liệm tà phái vương vấn nghìn vạn oan hồn gào thét.",
+    "category": "talisman",
+    "rarity": "epic",
+    "icon_id": "talisman_item_21",
+    "stackable": false,
+    "max_stack": 1,
+    "order": 521,
+    "expires_after_hours": 0,
+    "tags": [
+      "talisman",
+      "spirit",
+      "uncommon"
+    ],
+    "attributes": {
+      "numeric_id": 21,
+      "talisman_type": "spirit",
+      "tier_name": "Trung phẩm",
+      "server_max_copies": 1,
+      "is_repairable": true,
+      "max_battle_uses": 3,
+      "durability_cost_per_cast": 1,
+      "durability_cost_per_battle": 3,
+      "base_durability": 100,
+      "max_durability": 100,
+      "repair_cost_per_point": 50,
+      "severe_repair_item_id": "talisman_heavenly_crystal",
+      "severe_repair_item_quantity": 2,
+      "max_level": 30,
+      "skill_id": "skill_talisman_21",
+      "skill_name": "Bách Quỷ Dạ Hành",
+      "skill_description": "Bách Quỷ Dạ Hành: Triệu hồi đàn quỷ ám tấn công và trừ độc liên tục lên các kẻ địch.",
+      "base_stats": {
+        "atk": 128,
+        "speed_pct": 3,
+        "spirit": 156,
+        "hp": 352,
+        "def": 49,
+        "skill_range_bonus_pct": 5,
+        "cooldown_reduction_pct": 4,
+        "dodge_rate": 0.02,
+        "element_resist_pct": 0
+      },
+      "stat_growth": {
+        "atk": 20,
+        "speed_pct": 1,
+        "spirit": 10,
+        "hp": 50,
+        "def": 8,
+        "skill_range_bonus_pct": 0.5,
+        "cooldown_reduction_pct": 0.2
+      },
+      "upgrade_materials": [],
+      "quality": "mid",
+      "element": "metal"
+    }
+  },
+  {
+    "id": "talisman_22",
+    "display_name": "Thanh Mộc Thần Long Trượng",
+    "description": "Gậy pháp làm từ rễ thần mộc thụ long khí biến dị ngàn năm.",
+    "category": "talisman",
+    "rarity": "epic",
+    "icon_id": "talisman_item_22",
+    "stackable": false,
+    "max_stack": 1,
+    "order": 522,
+    "expires_after_hours": 0,
+    "tags": [
+      "talisman",
+      "magic",
+      "uncommon"
+    ],
+    "attributes": {
+      "numeric_id": 22,
+      "talisman_type": "magic",
+      "tier_name": "Trung phẩm",
+      "server_max_copies": 1,
+      "is_repairable": true,
+      "max_battle_uses": 3,
+      "durability_cost_per_cast": 1,
+      "durability_cost_per_battle": 3,
+      "base_durability": 100,
+      "max_durability": 100,
+      "repair_cost_per_point": 50,
+      "severe_repair_item_id": "talisman_heavenly_crystal",
+      "severe_repair_item_quantity": 2,
+      "max_level": 30,
+      "skill_id": "skill_talisman_22",
+      "skill_name": "Thần Mộc Trói Buộc",
+      "skill_description": "Thần Mộc Trói Buộc: Rễ cây trồi lên từ lòng đất trói chặt kẻ địch và liên tục hút chân khí.",
+      "base_stats": {
+        "atk": 275,
+        "speed_pct": 3,
+        "spirit": 137,
+        "hp": 304,
+        "def": 43,
+        "skill_range_bonus_pct": 10,
+        "cooldown_reduction_pct": 4,
+        "dodge_rate": 0.02,
+        "element_resist_pct": 0
+      },
+      "stat_growth": {
+        "atk": 20,
+        "speed_pct": 1,
+        "spirit": 10,
+        "hp": 50,
+        "def": 8,
+        "skill_range_bonus_pct": 0.5,
+        "cooldown_reduction_pct": 0.2
+      },
+      "upgrade_materials": [],
+      "quality": "mid",
+      "element": "wood"
+    }
+  },
+  {
+    "id": "talisman_23",
+    "display_name": "Thất Tinh Đoạt Mệnh Kiếm",
+    "description": "Thanh kiếm mang hình tượng chòm sao Bắc Đẩu định đoạt sinh tử kiếp số.",
+    "category": "talisman",
+    "rarity": "epic",
+    "icon_id": "talisman_item_23",
+    "stackable": false,
+    "max_stack": 1,
+    "order": 523,
+    "expires_after_hours": 0,
+    "tags": [
+      "talisman",
+      "attack",
+      "uncommon"
+    ],
+    "attributes": {
+      "numeric_id": 23,
+      "talisman_type": "attack",
+      "tier_name": "Trung phẩm",
+      "server_max_copies": 1,
+      "is_repairable": true,
+      "max_battle_uses": 3,
+      "durability_cost_per_cast": 1,
+      "durability_cost_per_battle": 3,
+      "base_durability": 100,
+      "max_durability": 100,
+      "repair_cost_per_point": 50,
+      "severe_repair_item_id": "talisman_heavenly_crystal",
+      "severe_repair_item_quantity": 2,
+      "max_level": 30,
+      "skill_id": "skill_talisman_23",
+      "skill_name": "Thất Tinh Liên Châu",
+      "skill_description": "Thất Tinh Liên Châu: Bắn liên tiếp 7 đợt tinh quang kiếm khí với sát thương tăng dần.",
+      "base_stats": {
+        "atk": 352,
+        "speed_pct": 4,
+        "spirit": 80,
+        "hp": 400,
+        "def": 56,
+        "skill_range_bonus_pct": 5,
+        "cooldown_reduction_pct": 4,
+        "dodge_rate": 0.02,
+        "element_resist_pct": 0
+      },
+      "stat_growth": {
+        "atk": 20,
+        "speed_pct": 1,
+        "spirit": 10,
+        "hp": 50,
+        "def": 8,
+        "skill_range_bonus_pct": 0.5,
+        "cooldown_reduction_pct": 0.2
+      },
+      "upgrade_materials": [],
+      "quality": "mid",
+      "element": "water"
+    }
+  },
+  {
+    "id": "talisman_24",
+    "display_name": "Càn Khôn Khốn Yêu Thừng",
+    "description": "Sợi dây thừng dệt bằng gân yêu vương và tơ thiên tằm chắc chắn.",
+    "category": "talisman",
+    "rarity": "epic",
+    "icon_id": "talisman_item_24",
+    "stackable": false,
+    "max_stack": 1,
+    "order": 524,
+    "expires_after_hours": 0,
+    "tags": [
+      "talisman",
+      "spirit",
+      "uncommon"
+    ],
+    "attributes": {
+      "numeric_id": 24,
+      "talisman_type": "spirit",
+      "tier_name": "Trung phẩm",
+      "server_max_copies": 1,
+      "is_repairable": true,
+      "max_battle_uses": 3,
+      "durability_cost_per_cast": 1,
+      "durability_cost_per_battle": 3,
+      "base_durability": 100,
+      "max_durability": 100,
+      "repair_cost_per_point": 50,
+      "severe_repair_item_id": "talisman_heavenly_crystal",
+      "severe_repair_item_quantity": 2,
+      "max_level": 30,
+      "skill_id": "skill_talisman_24",
+      "skill_name": "Thiên La Địa Võng",
+      "skill_description": "Thiên La Địa Võng: Vung dây trói định thân kẻ địch, phong ấn toàn bộ kỹ năng kích hoạt trong 3 giây.",
+      "base_stats": {
+        "atk": 88,
+        "speed_pct": 2,
+        "spirit": 108,
+        "hp": 232,
+        "def": 33,
+        "skill_range_bonus_pct": 5,
+        "cooldown_reduction_pct": 4,
+        "dodge_rate": 0.02,
+        "element_resist_pct": 0
+      },
+      "stat_growth": {
+        "atk": 20,
+        "speed_pct": 1,
+        "spirit": 10,
+        "hp": 50,
+        "def": 8,
+        "skill_range_bonus_pct": 0.5,
+        "cooldown_reduction_pct": 0.2
+      },
+      "upgrade_materials": [],
+      "quality": "mid",
+      "element": "fire"
+    }
+  },
+  {
+    "id": "talisman_25",
+    "display_name": "Trấn Nhạc Phiên Thiên Ấn",
+    "description": "Đại ấn ngưng tụ trọng lượng của cả một ngọn núi linh thiêng hùng vĩ.",
+    "category": "talisman",
+    "rarity": "epic",
+    "icon_id": "talisman_item_25",
+    "stackable": false,
+    "max_stack": 1,
+    "order": 525,
+    "expires_after_hours": 0,
+    "tags": [
+      "talisman",
+      "defense",
+      "uncommon"
+    ],
+    "attributes": {
+      "numeric_id": 25,
+      "talisman_type": "defense",
+      "tier_name": "Trung phẩm",
+      "server_max_copies": 1,
+      "is_repairable": true,
+      "max_battle_uses": 3,
+      "durability_cost_per_cast": 1,
+      "durability_cost_per_battle": 3,
+      "base_durability": 100,
+      "max_durability": 100,
+      "repair_cost_per_point": 50,
+      "severe_repair_item_id": "talisman_heavenly_crystal",
+      "severe_repair_item_quantity": 2,
+      "max_level": 30,
+      "skill_id": "skill_talisman_25",
+      "skill_name": "Thái Sơn Áp Đỉnh",
+      "skill_description": "Thái Sơn Áp Đỉnh: Ấn biến to che trời đập xuống, gây sát thương chấn động và đánh ngã toàn bộ mục tiêu.",
+      "base_stats": {
+        "atk": 104,
+        "speed_pct": 3,
+        "spirit": 56,
+        "hp": 760,
+        "def": 128,
+        "skill_range_bonus_pct": 5,
+        "cooldown_reduction_pct": 4,
+        "dodge_rate": 0.02,
+        "element_resist_pct": 5
+      },
+      "stat_growth": {
+        "atk": 20,
+        "speed_pct": 1,
+        "spirit": 10,
+        "hp": 50,
+        "def": 8,
+        "skill_range_bonus_pct": 0.5,
+        "cooldown_reduction_pct": 0.2
+      },
+      "upgrade_materials": [],
+      "quality": "mid",
+      "element": "earth"
+    }
+  },
+  {
+    "id": "talisman_26",
+    "display_name": "Hiên Viên Tru Tiên Kiếm",
+    "description": "Thần kiếm thượng cổ do thánh nhân lưu lại, hàm chứa thiên uy sát phạt vô song.",
+    "category": "talisman",
+    "rarity": "legendary",
+    "icon_id": "talisman_item_26",
+    "stackable": false,
+    "max_stack": 1,
+    "order": 526,
+    "expires_after_hours": 0,
+    "tags": [
+      "talisman",
+      "attack",
+      "rare"
+    ],
+    "attributes": {
+      "numeric_id": 26,
+      "talisman_type": "attack",
+      "tier_name": "Thượng phẩm",
+      "server_max_copies": 1,
+      "is_repairable": true,
+      "max_battle_uses": 3,
+      "durability_cost_per_cast": 1,
+      "durability_cost_per_battle": 3,
+      "base_durability": 100,
+      "max_durability": 100,
+      "repair_cost_per_point": 50,
+      "severe_repair_item_id": "talisman_heavenly_crystal",
+      "severe_repair_item_quantity": 2,
+      "max_level": 30,
+      "skill_id": "skill_talisman_26",
+      "skill_name": "Tru Tiên Diệt Ma Diệt Tuyệt Trảm",
+      "skill_description": "Tru Tiên Diệt Ma Diệt Tuyệt Trảm: Chém ra kiếm khí hủy thiên diệt địa, bỏ qua 100% giáp hộ thể và kết liễu kẻ địch dưới 15% máu.",
+      "base_stats": {
+        "atk": 700,
+        "speed_pct": 5,
+        "spirit": 162,
+        "hp": 812,
+        "def": 112,
+        "skill_range_bonus_pct": 5,
+        "cooldown_reduction_pct": 4,
+        "dodge_rate": 0.02,
+        "element_resist_pct": 0
+      },
+      "stat_growth": {
+        "atk": 20,
+        "speed_pct": 1,
+        "spirit": 10,
+        "hp": 50,
+        "def": 8,
+        "skill_range_bonus_pct": 0.5,
+        "cooldown_reduction_pct": 0.2
+      },
+      "upgrade_materials": [],
+      "quality": "high",
+      "element": "metal"
+    }
+  },
+  {
+    "id": "talisman_27",
+    "display_name": "Đông Hoàng Hỗn Độn Chung",
+    "description": "Cổ chung nguyên thủy từ thời khai thiên lập địa, trấn giữ cõi tam giới lục đạo.",
+    "category": "talisman",
+    "rarity": "legendary",
+    "icon_id": "talisman_item_27",
+    "stackable": false,
+    "max_stack": 1,
+    "order": 527,
+    "expires_after_hours": 0,
+    "tags": [
+      "talisman",
+      "defense",
+      "rare"
+    ],
+    "attributes": {
+      "numeric_id": 27,
+      "talisman_type": "defense",
+      "tier_name": "Thượng phẩm",
+      "server_max_copies": 1,
+      "is_repairable": true,
+      "max_battle_uses": 3,
+      "durability_cost_per_cast": 1,
+      "durability_cost_per_battle": 3,
+      "base_durability": 100,
+      "max_durability": 100,
+      "repair_cost_per_point": 50,
+      "severe_repair_item_id": "talisman_heavenly_crystal",
+      "severe_repair_item_quantity": 2,
+      "max_level": 30,
+      "skill_id": "skill_talisman_27",
+      "skill_name": "Hỗn Độn Định Thế Giới",
+      "skill_description": "Hỗn Độn Định Thế Giới: Rung chuông làm ngưng đọng thời gian và không gian toàn map trong 2.5 giây.",
+      "base_stats": {
+        "atk": 250,
+        "speed_pct": 4,
+        "spirit": 140,
+        "hp": 1800,
+        "def": 305,
+        "skill_range_bonus_pct": 5,
+        "cooldown_reduction_pct": 4,
+        "dodge_rate": 0.02,
+        "element_resist_pct": 5
+      },
+      "stat_growth": {
+        "atk": 20,
+        "speed_pct": 1,
+        "spirit": 10,
+        "hp": 50,
+        "def": 8,
+        "skill_range_bonus_pct": 0.5,
+        "cooldown_reduction_pct": 0.2
+      },
+      "upgrade_materials": [],
+      "quality": "high",
+      "element": "wood"
+    }
+  },
+  {
+    "id": "talisman_28",
+    "display_name": "Thái Cực Bát Quái Đồ",
+    "description": "Đạo đồ bao hàm quy luật âm dương luân chuyển, đảo ngược càn khôn biến hóa.",
+    "category": "talisman",
+    "rarity": "legendary",
+    "icon_id": "talisman_item_28",
+    "stackable": false,
+    "max_stack": 1,
+    "order": 528,
+    "expires_after_hours": 0,
+    "tags": [
+      "talisman",
+      "spirit",
+      "rare"
+    ],
+    "attributes": {
+      "numeric_id": 28,
+      "talisman_type": "spirit",
+      "tier_name": "Thượng phẩm",
+      "server_max_copies": 1,
+      "is_repairable": true,
+      "max_battle_uses": 3,
+      "durability_cost_per_cast": 1,
+      "durability_cost_per_battle": 3,
+      "base_durability": 100,
+      "max_durability": 100,
+      "repair_cost_per_point": 50,
+      "severe_repair_item_id": "talisman_heavenly_crystal",
+      "severe_repair_item_quantity": 2,
+      "max_level": 30,
+      "skill_id": "skill_talisman_28",
+      "skill_name": "Âm Dương Nghịch Chuyển",
+      "skill_description": "Âm Dương Nghịch Chuyển: Chuyển đổi 70% sát thương phải gánh chịu thành sinh lực và phản lại 30% sát thương cho kẻ tấn công.",
+      "base_stats": {
+        "atk": 275,
+        "speed_pct": 4,
+        "spirit": 335,
+        "hp": 775,
+        "def": 107,
+        "skill_range_bonus_pct": 5,
+        "cooldown_reduction_pct": 4,
+        "dodge_rate": 0.02,
+        "element_resist_pct": 0
+      },
+      "stat_growth": {
+        "atk": 20,
+        "speed_pct": 1,
+        "spirit": 10,
+        "hp": 50,
+        "def": 8,
+        "skill_range_bonus_pct": 0.5,
+        "cooldown_reduction_pct": 0.2
+      },
+      "upgrade_materials": [],
+      "quality": "high",
+      "element": "water"
+    }
+  },
+  {
+    "id": "talisman_29",
+    "display_name": "Sơn Hà Xã Tắc Đồ",
+    "description": "Bức họa tiên giới vô tận chứa đựng non sông cẩm tú tự thành một tiểu thế giới.",
+    "category": "talisman",
+    "rarity": "legendary",
+    "icon_id": "talisman_item_29",
+    "stackable": false,
+    "max_stack": 1,
+    "order": 529,
+    "expires_after_hours": 0,
+    "tags": [
+      "talisman",
+      "magic",
+      "rare"
+    ],
+    "attributes": {
+      "numeric_id": 29,
+      "talisman_type": "magic",
+      "tier_name": "Thượng phẩm",
+      "server_max_copies": 1,
+      "is_repairable": true,
+      "max_battle_uses": 3,
+      "durability_cost_per_cast": 1,
+      "durability_cost_per_battle": 3,
+      "base_durability": 100,
+      "max_durability": 100,
+      "repair_cost_per_point": 50,
+      "severe_repair_item_id": "talisman_heavenly_crystal",
+      "severe_repair_item_quantity": 2,
+      "max_level": 30,
+      "skill_id": "skill_talisman_29",
+      "skill_name": "Họa Trung Càn Khôn",
+      "skill_description": "Họa Trung Càn Khôn: Hút toàn bộ kẻ địch vào không gian bức họa, gây sát thương nghiền nát nguyên thần và giảm vĩnh viễn 20% công kích của chúng.",
+      "base_stats": {
+        "atk": 580,
+        "speed_pct": 4,
+        "spirit": 290,
+        "hp": 662,
+        "def": 92,
+        "skill_range_bonus_pct": 10,
+        "cooldown_reduction_pct": 4,
+        "dodge_rate": 0.02,
+        "element_resist_pct": 0
+      },
+      "stat_growth": {
+        "atk": 20,
+        "speed_pct": 1,
+        "spirit": 10,
+        "hp": 50,
+        "def": 8,
+        "skill_range_bonus_pct": 0.5,
+        "cooldown_reduction_pct": 0.2
+      },
+      "upgrade_materials": [],
+      "quality": "high",
+      "element": "fire"
+    }
+  },
+  {
+    "id": "talisman_30",
+    "display_name": "Bàn Cổ Khai Thiên Phủ",
+    "description": "Cây rìu khai thiên lập địa khai mở hồng hoang, sở hữu sức mạnh phá vỡ mọi quy tắc giới hạn.",
+    "category": "talisman",
+    "rarity": "legendary",
+    "icon_id": "talisman_item_30",
+    "stackable": false,
+    "max_stack": 1,
+    "order": 530,
+    "expires_after_hours": 0,
+    "tags": [
+      "talisman",
+      "attack",
+      "rare"
+    ],
+    "attributes": {
+      "numeric_id": 30,
+      "talisman_type": "attack",
+      "tier_name": "Thượng phẩm",
+      "server_max_copies": 1,
+      "is_repairable": true,
+      "max_battle_uses": 3,
+      "durability_cost_per_cast": 1,
+      "durability_cost_per_battle": 3,
+      "base_durability": 100,
+      "max_durability": 100,
+      "repair_cost_per_point": 50,
+      "severe_repair_item_id": "talisman_heavenly_crystal",
+      "severe_repair_item_quantity": 2,
+      "max_level": 30,
+      "skill_id": "skill_talisman_30",
+      "skill_name": "Khai Thiên Phách Địa",
+      "skill_description": "Khai Thiên Phách Địa: Bổ đôi hư không tạo ra vết nứt không gian, gây sát thương chuẩn cực đại lên toàn bộ kẻ địch theo đường thẳng.",
+      "base_stats": {
+        "atk": 730,
+        "speed_pct": 5,
+        "spirit": 170,
+        "hp": 850,
+        "def": 117,
+        "skill_range_bonus_pct": 5,
+        "cooldown_reduction_pct": 4,
+        "dodge_rate": 0.02,
+        "element_resist_pct": 0
+      },
+      "stat_growth": {
+        "atk": 20,
+        "speed_pct": 1,
+        "spirit": 10,
+        "hp": 50,
+        "def": 8,
+        "skill_range_bonus_pct": 0.5,
+        "cooldown_reduction_pct": 0.2
+      },
+      "upgrade_materials": [],
+      "quality": "high",
+      "element": "earth"
+    }
+  },
+  {
+    "id": "talisman_fragment_1",
+    "display_name": "Mảnh Thanh Phong Kiếm",
+    "description": "Dùng để ghép và cường hóa pháp bảo tương ứng.",
+    "category": "talisman_fragment",
+    "rarity": "rare",
+    "icon_id": "talisman_fragment_1",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 801,
+    "expires_after_hours": 0,
+    "tags": [
+      "material",
+      "talisman_fragment"
+    ],
+    "attributes": {
+      "target_talisman_id": 1,
+      "quality": "low",
+      "element": "metal",
+      "atlas_index": 0,
+      "use_action": "open_talisman_screen"
+    }
+  },
+  {
+    "id": "talisman_fragment_2",
+    "display_name": "Mảnh Xích Đồng Đao",
+    "description": "Dùng để ghép và cường hóa pháp bảo tương ứng.",
+    "category": "talisman_fragment",
+    "rarity": "rare",
+    "icon_id": "talisman_fragment_2",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 802,
+    "expires_after_hours": 0,
+    "tags": [
+      "material",
+      "talisman_fragment"
+    ],
+    "attributes": {
+      "target_talisman_id": 2,
+      "quality": "low",
+      "element": "fire",
+      "atlas_index": 1,
+      "use_action": "open_talisman_screen"
+    }
+  },
+  {
+    "id": "talisman_fragment_3",
+    "display_name": "Mảnh Bách Luyện Thương",
+    "description": "Dùng để ghép và cường hóa pháp bảo tương ứng.",
+    "category": "talisman_fragment",
+    "rarity": "rare",
+    "icon_id": "talisman_fragment_3",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 803,
+    "expires_after_hours": 0,
+    "tags": [
+      "material",
+      "talisman_fragment"
+    ],
+    "attributes": {
+      "target_talisman_id": 3,
+      "quality": "low",
+      "element": "metal",
+      "atlas_index": 2,
+      "use_action": "open_talisman_screen"
+    }
+  },
+  {
+    "id": "talisman_fragment_4",
+    "display_name": "Mảnh Ô Thiết Thuẫn",
+    "description": "Dùng để ghép và cường hóa pháp bảo tương ứng.",
+    "category": "talisman_fragment",
+    "rarity": "rare",
+    "icon_id": "talisman_fragment_4",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 804,
+    "expires_after_hours": 0,
+    "tags": [
+      "material",
+      "talisman_fragment"
+    ],
+    "attributes": {
+      "target_talisman_id": 4,
+      "quality": "low",
+      "element": "metal",
+      "atlas_index": 3,
+      "use_action": "open_talisman_screen"
+    }
+  },
+  {
+    "id": "talisman_fragment_5",
+    "display_name": "Mảnh Lưu Thủy Hoàn",
+    "description": "Dùng để ghép và cường hóa pháp bảo tương ứng.",
+    "category": "talisman_fragment",
+    "rarity": "rare",
+    "icon_id": "talisman_fragment_5",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 805,
+    "expires_after_hours": 0,
+    "tags": [
+      "material",
+      "talisman_fragment"
+    ],
+    "attributes": {
+      "target_talisman_id": 5,
+      "quality": "low",
+      "element": "water",
+      "atlas_index": 4,
+      "use_action": "open_talisman_screen"
+    }
+  },
+  {
+    "id": "talisman_fragment_6",
+    "display_name": "Mảnh Huyền Mộc Trượng",
+    "description": "Dùng để ghép và cường hóa pháp bảo tương ứng.",
+    "category": "talisman_fragment",
+    "rarity": "rare",
+    "icon_id": "talisman_fragment_6",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 806,
+    "expires_after_hours": 0,
+    "tags": [
+      "material",
+      "talisman_fragment"
+    ],
+    "attributes": {
+      "target_talisman_id": 6,
+      "quality": "low",
+      "element": "wood",
+      "atlas_index": 5,
+      "use_action": "open_talisman_screen"
+    }
+  },
+  {
+    "id": "talisman_fragment_7",
+    "display_name": "Mảnh Phá Nham Chùy",
+    "description": "Dùng để ghép và cường hóa pháp bảo tương ứng.",
+    "category": "talisman_fragment",
+    "rarity": "rare",
+    "icon_id": "talisman_fragment_7",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 807,
+    "expires_after_hours": 0,
+    "tags": [
+      "material",
+      "talisman_fragment"
+    ],
+    "attributes": {
+      "target_talisman_id": 7,
+      "quality": "low",
+      "element": "earth",
+      "atlas_index": 6,
+      "use_action": "open_talisman_screen"
+    }
+  },
+  {
+    "id": "talisman_fragment_8",
+    "display_name": "Mảnh Băng Tinh Châm",
+    "description": "Dùng để ghép và cường hóa pháp bảo tương ứng.",
+    "category": "talisman_fragment",
+    "rarity": "rare",
+    "icon_id": "talisman_fragment_8",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 808,
+    "expires_after_hours": 0,
+    "tags": [
+      "material",
+      "talisman_fragment"
+    ],
+    "attributes": {
+      "target_talisman_id": 8,
+      "quality": "low",
+      "element": "water",
+      "atlas_index": 7,
+      "use_action": "open_talisman_screen"
+    }
+  },
+  {
+    "id": "talisman_fragment_9",
+    "display_name": "Mảnh Hỏa Vân Phiến",
+    "description": "Dùng để ghép và cường hóa pháp bảo tương ứng.",
+    "category": "talisman_fragment",
+    "rarity": "rare",
+    "icon_id": "talisman_fragment_9",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 809,
+    "expires_after_hours": 0,
+    "tags": [
+      "material",
+      "talisman_fragment"
+    ],
+    "attributes": {
+      "target_talisman_id": 9,
+      "quality": "low",
+      "element": "fire",
+      "atlas_index": 8,
+      "use_action": "open_talisman_screen"
+    }
+  },
+  {
+    "id": "talisman_fragment_10",
+    "display_name": "Mảnh Tỏa Hồn Linh",
+    "description": "Dùng để ghép và cường hóa pháp bảo tương ứng.",
+    "category": "talisman_fragment",
+    "rarity": "rare",
+    "icon_id": "talisman_fragment_10",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 810,
+    "expires_after_hours": 0,
+    "tags": [
+      "material",
+      "talisman_fragment"
+    ],
+    "attributes": {
+      "target_talisman_id": 10,
+      "quality": "low",
+      "element": "earth",
+      "atlas_index": 9,
+      "use_action": "open_talisman_screen"
+    }
+  },
+  {
+    "id": "talisman_fragment_11",
+    "display_name": "Mảnh Tật Phong Tiễn",
+    "description": "Dùng để ghép và cường hóa pháp bảo tương ứng.",
+    "category": "talisman_fragment",
+    "rarity": "rare",
+    "icon_id": "talisman_fragment_11",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 811,
+    "expires_after_hours": 0,
+    "tags": [
+      "material",
+      "talisman_fragment"
+    ],
+    "attributes": {
+      "target_talisman_id": 11,
+      "quality": "low",
+      "element": "wood",
+      "atlas_index": 10,
+      "use_action": "open_talisman_screen"
+    }
+  },
+  {
+    "id": "talisman_fragment_12",
+    "display_name": "Mảnh Hoàng Thổ Ấn",
+    "description": "Dùng để ghép và cường hóa pháp bảo tương ứng.",
+    "category": "talisman_fragment",
+    "rarity": "rare",
+    "icon_id": "talisman_fragment_12",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 812,
+    "expires_after_hours": 0,
+    "tags": [
+      "material",
+      "talisman_fragment"
+    ],
+    "attributes": {
+      "target_talisman_id": 12,
+      "quality": "low",
+      "element": "earth",
+      "atlas_index": 11,
+      "use_action": "open_talisman_screen"
+    }
+  },
+  {
+    "id": "talisman_fragment_13",
+    "display_name": "Mảnh Lôi Lôi Châm",
+    "description": "Dùng để ghép và cường hóa pháp bảo tương ứng.",
+    "category": "talisman_fragment",
+    "rarity": "rare",
+    "icon_id": "talisman_fragment_13",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 813,
+    "expires_after_hours": 0,
+    "tags": [
+      "material",
+      "talisman_fragment"
+    ],
+    "attributes": {
+      "target_talisman_id": 13,
+      "quality": "low",
+      "element": "fire",
+      "atlas_index": 12,
+      "use_action": "open_talisman_screen"
+    }
+  },
+  {
+    "id": "talisman_fragment_14",
+    "display_name": "Mảnh Hấp Huyết Thứ",
+    "description": "Dùng để ghép và cường hóa pháp bảo tương ứng.",
+    "category": "talisman_fragment",
+    "rarity": "rare",
+    "icon_id": "talisman_fragment_14",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 814,
+    "expires_after_hours": 0,
+    "tags": [
+      "material",
+      "talisman_fragment"
+    ],
+    "attributes": {
+      "target_talisman_id": 14,
+      "quality": "low",
+      "element": "wood",
+      "atlas_index": 13,
+      "use_action": "open_talisman_screen"
+    }
+  },
+  {
+    "id": "talisman_fragment_15",
+    "display_name": "Mảnh Dạ Quang Châu",
+    "description": "Dùng để ghép và cường hóa pháp bảo tương ứng.",
+    "category": "talisman_fragment",
+    "rarity": "rare",
+    "icon_id": "talisman_fragment_15",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 815,
+    "expires_after_hours": 0,
+    "tags": [
+      "material",
+      "talisman_fragment"
+    ],
+    "attributes": {
+      "target_talisman_id": 15,
+      "quality": "low",
+      "element": "water",
+      "atlas_index": 14,
+      "use_action": "open_talisman_screen"
+    }
+  },
+  {
+    "id": "talisman_fragment_16",
+    "display_name": "Mảnh Hàn Băng Phách Kiếm",
+    "description": "Dùng để ghép và cường hóa pháp bảo tương ứng.",
+    "category": "talisman_fragment",
+    "rarity": "epic",
+    "icon_id": "talisman_fragment_16",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 816,
+    "expires_after_hours": 0,
+    "tags": [
+      "material",
+      "talisman_fragment"
+    ],
+    "attributes": {
+      "target_talisman_id": 16,
+      "quality": "mid",
+      "element": "metal",
+      "atlas_index": 15,
+      "use_action": "open_talisman_screen"
+    }
+  },
+  {
+    "id": "talisman_fragment_17",
+    "display_name": "Mảnh Cửu U Ma Đao",
+    "description": "Dùng để ghép và cường hóa pháp bảo tương ứng.",
+    "category": "talisman_fragment",
+    "rarity": "epic",
+    "icon_id": "talisman_fragment_17",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 817,
+    "expires_after_hours": 0,
+    "tags": [
+      "material",
+      "talisman_fragment"
+    ],
+    "attributes": {
+      "target_talisman_id": 17,
+      "quality": "mid",
+      "element": "wood",
+      "atlas_index": 16,
+      "use_action": "open_talisman_screen"
+    }
+  },
+  {
+    "id": "talisman_fragment_18",
+    "display_name": "Mảnh Tử Tiêu Lôi Kính",
+    "description": "Dùng để ghép và cường hóa pháp bảo tương ứng.",
+    "category": "talisman_fragment",
+    "rarity": "epic",
+    "icon_id": "talisman_fragment_18",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 818,
+    "expires_after_hours": 0,
+    "tags": [
+      "material",
+      "talisman_fragment"
+    ],
+    "attributes": {
+      "target_talisman_id": 18,
+      "quality": "mid",
+      "element": "water",
+      "atlas_index": 17,
+      "use_action": "open_talisman_screen"
+    }
+  },
+  {
+    "id": "talisman_fragment_19",
+    "display_name": "Mảnh Liệt Hỏa Phần Thiên Lô",
+    "description": "Dùng để ghép và cường hóa pháp bảo tương ứng.",
+    "category": "talisman_fragment",
+    "rarity": "epic",
+    "icon_id": "talisman_fragment_19",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 819,
+    "expires_after_hours": 0,
+    "tags": [
+      "material",
+      "talisman_fragment"
+    ],
+    "attributes": {
+      "target_talisman_id": 19,
+      "quality": "mid",
+      "element": "fire",
+      "atlas_index": 18,
+      "use_action": "open_talisman_screen"
+    }
+  },
+  {
+    "id": "talisman_fragment_20",
+    "display_name": "Mảnh Kim Cương Hộ Tâm Kính",
+    "description": "Dùng để ghép và cường hóa pháp bảo tương ứng.",
+    "category": "talisman_fragment",
+    "rarity": "epic",
+    "icon_id": "talisman_fragment_20",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 820,
+    "expires_after_hours": 0,
+    "tags": [
+      "material",
+      "talisman_fragment"
+    ],
+    "attributes": {
+      "target_talisman_id": 20,
+      "quality": "mid",
+      "element": "earth",
+      "atlas_index": 19,
+      "use_action": "open_talisman_screen"
+    }
+  },
+  {
+    "id": "talisman_fragment_21",
+    "display_name": "Mảnh Thực Cốt Phệ Hồn Phiên",
+    "description": "Dùng để ghép và cường hóa pháp bảo tương ứng.",
+    "category": "talisman_fragment",
+    "rarity": "epic",
+    "icon_id": "talisman_fragment_21",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 821,
+    "expires_after_hours": 0,
+    "tags": [
+      "material",
+      "talisman_fragment"
+    ],
+    "attributes": {
+      "target_talisman_id": 21,
+      "quality": "mid",
+      "element": "metal",
+      "atlas_index": 20,
+      "use_action": "open_talisman_screen"
+    }
+  },
+  {
+    "id": "talisman_fragment_22",
+    "display_name": "Mảnh Thanh Mộc Thần Long Trượng",
+    "description": "Dùng để ghép và cường hóa pháp bảo tương ứng.",
+    "category": "talisman_fragment",
+    "rarity": "epic",
+    "icon_id": "talisman_fragment_22",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 822,
+    "expires_after_hours": 0,
+    "tags": [
+      "material",
+      "talisman_fragment"
+    ],
+    "attributes": {
+      "target_talisman_id": 22,
+      "quality": "mid",
+      "element": "wood",
+      "atlas_index": 21,
+      "use_action": "open_talisman_screen"
+    }
+  },
+  {
+    "id": "talisman_fragment_23",
+    "display_name": "Mảnh Thất Tinh Đoạt Mệnh Kiếm",
+    "description": "Dùng để ghép và cường hóa pháp bảo tương ứng.",
+    "category": "talisman_fragment",
+    "rarity": "epic",
+    "icon_id": "talisman_fragment_23",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 823,
+    "expires_after_hours": 0,
+    "tags": [
+      "material",
+      "talisman_fragment"
+    ],
+    "attributes": {
+      "target_talisman_id": 23,
+      "quality": "mid",
+      "element": "water",
+      "atlas_index": 22,
+      "use_action": "open_talisman_screen"
+    }
+  },
+  {
+    "id": "talisman_fragment_24",
+    "display_name": "Mảnh Càn Khôn Khốn Yêu Thừng",
+    "description": "Dùng để ghép và cường hóa pháp bảo tương ứng.",
+    "category": "talisman_fragment",
+    "rarity": "epic",
+    "icon_id": "talisman_fragment_24",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 824,
+    "expires_after_hours": 0,
+    "tags": [
+      "material",
+      "talisman_fragment"
+    ],
+    "attributes": {
+      "target_talisman_id": 24,
+      "quality": "mid",
+      "element": "fire",
+      "atlas_index": 23,
+      "use_action": "open_talisman_screen"
+    }
+  },
+  {
+    "id": "talisman_fragment_25",
+    "display_name": "Mảnh Trấn Nhạc Phiên Thiên Ấn",
+    "description": "Dùng để ghép và cường hóa pháp bảo tương ứng.",
+    "category": "talisman_fragment",
+    "rarity": "epic",
+    "icon_id": "talisman_fragment_25",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 825,
+    "expires_after_hours": 0,
+    "tags": [
+      "material",
+      "talisman_fragment"
+    ],
+    "attributes": {
+      "target_talisman_id": 25,
+      "quality": "mid",
+      "element": "earth",
+      "atlas_index": 24,
+      "use_action": "open_talisman_screen"
+    }
+  },
+  {
+    "id": "talisman_fragment_26",
+    "display_name": "Mảnh Hiên Viên Tru Tiên Kiếm",
+    "description": "Dùng để ghép và cường hóa pháp bảo tương ứng.",
+    "category": "talisman_fragment",
+    "rarity": "legendary",
+    "icon_id": "talisman_fragment_26",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 826,
+    "expires_after_hours": 0,
+    "tags": [
+      "material",
+      "talisman_fragment"
+    ],
+    "attributes": {
+      "target_talisman_id": 26,
+      "quality": "high",
+      "element": "metal",
+      "atlas_index": 25,
+      "use_action": "open_talisman_screen"
+    }
+  },
+  {
+    "id": "talisman_fragment_27",
+    "display_name": "Mảnh Đông Hoàng Hỗn Độn Chung",
+    "description": "Dùng để ghép và cường hóa pháp bảo tương ứng.",
+    "category": "talisman_fragment",
+    "rarity": "legendary",
+    "icon_id": "talisman_fragment_27",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 827,
+    "expires_after_hours": 0,
+    "tags": [
+      "material",
+      "talisman_fragment"
+    ],
+    "attributes": {
+      "target_talisman_id": 27,
+      "quality": "high",
+      "element": "wood",
+      "atlas_index": 26,
+      "use_action": "open_talisman_screen"
+    }
+  },
+  {
+    "id": "talisman_fragment_28",
+    "display_name": "Mảnh Thái Cực Bát Quái Đồ",
+    "description": "Dùng để ghép và cường hóa pháp bảo tương ứng.",
+    "category": "talisman_fragment",
+    "rarity": "legendary",
+    "icon_id": "talisman_fragment_28",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 828,
+    "expires_after_hours": 0,
+    "tags": [
+      "material",
+      "talisman_fragment"
+    ],
+    "attributes": {
+      "target_talisman_id": 28,
+      "quality": "high",
+      "element": "water",
+      "atlas_index": 27,
+      "use_action": "open_talisman_screen"
+    }
+  },
+  {
+    "id": "talisman_fragment_29",
+    "display_name": "Mảnh Sơn Hà Xã Tắc Đồ",
+    "description": "Dùng để ghép và cường hóa pháp bảo tương ứng.",
+    "category": "talisman_fragment",
+    "rarity": "legendary",
+    "icon_id": "talisman_fragment_29",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 829,
+    "expires_after_hours": 0,
+    "tags": [
+      "material",
+      "talisman_fragment"
+    ],
+    "attributes": {
+      "target_talisman_id": 29,
+      "quality": "high",
+      "element": "fire",
+      "atlas_index": 28,
+      "use_action": "open_talisman_screen"
+    }
+  },
+  {
+    "id": "talisman_fragment_30",
+    "display_name": "Mảnh Bàn Cổ Khai Thiên Phủ",
+    "description": "Dùng để ghép và cường hóa pháp bảo tương ứng.",
+    "category": "talisman_fragment",
+    "rarity": "legendary",
+    "icon_id": "talisman_fragment_30",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 830,
+    "expires_after_hours": 0,
+    "tags": [
+      "material",
+      "talisman_fragment"
+    ],
+    "attributes": {
+      "target_talisman_id": 30,
+      "quality": "high",
+      "element": "earth",
+      "atlas_index": 29,
+      "use_action": "open_talisman_screen"
+    }
+  },
+  {
+    "id": "huyen_thiet_ha",
+    "display_name": "Huyền Thiết Hạ Phẩm",
+    "description": "Quặng huyền thiết thô sơ chứa linh khí kim thạch cơ bản, dùng để tôi luyện và cường hóa trang bị.",
+    "category": "material",
+    "rarity": "common",
+    "icon_id": "huyen_thiet_ha",
+    "stackable": true,
+    "max_stack": 999,
+    "order": 160,
+    "expires_after_hours": 0,
+    "tags": [
+      "material",
+      "refine",
+      "metal"
+    ],
+    "attributes": {}
+  },
+  {
+    "id": "huyen_thiet_trung",
+    "display_name": "Huyền Thiết Trung Phẩm",
+    "description": "Quặng huyền thiết đã qua tôi luyện ngưng tụ tinh hoa kim loại, dùng để tôi luyện và cường hóa trang bị.",
+    "category": "material",
+    "rarity": "rare",
+    "icon_id": "huyen_thiet_trung",
+    "stackable": true,
+    "max_stack": 999,
+    "order": 260,
+    "expires_after_hours": 0,
+    "tags": [
+      "material",
+      "refine",
+      "metal"
+    ],
+    "attributes": {}
+  },
+  {
+    "id": "huyen_thiet_thuong",
+    "display_name": "Huyền Thiết Thượng Phẩm",
+    "description": "Huyền thiết ngàn năm hấp thu linh khí nhật nguyệt, cực kỳ kiên cố, nguyên liệu tuyệt hảo cho pháp bảo và trang bị.",
+    "category": "material",
+    "rarity": "epic",
+    "icon_id": "huyen_thiet_thuong",
+    "stackable": true,
+    "max_stack": 999,
+    "order": 360,
+    "expires_after_hours": 0,
+    "tags": [
+      "material",
+      "refine",
+      "metal"
+    ],
+    "attributes": {}
+  }
+]

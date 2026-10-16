@@ -1,0 +1,13 @@
+{
+  "name": "survival-td-nakama",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "npx esbuild@0.25.0 data/modules/main.ts data/modules/config_tables.ts data/modules/monetization_tables.ts data/modules/seed.ts data/modules/event_service_rpc.ts data/modules/config_rpc.ts data/modules/player_rpc.ts data/modules/account_link.ts data/modules/inventory_rpc.ts data/modules/resource_rpc.ts data/modules/progression_rpc.ts data/modules/monetization_rpc.ts data/modules/daily_checkin_rpc.ts data/modules/combat_power.ts data/modules/leaderboard_rpc.ts data/modules/leaderboard_setup.ts --bundle=false --outdir=data/modules/build --platform=node --target=es2017 && node -e \"const fs = require('fs'); const files = ['config_tables.js', 'monetization_tables.js', 'seed.js', 'event_service_rpc.js', 'config_rpc.js', 'player_rpc.js', 'account_link.js', 'inventory_rpc.js', 'resource_rpc.js', 'progression_rpc.js', 'monetization_rpc.js', 'daily_checkin_rpc.js', 'combat_power.js', 'leaderboard_rpc.js', 'leaderboard_setup.js', 'main.js'].map(f => 'data/modules/build/' + f); const code = files.map(f => fs.readFileSync(f, 'utf8')).join('\\n'); fs.writeFileSync('data/modules/build/index.js', code); fs.writeFileSync('data/build/index.js', code);\"",
+    "build:unix": "npx esbuild@0.25.0 data/modules/main.ts data/modules/config_tables.ts data/modules/monetization_tables.ts data/modules/seed.ts data/modules/event_service_rpc.ts data/modules/config_rpc.ts data/modules/player_rpc.ts data/modules/account_link.ts data/modules/inventory_rpc.ts data/modules/resource_rpc.ts data/modules/progression_rpc.ts data/modules/monetization_rpc.ts data/modules/daily_checkin_rpc.ts data/modules/combat_power.ts data/modules/leaderboard_rpc.ts data/modules/leaderboard_setup.ts --bundle=false --outdir=data/modules/build --platform=node --target=es2017 && node -e \"const fs = require('fs'); const files = ['config_tables.js', 'monetization_tables.js', 'seed.js', 'event_service_rpc.js', 'config_rpc.js', 'player_rpc.js', 'account_link.js', 'inventory_rpc.js', 'resource_rpc.js', 'progression_rpc.js', 'monetization_rpc.js', 'daily_checkin_rpc.js', 'combat_power.js', 'leaderboard_rpc.js', 'leaderboard_setup.js', 'main.js'].map(f => 'data/modules/build/' + f); const code = files.map(f => fs.readFileSync(f, 'utf8')).join('\\n'); fs.writeFileSync('data/modules/build/index.js', code); fs.writeFileSync('data/build/index.js', code);\""
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0",
+    "@types/node": "^20.0.0"
+  }
+}

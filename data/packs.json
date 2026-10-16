@@ -1,0 +1,240 @@
+{
+  "tabs": [
+    {"id": "privileges", "name": "ĐẶC QUYỀN"},
+    {"id": "passes", "name": "THẺ & PASS"},
+    {"id": "daily", "name": "GÓI NGÀY"},
+    {"id": "resources", "name": "TÀI NGUYÊN"}
+  ],
+  "packs_by_tab": {
+    "supplemental": [
+      {
+        "id": "remove_ads_1d",
+        "name": "Bỏ Quảng Cáo 1 Ngày",
+        "price": "$0.99",
+        "product_id": "remove_ads_1d",
+        "active": true,
+        "fulfillment_type": "consumable",
+        "rewards": [{"reward_type": "entitlement", "reward_id": "no_ads_seconds", "quantity": 86400}],
+        "icon_type": "extra",
+        "icon_key": "no_ads",
+        "badge": "1 NGÀY",
+        "desc": "Tắt quảng cáo trong 1 ngày",
+        "reward_summary": "1 Ngày Bỏ Quảng Cáo"
+      },
+      {
+        "id": "remove_ads_7d",
+        "name": "Bỏ Quảng Cáo 7 Ngày",
+        "price": "$3.99",
+        "product_id": "remove_ads_7d",
+        "active": true,
+        "fulfillment_type": "consumable",
+        "rewards": [{"reward_type": "entitlement", "reward_id": "no_ads_seconds", "quantity": 604800}],
+        "icon_type": "extra",
+        "icon_key": "no_ads",
+        "badge": "7 NGÀY",
+        "desc": "Tắt quảng cáo trong 7 ngày",
+        "reward_summary": "7 Ngày Bỏ Quảng Cáo"
+      }
+    ],
+    "privileges": [
+      {
+        "id": "remove_ads_3d",
+        "name": "Bỏ Quảng Cáo 3 Ngày",
+        "price": "$1.99",
+        "product_id": "remove_ads_3d",
+        "active": true,
+        "fulfillment_type": "consumable",
+        "rewards": [{"reward_type": "entitlement", "reward_id": "no_ads_seconds", "quantity": 259200}],
+        "icon_type": "extra",
+        "icon_key": "no_ads",
+        "badge": "TIẾT KIỆM",
+        "desc": "Tắt quảng cáo xen kẽ và banner trong 3 ngày",
+        "reward_summary": "3 Ngày Bỏ Quảng Cáo"
+      },
+      {
+        "id": "remove_ads_30d",
+        "name": "Bỏ Quảng Cáo 30 Ngày",
+        "price": "$14.99",
+        "product_id": "remove_ads_30d",
+        "active": true,
+        "fulfillment_type": "consumable",
+        "rewards": [{"reward_type": "entitlement", "reward_id": "no_ads_seconds", "quantity": 2592000}],
+        "icon_type": "extra",
+        "icon_key": "no_ads",
+        "badge": "HOT",
+        "desc": "30 ngày trải nghiệm game mượt mà không phiền toái",
+        "reward_summary": "30 Ngày Bỏ Quảng Cáo"
+      },
+      {
+        "id": "remove_ads_permanent",
+        "name": "Bỏ Quảng Cáo Trọn Đời",
+        "price": "$29.99",
+        "product_id": "remove_ads_permanent",
+        "active": true,
+        "unique_purchase": true,
+        "fulfillment_type": "non_consumable",
+        "rewards": [{"reward_type": "entitlement", "reward_id": "no_ads_seconds", "quantity": 3153600000}],
+        "icon_type": "extra",
+        "icon_key": "ad_skip",
+        "badge": "VĨNH VIỄN",
+        "desc": "Sở hữu vĩnh viễn quyền miễn quảng cáo toàn diện",
+        "reward_summary": "Bỏ Quảng Cáo Trọn Đời"
+      },
+      {
+        "id": "privilege_card",
+        "name": "Đặc Quyền Tu Tiên",
+        "price": "$9.99",
+        "product_id": "privilege_card",
+        "active": false,
+        "unique_purchase": true,
+        "fulfillment_type": "non_consumable",
+        "rewards": [{"reward_type": "entitlement", "reward_id": "privilege_card", "quantity": 1}],
+        "icon_type": "pack",
+        "icon_key": "privilege_card",
+        "badge": "VIP",
+        "desc": "+20% Vàng rơi ra, +10% EXP nhân vật",
+        "reward_summary": "+20% Vàng, +10% EXP"
+      }
+    ],
+    "passes": [
+      {
+        "id": "monthly_card",
+        "name": "Thẻ Tháng Tu Tiên",
+        "price": "$4.99",
+        "product_id": "monthly_card",
+        "active": false,
+        "unique_purchase": true,
+        "fulfillment_type": "non_consumable",
+        "rewards": [
+          {"reward_type": "currency", "reward_id": "gems", "quantity": 300},
+          {"reward_type": "entitlement", "reward_id": "monthly_card_days", "quantity": 30}
+        ],
+        "icon_type": "pack",
+        "icon_key": "monthly_card",
+        "badge": "PHỔ BIẾN",
+        "desc": "Nhận ngay 300 Đá Quý + 100 Đá Quý mỗi ngày (30 ngày)",
+        "reward_summary": "3.300 Đá Quý Tổng"
+      },
+      {
+        "id": "growth_fund",
+        "name": "Quỹ Trưởng Thành",
+        "price": "$19.99",
+        "product_id": "growth_fund",
+        "active": false,
+        "unique_purchase": true,
+        "fulfillment_type": "non_consumable",
+        "rewards": [{"reward_type": "entitlement", "reward_id": "growth_fund", "quantity": 1}],
+        "icon_type": "pack",
+        "icon_key": "growth_fund",
+        "badge": "LỜI X10",
+        "desc": "Nhận đến 15.000 Đá Quý khi vượt qua các chương ải",
+        "reward_summary": "15.000 Đá Quý Theo Cấp"
+      },
+      {
+        "id": "weekly_card",
+        "name": "Thẻ Tuần Cường Hóa",
+        "price": "$1.99",
+        "product_id": "weekly_card",
+        "active": false,
+        "unique_purchase": true,
+        "fulfillment_type": "non_consumable",
+        "rewards": [
+          {"reward_type": "currency", "reward_id": "gems", "quantity": 100},
+          {"reward_type": "entitlement", "reward_id": "weekly_card_days", "quantity": 7}
+        ],
+        "icon_type": "pack",
+        "icon_key": "weekly_card",
+        "badge": "7 NGÀY",
+        "desc": "Nhận ngay 100 Đá Quý + 50 Đá Quý & 10 Thể Lực mỗi ngày",
+        "reward_summary": "450 Đá Quý + 70 Thể Lực"
+      }
+    ],
+    "daily": [
+      {
+        "id": "daily_deal",
+        "name": "Lễ Bao Hàng Ngày",
+        "price": "$0.99",
+        "product_id": "daily_deal",
+        "active": true,
+        "purchase_limit": 1,
+        "purchase_limit_period": "day",
+        "fulfillment_type": "consumable",
+        "rewards": [
+          {"reward_type": "currency", "reward_id": "gems", "quantity": 100},
+          {"reward_type": "currency", "reward_id": "gold", "quantity": 10000},
+          {"reward_type": "stamina", "reward_id": "stamina", "quantity": 20}
+        ],
+        "icon_type": "pack",
+        "icon_key": "daily_deal",
+        "badge": "GIỚI HẠN",
+        "desc": "100 Đá Quý + 10.000 Vàng + 20 Thể Lực",
+        "reward_summary": "100 Gem + 10k Vàng + 20 TL"
+      },
+      {
+        "id": "flash_sale",
+        "name": "Gói Đột Phá Thần Tốc",
+        "price": "$2.99",
+        "product_id": "flash_sale",
+        "active": true,
+        "fulfillment_type": "consumable",
+        "rewards": [
+          {"reward_type": "currency", "reward_id": "gems", "quantity": 300},
+          {"reward_type": "item", "reward_id": "reset_talisman", "quantity": 5},
+          {"reward_type": "stamina", "reward_id": "stamina", "quantity": 50}
+        ],
+        "icon_type": "pack",
+        "icon_key": "flash_sale",
+        "badge": "ƯU ĐÃI",
+        "desc": "300 Đá Quý + 5 Bùa Tẩy Điểm + 50 Thể Lực",
+        "reward_summary": "300 Gem + 5 Bùa + 50 TL"
+      }
+    ],
+    "resources": [
+      {
+        "id": "gem_sack",
+        "name": "Túi Đá Quý Lớn",
+        "price": "$4.99",
+        "product_id": "gem_sack",
+        "active": true,
+        "fulfillment_type": "consumable",
+        "rewards": [
+          {"reward_type": "currency", "reward_id": "gems", "quantity": 500},
+          {"reward_type": "currency", "reward_id": "gems", "quantity": 500, "metadata": {"condition": "first_purchase"}}
+        ],
+        "icon_type": "pack",
+        "icon_key": "gem_sack",
+        "badge": "X2 LẦN ĐẦU",
+        "desc": "500 Đá Quý thuần khiết dùng triệu hồi",
+        "reward_summary": "500 Đá Quý"
+      },
+      {
+        "id": "gem_chest",
+        "name": "Rương Đá Quý Cực Phẩm",
+        "price": "$19.99",
+        "product_id": "gem_chest",
+        "active": true,
+        "fulfillment_type": "consumable",
+        "rewards": [{"reward_type": "currency", "reward_id": "gems", "quantity": 2500}],
+        "icon_type": "pack",
+        "icon_key": "gem_chest",
+        "badge": "SIÊU HỜI",
+        "desc": "2.500 Đá Quý thuần khiết dùng triệu hồi",
+        "reward_summary": "2.500 Đá Quý"
+      },
+      {
+        "id": "gold_vault",
+        "name": "Kho Báu Hoàng Kim",
+        "price": "$9.99",
+        "product_id": "gold_vault",
+        "active": true,
+        "fulfillment_type": "consumable",
+        "rewards": [{"reward_type": "currency", "reward_id": "gold", "quantity": 500000}],
+        "icon_type": "pack",
+        "icon_key": "gold_vault",
+        "badge": "DỒI DÀO",
+        "desc": "500.000 Vàng để cường hóa ngũ hành",
+        "reward_summary": "500.000 Vàng"
+      }
+    ]
+  }
+}

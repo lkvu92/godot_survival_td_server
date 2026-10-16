@@ -1,0 +1,33 @@
+name: survival_td
+data_dir: "/nakama/data"
+
+logger:
+  level: "INFO"
+
+console:
+  port: 7351
+  username: "admin"
+  password: "NakamaLocalSecure2026!"
+
+runtime:
+  js_entrypoint: "build/index.js"
+  http_key: "local-monetization-http-key-2026"
+  env:
+    - "APP_ENVIRONMENT=production"
+    - "ANDROID_PACKAGE_NAME=vn.lkvu92.survivaltd"
+    - "PLAY_PURCHASE_VERIFIER_URL=http://monetization-verifier:8080/google-play/verify"
+    - "MONETIZATION_VERIFIER_SECRET=local-development-only"
+    - "ADMOB_REWARDED_UNIT_ID_DEVELOP=ca-app-pub-3940256099942544/5224354917"
+    - "ADMOB_REWARDED_UNIT_ID_PRODUCTION=ca-app-pub-2623237649967496/5496497462"
+    - "CONFIG_ADMIN_USER_ID=20f3bb1e-ac78-44f4-a9ac-a0c7ce2a591c"
+
+session:
+  token_expiry_sec: 7200 # 2 giờ
+  refresh_token_expiry_sec: 2592000 # 30 ngày
+
+# Production/staging must inject these values from a secret manager. Never
+# commit the service-account private key to this repository.
+# iap:
+#   google:
+#     client_email: "nakama-iap-validator@PROJECT.iam.gserviceaccount.com"
+#     private_key: "-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"

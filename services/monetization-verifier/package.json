@@ -1,0 +1,16 @@
+{
+  "name": "survival-td-monetization-verifier",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "check": "node --check src/server.js"
+  },
+  "dependencies": {
+    "googleapis": "^183.0.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

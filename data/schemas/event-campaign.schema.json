@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Survival TD Event Campaigns",
+  "type": "object",
+  "required": ["schema_version", "timezone", "events"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "timezone": {"const": "Asia/Ho_Chi_Minh"},
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["event_id", "version", "starts_at", "ends_at", "requirements", "quests"],
+        "properties": {
+          "event_id": {"type": "string", "pattern": "^[A-Za-z0-9_.-]+$"},
+          "version": {"type": "integer", "minimum": 1},
+          "active": {"type": "boolean"},
+          "starts_at": {"type": "string", "format": "date-time"},
+          "ends_at": {"type": "string", "format": "date-time"},
+          "recurrence": {
+            "type": "object",
+            "properties": {"interval": {"enum": ["none", "week", "month", "year"]}},
+            "additionalProperties": false
+          },
+          "requirements": {
+            "type": "object",
+            "properties": {"level": {"type": "integer", "minimum": 1}, "vip": {"type": "integer", "minimum": 0}}
+          },
+          "route_id": {"type": "string"},
+          "quests": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["quest_id", "type", "target", "rewards"],
+              "properties": {
+                "quest_id": {"type": "string"},
+                "type": {"enum": ["stage_clear", "enemy_kill", "specific_stage_clear", "element_upgrade", "talisman_enhance", "profile_complete", "user_level_reached", "stamina_spent", "item_earned"]},
+                "target": {"type": "number", "exclusiveMinimum": 0},
+                "filters": {"type": "object"},
+                "rewards": {"type": "object", "required": ["normal", "vip"]}
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

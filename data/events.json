@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "timezone": "Asia/Ho_Chi_Minh",
+  "events": [
+    {
+      "event_id": "weekly_adventurer_v1",
+      "version": 1,
+      "active": true,
+      "title": "SỰ KIỆN ĐẶC BIỆT",
+      "subtitle": "NHIỆM VỤ TUẦN DÀNH CHO MỌI ĐẠO HỮU",
+      "banner_title": "HÀNH TRÌNH TUẦN",
+      "description": "Hoàn thành nhiệm vụ chiến dịch từ Thứ 2 đến hết Chủ nhật.",
+      "starts_at": "2026-10-12T00:00:00+07:00",
+      "ends_at": "2026-10-18T23:59:00+07:00",
+      "recurrence": {"interval": "week"},
+      "requirements": {"level": 1, "vip": 0},
+      "route_id": "arc_select",
+      "quests": [
+        {"quest_id":"spend_stamina_100","type":"stamina_spent","name":"Tiêu hao 100 Thể lực","target":100,"icon_type":"ui","icon_key":"detail_stamina","filters":{},"rewards":{"normal":[{"type":"stamina","amount":50}],"vip":{"required_vip":1,"grants":[{"type":"stamina","amount":75}]}}},
+        {"quest_id":"clear_any_stage_10","type":"stage_clear","name":"Vượt thành công 10 ải","target":10,"icon_type":"pack","icon_key":"gold_pouch","filters":{},"rewards":{"normal":[{"type":"resource","id":"gold","amount":10000}],"vip":{"required_vip":1,"grants":[{"type":"resource","id":"gold","amount":15000}]}}},
+        {"quest_id":"kill_300_enemies","type":"enemy_kill","name":"Tiêu diệt 300 yêu quái","target":300,"icon_type":"pack","icon_key":"gem_pouch","filters":{},"rewards":{"normal":[{"type":"resource","id":"gems","amount":30}],"vip":{"required_vip":1,"grants":[{"type":"resource","id":"gems","amount":45}]}}}
+      ]
+    },
+    {
+      "event_id": "weekly_profile_v1",
+      "version": 1,
+      "active": true,
+      "title": "SỰ KIỆN ĐẶC BIỆT",
+      "subtitle": "HOÀN TẤT HỒ SƠ ĐẠO HỮU",
+      "banner_title": "HỒ SƠ ĐẠO HỮU",
+      "description": "Cập nhật đầy đủ hồ sơ trong tuần để nhận vật tư tu luyện.",
+      "starts_at": "2026-10-12T00:00:00+07:00",
+      "ends_at": "2026-10-18T23:59:00+07:00",
+      "recurrence": {"interval": "week"},
+      "requirements": {"level": 1, "vip": 0},
+      "route_id": "profile_update",
+      "quests": [
+        {"quest_id":"complete_profile","type":"profile_complete","name":"Cập nhật đầy đủ hồ sơ","target":1,"icon_type":"pack","icon_key":"starter_pack","filters":{},"rewards":{"normal":[{"type":"item","id":"talisman_fragment_1","amount":10},{"type":"resource","id":"gems","amount":50},{"type":"resource","id":"gold","amount":10000}],"vip":{"required_vip":1,"grants":[{"type":"item","id":"talisman_fragment_1","amount":15},{"type":"resource","id":"gems","amount":75},{"type":"resource","id":"gold","amount":15000}]}}}
+      ]
+    },
+    {
+      "event_id": "weekly_rune_hunt_v1",
+      "version": 1,
+      "active": true,
+      "title": "SỰ KIỆN ĐẶC BIỆT",
+      "subtitle": "TRUY TÌM LINH RUNE",
+      "banner_title": "RUNE TỨ TƯỢNG",
+      "description": "Thu thập Rune từ Thứ 5 đến hết Chủ nhật.",
+      "starts_at": "2026-10-15T00:00:00+07:00",
+      "ends_at": "2026-10-18T23:59:00+07:00",
+      "recurrence": {"interval": "week"},
+      "requirements": {"level": 1, "vip": 0},
+      "route_id": "inventory",
+      "quests": [
+        {"quest_id":"earn_runes_20","type":"item_earned","name":"Kiếm được 20 Rune","target":20,"icon_type":"extra","icon_key":"dismantle","filters":{"item_prefixes":["rune_"]},"rewards":{"normal":[{"type":"random_item","pool":["rune_metal_low","rune_wood_low","rune_water_low","rune_fire_low","rune_earth_low"],"amount":10}],"vip":{"required_vip":1,"grants":[{"type":"random_item","pool":["rune_metal_low","rune_wood_low","rune_water_low","rune_fire_low","rune_earth_low"],"amount":15}]}}}
+      ]
+    },
+    {
+      "event_id": "weekly_element_upgrade_v1",
+      "version": 1,
+      "active": true,
+      "title": "SỰ KIỆN ĐẶC BIỆT",
+      "subtitle": "NGŨ HÀNH LUYỆN ĐẠO",
+      "banner_title": "TỊNH LUYỆN NGŨ HÀNH",
+      "description": "Nâng cấp Ngũ Hành từ Thứ 6 đến hết Chủ nhật.",
+      "starts_at": "2026-10-16T00:00:00+07:00",
+      "ends_at": "2026-10-18T23:59:00+07:00",
+      "recurrence": {"interval": "week"},
+      "requirements": {"level": 10, "vip": 0},
+      "route_id": "element_upgrade",
+      "quests": [
+        {"quest_id":"upgrade_element_5","type":"element_upgrade","name":"Nâng cấp Ngũ Hành 5 lần","target":5,"icon_type":"ui","icon_key":"detail_stamina","filters":{},"rewards":{"normal":[{"type":"resource","id":"gold","amount":15000},{"type":"resource","id":"gems","amount":10},{"type":"random_item","pool":["rune_metal_low","rune_wood_low","rune_water_low","rune_fire_low","rune_earth_low"],"amount":10}],"vip":{"required_vip":1,"grants":[{"type":"resource","id":"gold","amount":22500},{"type":"resource","id":"gems","amount":15},{"type":"random_item","pool":["rune_metal_low","rune_wood_low","rune_water_low","rune_fire_low","rune_earth_low"],"amount":15}]}}}
+      ]
+    },
+    {
+      "event_id": "weekly_talisman_enhance_v1",
+      "version": 1,
+      "active": true,
+      "title": "SỰ KIỆN ĐẶC BIỆT",
+      "subtitle": "PHÁP BẢO TINH LUYỆN",
+      "banner_title": "CƯỜNG HÓA PHÁP BẢO",
+      "description": "Cường hóa Pháp Bảo từ Thứ 6 đến hết Chủ nhật.",
+      "starts_at": "2026-10-16T00:00:00+07:00",
+      "ends_at": "2026-10-18T23:59:00+07:00",
+      "recurrence": {"interval": "week"},
+      "requirements": {"level": 20, "vip": 0},
+      "route_id": "talisman",
+      "quests": [
+        {"quest_id":"enhance_talisman_5","type":"talisman_enhance","name":"Cường hóa Pháp Bảo 5 lần","target":5,"icon_type":"extra","icon_key":"dismantle","filters":{},"rewards":{"normal":[{"type":"resource","id":"gold","amount":20000},{"type":"resource","id":"gems","amount":10},{"type":"item","id":"huyen_thiet_ha","amount":10}],"vip":{"required_vip":1,"grants":[{"type":"resource","id":"gold","amount":30000},{"type":"resource","id":"gems","amount":15},{"type":"item","id":"huyen_thiet_ha","amount":15}]}}}
+      ]
+    }
+  ]
+}

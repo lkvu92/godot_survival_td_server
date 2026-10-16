@@ -1,0 +1,35 @@
+# Godot Client & OS (if switching branches)
+.godot/
+.import/
+export/
+builds/
+dist/
+android/
+addons/
+temp/
+/temp/
+*.tmp
+*.log
+startup-error.log
+.DS_Store
+Thumbs.db
+
+# Node.js dependencies
+node_modules/
+
+# Python
+__pycache__/
+*.pyc
+
+# Nakama runtime & build
+nakama/data/.cookie
+nakama/data/modules/build/
+nakama/local.yml
+nakama/iap.secret.yml
+nakama/backups/
+.env
+nakama/.env
+
+# Allow pre-compiled runtime bundle
+!nakama/data/build/
+!nakama/data/build/*.js

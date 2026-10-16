@@ -1,0 +1,141 @@
+[
+  {
+    "id": "arc_0",
+    "order": 0,
+    "display_name": "Diễn Võ Trường",
+    "element": "water",
+    "description": "Đấu trường thử nghiệm với Dummy Boss 1.000.000 HP, ATK = 1, DEF bình thường, range 1/3 màn hình.",
+    "stage_ids": [
+      "stage_0_1"
+    ]
+  },
+  {
+    "id": "arc_frozen_realm",
+    "display_name": "Băng Giới",
+    "description": "Băng Nguyên Hoang Dã - Thử thách khởi đầu, làm quen nhịp độ và đạt cấp 20 tự nhiên.",
+    "level_min": 1,
+    "level_max": 10,
+    "enabled_if": {
+      "type": "always"
+    },
+    "element": "water",
+    "order": 1,
+    "boss_skill_ids": ["control_resistance_growth"],
+    "stage_ids": [
+      "stage_frozen_frontier",
+      "stage_1_02",
+      "stage_1_03",
+      "stage_1_04",
+      "stage_1_05",
+      "stage_1_06",
+      "stage_1_07",
+      "stage_1_08",
+      "stage_1_09",
+      "stage_1_10"
+    ]
+  },
+  {
+    "id": "arc_2",
+    "display_name": "Hỏa Giới",
+    "description": "Hỏa Sơn Quỷ Vực - Nhiệt độ thiêu đốt, quái di chuyển thần tốc yêu cầu khả năng thả diều và khắc hệ.",
+    "level_min": 11,
+    "level_max": 20,
+    "enabled_if": {
+      "type": "always"
+    },
+    "element": "fire",
+    "order": 2,
+    "enemy_visual_scale_multiplier": 2.0,
+    "boss_skill_ids": ["control_resistance_growth"],
+    "stage_ids": [
+      "stage_flame_frontier",
+      "stage_2_02",
+      "stage_2_03",
+      "stage_2_04",
+      "stage_2_05",
+      "stage_2_06",
+      "stage_2_07",
+      "stage_2_08",
+      "stage_2_09",
+      "stage_2_10"
+    ]
+  },
+  {
+    "id": "arc_verdant_realm",
+    "display_name": "Mộc Giới",
+    "description": "U Tối Rừng Thiêng - Đầm lầy độc mộc và quái hồi phục mạnh mẽ, thử thách khống chế và dồn sát thương AoE.",
+    "level_min": 21,
+    "level_max": 30,
+    "enabled_if": {
+      "type": "always"
+    },
+    "element": "wood",
+    "order": 3,
+    "enemy_visual_scale_multiplier": 2.0,
+    "boss_skill_ids": ["control_resistance_growth"],
+    "stage_ids": [
+      "stage_3_01",
+      "stage_3_02",
+      "stage_3_03",
+      "stage_3_04",
+      "stage_3_05",
+      "stage_3_06",
+      "stage_3_07",
+      "stage_3_08",
+      "stage_3_09",
+      "stage_3_10"
+    ]
+  },
+  {
+    "id": "arc_iron_bastion",
+    "display_name": "Kim Giới",
+    "description": "Thiết Giáp Pháo Đài - Bức tường phòng thủ kiên cố, người chơi cần đòn bạo kích (Crit) để xuyên phá giáp dày.",
+    "level_min": 31,
+    "level_max": 40,
+    "enabled_if": {
+      "type": "always"
+    },
+    "element": "metal",
+    "order": 4,
+    "enemy_visual_scale_multiplier": 2.0,
+    "boss_skill_ids": ["control_resistance_growth"],
+    "stage_ids": [
+      "stage_4_01",
+      "stage_4_02",
+      "stage_4_03",
+      "stage_4_04",
+      "stage_4_05",
+      "stage_4_06",
+      "stage_4_07",
+      "stage_4_08",
+      "stage_4_09",
+      "stage_4_10"
+    ]
+  },
+  {
+    "id": "arc_titan_realm",
+    "display_name": "Thổ Giới",
+    "description": "Thần Sơn Cổ Đại - Thử thách tột cùng đòi hỏi người chơi tích lũy cấp độ Hero và Cổ Ngữ Ngũ Hành đỉnh cao.",
+    "level_min": 41,
+    "level_max": 50,
+    "enabled_if": {
+      "type": "always"
+    },
+    "element": "earth",
+    "order": 5,
+    "enemy_visual_scale_multiplier": 2.0,
+    "boss_skill_ids": ["control_resistance_growth"],
+    "stage_ids": [
+      "stage_5_01",
+      "stage_5_02",
+      "stage_5_03",
+      "stage_5_04",
+      "stage_5_05",
+      "stage_5_06",
+      "stage_5_07",
+      "stage_5_08",
+      "stage_5_09",
+      "stage_5_10"
+    ]
+  }
+]
