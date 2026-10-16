@@ -27,6 +27,7 @@ nakama/data/.cookie
 nakama/data/modules/build/
 nakama/local.yml
 nakama/iap.secret.yml
+nakama/google-play-service-account.json
 nakama/backups/
 .env
 nakama/.env

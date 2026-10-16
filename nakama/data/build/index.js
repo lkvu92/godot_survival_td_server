@@ -2135,43 +2135,6 @@ function canonicalHeroStates(nk, source) {
     };
   });
 }
-function createStarterTalisman(nk, userId) {
-  const rows = nk.sqlQuery("SELECT attributes FROM game_items WHERE id = 'talisman_1' AND category = 'talisman'", []);
-  if (rows.length === 0) return null;
-  const attrs = parseJsonb(rows[0].attributes) || {};
-  const baseStats = attrs.base_stats && typeof attrs.base_stats === "object" ? attrs.base_stats : {};
-  const configRows = nk.sqlQuery("SELECT value FROM game_config WHERE key = 'progression'", []);
-  const progression = configRows.length > 0 ? parseJsonb(configRows[0].value) || {} : {};
-  const varianceRatio = Math.max(0, Math.min(100, Number((progression.talisman_system || {}).random_stat_variance_pct || 20))) * 0.01;
-  const rolled = {};
-  for (const key of Object.keys(baseStats)) {
-    const value = Number(baseStats[key] || 0) * (1 + (Math.random() * 2 - 1) * varianceRatio);
-    rolled[key] = key === "dodge_rate" ? Math.round(value * 1e3) / 1e3 : key.indexOf("_pct") >= 0 ? Math.round(value * 10) / 10 : Math.round(value);
-  }
-  return {
-    instance_id: `talisman_${userId}_${Date.now()}`,
-    item_id: "talisman_1",
-    category: "talisman",
-    quantity: 1,
-    acquired_at: (/* @__PURE__ */ new Date()).toISOString(),
-    expires_at: "",
-    level: 1,
-    exp: 0,
-    max_exp: 1,
-    durability: Math.max(1, Number(attrs.base_durability || 100)),
-    max_durability: Math.max(1, Number(attrs.max_durability || 100)),
-    is_equipped: true,
-    is_repairable: attrs.is_repairable !== false,
-    max_battle_uses: Math.max(0, Number(attrs.max_battle_uses || 0)),
-    skill_id: String(attrs.skill_id || "skill_talisman_1"),
-    durability_cost_per_cast: Math.max(0, Number(attrs.durability_cost_per_cast || 0)),
-    durability_cost_per_battle: Math.max(0, Number(attrs.durability_cost_per_battle || 0)),
-    tier_name: String(attrs.tier_name || ""),
-    base_rolled_stats: rolled,
-    current_stats: Object.assign({}, rolled),
-    reforge_affixes: []
-  };
-}
 const savePlayerProfile = (ctx, logger, nk, payload) => {
   const data = JSON.parse(payload);
   const writes = [];
@@ -2330,19 +2293,7 @@ const loadPlayerProfile = (ctx, logger, nk, payload) => {
   if (inventoryWasMissing) {
     result.inventory = { items: [], _iap_reward_ids: [] };
   }
-  let starterTalismanGranted = false;
-  const inventoryItems = Array.isArray(result.inventory.items) ? result.inventory.items : [];
-  const hasOwnedTalisman = inventoryItems.some((entry) => entry && /^talisman_[0-9]+$/.test(String(entry.item_id || "")));
-  if (result.profile && !hasOwnedTalisman) {
-    const starter = createStarterTalisman(nk, ctx.userId);
-    if (starter) {
-      inventoryItems.push(starter);
-      result.inventory.items = inventoryItems;
-      result.profile._starter_talisman_granted = true;
-      starterTalismanGranted = true;
-    }
-  }
-  if (inventoryWasMissing || starterTalismanGranted) {
+  if (inventoryWasMissing) {
     repairWrites.push({
       collection: "player_inventory",
       key: "items",
@@ -2368,7 +2319,7 @@ const loadPlayerProfile = (ctx, logger, nk, payload) => {
   if (repairWrites.length > 0) nk.storageWrite(repairWrites);
   result.monetization = buildMonetizationResponse(nk, ctx.userId, monetizationMode(ctx));
   if (result.profile && typeof result.profile === "object" && Object.keys(result.profile).length > 0) {
-    let profileChanged = starterTalismanGranted || cultivationEnsureProfile(nk, result.profile, true);
+    let profileChanged = cultivationEnsureProfile(nk, result.profile, true);
     if (cultivationEnsurePreview(nk, result.profile)) profileChanged = true;
     const nowRows = nk.sqlQuery("SELECT EXTRACT(EPOCH FROM NOW())::BIGINT AS now", []);
     const now = Number(nowRows.length > 0 ? nowRows[0].now : 0);

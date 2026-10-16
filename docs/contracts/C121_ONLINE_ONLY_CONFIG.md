@@ -1,6 +1,6 @@
 # C121 Online-only gameplay configuration
 
-Version: 1.0.0
+Version: 1.0.1
 Status: ACTIVE
 Updated: 2026-10-16
 
@@ -38,6 +38,9 @@ Transport failure/disconnection pauses active gameplay and routes to loading
 retry; invalid authentication routes to login. Periodic authenticated heartbeat
 detects an otherwise silent disconnection. No offline economy fallback or local
 settlement grants. Registration initialization belongs to load_player_profile.
+New profiles start with an empty inventory. Loading an existing profile never
+grants a talisman solely because the account has none; talismans remain available
+through explicit reward and purchase flows. Existing owned items are preserved.
 
 ## Rollout and tests
 
@@ -52,6 +55,7 @@ and Godot headless runtime tests. No new assets or visual styles.
 | Version | Date | Change |
 |---|---|---|
 | 1.0.0 | 2026-10-16 | DB-only gameplay catalogs, complete RPC, memory-only client snapshots and fail-closed connectivity. |
+| 1.0.1 | 2026-10-16 | Stop granting Thanh Phong Kiem automatically during profile load. |
 
 Local acceptance: GATE 1 contract/index/registry complete; GATE 2 Nakama build
 and Godot 4.6.3 scene compilation PASS; GATE 3 existing assets/skin preserved,
