@@ -1,5 +1,7 @@
 # Server documentation
 
+- [C129 Consumable store](contracts/C129_CONSUMABLE_STORE.md): item rarity/prices, Gold/Gem alternatives, item-paid renames and talent reroll.
+
 - [C124 Public proxy network](contracts/C124_PUBLIC_PROXY_NETWORK.md) v1.0.0: shared Nginx network and stable game service aliases.
 
 - [C119 Config and seed integrity](contracts/C119_CONFIG_SEED_INTEGRITY.md) — v1.0.0.

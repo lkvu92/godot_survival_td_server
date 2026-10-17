@@ -2037,12 +2037,24 @@ const publishConfigRelease = (ctx, _logger, nk, payload) => {
 
 const HERO_ID_MIGRATIONS = { ice_demoness: "hero_1", flame_archer: "hero_2" };
 function ensurePlayerName(nk, userId, profile) {
+  if (!Number.isSafeInteger(Number(profile.name_changes_used || 0)) || Number(profile.name_changes_used || 0) < 0) throw new Error("Invalid rename counter");
   const identities = nk.storageRead([{ collection: "player_identity", key: "name", userId }]);
   if (identities.length) {
     const identity = identities[0].value;
-    const changed = profile.display_name !== identity.display_name || Number(profile.name_changes_used || 0) !== Number(identity.name_changes_used || 0);
+    if (!Number.isSafeInteger(Number(identity.name_changes_used || 0)) || Number(identity.name_changes_used || 0) < 0) throw new Error("Invalid identity rename counter");
+    const used = Math.max(0, Number(identity.name_changes_used || 0), Number(profile.name_changes_used || 0));
+    const changed = profile.display_name !== identity.display_name || Number(profile.name_changes_used || 0) !== used;
+    if (Number(identity.name_changes_used || 0) !== used) nk.storageWrite([{
+      collection: "player_identity",
+      key: "name",
+      userId,
+      value: Object.assign({}, identity, { name_changes_used: used }),
+      permissionRead: 1,
+      permissionWrite: 0,
+      version: identities[0].version
+    }]);
     profile.display_name = identity.display_name;
-    profile.name_changes_used = Number(identity.name_changes_used || 0);
+    profile.name_changes_used = used;
     return changed;
   }
   const account = nk.accountGetId(userId);
@@ -2053,7 +2065,7 @@ function ensurePlayerName(nk, userId, profile) {
     collection: "player_identity",
     key: "name",
     userId,
-    value: { display_name: profile.display_name, name_changes_used: Math.min(1, Number(profile.name_changes_used || 0)) },
+    value: { display_name: profile.display_name, name_changes_used: Math.max(0, Number(profile.name_changes_used || 0)) },
     permissionRead: 1,
     permissionWrite: 0,
     version: "*"
@@ -2076,40 +2088,67 @@ const renamePlayer = (ctx, _logger, nk, payload) => {
   const rows = nk.storageRead([{ collection: "player_profiles", key: "main", userId: ctx.userId }]);
   if (!rows.length) return fail(409, "Ch\u01B0a t\u1EA3i \u0111\u01B0\u1EE3c h\u1ED3 s\u01A1. H\xE3y \u0111\u0103ng nh\u1EADp l\u1EA1i.");
   const profile = rows[0].value;
-  ensurePlayerName(nk, ctx.userId, profile);
-  const identities = nk.storageRead([{ collection: "player_identity", key: "name", userId: ctx.userId }]);
-  if (Number(profile.name_changes_used || 0) >= 1) {
-    if (profile.display_name === name) return JSON.stringify({ success: true, display_name: name, name_changes_used: 1 });
-    return fail(409, "B\u1EA1n \u0111\xE3 s\u1EED d\u1EE5ng l\u01B0\u1EE3t \u0111\u1ED5i t\xEAn duy nh\u1EA5t c\u1EE7a t\xE0i kho\u1EA3n.");
-  }
-  if (profile.display_name === name) return fail(400, "H\xE3y nh\u1EADp t\xEAn m\u1EDBi kh\xE1c t\xEAn hi\u1EC7n t\u1EA1i.");
-  profile.display_name = name;
-  profile.name_changes_used = 1;
   try {
-    nk.storageWrite([
-      {
-        collection: "player_profiles",
-        key: "main",
-        userId: ctx.userId,
-        value: profile,
-        permissionRead: 1,
-        permissionWrite: 0,
-        version: rows[0].version
-      },
-      {
-        collection: "player_identity",
-        key: "name",
-        userId: ctx.userId,
-        value: { display_name: name, name_changes_used: 1 },
-        permissionRead: 1,
-        permissionWrite: 0,
-        version: identities[0].version
-      }
-    ]);
+    ensurePlayerName(nk, ctx.userId, profile);
+  } catch (_e) {
+    return fail(409, "Ch\u01B0a \u0111\u1ED3ng b\u1ED9 \u0111\u01B0\u1EE3c l\u01B0\u1EE3t \u0111\u1ED5i t\xEAn. H\xE3y t\u1EA3i l\u1EA1i h\u1ED3 s\u01A1.");
+  }
+  const identities = nk.storageRead([{ collection: "player_identity", key: "name", userId: ctx.userId }]);
+  const used = Math.max(0, Number(profile.name_changes_used || 0));
+  const inventoryRows = nk.storageRead([{ collection: "player_inventory", key: "items", userId: ctx.userId }]);
+  const inventoryValue = inventoryRows.length ? inventoryRows[0].value : { items: [] };
+  if (profile.display_name === name) return used > 0 ? JSON.stringify({ success: true, display_name: name, name_changes_used: used, idempotent: true, inventory: inventoryValue.items || [] }) : fail(400, "H\xE3y nh\u1EADp t\xEAn m\u1EDBi kh\xE1c t\xEAn hi\u1EC7n t\u1EA1i.");
+  const items = Array.isArray(inventoryValue.items) ? inventoryValue.items : [];
+  if (used >= 1) {
+    const card = items.find((entry) => entry.item_id === "rename_talisman" && Number.isSafeInteger(entry.quantity) && entry.quantity > 0);
+    if (!card) return fail(409, "C\u1EA7n 1 Th\u1EBB \u0111\u1ED5i t\xEAn. B\u1EA1n \u0111\xE3 s\u1EED d\u1EE5ng l\u01B0\u1EE3t \u0111\u1ED5i t\xEAn mi\u1EC5n ph\xED.");
+    card.quantity -= 1;
+    inventoryValue.items = items.filter((entry) => entry.quantity > 0);
+  }
+  profile.display_name = name;
+  profile.name_changes_used = used + 1;
+  const writes = [
+    {
+      collection: "player_profiles",
+      key: "main",
+      userId: ctx.userId,
+      value: profile,
+      permissionRead: 1,
+      permissionWrite: 0,
+      version: rows[0].version
+    },
+    {
+      collection: "player_identity",
+      key: "name",
+      userId: ctx.userId,
+      value: { display_name: name, name_changes_used: used + 1 },
+      permissionRead: 1,
+      permissionWrite: 0,
+      version: identities[0].version
+    }
+  ];
+  if (used >= 1) writes.push({
+    collection: "player_inventory",
+    key: "items",
+    userId: ctx.userId,
+    value: inventoryValue,
+    permissionRead: 1,
+    permissionWrite: 0,
+    version: inventoryRows[0].version
+  });
+  try {
+    nk.storageWrite(writes);
   } catch (_e) {
     return fail(409, "H\u1ED3 s\u01A1 \u0111\xE3 thay \u0111\u1ED5i. H\xE3y t\u1EA3i l\u1EA1i h\u1ED3 s\u01A1 tr\u01B0\u1EDBc khi th\u1EED l\u1EA1i.");
   }
-  return JSON.stringify({ success: true, display_name: name, name_changes_used: 1 });
+  return JSON.stringify({
+    success: true,
+    display_name: name,
+    name_changes_used: used + 1,
+    used_free: used === 0,
+    consumed_item_id: used >= 1 ? "rename_talisman" : "",
+    inventory: inventoryValue.items || []
+  });
 };
 const setPlayerAvatar = (ctx, _logger, nk, payload) => {
   if (!ctx.userId) return JSON.stringify({ success: false, code: 401, message: "Authentication required" });
@@ -2169,7 +2208,7 @@ function defaultPlayerProfile(displayName) {
     avatar_url: "hero_1",
     level: 1,
     exp: 0,
-    next_level_exp: 1e4,
+    next_level_exp: 1e3,
     progression_version: 2,
     vip: 0,
     vip_exp: 0,
@@ -3267,7 +3306,7 @@ const talismanAction = (ctx, _logger, nk, payload) => {
     return JSON.stringify({ success: false, message: "Invalid JSON" });
   }
   const action = String(req.action || "");
-  if (["equip", "upgrade", "repair", "quote_upgrade", "quote_craft", "craft", "buy_fragment", "buy_material"].indexOf(action) < 0) {
+  if (["equip", "upgrade", "repair", "quote_upgrade", "quote_craft", "craft", "buy_fragment", "buy_material", "reroll_talent"].indexOf(action) < 0) {
     return JSON.stringify({ success: false, message: "Unsupported talisman action" });
   }
   const stored = nk.storageRead([
@@ -3283,6 +3322,7 @@ const talismanAction = (ctx, _logger, nk, payload) => {
   const profile = talismanJsonObject(profileObject.value);
   const items = Array.isArray(inventoryValue.items) ? inventoryValue.items : [];
   const resources = talismanJsonObject(profile.resources);
+  let rerolledTalent = null;
   let upgradeAttempted = false;
   let upgradeSucceeded = true;
   let upgradeSuccessRate = 0;
@@ -3291,23 +3331,66 @@ const talismanAction = (ctx, _logger, nk, payload) => {
   const itemId = `talisman_${talismanId}`;
   let target = items.find((entry) => entry && String(entry.item_id || "") === itemId);
   const requestId = String(req.request_id || "");
+  const isItemRequest = action === "buy_material" || action === "reroll_talent";
+  const fingerprint = JSON.stringify([action, action === "reroll_talent" ? "spirit_root_reset" : String(req.item_id || ""), req.currency === void 0 ? "gold" : String(req.currency)]);
+  if (isItemRequest) {
+    if (!/^[A-Za-z0-9_-]{1,128}$/.test(requestId)) return JSON.stringify({ success: false, message: "M\xE3 y\xEAu c\u1EA7u kh\xF4ng h\u1EE3p l\u1EC7" });
+    const previous = nk.storageRead([{ collection: "player_item_requests", key: requestId, userId: ctx.userId }]);
+    if (previous.length) {
+      if (previous[0].value.fingerprint !== fingerprint) return JSON.stringify({ success: false, message: "M\xE3 y\xEAu c\u1EA7u \u0111\xE3 d\xF9ng cho giao d\u1ECBch kh\xE1c" });
+      return JSON.stringify({ success: true, duplicate: true, inventory: items, resources, profile, rolled: previous[0].value.rolled });
+    }
+  }
   const handledRequestIds = Array.isArray(inventoryValue._talisman_request_ids) ? inventoryValue._talisman_request_ids : [];
-  if ((action === "craft" || action === "buy_fragment" || action === "buy_material") && requestId && handledRequestIds.indexOf(requestId) >= 0) {
+  if ((action === "craft" || action === "buy_fragment") && requestId && handledRequestIds.indexOf(requestId) >= 0) {
     return JSON.stringify({ success: true, duplicate: true, inventory: items, resources });
   }
-  if (action === "buy_material") {
+  if (action === "reroll_talent") {
+    if (!requestId || requestId.length > 128) return JSON.stringify({ success: false, message: "M\xE3 y\xEAu c\u1EA7u kh\xF4ng h\u1EE3p l\u1EC7" });
+    const receipts = Array.isArray(inventoryValue._talent_reroll_receipts) ? inventoryValue._talent_reroll_receipts : [];
+    const receipt = receipts.find((entry) => entry.request_id === requestId);
+    if (receipt) return JSON.stringify({ success: true, duplicate: true, rolled: receipt.rolled, inventory: items, profile, resources });
+    const active = nk.storageRead([{ collection: "player_stage_runs", key: "active", userId: ctx.userId }]);
+    if (active.length && active[0].value.status === "active" && Number(active[0].value.expires_at_ms) > Date.now() || profile.breakthrough && profile.breakthrough.in_tribulation) {
+      return JSON.stringify({ success: false, message: "Kh\xF4ng th\u1EC3 t\u1EA9y thi\xEAn ph\xFA khi \u0111ang trong tr\u1EADn ho\u1EB7c Thi\xEAn Ki\u1EBFp" });
+    }
+    const catalog = nk.sqlQuery("SELECT attributes FROM game_items WHERE id=$1", ["spirit_root_reset"]);
+    if (!catalog.length || talismanJsonObject(catalog[0].attributes).use_action !== "reroll_talent") return JSON.stringify({ success: false, message: "T\u1EA9y Linh Qu\u1EA3 ch\u01B0a \u0111\u01B0\u1EE3c c\u1EA5u h\xECnh" });
+    if (!talismanRemoveItems(items, "spirit_root_reset", 1)) return JSON.stringify({ success: false, message: "C\u1EA7n 1 T\u1EA9y Linh Qu\u1EA3" });
+    rerolledTalent = cultivationRollProfile();
+    Object.assign(profile, rerolledTalent);
+    if (profile.breakthrough) Object.assign(profile.breakthrough, { count_rolled: false, tribulation_count: 0, encounter_id: "", encounter_seed: 0, skill_set: [] });
+    receipts.push({ request_id: requestId, rolled: rerolledTalent });
+    inventoryValue._talent_reroll_receipts = receipts.slice(-100);
+  } else if (action === "buy_material") {
     const requestedItemId = String(req.item_id || "");
+    const currency = req.currency === void 0 ? "gold" : String(req.currency);
+    if (["gold", "gems"].indexOf(currency) < 0 || !requestedItemId || !requestId || requestId.length > 128) {
+      return JSON.stringify({ success: false, message: "Y\xEAu c\u1EA7u mua v\u1EADt ph\u1EA9m kh\xF4ng h\u1EE3p l\u1EC7" });
+    }
+    const receipts = Array.isArray(inventoryValue._store_receipts) ? inventoryValue._store_receipts : [];
+    const receipt = receipts.find((entry) => entry.request_id === requestId);
+    if (receipt) {
+      if (receipt.item_id !== requestedItemId || receipt.currency !== currency) return JSON.stringify({ success: false, message: "M\xE3 giao d\u1ECBch \u0111\xE3 d\xF9ng cho v\u1EADt ph\u1EA9m kh\xE1c" });
+      return JSON.stringify({ success: true, duplicate: true, inventory: items, resources });
+    }
+    if (handledRequestIds.indexOf(requestId) >= 0) return JSON.stringify({ success: false, message: "M\xE3 giao d\u1ECBch \u0111\xE3 \u0111\u01B0\u1EE3c s\u1EED d\u1EE5ng" });
     const store = talismanJsonObject(talismanConfig(nk).store);
     const materialProducts = Array.isArray(store.materials) ? store.materials : [];
-    const product = materialProducts.find((entry) => entry && String(entry.item_id || "") === requestedItemId && String(entry.currency || "") === "gold");
-    if (!product) return JSON.stringify({ success: false, message: "V\u1EADt ph\u1EA9m kh\xF4ng \u0111\u01B0\u1EE3c b\xE1n b\u1EB1ng V\xE0ng" });
-    const price = Math.max(1, Math.floor(Number(product.price || 0)));
-    const grantQuantity = Math.max(1, Math.floor(Number(product.quantity || 1)));
-    if (Number(resources.gold || 0) < price) return JSON.stringify({ success: false, message: "Kh\xF4ng \u0111\u1EE7 V\xE0ng" });
+    const product = materialProducts.find((entry) => entry && String(entry.item_id || "") === requestedItemId && String(entry.currency || "") === currency);
+    if (!product || product.enabled === false) return JSON.stringify({ success: false, message: "V\u1EADt ph\u1EA9m ch\u01B0a \u0111\u01B0\u1EE3c b\xE1n b\u1EB1ng lo\u1EA1i ti\u1EC1n n\xE0y" });
+    const price = Number(product.price);
+    const grantQuantity = Number(product.quantity);
+    if (!Number.isSafeInteger(price) || price <= 0 || !Number.isSafeInteger(grantQuantity) || grantQuantity <= 0) return JSON.stringify({ success: false, message: "C\u1EA5u h\xECnh gi\xE1 kh\xF4ng h\u1EE3p l\u1EC7" });
+    const balance = Number(resources[currency] || 0);
+    if (!Number.isSafeInteger(balance) || balance < 0) return JSON.stringify({ success: false, message: "S\u1ED1 d\u01B0 kh\xF4ng h\u1EE3p l\u1EC7; vui l\xF2ng \u0111\u1ED3ng b\u1ED9 l\u1EA1i h\u1ED3 s\u01A1" });
+    if (balance < price) return JSON.stringify({ success: false, message: currency === "gold" ? "Kh\xF4ng \u0111\u1EE7 V\xE0ng" : "Kh\xF4ng \u0111\u1EE7 Gem" });
     if (!serverGrantInventoryItem(nk, items, requestedItemId, grantQuantity)) {
       return JSON.stringify({ success: false, message: "Kh\xF4ng th\u1EC3 c\u1EA5p v\u1EADt ph\u1EA9m" });
     }
-    resources.gold = Number(resources.gold || 0) - price;
+    resources[currency] = balance - price;
+    receipts.push({ request_id: requestId, item_id: requestedItemId, currency });
+    inventoryValue._store_receipts = receipts.slice(-100);
     if (requestId) handledRequestIds.push(requestId);
   } else if (action === "buy_fragment") {
     const quantity = Math.max(1, Math.floor(Number(req.quantity || 1)));
@@ -3451,7 +3534,7 @@ const talismanAction = (ctx, _logger, nk, payload) => {
   inventoryValue.items = items;
   inventoryValue._talisman_request_ids = handledRequestIds.slice(-100);
   profile.resources = resources;
-  nk.storageWrite([
+  const actionWrites = [
     {
       collection: "player_inventory",
       key: "items",
@@ -3470,7 +3553,21 @@ const talismanAction = (ctx, _logger, nk, payload) => {
       permissionWrite: 0,
       version: profileObject.version
     }
-  ]);
+  ];
+  if (isItemRequest) actionWrites.push({
+    collection: "player_item_requests",
+    key: requestId,
+    userId: ctx.userId,
+    value: { fingerprint, rolled: rerolledTalent, created_at: Date.now() },
+    permissionRead: 1,
+    permissionWrite: 0,
+    version: "*"
+  });
+  try {
+    nk.storageWrite(actionWrites);
+  } catch (_e) {
+    return JSON.stringify({ success: false, message: "D\u1EEF li\u1EC7u \u0111\xE3 thay \u0111\u1ED5i. Vui l\xF2ng \u0111\u1ED3ng b\u1ED9 r\u1ED3i th\u1EED l\u1EA1i." });
+  }
   if (action === "upgrade" && upgradeSucceeded) {
     eventRecord(
       nk,
@@ -3490,6 +3587,8 @@ const talismanAction = (ctx, _logger, nk, payload) => {
     message: action === "upgrade" && !upgradeSucceeded ? "Talisman enhancement failed" : "",
     inventory: items,
     resources,
+    profile: rerolledTalent ? profile : void 0,
+    rolled: rerolledTalent || void 0,
     level: target ? Number(target.level || 1) : 0,
     exp: target ? Number(target.exp || 0) : 0,
     max_exp: target ? Number(target.max_exp || 20) : 0,
@@ -4526,6 +4625,12 @@ const awardStageProgression = (ctx, _logger, nk, payload) => {
       eventRecord(nk, ctx.userId, "item_earned", Number(reward.quantity), { item_id: String(reward.item_id) }, `${runId}:${reward.item_id}`);
     }
   }
+  if (typeof writePlayerLeaderboardRecords === "function") {
+    try {
+      writePlayerLeaderboardRecords(nk, ctx.userId, profile, profile.display_name);
+    } catch (_lbErr) {
+    }
+  }
   userResult.unlocked_arcs = profile.unlocked_arcs;
   userResult.unlocked_stages = profile.unlocked_stages;
   userResult.completed_stage_levels = profile.completed_stage_levels;
@@ -4658,6 +4763,12 @@ const tribulationAction = (ctx, _logger, nk, payload) => {
     permissionWrite: 0,
     version: object.version
   }]);
+  if (typeof writePlayerLeaderboardRecords === "function") {
+    try {
+      writePlayerLeaderboardRecords(nk, ctx.userId, profile, profile.display_name);
+    } catch (_lbErr) {
+    }
+  }
   return JSON.stringify({
     ok: true,
     outcome_success: true,
@@ -6225,38 +6336,13 @@ function syncAllStoredProfilesToLeaderboards(nk, logger) {
       reads.push({ collection: "player_profiles", key: "main", userId: uid });
       usernameMap[uid] = String(r.username || "\u0110\u1EA1o H\u1EEFu");
     }
-    const catalog = readCombatPowerCatalog(nk);
     const objects = nk.storageRead(reads);
     let count = 0;
     for (const obj of objects) {
       const userId = obj.userId;
       const profile = obj.value || {};
-      const level = Math.max(1, Math.min(50, Number(profile.level || 1)));
-      const vip = Number(profile.vip || (profile.vip_progress ? profile.vip_progress.level : 0) || 0);
-      const heroId = String(profile.avatar_url || "hero_1");
       const displayName = String(profile.display_name || usernameMap[userId] || "\u0110\u1EA1o H\u1EEFu");
-      let highestStage = 1;
-      if (Array.isArray(profile.unlocked_stages)) {
-        highestStage = Math.max(1, profile.unlocked_stages.length);
-      }
-      const power = readPlayerCombatPower(nk, userId, profile, catalog);
-      const combatPower = power.score;
-      const realmTitle = getLeaderboardRealmTitle(level);
-      const metadata = {
-        display_name: displayName,
-        avatar_url: heroId,
-        hero_id: heroId,
-        vip,
-        level,
-        realm: realmTitle,
-        stage: highestStage,
-        combat_power: combatPower,
-        power_version: power.version,
-        power_hero_id: power.hero_id
-      };
-      nk.leaderboardRecordWrite("cultivation_realm", userId, displayName, level, 0, metadata);
-      nk.leaderboardRecordWrite("campaign_stage", userId, displayName, highestStage, 0, metadata);
-      nk.leaderboardRecordWrite("combat_power_v2", userId, displayName, combatPower, 0, metadata);
+      writePlayerLeaderboardRecords(nk, userId, profile, displayName);
       count++;
     }
     logger.info(`Synced ${count} real player profiles from DB to leaderboards.`);
@@ -6266,31 +6352,33 @@ function syncAllStoredProfilesToLeaderboards(nk, logger) {
     return -1;
   }
 }
-const syncPlayerLeaderboards = (ctx, logger, nk, _payload) => {
-  if (!ctx.userId) return JSON.stringify({ success: false, code: 401, message: "Unauthorized" });
-  const stored = nk.storageRead([{ collection: "player_profiles", key: "main", userId: ctx.userId }]);
-  if (!stored || stored.length === 0) {
-    return JSON.stringify({ success: false, code: 404, message: "Profile not found" });
-  }
-  const profile = stored[0].value || {};
+function writePlayerLeaderboardRecords(nk, userId, profile, displayName) {
   const level = Math.max(1, Math.min(50, Number(profile.level || 1)));
   const vip = Number(profile.vip || (profile.vip_progress ? profile.vip_progress.level : 0) || 0);
   const heroId = String(profile.avatar_url || "hero_1");
-  const displayName = String(profile.display_name || ctx.username || "\u0110\u1EA1o H\u1EEFu");
+  let name = String(displayName || profile.display_name || "").trim();
+  if (!name) {
+    try {
+      const acc = nk.accountGetId(userId);
+      name = acc && acc.user && (acc.user.displayName || acc.user.username) ? acc.user.displayName || acc.user.username : "\u0110\u1EA1o H\u1EEFu";
+    } catch (_e) {
+      name = "\u0110\u1EA1o H\u1EEFu";
+    }
+  }
   let highestStage = 1;
   if (Array.isArray(profile.unlocked_stages)) {
     highestStage = Math.max(1, profile.unlocked_stages.length);
   }
-  let power;
+  let power = { score: 0, version: 2, hero_id: heroId };
   try {
-    power = readPlayerCombatPower(nk, ctx.userId, profile, readCombatPowerCatalog(nk));
+    const catalog = readCombatPowerCatalog(nk);
+    power = readPlayerCombatPower(nk, userId, profile, catalog);
   } catch (_e) {
-    return JSON.stringify({ success: false, code: 503, message: "Combat power config unavailable; update server progression config" });
   }
-  const combatPower = power.score;
+  const combatPower = Number(power.score || 0);
   const realmTitle = getLeaderboardRealmTitle(level);
   const metadata = {
-    display_name: displayName,
+    display_name: name,
     avatar_url: heroId,
     hero_id: heroId,
     vip,
@@ -6301,10 +6389,22 @@ const syncPlayerLeaderboards = (ctx, logger, nk, _payload) => {
     power_version: power.version,
     power_hero_id: power.hero_id
   };
+  nk.leaderboardRecordWrite("cultivation_realm", userId, name, level, 0, metadata);
+  nk.leaderboardRecordWrite("campaign_stage", userId, name, highestStage, 0, metadata);
+  nk.leaderboardRecordWrite("combat_power_v2", userId, name, combatPower, 0, metadata);
+  return { metadata, power, level, highestStage, combatPower, name };
+}
+const syncPlayerLeaderboards = (ctx, logger, nk, _payload) => {
+  if (!ctx.userId) return JSON.stringify({ success: false, code: 401, message: "Unauthorized" });
+  const stored = nk.storageRead([{ collection: "player_profiles", key: "main", userId: ctx.userId }]);
+  if (!stored || stored.length === 0) {
+    return JSON.stringify({ success: false, code: 404, message: "Profile not found" });
+  }
+  const profile = stored[0].value || {};
+  const displayName = String(profile.display_name || ctx.username || "\u0110\u1EA1o H\u1EEFu");
+  let result;
   try {
-    nk.leaderboardRecordWrite("cultivation_realm", ctx.userId, displayName, level, 0, metadata);
-    nk.leaderboardRecordWrite("campaign_stage", ctx.userId, displayName, highestStage, 0, metadata);
-    nk.leaderboardRecordWrite("combat_power_v2", ctx.userId, displayName, combatPower, 0, metadata);
+    result = writePlayerLeaderboardRecords(nk, ctx.userId, profile, displayName);
   } catch (e) {
     logger.error("Failed to write leaderboard records: " + String(e.message || e));
     return JSON.stringify({ success: false, code: 500, message: "Failed to write leaderboard" });
@@ -6312,12 +6412,12 @@ const syncPlayerLeaderboards = (ctx, logger, nk, _payload) => {
   return JSON.stringify({
     success: true,
     scores: {
-      cultivation_realm: level,
-      campaign_stage: highestStage,
-      combat_power: combatPower
+      cultivation_realm: result.level,
+      campaign_stage: result.highestStage,
+      combat_power: result.combatPower
     },
-    metadata,
-    combat_power_detail: power
+    metadata: result.metadata,
+    combat_power_detail: result.power
   });
 };
 const getLeaderboardRecords = (ctx, logger, nk, payload) => {

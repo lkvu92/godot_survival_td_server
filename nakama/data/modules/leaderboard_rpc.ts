@@ -51,42 +51,13 @@ function syncAllStoredProfilesToLeaderboards(nk: nkruntime.Nakama, logger: nkrun
             usernameMap[uid] = String(r.username || "Đạo Hữu");
         }
 
-        const catalog = readCombatPowerCatalog(nk);
         const objects = nk.storageRead(reads);
         let count = 0;
         for (const obj of objects) {
             const userId = obj.userId;
             const profile = obj.value || {};
-
-            const level = Math.max(1, Math.min(50, Number(profile.level || 1)));
-            const vip = Number(profile.vip || (profile.vip_progress ? profile.vip_progress.level : 0) || 0);
-            const heroId = String(profile.avatar_url || "hero_1");
             const displayName = String(profile.display_name || usernameMap[userId] || "Đạo Hữu");
-
-            let highestStage = 1;
-            if (Array.isArray(profile.unlocked_stages)) {
-                highestStage = Math.max(1, profile.unlocked_stages.length);
-            }
-            const power = readPlayerCombatPower(nk, userId, profile, catalog);
-            const combatPower = power.score;
-            const realmTitle = getLeaderboardRealmTitle(level);
-
-            const metadata = {
-                display_name: displayName,
-                avatar_url: heroId,
-                hero_id: heroId,
-                vip: vip,
-                level: level,
-                realm: realmTitle,
-                stage: highestStage,
-                combat_power: combatPower,
-                power_version: power.version,
-                power_hero_id: power.hero_id
-            };
-
-            nk.leaderboardRecordWrite("cultivation_realm", userId, displayName, level, 0, metadata);
-            nk.leaderboardRecordWrite("campaign_stage", userId, displayName, highestStage, 0, metadata);
-            nk.leaderboardRecordWrite("combat_power_v2", userId, displayName, combatPower, 0, metadata);
+            writePlayerLeaderboardRecords(nk, userId, profile, displayName);
             count++;
         }
         logger.info(`Synced ${count} real player profiles from DB to leaderboards.`);
@@ -97,30 +68,34 @@ function syncAllStoredProfilesToLeaderboards(nk: nkruntime.Nakama, logger: nkrun
     }
 }
 
-const syncPlayerLeaderboards: nkruntime.RpcFunction = (ctx, logger, nk, _payload) => {
-    if (!ctx.userId) return JSON.stringify({ success: false, code: 401, message: "Unauthorized" });
-    const stored = nk.storageRead([{ collection: "player_profiles", key: "main", userId: ctx.userId }]);
-    if (!stored || stored.length === 0) {
-        return JSON.stringify({ success: false, code: 404, message: "Profile not found" });
-    }
-    const profile = stored[0].value || {};
+function writePlayerLeaderboardRecords(nk: nkruntime.Nakama, userId: string, profile: any, displayName?: string): any {
     const level = Math.max(1, Math.min(50, Number(profile.level || 1)));
     const vip = Number(profile.vip || (profile.vip_progress ? profile.vip_progress.level : 0) || 0);
     const heroId = String(profile.avatar_url || "hero_1");
-    const displayName = String(profile.display_name || ctx.username || "Đạo Hữu");
+    let name = String(displayName || profile.display_name || "").trim();
+    if (!name) {
+        try {
+            const acc = nk.accountGetId(userId);
+            name = (acc && acc.user && (acc.user.displayName || acc.user.username)) ? (acc.user.displayName || acc.user.username) : "Đạo Hữu";
+        } catch (_e) {
+            name = "Đạo Hữu";
+        }
+    }
 
     let highestStage = 1;
     if (Array.isArray(profile.unlocked_stages)) {
         highestStage = Math.max(1, profile.unlocked_stages.length);
     }
-    let power: any;
-    try { power = readPlayerCombatPower(nk, ctx.userId, profile, readCombatPowerCatalog(nk)); }
-    catch (_e) { return JSON.stringify({success:false,code:503,message:"Combat power config unavailable; update server progression config"}); }
-    const combatPower = power.score;
+    let power: any = { score: 0, version: 2, hero_id: heroId };
+    try {
+        const catalog = readCombatPowerCatalog(nk);
+        power = readPlayerCombatPower(nk, userId, profile, catalog);
+    } catch (_e) { }
+    const combatPower = Number(power.score || 0);
     const realmTitle = getLeaderboardRealmTitle(level);
 
     const metadata = {
-        display_name: displayName,
+        display_name: name,
         avatar_url: heroId,
         hero_id: heroId,
         vip: vip,
@@ -132,10 +107,25 @@ const syncPlayerLeaderboards: nkruntime.RpcFunction = (ctx, logger, nk, _payload
         power_hero_id: power.hero_id
     };
 
+    nk.leaderboardRecordWrite("cultivation_realm", userId, name, level, 0, metadata);
+    nk.leaderboardRecordWrite("campaign_stage", userId, name, highestStage, 0, metadata);
+    nk.leaderboardRecordWrite("combat_power_v2", userId, name, combatPower, 0, metadata);
+
+    return { metadata, power, level, highestStage, combatPower, name };
+}
+
+const syncPlayerLeaderboards: nkruntime.RpcFunction = (ctx, logger, nk, _payload) => {
+    if (!ctx.userId) return JSON.stringify({ success: false, code: 401, message: "Unauthorized" });
+    const stored = nk.storageRead([{ collection: "player_profiles", key: "main", userId: ctx.userId }]);
+    if (!stored || stored.length === 0) {
+        return JSON.stringify({ success: false, code: 404, message: "Profile not found" });
+    }
+    const profile = stored[0].value || {};
+    const displayName = String(profile.display_name || ctx.username || "Đạo Hữu");
+
+    let result: any;
     try {
-        nk.leaderboardRecordWrite("cultivation_realm", ctx.userId, displayName, level, 0, metadata);
-        nk.leaderboardRecordWrite("campaign_stage", ctx.userId, displayName, highestStage, 0, metadata);
-        nk.leaderboardRecordWrite("combat_power_v2", ctx.userId, displayName, combatPower, 0, metadata);
+        result = writePlayerLeaderboardRecords(nk, ctx.userId, profile, displayName);
     } catch (e: any) {
         logger.error("Failed to write leaderboard records: " + String(e.message || e));
         return JSON.stringify({ success: false, code: 500, message: "Failed to write leaderboard" });
@@ -144,12 +134,12 @@ const syncPlayerLeaderboards: nkruntime.RpcFunction = (ctx, logger, nk, _payload
     return JSON.stringify({
         success: true,
         scores: {
-            cultivation_realm: level,
-            campaign_stage: highestStage,
-            combat_power: combatPower
+            cultivation_realm: result.level,
+            campaign_stage: result.highestStage,
+            combat_power: result.combatPower
         },
-        metadata: metadata,
-        combat_power_detail: power
+        metadata: result.metadata,
+        combat_power_detail: result.power
     });
 };
 

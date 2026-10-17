@@ -1,10 +1,17 @@
 {
   "contracts": [
     {
-      "id": "C125_PLAYER_NAMES",
+      "id": "C129_CONSUMABLE_STORE",
       "version": "1.0.0",
       "status": "IN_PROGRESS",
-      "updated_at": "2026-10-16",
+      "updated_at": "2026-10-17",
+      "contract_file": "docs/contracts/C129_CONSUMABLE_STORE.md"
+    },
+    {
+      "id": "C125_PLAYER_NAMES",
+      "version": "1.1.0",
+      "status": "IN_PROGRESS",
+      "updated_at": "2026-10-17",
       "contract_file": "docs/contracts/C125_PLAYER_NAMES.md"
     },
     {

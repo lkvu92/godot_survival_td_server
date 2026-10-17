@@ -628,6 +628,11 @@ const awardStageProgression: nkruntime.RpcFunction = (
             eventRecord(nk, ctx.userId, "item_earned", Number(reward.quantity), { item_id: String(reward.item_id) }, `${runId}:${reward.item_id}`);
         }
     }
+    if (typeof writePlayerLeaderboardRecords === "function") {
+        try {
+            writePlayerLeaderboardRecords(nk, ctx.userId, profile, profile.display_name);
+        } catch (_lbErr) { }
+    }
     userResult.unlocked_arcs = profile.unlocked_arcs;
     userResult.unlocked_stages = profile.unlocked_stages;
     userResult.completed_stage_levels = profile.completed_stage_levels;
@@ -709,6 +714,11 @@ const tribulationAction: nkruntime.RpcFunction = (
     progressionReconcileLevelUnlocks(nk, profile);
     nk.storageWrite([{ collection: "player_profiles", key: "main", userId: ctx.userId, value: profile,
         permissionRead: 1, permissionWrite: 0, version: object.version }]);
+    if (typeof writePlayerLeaderboardRecords === "function") {
+        try {
+            writePlayerLeaderboardRecords(nk, ctx.userId, profile, profile.display_name);
+        } catch (_lbErr) { }
+    }
     return JSON.stringify({ ok: true, outcome_success: true, old_level: level, new_level: profile.level,
         attempts_left: CULTIVATION_MAX_ATTEMPTS, penalty_applied: false, reward, profile });
 };

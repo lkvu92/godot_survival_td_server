@@ -325,7 +325,7 @@ const talismanAction: nkruntime.RpcFunction = (ctx, _logger, nk, payload): strin
     try { req = JSON.parse(payload || "{}"); }
     catch (_e) { return JSON.stringify({ success: false, message: "Invalid JSON" }); }
     const action = String(req.action || "");
-    if (["equip", "upgrade", "repair", "quote_upgrade", "quote_craft", "craft", "buy_fragment", "buy_material"].indexOf(action) < 0) {
+    if (["equip", "upgrade", "repair", "quote_upgrade", "quote_craft", "craft", "buy_fragment", "buy_material", "reroll_talent"].indexOf(action) < 0) {
         return JSON.stringify({ success: false, message: "Unsupported talisman action" });
     }
 
@@ -342,6 +342,7 @@ const talismanAction: nkruntime.RpcFunction = (ctx, _logger, nk, payload): strin
     const profile = talismanJsonObject(profileObject.value);
     const items: any[] = Array.isArray(inventoryValue.items) ? inventoryValue.items : [];
     const resources = talismanJsonObject(profile.resources);
+	let rerolledTalent:any=null;
 	let upgradeAttempted = false;
 	let upgradeSucceeded = true;
 	let upgradeSuccessRate = 0;
@@ -350,26 +351,69 @@ const talismanAction: nkruntime.RpcFunction = (ctx, _logger, nk, payload): strin
     const itemId = `talisman_${talismanId}`;
     let target = items.find((entry: any) => entry && String(entry.item_id || "") === itemId);
 	const requestId = String(req.request_id || "");
+	const isItemRequest = action === "buy_material" || action === "reroll_talent";
+	const fingerprint = JSON.stringify([action,action === "reroll_talent" ? "spirit_root_reset" : String(req.item_id||""),req.currency===undefined?"gold":String(req.currency)]);
+	if (isItemRequest) {
+		if (!/^[A-Za-z0-9_-]{1,128}$/.test(requestId)) return JSON.stringify({success:false,message:"Mã yêu cầu không hợp lệ"});
+		const previous=nk.storageRead([{collection:"player_item_requests",key:requestId,userId:ctx.userId}]);
+		if (previous.length) {
+			if (previous[0].value.fingerprint!==fingerprint) return JSON.stringify({success:false,message:"Mã yêu cầu đã dùng cho giao dịch khác"});
+			return JSON.stringify({success:true,duplicate:true,inventory:items,resources,profile,rolled:previous[0].value.rolled});
+		}
+	}
 	const handledRequestIds: string[] = Array.isArray(inventoryValue._talisman_request_ids) ? inventoryValue._talisman_request_ids : [];
-	if ((action === "craft" || action === "buy_fragment" || action === "buy_material") && requestId && handledRequestIds.indexOf(requestId) >= 0) {
+	if ((action === "craft" || action === "buy_fragment") && requestId && handledRequestIds.indexOf(requestId) >= 0) {
 		return JSON.stringify({ success: true, duplicate: true, inventory: items, resources });
 	}
 
-    if (action === "buy_material") {
+    if (action === "reroll_talent") {
+		if (!requestId || requestId.length>128) return JSON.stringify({success:false,message:"Mã yêu cầu không hợp lệ"});
+		const receipts:any[]=Array.isArray(inventoryValue._talent_reroll_receipts)?inventoryValue._talent_reroll_receipts:[];
+		const receipt=receipts.find((entry:any)=>entry.request_id===requestId);
+		if (receipt) return JSON.stringify({success:true,duplicate:true,rolled:receipt.rolled,inventory:items,profile,resources});
+		const active=nk.storageRead([{collection:"player_stage_runs",key:"active",userId:ctx.userId}]);
+		if ((active.length && active[0].value.status==="active" && Number(active[0].value.expires_at_ms)>Date.now()) || (profile.breakthrough && profile.breakthrough.in_tribulation)) {
+			return JSON.stringify({success:false,message:"Không thể tẩy thiên phú khi đang trong trận hoặc Thiên Kiếp"});
+		}
+		const catalog=nk.sqlQuery("SELECT attributes FROM game_items WHERE id=$1",["spirit_root_reset"]);
+		if (!catalog.length || talismanJsonObject(catalog[0].attributes).use_action!=="reroll_talent") return JSON.stringify({success:false,message:"Tẩy Linh Quả chưa được cấu hình"});
+		if (!talismanRemoveItems(items,"spirit_root_reset",1)) return JSON.stringify({success:false,message:"Cần 1 Tẩy Linh Quả"});
+		rerolledTalent=cultivationRollProfile();
+		Object.assign(profile,rerolledTalent);
+		if (profile.breakthrough) Object.assign(profile.breakthrough,{count_rolled:false,tribulation_count:0,encounter_id:"",encounter_seed:0,skill_set:[]});
+		receipts.push({request_id:requestId,rolled:rerolledTalent});
+		inventoryValue._talent_reroll_receipts=receipts.slice(-100);
+    } else if (action === "buy_material") {
 		const requestedItemId = String(req.item_id || "");
+		const currency = req.currency === undefined ? "gold" : String(req.currency);
+		if (["gold", "gems"].indexOf(currency) < 0 || !requestedItemId || !requestId || requestId.length > 128) {
+			return JSON.stringify({ success: false, message: "Yêu cầu mua vật phẩm không hợp lệ" });
+		}
+		const receipts: any[] = Array.isArray(inventoryValue._store_receipts) ? inventoryValue._store_receipts : [];
+		const receipt = receipts.find((entry: any) => entry.request_id === requestId);
+		if (receipt) {
+			if (receipt.item_id !== requestedItemId || receipt.currency !== currency) return JSON.stringify({ success: false, message: "Mã giao dịch đã dùng cho vật phẩm khác" });
+			return JSON.stringify({ success: true, duplicate: true, inventory: items, resources });
+		}
+		if (handledRequestIds.indexOf(requestId) >= 0) return JSON.stringify({ success: false, message: "Mã giao dịch đã được sử dụng" });
 		const store = talismanJsonObject(talismanConfig(nk).store);
 		const materialProducts: any[] = Array.isArray(store.materials) ? store.materials : [];
 		const product = materialProducts.find((entry: any) => entry
 			&& String(entry.item_id || "") === requestedItemId
-			&& String(entry.currency || "") === "gold");
-		if (!product) return JSON.stringify({ success: false, message: "Vật phẩm không được bán bằng Vàng" });
-		const price = Math.max(1, Math.floor(Number(product.price || 0)));
-		const grantQuantity = Math.max(1, Math.floor(Number(product.quantity || 1)));
-		if (Number(resources.gold || 0) < price) return JSON.stringify({ success: false, message: "Không đủ Vàng" });
+			&& String(entry.currency || "") === currency);
+		if (!product || product.enabled === false) return JSON.stringify({ success: false, message: "Vật phẩm chưa được bán bằng loại tiền này" });
+		const price = Number(product.price);
+		const grantQuantity = Number(product.quantity);
+		if (!Number.isSafeInteger(price) || price <= 0 || !Number.isSafeInteger(grantQuantity) || grantQuantity <= 0) return JSON.stringify({ success: false, message: "Cấu hình giá không hợp lệ" });
+		const balance = Number(resources[currency] || 0);
+		if (!Number.isSafeInteger(balance) || balance < 0) return JSON.stringify({success:false,message:"Số dư không hợp lệ; vui lòng đồng bộ lại hồ sơ"});
+		if (balance < price) return JSON.stringify({ success: false, message: currency === "gold" ? "Không đủ Vàng" : "Không đủ Gem" });
 		if (!serverGrantInventoryItem(nk, items, requestedItemId, grantQuantity)) {
 			return JSON.stringify({ success: false, message: "Không thể cấp vật phẩm" });
 		}
-		resources.gold = Number(resources.gold || 0) - price;
+		resources[currency] = balance - price;
+		receipts.push({ request_id: requestId, item_id: requestedItemId, currency });
+		inventoryValue._store_receipts = receipts.slice(-100);
 		if (requestId) handledRequestIds.push(requestId);
     } else if (action === "buy_fragment") {
 		const quantity = Math.max(1, Math.floor(Number(req.quantity || 1)));
@@ -496,12 +540,15 @@ const talismanAction: nkruntime.RpcFunction = (ctx, _logger, nk, payload): strin
     inventoryValue.items = items;
 	inventoryValue._talisman_request_ids = handledRequestIds.slice(-100);
     profile.resources = resources;
-    nk.storageWrite([
+    const actionWrites:nkruntime.StorageWriteRequest[]=[
         { collection: "player_inventory", key: "items", userId: ctx.userId, value: inventoryValue,
             permissionRead: 1, permissionWrite: 0, version: inventoryObject.version },
         { collection: "player_profiles", key: "main", userId: ctx.userId, value: profile,
             permissionRead: 1, permissionWrite: 0, version: profileObject.version }
-    ]);
+    ];
+	if (isItemRequest) actionWrites.push({collection:"player_item_requests",key:requestId,userId:ctx.userId,
+		value:{fingerprint,rolled:rerolledTalent,created_at:Date.now()},permissionRead:1,permissionWrite:0,version:"*"});
+    try { nk.storageWrite(actionWrites); } catch (_e) { return JSON.stringify({success:false,message:"Dữ liệu đã thay đổi. Vui lòng đồng bộ rồi thử lại."}); }
 	if (action === "upgrade" && upgradeSucceeded) {
 		eventRecord(nk, ctx.userId, "talisman_enhance", 1, { talisman_id: talismanId },
 			requestId || `${talismanId}:${Number(target ? target.level : 0)}`);
@@ -509,7 +556,7 @@ const talismanAction: nkruntime.RpcFunction = (ctx, _logger, nk, payload): strin
 	return JSON.stringify({ success: action === "upgrade" ? upgradeSucceeded : true,
 		attempted: upgradeAttempted, consumed: upgradeAttempted, charm_consumed: charmConsumed, success_rate: upgradeSuccessRate,
 		message: action === "upgrade" && !upgradeSucceeded ? "Talisman enhancement failed" : "",
-		inventory: items, resources,
+		inventory: items, resources, profile: rerolledTalent ? profile : undefined, rolled: rerolledTalent || undefined,
         level: target ? Number(target.level || 1) : 0,
         exp: target ? Number(target.exp || 0) : 0,
         max_exp: target ? Number(target.max_exp || 20) : 0,

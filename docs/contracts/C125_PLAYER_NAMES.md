@@ -1,8 +1,10 @@
 # C125 — Player names and one-time rename
 
-- Version: `1.0.0`
+- Version: `1.1.0`
 - Status: `IN_PROGRESS`
-- Date: `2026-10-16`
+- Date: `2026-10-17`
+
+1.1.0 supersedes the one-time-only policy below: one free rename per account since creation; later renames consume rename_talisman (Thẻ đổi tên) x1. Counter is the monotonic total, reconciled with MAX(profile, durable identity) and never clamped to one. Inventory/card debit, profile and identity commit atomically. Same-name retries never spend another card. UI refreshes authoritative eligibility on open, distinguishes free vs item-paid, displays owned cards and disables unavailable actions. C129 defines catalog/prices. Offline/validation/CAS/account switch cannot spend an item.
 
 Google's Nakama username is an internal random identifier, separate from the game display name. On server profile bootstrap/repair, Google accounts with blank names or names equal to that generated username receive a persistent random game name `Tu Giả XXXXXX`. Email accounts use their registered username. Existing custom names remain unchanged. No local or hardcoded personal-name fallback.
 
@@ -16,4 +18,5 @@ Validation: compiled backend tests for generation/preservation, validation, one-
 
 | Version | Date | Change |
 |---|---|---|
+| 1.1.0 | 2026-10-17 | One free rename, then consume one rename card; monotonic legacy quota reconciliation and item-aware UI. |
 | 1.0.0 | 2026-10-16 | Persistent generated Google player names, account-owned display and one-time rename. |

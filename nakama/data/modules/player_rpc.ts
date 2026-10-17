@@ -1,11 +1,16 @@
 const HERO_ID_MIGRATIONS: any = { ice_demoness: "hero_1", flame_archer: "hero_2" };
 
 function ensurePlayerName(nk: nkruntime.Nakama, userId: string, profile: any): boolean {
+    if (!Number.isSafeInteger(Number(profile.name_changes_used||0)) || Number(profile.name_changes_used||0)<0) throw new Error("Invalid rename counter");
     const identities=nk.storageRead([{collection:"player_identity",key:"name",userId}]);
     if (identities.length) {
         const identity=identities[0].value;
-        const changed=profile.display_name!==identity.display_name || Number(profile.name_changes_used||0)!==Number(identity.name_changes_used||0);
-        profile.display_name=identity.display_name;profile.name_changes_used=Number(identity.name_changes_used||0);
+        if (!Number.isSafeInteger(Number(identity.name_changes_used||0)) || Number(identity.name_changes_used||0)<0) throw new Error("Invalid identity rename counter");
+        const used=Math.max(0,Number(identity.name_changes_used||0),Number(profile.name_changes_used||0));
+        const changed=profile.display_name!==identity.display_name || Number(profile.name_changes_used||0)!==used;
+        if (Number(identity.name_changes_used||0)!==used) nk.storageWrite([{collection:"player_identity",key:"name",userId,
+            value:Object.assign({},identity,{name_changes_used:used}),permissionRead:1,permissionWrite:0,version:identities[0].version}]);
+        profile.display_name=identity.display_name;profile.name_changes_used=used;
         return changed;
     }
     const account=nk.accountGetId(userId);
@@ -15,7 +20,7 @@ function ensurePlayerName(nk: nkruntime.Nakama, userId: string, profile: any): b
         ? "Tu Giả " + nk.uuidv4().replace(/-/g,"").slice(0,6).toUpperCase()
         : String(account.user.username||"").trim() || "Tu Giả " + nk.uuidv4().replace(/-/g,"").slice(0,6).toUpperCase();
     nk.storageWrite([{collection:"player_identity",key:"name",userId,
-        value:{display_name:profile.display_name,name_changes_used:Math.min(1,Number(profile.name_changes_used||0))},
+        value:{display_name:profile.display_name,name_changes_used:Math.max(0,Number(profile.name_changes_used||0))},
         permissionRead:1,permissionWrite:0,version:"*"}]);
     return !existing || generatedGoogle;
 }
@@ -32,20 +37,32 @@ const renamePlayer: nkruntime.RpcFunction = (ctx, _logger, nk, payload) => {
     const rows=nk.storageRead([{collection:"player_profiles",key:"main",userId:ctx.userId}]);
     if (!rows.length) return fail(409,"Chưa tải được hồ sơ. Hãy đăng nhập lại.");
     const profile=rows[0].value;
-    ensurePlayerName(nk,ctx.userId,profile);
+    try {ensurePlayerName(nk,ctx.userId,profile);} catch (_e) {return fail(409,"Chưa đồng bộ được lượt đổi tên. Hãy tải lại hồ sơ.");}
     const identities=nk.storageRead([{collection:"player_identity",key:"name",userId:ctx.userId}]);
-    if (Number(profile.name_changes_used||0)>=1) {
-        if (profile.display_name===name) return JSON.stringify({success:true,display_name:name,name_changes_used:1});
-        return fail(409,"Bạn đã sử dụng lượt đổi tên duy nhất của tài khoản.");
+    const used=Math.max(0,Number(profile.name_changes_used||0));
+    const inventoryRows=nk.storageRead([{collection:"player_inventory",key:"items",userId:ctx.userId}]);
+    const inventoryValue=inventoryRows.length ? inventoryRows[0].value : {items:[]};
+    if (profile.display_name===name) return used>0
+        ? JSON.stringify({success:true,display_name:name,name_changes_used:used,idempotent:true,inventory:inventoryValue.items||[]})
+        : fail(400,"Hãy nhập tên mới khác tên hiện tại.");
+    const items:any[]=Array.isArray(inventoryValue.items)?inventoryValue.items:[];
+    if (used>=1) {
+        const card=items.find((entry:any)=>entry.item_id==="rename_talisman" && Number.isSafeInteger(entry.quantity) && entry.quantity>0);
+        if (!card) return fail(409,"Cần 1 Thẻ đổi tên. Bạn đã sử dụng lượt đổi tên miễn phí.");
+        card.quantity-=1;
+        inventoryValue.items=items.filter((entry:any)=>entry.quantity>0);
     }
-    if (profile.display_name===name) return fail(400,"Hãy nhập tên mới khác tên hiện tại.");
-    profile.display_name=name;profile.name_changes_used=1;
-    try {nk.storageWrite([{collection:"player_profiles",key:"main",userId:ctx.userId,value:profile,
+    profile.display_name=name;profile.name_changes_used=used+1;
+    const writes:nkruntime.StorageWriteRequest[]=[{collection:"player_profiles",key:"main",userId:ctx.userId,value:profile,
         permissionRead:1,permissionWrite:0,version:rows[0].version},
-        {collection:"player_identity",key:"name",userId:ctx.userId,value:{display_name:name,name_changes_used:1},
-            permissionRead:1,permissionWrite:0,version:identities[0].version}]);}
+        {collection:"player_identity",key:"name",userId:ctx.userId,value:{display_name:name,name_changes_used:used+1},
+            permissionRead:1,permissionWrite:0,version:identities[0].version}];
+    if (used>=1) writes.push({collection:"player_inventory",key:"items",userId:ctx.userId,value:inventoryValue,
+        permissionRead:1,permissionWrite:0,version:inventoryRows[0].version});
+    try {nk.storageWrite(writes);}
     catch (_e) {return fail(409,"Hồ sơ đã thay đổi. Hãy tải lại hồ sơ trước khi thử lại.");}
-    return JSON.stringify({success:true,display_name:name,name_changes_used:1});
+    return JSON.stringify({success:true,display_name:name,name_changes_used:used+1,used_free:used===0,
+        consumed_item_id:used>=1?"rename_talisman":"",inventory:inventoryValue.items||[]});
 };
 
 const setPlayerAvatar: nkruntime.RpcFunction = (ctx, _logger, nk, payload) => {
@@ -96,7 +113,7 @@ function defaultPlayerProfile(displayName: string): any {
     return {
         display_name: displayName,
         avatar_url: "hero_1",
-        level: 1, exp: 0, next_level_exp: 10000, progression_version: 2, vip: 0, vip_exp: 0,
+        level: 1, exp: 0, next_level_exp: 1000, progression_version: 2, vip: 0, vip_exp: 0,
         stamina: 30, last_stamina_update: 0,
         resources: { gold: 1000, gems: 100 },
         elements: { metal: 0, wood: 0, water: 0, fire: 0, earth: 0 },
