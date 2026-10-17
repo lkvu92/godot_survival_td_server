@@ -20,16 +20,7 @@
     "skills": [
       "melee_hit"
     ],
-    "generic_skills": [
-      {
-        "id": "haste",
-        "display_name": "Bone Rush",
-        "params": {
-          "hp_below_pct": 0.5,
-          "move_speed_multiplier": 1.45
-        }
-      }
-    ],
+    "generic_skills": [],
     "reward": {
       "gold": 1,
       "exp": 2
@@ -56,17 +47,7 @@
     "skills": [
       "melee_hit"
     ],
-    "generic_skills": [
-      {
-        "id": "damage_shield",
-        "display_name": "Thorn Bulwark",
-        "params": {
-          "shield_percent_max_hp": 0.25,
-          "cooldown_seconds": 10.0,
-          "initial_delay_seconds": 2.0
-        }
-      }
-    ],
+    "generic_skills": [],
     "reward": {
       "gold": 2,
       "exp": 3
@@ -94,17 +75,7 @@
     "skills": [
       "ranged_bolt"
     ],
-    "generic_skills": [
-      {
-        "id": "damage_shield",
-        "display_name": "Frozen Ward",
-        "params": {
-          "shield_percent_max_hp": 0.2,
-          "cooldown_seconds": 9.0,
-          "initial_delay_seconds": 1.5
-        }
-      }
-    ],
+    "generic_skills": [],
     "reward": {
       "gold": 2,
       "exp": 3
@@ -131,16 +102,7 @@
     "skills": [
       "melee_hit"
     ],
-    "generic_skills": [
-      {
-        "id": "haste",
-        "display_name": "Pack Hunt",
-        "params": {
-          "hp_below_pct": 1.01,
-          "move_speed_multiplier": 1.25
-        }
-      }
-    ],
+    "generic_skills": [],
     "reward": {
       "gold": 2,
       "exp": 3
@@ -167,15 +129,7 @@
     "skills": [
       "melee_hit"
     ],
-    "generic_skills": [
-      {
-        "id": "pierce_guard",
-        "display_name": "Phase Glide",
-        "params": {
-          "damage_multiplier": 0.35
-        }
-      }
-    ],
+    "generic_skills": [],
     "reward": {
       "gold": 1,
       "exp": 2
@@ -202,16 +156,7 @@
     "skills": [
       "melee_hit"
     ],
-    "generic_skills": [
-      {
-        "id": "defense_aura",
-        "display_name": "Iron Formation",
-        "params": {
-          "radius": 180.0,
-          "def_multiplier": 1.35
-        }
-      }
-    ],
+    "generic_skills": [],
     "reward": {
       "gold": 6,
       "exp": 6
@@ -400,28 +345,7 @@
     "skills": [
       "melee_hit"
     ],
-    "generic_skills": [
-      {
-        "id": "regeneration",
-        "display_name": "Glacial Endurance",
-        "params": {
-          "percent_max_hp_per_sec": 0.02
-        }
-      },
-      {
-        "id": "debuff_resistance",
-        "display_name": "Heavy Resolve",
-        "params": {
-          "duration_multiplier": 0.6,
-          "effect_ids": [
-            "slow",
-            "freeze",
-            "stun",
-            "holy_stun"
-          ]
-        }
-      }
-    ],
+    "generic_skills": [],
     "reward": {
       "gold": 8,
       "exp": 8
@@ -448,21 +372,7 @@
     "skills": [
       "melee_hit"
     ],
-    "generic_skills": [
-      {
-        "id": "debuff_resistance",
-        "display_name": "Lancer Momentum",
-        "params": {
-          "duration_multiplier": 0.5,
-          "effect_ids": [
-            "slow",
-            "freeze",
-            "knockback",
-            "knockback_light"
-          ]
-        }
-      }
-    ],
+    "generic_skills": [],
     "reward": {
       "gold": 7,
       "exp": 6
