@@ -4,7 +4,7 @@
 
 - [C131 Single login](contracts/C131_SINGLE_LOGIN.md) v1.1.0: signed login generations and realtime login-change push without polling.
 
-- [C131 Docker runtime build](contracts/C131_DOCKER_RUNTIME_BUILD.md) v1.0.0: build and verify Nakama runtime in Docker before deploy/start/restart.
+- [C132 Docker runtime build](contracts/C132_DOCKER_RUNTIME_BUILD.md) v1.0.0: build and verify Nakama runtime in Docker before deploy/start/restart.
 
 - C129 v1.1.1: strict store_purchase currency protocol; C130 v1.0.1: left vertical client item rail and original HP position.
 

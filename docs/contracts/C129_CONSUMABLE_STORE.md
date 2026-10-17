@@ -12,11 +12,11 @@ spirit_root_reset fully rerolls talent tier/score/main element/affinities server
 
 Build and targeted catalog/config publication required; no live deployment or player reset is authorized by this implementation.
 
-store_purchase protocol v2 requires {item_id,currency:gold|gems,request_id,purchase_protocol:2}; omission/unknown currency fails without mutation. Response echoes purchase_protocol, item_id and currency, including failures. Account/config gates apply; delegate to currency-aware talismanAction action=buy_material. New clients never use the legacy endpoint for material purchases; an old server cannot silently debit Gold for Gem. Packaging gate verifies Docker uses tracked data/local.yml and canonical data/build/index.js, not ignored legacy root local.yml. Init log announces store_purchase v2. Seed does not compile TypeScript; deploy/start/restart build and verify the runtime first under C131. No live mutation is authorized here.
+store_purchase protocol v2 requires {item_id,currency:gold|gems,request_id,purchase_protocol:2}; omission/unknown currency fails without mutation. Response echoes purchase_protocol, item_id and currency, including failures. Account/config gates apply; delegate to currency-aware talismanAction action=buy_material. New clients never use the legacy endpoint for material purchases; an old server cannot silently debit Gold for Gem. Packaging gate verifies Docker uses tracked data/local.yml and canonical data/build/index.js, not ignored legacy root local.yml. Init log announces store_purchase v2. Seed does not compile TypeScript; deploy/start/restart build and verify the runtime first under C132. No live mutation is authorized here.
 
 | Version | Date | Change |
 |---|---|---|
-| 1.1.1 | 2026-10-17 | Align deployment instructions with C131 Docker runtime build. |
+| 1.1.1 | 2026-10-17 | Align deployment instructions with C132 Docker runtime build. |
 | 1.1.0 | 2026-10-17 | Strict currency protocol and canonical runtime packaging. |
 
 Local verification: npm build/postbuild packaging gate and compiled store tests pass (explicit currencies, Gem-only fruit, dual-currency charms, replay/mismatch protection). Client real-service/transport-fake regressions pass. Update both client build and nakama/data/build/index.js; startup must log "Store purchase protocol v2 loaded". No live server inspection, deployment, seed or restart was performed.
