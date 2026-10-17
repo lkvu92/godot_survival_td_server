@@ -101,9 +101,10 @@ Chạy lệnh triển khai tự động:
 
 Kịch bản `deploy.sh` sẽ tự động:
 1. Tạo file bí mật mẫu nếu chưa có.
-2. Build container Monetization Verifier và khởi động PostgreSQL + Nakama.
-3. Chờ Nakama hoàn thành khởi động và đạt trạng thái Healthy.
-4. Tự động chạy `seed_all.py` để nạp toàn bộ cấu hình từ `data/*.json` vào PostgreSQL.
+2. Build và kiểm tra Nakama runtime bằng Docker (`node:20-bookworm-slim`), không cần npm trên host.
+3. Build container Monetization Verifier và khởi động PostgreSQL + Nakama.
+4. Chờ Nakama hoàn thành khởi động và đạt trạng thái Healthy.
+5. Tự động chạy `seed_all.py` để nạp toàn bộ cấu hình từ `data/*.json` vào PostgreSQL.
 
 ---
 
@@ -117,7 +118,7 @@ Kịch bản `deploy.sh` sẽ tự động:
 | **Xem log hệ thống** | `./deploy.sh logs` hoặc `./deploy.sh logs nakama` |
 | **Kiểm tra trạng thái** | `./deploy.sh health` |
 | **Seed lại dữ liệu game** | `./deploy.sh seed` (hoặc `python3 nakama/seed_all.py`) |
-| **Biên dịch lại TS Runtime** | `./deploy.sh build` (yêu cầu VPS có Node.js & npm) |
+| **Biên dịch và kiểm tra TS Runtime** | `./deploy.sh build` (chỉ cần Docker trên VPS) |
 
 ---
 

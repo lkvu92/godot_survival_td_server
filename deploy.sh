@@ -40,12 +40,17 @@ wait_for_nakama() {
     echo "[OK] Nakama server is healthy and responding."
 }
 
-cmd_start() {
+start_services() {
     ensure_secrets
     python3 configure_runtime.py
     echo "[INFO] Starting Survival TD stack (PostgreSQL, Nakama, Monetization Verifier)..."
     docker compose up -d --build
     wait_for_nakama
+}
+
+cmd_start() {
+    cmd_build
+    start_services
 }
 
 cmd_stop() {
@@ -54,10 +59,9 @@ cmd_stop() {
 }
 
 cmd_restart() {
-    ensure_secrets
-    python3 configure_runtime.py
+    cmd_build
     cmd_stop
-    cmd_start
+    start_services
 }
 
 cmd_seed() {
@@ -67,8 +71,19 @@ cmd_seed() {
 
 cmd_build() {
     echo "[INFO] Compiling TypeScript runtime modules..."
-    npm ci
-    npm run build
+    docker run --rm \
+        --user "$(id -u):$(id -g)" \
+        -v "${NAKAMA_DIR}:/workspace" \
+        -w /workspace \
+        node:20-bookworm-slim \
+        sh -lc 'npm ci && npm run build'
+    echo "[INFO] Verifying freshly built runtime artifact..."
+    docker run --rm \
+        --user "$(id -u):$(id -g)" \
+        -v "${NAKAMA_DIR}:/workspace" \
+        -w /workspace \
+        node:20-bookworm-slim \
+        node verify_runtime.cjs
 }
 
 cmd_logs() {

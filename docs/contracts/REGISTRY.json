@@ -16,7 +16,7 @@
     },
     {
       "id": "C129_CONSUMABLE_STORE",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "status": "IN_PROGRESS",
       "updated_at": "2026-10-17",
       "contract_file": "docs/contracts/C129_CONSUMABLE_STORE.md"

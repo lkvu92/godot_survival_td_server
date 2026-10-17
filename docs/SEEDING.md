@@ -4,13 +4,12 @@ Build and restart the server before using the new seed payloads. Startup adds
 nullable columns without removing existing data. Seed fills them from data/.
 
 ```bash
-cd nakama
-npm ci
-npm run build
+./deploy.sh build
 
 # Build runs a packaging gate: Docker's mounted config loads data/build/index.js
 # and the artifact must register store_purchase protocol v2. Seeding does not
-# compile runtime code. Copy the rebuilt tracked bundle before restarting.
+# compile runtime code. Deploy/start/restart now build and verify before starting.
+cd nakama
 export NAKAMA_URL=https://api.lkvustudio.com
 export NAKAMA_HTTP_KEY='<server runtime HTTP key>'
 python3 seed_all.py
