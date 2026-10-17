@@ -383,6 +383,7 @@ const gatedGetGameConfig: nkruntime.RpcFunction = (ctx, logger, nk, payload) => 
 const gatedPublishConfigRelease: nkruntime.RpcFunction = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, publishConfigRelease);
 const gatedSavePlayerProfile: nkruntime.RpcFunction = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, savePlayerProfile);
 const gatedLoadPlayerProfile: nkruntime.RpcFunction = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, loadPlayerProfile);
+const gatedAbandonRun: nkruntime.RpcFunction = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, abandonRun);
 const gatedUpdateInventory: nkruntime.RpcFunction = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, updateInventory);
 const gatedTalismanAction: nkruntime.RpcFunction = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, talismanAction);
 const gatedStorePurchase: nkruntime.RpcFunction = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, storePurchase);

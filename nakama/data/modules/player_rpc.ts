@@ -262,23 +262,67 @@ const savePlayerProfile: nkruntime.RpcFunction = (
     return JSON.stringify({ success: true });
 };
 
+const abandonRun: nkruntime.RpcFunction = (ctx, _logger, nk, payload) => {
+    let req: any;
+    try { req = JSON.parse(payload || "{}"); } catch (_) { return JSON.stringify({success: false, message: "Invalid JSON"}); }
+    if (!req || typeof req !== "object" || Array.isArray(req)) return JSON.stringify({success: false, message: "Invalid request"});
+    const runId = String(req.run_id || "");
+    const encounterId = String(req.encounter_id || "");
+    if (!ctx.userId || (!runId && !encounterId) || runId.length > 128 || encounterId.length > 128) {
+        return JSON.stringify({success: false, message: "Run identity is required"});
+    }
+    const objects = nk.storageRead([
+        {collection: "player_stage_runs", key: "active", userId: ctx.userId},
+        {collection: "player_profiles", key: "main", userId: ctx.userId}
+    ]);
+    const stage = objects.find(o => o.collection === "player_stage_runs");
+    const storedProfile = objects.find(o => o.collection === "player_profiles");
+    if ((runId && (!stage || String(stage.value.run_id || "") !== runId))
+        || (encounterId && (!storedProfile || String((storedProfile.value.breakthrough || {}).encounter_id || "") !== encounterId))) {
+        return JSON.stringify({success: false, message: "Run identity no longer matches"});
+    }
+    const writes: nkruntime.StorageWriteRequest[] = [];
+    if (runId && stage && stage.value.status === "active") {
+        const run = stage.value;
+        run.status = "abandoned";
+        run.abandoned_at_ms = Date.now();
+        writes.push({collection: "player_stage_runs", key: "active", userId: ctx.userId,
+            value: run, permissionRead: 1, permissionWrite: 0, version: stage.version});
+    }
+    if (encounterId && storedProfile && (storedProfile.value.breakthrough || {}).in_tribulation === true) {
+        cultivationEnsureProfile(nk, storedProfile.value, true);
+        writes.push({collection: "player_profiles", key: "main", userId: ctx.userId,
+            value: storedProfile.value, permissionRead: 1, permissionWrite: 0, version: storedProfile.version});
+    }
+    try { if (writes.length) nk.storageWrite(writes); }
+    catch (_) { return JSON.stringify({success: false, message: "Run changed; please retry exiting"}); }
+    return JSON.stringify({success: true, profile: storedProfile ? storedProfile.value : {}});
+};
+
 const loadPlayerProfile: nkruntime.RpcFunction = (
     ctx: nkruntime.Context,
     logger: nkruntime.Logger,
     nk: nkruntime.Nakama,
     payload: string
 ): string => {
+    let request: any = {};
+    try { request = JSON.parse(payload || "{}"); }
+    catch (_) { return JSON.stringify({ success: false, message: "Invalid payload JSON" }); }
+    if (!request || typeof request !== "object" || Array.isArray(request)) return JSON.stringify({success: false, message: "Invalid request"});
+    const freshLogin = request.fresh_login === true;
     const objects = nk.storageRead([
         { collection: "player_profiles", key: "main", userId: ctx.userId },
         { collection: "player_heroes", key: "states", userId: ctx.userId },
         { collection: "player_inventory", key: "items", userId: ctx.userId },
         { collection: "player_settings", key: "prefs", userId: ctx.userId },
         { collection: "player_compliance_profiles", key: "profile", userId: ctx.userId },
+        { collection: "player_stage_runs", key: "active", userId: ctx.userId },
     ]);
 
     const result: any = { profile: {}, heroes: {}, inventory: {}, settings: {}, compliance_profile: {} };
     let profileObject: nkruntime.StorageObject | null = null;
     let inventoryObject: nkruntime.StorageObject | null = null;
+	let activeRunObject: nkruntime.StorageObject | null = null;
     for (const obj of objects) {
         switch (obj.collection) {
             case "player_profiles": result.profile = obj.value; profileObject = obj; break;
@@ -286,12 +330,26 @@ const loadPlayerProfile: nkruntime.RpcFunction = (
             case "player_inventory": result.inventory = obj.value; inventoryObject = obj; break;
             case "player_settings": result.settings = obj.value; break;
             case "player_compliance_profiles": result.compliance_profile = obj.value; break;
+			case "player_stage_runs": activeRunObject = obj; break;
         }
     }
 
     // Repair incomplete accounts and migrate legacy hero IDs during load. This
     // makes a failed first bootstrap recoverable on the next login.
     const repairWrites: nkruntime.StorageWriteRequest[] = [];
+	// Combat is intentionally not resumable. A new authenticated session
+	// abandons a still-live server run, so account-wide actions cannot remain
+	// locked until its two-hour lease expires. Ordinary profile refreshes omit
+	// fresh_login and never alter an active combat run.
+	if (freshLogin && activeRunObject) {
+		const activeRun: any = activeRunObject.value && typeof activeRunObject.value === "object" ? activeRunObject.value : {};
+		if (String(activeRun.status || "") === "active") {
+			activeRun.status = "abandoned";
+			activeRun.abandoned_at_ms = Date.now();
+			repairWrites.push({ collection: "player_stage_runs", key: "active", userId: ctx.userId,
+				value: activeRun, permissionRead: 1, permissionWrite: 0, version: activeRunObject.version });
+		}
+	}
     if (!profileObject) {
         result.profile = defaultPlayerProfile("");
         ensurePlayerName(nk, ctx.userId, result.profile);
@@ -334,7 +392,7 @@ const loadPlayerProfile: nkruntime.RpcFunction = (
     result.monetization = buildMonetizationResponse(nk, ctx.userId, monetizationMode(ctx));
 
     if (result.profile && typeof result.profile === "object" && Object.keys(result.profile).length > 0) {
-        let profileChanged = cultivationEnsureProfile(nk, result.profile, true);
+        let profileChanged = cultivationEnsureProfile(nk, result.profile, freshLogin);
         if (cultivationEnsurePreview(nk, result.profile)) profileChanged = true;
         // Stamina regeneration uses server UTC and the currently published
         // interval/amount; device time is never trusted.

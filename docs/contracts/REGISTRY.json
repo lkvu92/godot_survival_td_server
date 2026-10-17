@@ -1,5 +1,6 @@
 {
   "contracts": [
+    {"id":"C133_RUN_LIFECYCLE","version":"1.0.0","status":"ACTIVE","updated_at":"2026-10-17","contract_file":"docs/contracts/C133_RUN_LIFECYCLE.md"},
     {
       "id": "C105_PROGRESSION",
       "version": "1.2.0",

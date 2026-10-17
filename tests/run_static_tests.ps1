@@ -7,6 +7,8 @@ try {
     }
     & node --check nakama/data/build/index.js
     if ($LASTEXITCODE -ne 0) { throw 'Runtime syntax failed' }
+    & node tests/test_run_lifecycle.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Run lifecycle regression failed' }
     & node tests/test_new_profile_inventory.cjs
     if ($LASTEXITCODE -ne 0) { throw 'New profile inventory regression failed' }
     & node tests/test_account_password.cjs

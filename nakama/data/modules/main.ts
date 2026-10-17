@@ -38,6 +38,9 @@ function linkedRpc_save_player_profile(ctx: nkruntime.Context, logger: nkruntime
 function linkedRpc_load_player_profile(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
     return accountGuardedRpc("load_player_profile", gatedLoadPlayerProfile)(ctx, logger, nk, payload);
 }
+function linkedRpc_abandon_run(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("abandon_run", gatedAbandonRun)(ctx, logger, nk, payload);
+}
 function linkedRpc_set_player_avatar(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
     return accountGuardedRpc("set_player_avatar", setPlayerAvatar)(ctx, logger, nk, payload);
 }
@@ -178,6 +181,7 @@ function InitModule(
     // Phase 4: Player RPCs
     initializer.registerRpc("save_player_profile", linkedRpc_save_player_profile);
     initializer.registerRpc("load_player_profile", linkedRpc_load_player_profile);
+    initializer.registerRpc("abandon_run", linkedRpc_abandon_run);
     initializer.registerRpc("set_player_avatar", linkedRpc_set_player_avatar);
     initializer.registerRpc("get_player_avatars", linkedRpc_get_player_avatars);
     initializer.registerRpc("save_compliance_profile", linkedRpc_save_compliance_profile);

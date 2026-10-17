@@ -1,5 +1,7 @@
 # Server documentation
 
+- [C133 Run lifecycle](contracts/C133_RUN_LIFECYCLE.md): explicit abandon and login recovery; refresh never ends combat.
+
 - [C105 Progression](contracts/C105_PROGRESSION.md) v1.2.0: User EXP thresholds x5 and first-clear EXP x2.
 
 - [C131 Single login](contracts/C131_SINGLE_LOGIN.md) v1.1.0: signed login generations and realtime login-change push without polling.

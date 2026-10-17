@@ -1955,6 +1955,7 @@ const gatedGetGameConfig = (ctx, logger, nk, payload) => invokeWithVersionGate(c
 const gatedPublishConfigRelease = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, publishConfigRelease);
 const gatedSavePlayerProfile = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, savePlayerProfile);
 const gatedLoadPlayerProfile = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, loadPlayerProfile);
+const gatedAbandonRun = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, abandonRun);
 const gatedUpdateInventory = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, updateInventory);
 const gatedTalismanAction = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, talismanAction);
 const gatedStorePurchase = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, storePurchase);
@@ -2349,17 +2350,83 @@ const savePlayerProfile = (ctx, logger, nk, payload) => {
   }
   return JSON.stringify({ success: true });
 };
+const abandonRun = (ctx, _logger, nk, payload) => {
+  let req;
+  try {
+    req = JSON.parse(payload || "{}");
+  } catch (_) {
+    return JSON.stringify({ success: false, message: "Invalid JSON" });
+  }
+  if (!req || typeof req !== "object" || Array.isArray(req)) return JSON.stringify({ success: false, message: "Invalid request" });
+  const runId = String(req.run_id || "");
+  const encounterId = String(req.encounter_id || "");
+  if (!ctx.userId || !runId && !encounterId || runId.length > 128 || encounterId.length > 128) {
+    return JSON.stringify({ success: false, message: "Run identity is required" });
+  }
+  const objects = nk.storageRead([
+    { collection: "player_stage_runs", key: "active", userId: ctx.userId },
+    { collection: "player_profiles", key: "main", userId: ctx.userId }
+  ]);
+  const stage = objects.find((o) => o.collection === "player_stage_runs");
+  const storedProfile = objects.find((o) => o.collection === "player_profiles");
+  if (runId && (!stage || String(stage.value.run_id || "") !== runId) || encounterId && (!storedProfile || String((storedProfile.value.breakthrough || {}).encounter_id || "") !== encounterId)) {
+    return JSON.stringify({ success: false, message: "Run identity no longer matches" });
+  }
+  const writes = [];
+  if (runId && stage && stage.value.status === "active") {
+    const run = stage.value;
+    run.status = "abandoned";
+    run.abandoned_at_ms = Date.now();
+    writes.push({
+      collection: "player_stage_runs",
+      key: "active",
+      userId: ctx.userId,
+      value: run,
+      permissionRead: 1,
+      permissionWrite: 0,
+      version: stage.version
+    });
+  }
+  if (encounterId && storedProfile && (storedProfile.value.breakthrough || {}).in_tribulation === true) {
+    cultivationEnsureProfile(nk, storedProfile.value, true);
+    writes.push({
+      collection: "player_profiles",
+      key: "main",
+      userId: ctx.userId,
+      value: storedProfile.value,
+      permissionRead: 1,
+      permissionWrite: 0,
+      version: storedProfile.version
+    });
+  }
+  try {
+    if (writes.length) nk.storageWrite(writes);
+  } catch (_) {
+    return JSON.stringify({ success: false, message: "Run changed; please retry exiting" });
+  }
+  return JSON.stringify({ success: true, profile: storedProfile ? storedProfile.value : {} });
+};
 const loadPlayerProfile = (ctx, logger, nk, payload) => {
+  let request = {};
+  try {
+    request = JSON.parse(payload || "{}");
+  } catch (_) {
+    return JSON.stringify({ success: false, message: "Invalid payload JSON" });
+  }
+  if (!request || typeof request !== "object" || Array.isArray(request)) return JSON.stringify({ success: false, message: "Invalid request" });
+  const freshLogin = request.fresh_login === true;
   const objects = nk.storageRead([
     { collection: "player_profiles", key: "main", userId: ctx.userId },
     { collection: "player_heroes", key: "states", userId: ctx.userId },
     { collection: "player_inventory", key: "items", userId: ctx.userId },
     { collection: "player_settings", key: "prefs", userId: ctx.userId },
-    { collection: "player_compliance_profiles", key: "profile", userId: ctx.userId }
+    { collection: "player_compliance_profiles", key: "profile", userId: ctx.userId },
+    { collection: "player_stage_runs", key: "active", userId: ctx.userId }
   ]);
   const result = { profile: {}, heroes: {}, inventory: {}, settings: {}, compliance_profile: {} };
   let profileObject = null;
   let inventoryObject = null;
+  let activeRunObject = null;
   for (const obj of objects) {
     switch (obj.collection) {
       case "player_profiles":
@@ -2379,9 +2446,28 @@ const loadPlayerProfile = (ctx, logger, nk, payload) => {
       case "player_compliance_profiles":
         result.compliance_profile = obj.value;
         break;
+      case "player_stage_runs":
+        activeRunObject = obj;
+        break;
     }
   }
   const repairWrites = [];
+  if (freshLogin && activeRunObject) {
+    const activeRun = activeRunObject.value && typeof activeRunObject.value === "object" ? activeRunObject.value : {};
+    if (String(activeRun.status || "") === "active") {
+      activeRun.status = "abandoned";
+      activeRun.abandoned_at_ms = Date.now();
+      repairWrites.push({
+        collection: "player_stage_runs",
+        key: "active",
+        userId: ctx.userId,
+        value: activeRun,
+        permissionRead: 1,
+        permissionWrite: 0,
+        version: activeRunObject.version
+      });
+    }
+  }
   if (!profileObject) {
     result.profile = defaultPlayerProfile("");
     ensurePlayerName(nk, ctx.userId, result.profile);
@@ -2457,7 +2543,7 @@ const loadPlayerProfile = (ctx, logger, nk, payload) => {
   }
   result.monetization = buildMonetizationResponse(nk, ctx.userId, monetizationMode(ctx));
   if (result.profile && typeof result.profile === "object" && Object.keys(result.profile).length > 0) {
-    let profileChanged = cultivationEnsureProfile(nk, result.profile, true);
+    let profileChanged = cultivationEnsureProfile(nk, result.profile, freshLogin);
     if (cultivationEnsurePreview(nk, result.profile)) profileChanged = true;
     const nowRows = nk.sqlQuery("SELECT EXTRACT(EPOCH FROM NOW())::BIGINT AS now", []);
     const now = Number(nowRows.length > 0 ? nowRows[0].now : 0);
@@ -6847,6 +6933,9 @@ function linkedRpc_save_player_profile(ctx, logger, nk, payload) {
 function linkedRpc_load_player_profile(ctx, logger, nk, payload) {
   return accountGuardedRpc("load_player_profile", gatedLoadPlayerProfile)(ctx, logger, nk, payload);
 }
+function linkedRpc_abandon_run(ctx, logger, nk, payload) {
+  return accountGuardedRpc("abandon_run", gatedAbandonRun)(ctx, logger, nk, payload);
+}
 function linkedRpc_set_player_avatar(ctx, logger, nk, payload) {
   return accountGuardedRpc("set_player_avatar", setPlayerAvatar)(ctx, logger, nk, payload);
 }
@@ -6973,6 +7062,7 @@ function InitModule(ctx, logger, nk, initializer) {
   initializer.registerRpc("publish_config_release", linkedRpc_publish_config_release);
   initializer.registerRpc("save_player_profile", linkedRpc_save_player_profile);
   initializer.registerRpc("load_player_profile", linkedRpc_load_player_profile);
+  initializer.registerRpc("abandon_run", linkedRpc_abandon_run);
   initializer.registerRpc("set_player_avatar", linkedRpc_set_player_avatar);
   initializer.registerRpc("get_player_avatars", linkedRpc_get_player_avatars);
   initializer.registerRpc("save_compliance_profile", linkedRpc_save_compliance_profile);
