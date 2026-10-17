@@ -1,3 +1,99 @@
+/** Atomic, replayable item activation. Combat remains simulated by the client,
+ * matching talisman_cast; inventory, allowed effects and run limits are server owned. */
+const useConsumable: nkruntime.RpcFunction = (ctx, _logger, nk, payload): string => {
+    const fail = (message: string) => JSON.stringify({success:false,message});
+    let req: any;
+    try { req = JSON.parse(payload || "{}"); } catch (_) { return fail("Invalid JSON"); }
+    if (!req || typeof req !== "object" || Array.isArray(req)) return fail("Invalid request");
+    const itemId = String(req.item_id || ""), requestId = String(req.request_id || ""), runId = String(req.run_id || "");
+    const quantity = req.quantity === undefined ? 1 : req.quantity;
+    if (!/^[A-Za-z0-9_-]{1,128}$/.test(requestId) || !Number.isSafeInteger(quantity) || quantity < 1 || quantity > 99) return fail("Invalid request");
+    const fingerprint = JSON.stringify(["use_consumable", itemId, quantity, runId]);
+    const stored = nk.storageRead([
+        {collection:"player_profiles",key:"main",userId:ctx.userId},
+        {collection:"player_inventory",key:"items",userId:ctx.userId},
+        {collection:"player_item_requests",key:requestId,userId:ctx.userId},
+        {collection:"player_stage_runs",key:"active",userId:ctx.userId}
+    ]);
+    const profileObject = stored.find(row => row.collection === "player_profiles");
+    const inventoryObject = stored.find(row => row.collection === "player_inventory");
+    const previous = stored.find(row => row.collection === "player_item_requests");
+    const runObject = stored.find(row => row.collection === "player_stage_runs");
+    if (!profileObject || !inventoryObject) return fail("Profile is incomplete");
+    const profile = talismanJsonObject(profileObject.value), inventory = talismanJsonObject(inventoryObject.value);
+    const items = Array.isArray(inventory.items) ? inventory.items : [];
+    if (previous) {
+        if (previous.value.fingerprint !== fingerprint) return fail("Request ID conflict");
+        return JSON.stringify({success:true,duplicate:true,inventory:items,profile,effect:previous.value.effect,receipt_id:requestId});
+    }
+    const rows = nk.sqlQuery("SELECT attributes FROM game_items WHERE id=$1", [itemId]);
+    if (!rows.length) return fail("Unknown item");
+    const attrs = talismanJsonObject(rows[0].attributes), effect = talismanJsonObject(attrs.effect);
+    const kind = String(effect.kind || ""), value = Number(effect.value);
+    if (attrs.enabled === false || attrs.use_action !== "use_consumable" || !Number.isFinite(value) || value <= 0) return fail("Item effect is unavailable");
+    if (talismanItemQuantity(items, itemId) < quantity) return fail("Not enough items");
+    const run = runObject ? talismanJsonObject(runObject.value) : {};
+    const now = Date.now(), combat = effect.context === "combat";
+    if (combat) {
+        if (!runId || quantity !== 1 || run.run_id !== runId || run.status !== "active" || now >= Number(run.expires_at_ms || 0)) return fail("No active stage run");
+        if (req.paused !== false || (kind !== "revive" && req.alive !== true)) return fail("Cannot use while paused or dead");
+        if ((profile.breakthrough || {}).in_tribulation) return fail("Items unavailable in tribulation");
+        const cooldowns = talismanJsonObject(run.item_cooldowns);
+        if (now < Number(cooldowns[itemId] || 0)) return fail("Item is on cooldown");
+        if (kind === "revive" && (req.alive !== false || Number(run.item_revives || 0) >= 1)) return fail("Revive unavailable");
+        if (["attack","defense","cooldown","resistance","critical","attack_speed","heal","shield","slow","revive"].indexOf(kind) < 0) return fail("Unsupported combat effect");
+        if (!Number.isFinite(Number(effect.duration || 0)) || !Number.isFinite(Number(effect.cooldown)) || Number(effect.cooldown) < 0) return fail("Invalid combat config");
+        cooldowns[itemId] = now + Number(effect.cooldown) * 1000;
+        run.item_cooldowns = cooldowns;
+        if (kind === "revive") run.item_revives = Number(run.item_revives || 0) + 1;
+    } else {
+        if (runId || (run.status === "active" && now < Number(run.expires_at_ms || 0)) || (profile.breakthrough || {}).in_tribulation) return fail("Use this item outside combat");
+        if (kind === "gold") {
+            const resources = talismanJsonObject(profile.resources);
+            const total = Number(resources.gold || 0) + value * quantity;
+            if (!Number.isSafeInteger(total)) return fail("Resource overflow");
+            resources.gold = total; profile.resources = resources;
+        } else if (kind === "exp") {
+            const threshold = progressionNextUserExp(nk, Number(profile.level || 1));
+            if (Number(profile.level || 1) >= PROGRESSION_MAX_LEVEL || (isBreakthroughMilestone(Number(profile.level || 1)) && Number(profile.exp || 0) >= threshold)) return fail("Level or breakthrough cap reached");
+            if (quantity > 1) {
+                const preview = JSON.parse(JSON.stringify(profile));
+                progressionApplyUser(nk, preview, value * (quantity - 1));
+                if (preview.level >= PROGRESSION_MAX_LEVEL || (isBreakthroughMilestone(preview.level) && preview.exp >= progressionNextUserExp(nk, preview.level))) return fail("Reduce quantity to avoid wasting items at the breakthrough cap");
+            }
+            progressionApplyUser(nk, profile, value * quantity);
+            cultivationEnsurePreview(nk, profile);
+            progressionReconcileLevelUnlocks(nk, profile);
+        } else if (kind === "stamina") {
+            const before = Number(profile.stamina || 0);
+            if (before >= 30 || (quantity > 1 && before + (quantity - 1) * value >= 30)) return fail("Stamina full or quantity exceeds capacity");
+            profile.stamina = Math.min(30, before + value * quantity);
+            if (profile.stamina === 30) profile.last_stamina_update = Math.floor(now / 1000);
+        } else if (kind === "affinity") {
+            if (CULTIVATION_ELEMENTS.indexOf(String(effect.element)) < 0) return fail("Unsupported element");
+            cultivationEnsureSources(profile);
+            const element = String(effect.element), before = Number(profile.element_affinities[element] || 0);
+            const cap = Number(effect.cap);
+            if (!Number.isFinite(cap) || before >= cap || (quantity > 1 && before + (quantity - 1) * value >= cap)) return fail("Affinity cap reached");
+            profile.element_sources.fruit[element] = cultivationRound1(Number(profile.element_sources.fruit[element] || 0) + Math.min(value * quantity, cap - before));
+            cultivationRebuildSources(profile);
+        } else return fail("Unsupported item effect");
+    }
+    if (!talismanRemoveItems(items, itemId, quantity)) return fail("Inventory changed");
+    inventory.items = items;
+    const writes: nkruntime.StorageWriteRequest[] = [
+        {collection:"player_profiles",key:"main",userId:ctx.userId,value:profile,version:profileObject.version,permissionRead:1,permissionWrite:0},
+        {collection:"player_inventory",key:"items",userId:ctx.userId,value:inventory,version:inventoryObject.version,permissionRead:1,permissionWrite:0},
+        {collection:"player_item_requests",key:requestId,userId:ctx.userId,value:{fingerprint,effect,created_at:now},version:"*",permissionRead:1,permissionWrite:0}
+    ];
+    if (combat) writes.push({collection:"player_stage_runs",key:"active",userId:ctx.userId,value:run,version:runObject.version,permissionRead:1,permissionWrite:0});
+    try { nk.storageWrite(writes); } catch (_) { return fail("Data changed; retry the same request"); }
+    if (!combat && typeof writePlayerLeaderboardRecords === "function") {
+        try { writePlayerLeaderboardRecords(nk, ctx.userId, profile, profile.display_name); } catch (_) { /* Next profile refresh reconciles ranking. */ }
+    }
+    return JSON.stringify({success:true,inventory:items,profile,effect,receipt_id:requestId});
+};
+
 const updateInventory: nkruntime.RpcFunction = (
     ctx: nkruntime.Context,
     logger: nkruntime.Logger,
@@ -379,7 +475,10 @@ const talismanAction: nkruntime.RpcFunction = (ctx, _logger, nk, payload): strin
 		if (!catalog.length || talismanJsonObject(catalog[0].attributes).use_action!=="reroll_talent") return JSON.stringify({success:false,message:"Tẩy Linh Quả chưa được cấu hình"});
 		if (!talismanRemoveItems(items,"spirit_root_reset",1)) return JSON.stringify({success:false,message:"Cần 1 Tẩy Linh Quả"});
 		rerolledTalent=cultivationRollProfile();
-		Object.assign(profile,rerolledTalent);
+		const progressionRows = nk.sqlQuery("SELECT value FROM game_config WHERE key = 'progression'", []);
+		const rerollConfig = progressionRows.length ? talismanJsonObject(talismanJsonObject(progressionRows[0].value).consumables).reroll : null;
+		if (!rerollConfig || !Number.isFinite(rerollConfig.main_growth) || !Number.isFinite(rerollConfig.secondary_growth)) return JSON.stringify({success:false,message:"Thiếu cấu hình tăng trưởng thiên phú"});
+		cultivationApplyReroll(profile, rerolledTalent, rerollConfig);
 		if (profile.breakthrough) Object.assign(profile.breakthrough,{count_rolled:false,tribulation_count:0,encounter_id:"",encounter_seed:0,skill_set:[]});
 		receipts.push({request_id:requestId,rolled:rerolledTalent});
 		inventoryValue._talent_reroll_receipts=receipts.slice(-100);
@@ -549,6 +648,9 @@ const talismanAction: nkruntime.RpcFunction = (ctx, _logger, nk, payload): strin
 	if (isItemRequest) actionWrites.push({collection:"player_item_requests",key:requestId,userId:ctx.userId,
 		value:{fingerprint,rolled:rerolledTalent,created_at:Date.now()},permissionRead:1,permissionWrite:0,version:"*"});
     try { nk.storageWrite(actionWrites); } catch (_e) { return JSON.stringify({success:false,message:"Dữ liệu đã thay đổi. Vui lòng đồng bộ rồi thử lại."}); }
+	if (rerolledTalent && typeof writePlayerLeaderboardRecords === "function") {
+		try { writePlayerLeaderboardRecords(nk, ctx.userId, profile, profile.display_name); } catch (_) { }
+	}
 	if (action === "upgrade" && upgradeSucceeded) {
 		eventRecord(nk, ctx.userId, "talisman_enhance", 1, { talisman_id: talismanId },
 			requestId || `${talismanId}:${Number(target ? target.level : 0)}`);

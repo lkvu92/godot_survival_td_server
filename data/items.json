@@ -307,7 +307,9 @@
       "upgrade",
       "heavenly_crystal"
     ],
-    "attributes": {"quality": "low"}
+    "attributes": {
+      "quality": "low"
+    }
   },
   {
     "id": "talisman_heavenly_crystal_medium",
@@ -319,8 +321,14 @@
     "category": "material",
     "stackable": true,
     "max_stack": 999999,
-    "tags": ["talisman", "upgrade", "heavenly_crystal"],
-    "attributes": {"quality": "mid"}
+    "tags": [
+      "talisman",
+      "upgrade",
+      "heavenly_crystal"
+    ],
+    "attributes": {
+      "quality": "mid"
+    }
   },
   {
     "id": "talisman_heavenly_crystal_high",
@@ -332,8 +340,14 @@
     "category": "material",
     "stackable": true,
     "max_stack": 999999,
-    "tags": ["talisman", "upgrade", "heavenly_crystal"],
-    "attributes": {"quality": "high"}
+    "tags": [
+      "talisman",
+      "upgrade",
+      "heavenly_crystal"
+    ],
+    "attributes": {
+      "quality": "high"
+    }
   },
   {
     "id": "element_enlightenment_charm",
@@ -346,7 +360,11 @@
     "stackable": true,
     "max_stack": 9999,
     "expires_after_hours": 0,
-    "tags": ["element", "upgrade", "success_charm"],
+    "tags": [
+      "element",
+      "upgrade",
+      "success_charm"
+    ],
     "attributes": {
       "upgrade_context": "element",
       "success_rate_multiplier": 1.5
@@ -363,7 +381,11 @@
     "stackable": true,
     "max_stack": 9999,
     "expires_after_hours": 0,
-    "tags": ["talisman", "upgrade", "success_charm"],
+    "tags": [
+      "talisman",
+      "upgrade",
+      "success_charm"
+    ],
     "attributes": {
       "upgrade_context": "talisman",
       "success_rate_multiplier": 1.5
@@ -2868,27 +2890,631 @@
     ],
     "attributes": {}
   },
-  {"id":"rename_talisman","display_name":"Đổi Danh Phù","description":"Thẻ đổi tên: dùng 1 thẻ để đổi tên sau lượt miễn phí đầu tiên.","category":"consumable","rarity":"epic","icon_id":"consumable_rename_talisman","stackable":true,"max_stack":999,"order":500,"expires_after_hours":0,"tags":["consumable","charms"],"attributes":{"atlas_slot":0,"consumable_family":"charms","use_action":"rename_player","enabled":true}},
-  {"id":"spirit_root_reset","display_name":"Tẩy Linh Quả","description":"Roll lại toàn bộ thiên phú, linh căn chính và điểm ngũ hành. Kết quả mới có thể thấp hơn.","category":"consumable","rarity":"mythic","icon_id":"consumable_spirit_root_reset","stackable":true,"max_stack":999,"order":501,"expires_after_hours":0,"tags":["consumable","fruits"],"attributes":{"atlas_slot":1,"consumable_family":"fruits","use_action":"reroll_talent","enabled":true}},
-  {"id":"metal_aptitude_fruit","display_name":"Kim Linh Quả","description":"Tăng tư chất hệ Kim.","category":"consumable","rarity":"legendary","icon_id":"consumable_metal_aptitude_fruit","stackable":true,"max_stack":999,"order":502,"expires_after_hours":0,"tags":["consumable","fruits"],"attributes":{"atlas_slot":2,"consumable_family":"fruits","use_action":"pending_consumable","enabled":true}},
-  {"id":"wood_aptitude_fruit","display_name":"Mộc Linh Quả","description":"Tăng tư chất hệ Mộc.","category":"consumable","rarity":"legendary","icon_id":"consumable_wood_aptitude_fruit","stackable":true,"max_stack":999,"order":503,"expires_after_hours":0,"tags":["consumable","fruits"],"attributes":{"atlas_slot":3,"consumable_family":"fruits","use_action":"pending_consumable","enabled":true}},
-  {"id":"water_aptitude_fruit","display_name":"Thủy Linh Quả","description":"Tăng tư chất hệ Thủy.","category":"consumable","rarity":"legendary","icon_id":"consumable_water_aptitude_fruit","stackable":true,"max_stack":999,"order":504,"expires_after_hours":0,"tags":["consumable","fruits"],"attributes":{"atlas_slot":4,"consumable_family":"fruits","use_action":"pending_consumable","enabled":true}},
-  {"id":"fire_aptitude_fruit","display_name":"Hỏa Linh Quả","description":"Tăng tư chất hệ Hỏa.","category":"consumable","rarity":"legendary","icon_id":"consumable_fire_aptitude_fruit","stackable":true,"max_stack":999,"order":505,"expires_after_hours":0,"tags":["consumable","fruits"],"attributes":{"atlas_slot":5,"consumable_family":"fruits","use_action":"pending_consumable","enabled":true}},
-  {"id":"earth_aptitude_fruit","display_name":"Thổ Linh Quả","description":"Tăng tư chất hệ Thổ.","category":"consumable","rarity":"legendary","icon_id":"consumable_earth_aptitude_fruit","stackable":true,"max_stack":999,"order":506,"expires_after_hours":0,"tags":["consumable","fruits"],"attributes":{"atlas_slot":6,"consumable_family":"fruits","use_action":"pending_consumable","enabled":true}},
-  {"id":"wind_aptitude_fruit","display_name":"Phong Linh Quả","description":"Hệ Phong chưa được hỗ trợ; chưa thể mua hoặc sử dụng.","category":"consumable","rarity":"legendary","icon_id":"consumable_wind_aptitude_fruit","stackable":true,"max_stack":999,"order":507,"expires_after_hours":0,"tags":["consumable","fruits"],"attributes":{"atlas_slot":7,"consumable_family":"fruits","use_action":"pending_consumable","enabled":false}},
-  {"id":"thunder_aptitude_fruit","display_name":"Lôi Linh Quả","description":"Hệ Lôi chưa được hỗ trợ; chưa thể mua hoặc sử dụng.","category":"consumable","rarity":"legendary","icon_id":"consumable_thunder_aptitude_fruit","stackable":true,"max_stack":999,"order":508,"expires_after_hours":0,"tags":["consumable","fruits"],"attributes":{"atlas_slot":8,"consumable_family":"fruits","use_action":"pending_consumable","enabled":false}},
-  {"id":"space_aptitude_fruit","display_name":"Không Gian Linh Quả","description":"Hệ Không Gian chưa được hỗ trợ; chưa thể mua hoặc sử dụng.","category":"consumable","rarity":"legendary","icon_id":"consumable_space_aptitude_fruit","stackable":true,"max_stack":999,"order":509,"expires_after_hours":0,"tags":["consumable","fruits"],"attributes":{"atlas_slot":9,"consumable_family":"fruits","use_action":"pending_consumable","enabled":false}},
-  {"id":"exp_talisman","display_name":"Tu Vi Phù","description":"Nhận EXP tu luyện. Lượng EXP đang chờ cấu hình.","category":"consumable","rarity":"epic","icon_id":"consumable_exp_talisman","stackable":true,"max_stack":999,"order":510,"expires_after_hours":0,"tags":["consumable","charms"],"attributes":{"atlas_slot":10,"consumable_family":"charms","use_action":"pending_consumable","enabled":true}},
-  {"id":"gold_talisman","display_name":"Kim Nguyên Phù","description":"Nhận Vàng. Lượng Vàng đang chờ cấu hình.","category":"consumable","rarity":"rare","icon_id":"consumable_gold_talisman","stackable":true,"max_stack":999,"order":511,"expires_after_hours":0,"tags":["consumable","charms"],"attributes":{"atlas_slot":11,"consumable_family":"charms","use_action":"pending_consumable","enabled":true}},
-  {"id":"attack_talisman","display_name":"Công Kích Phù","description":"Tăng công kích trong trận.","category":"consumable","rarity":"rare","icon_id":"consumable_attack_talisman","stackable":true,"max_stack":999,"order":512,"expires_after_hours":0,"tags":["consumable","charms"],"attributes":{"atlas_slot":12,"consumable_family":"charms","use_action":"pending_combat","enabled":true}},
-  {"id":"defense_talisman","display_name":"Hộ Thân Phù","description":"Tăng phòng thủ trong trận.","category":"consumable","rarity":"rare","icon_id":"consumable_defense_talisman","stackable":true,"max_stack":999,"order":513,"expires_after_hours":0,"tags":["consumable","charms"],"attributes":{"atlas_slot":13,"consumable_family":"charms","use_action":"pending_combat","enabled":true}},
-  {"id":"cooldown_talisman","display_name":"Linh Chuyển Phù","description":"Giảm thời gian hồi chiêu trong trận.","category":"consumable","rarity":"rare","icon_id":"consumable_cooldown_talisman","stackable":true,"max_stack":999,"order":514,"expires_after_hours":0,"tags":["consumable","charms"],"attributes":{"atlas_slot":14,"consumable_family":"charms","use_action":"pending_combat","enabled":true}},
-  {"id":"resistance_talisman","display_name":"Ngũ Hành Hộ Phù","description":"Tăng kháng ngũ hành trong trận.","category":"consumable","rarity":"rare","icon_id":"consumable_resistance_talisman","stackable":true,"max_stack":999,"order":515,"expires_after_hours":0,"tags":["consumable","charms"],"attributes":{"atlas_slot":15,"consumable_family":"charms","use_action":"pending_combat","enabled":true}},
-  {"id":"critical_talisman","display_name":"Bạo Kích Phù","description":"Tăng tỷ lệ chí mạng trong trận.","category":"consumable","rarity":"rare","icon_id":"consumable_critical_talisman","stackable":true,"max_stack":999,"order":516,"expires_after_hours":0,"tags":["consumable","charms"],"attributes":{"atlas_slot":16,"consumable_family":"charms","use_action":"pending_combat","enabled":true}},
-  {"id":"attack_speed_talisman","display_name":"Tật Công Phù","description":"Tăng tốc đánh trong trận.","category":"consumable","rarity":"rare","icon_id":"consumable_attack_speed_talisman","stackable":true,"max_stack":999,"order":517,"expires_after_hours":0,"tags":["consumable","charms"],"attributes":{"atlas_slot":17,"consumable_family":"charms","use_action":"pending_combat","enabled":true}},
-  {"id":"revive_talisman","display_name":"Hồi Sinh Phù","description":"Hồi sinh sau khi thất bại trong trận.","category":"consumable","rarity":"epic","icon_id":"consumable_revive_talisman","stackable":true,"max_stack":999,"order":518,"expires_after_hours":0,"tags":["consumable","charms"],"attributes":{"atlas_slot":18,"consumable_family":"charms","use_action":"pending_combat","enabled":true}},
-  {"id":"healing_elixir","display_name":"Hồi Xuân Đan","description":"Hồi HP trong trận.","category":"consumable","rarity":"rare","icon_id":"consumable_healing_elixir","stackable":true,"max_stack":999,"order":519,"expires_after_hours":0,"tags":["consumable","elixirs"],"attributes":{"atlas_slot":19,"consumable_family":"elixirs","use_action":"pending_combat","enabled":true}},
-  {"id":"shield_elixir","display_name":"Hộ Thuẫn Đan","description":"Tạo khiên bảo vệ trong trận.","category":"consumable","rarity":"rare","icon_id":"consumable_shield_elixir","stackable":true,"max_stack":999,"order":520,"expires_after_hours":0,"tags":["consumable","elixirs"],"attributes":{"atlas_slot":20,"consumable_family":"elixirs","use_action":"pending_combat","enabled":true}},
-  {"id":"energy_elixir","display_name":"Thể Lực Đan","description":"Hồi thể lực ngoài trận.","category":"consumable","rarity":"rare","icon_id":"consumable_energy_elixir","stackable":true,"max_stack":999,"order":521,"expires_after_hours":0,"tags":["consumable","elixirs"],"attributes":{"atlas_slot":21,"consumable_family":"elixirs","use_action":"pending_consumable","enabled":true}},
-  {"id":"slow_talisman","display_name":"Hàn Băng Phù","description":"Làm chậm quái ở gần trong trận.","category":"consumable","rarity":"rare","icon_id":"consumable_slow_talisman","stackable":true,"max_stack":999,"order":522,"expires_after_hours":0,"tags":["consumable","charms"],"attributes":{"atlas_slot":22,"consumable_family":"charms","use_action":"pending_combat","enabled":true}}
+  {
+    "id": "rename_talisman",
+    "display_name": "Đổi Danh Phù",
+    "description": "Thẻ đổi tên: dùng 1 thẻ để đổi tên sau lượt miễn phí đầu tiên.",
+    "category": "consumable",
+    "rarity": "epic",
+    "icon_id": "consumable_rename_talisman",
+    "stackable": true,
+    "max_stack": 999,
+    "order": 500,
+    "expires_after_hours": 0,
+    "tags": [
+      "consumable",
+      "charms"
+    ],
+    "attributes": {
+      "atlas_slot": 0,
+      "consumable_family": "charms",
+      "use_action": "rename_player",
+      "enabled": true
+    }
+  },
+  {
+    "id": "spirit_root_reset",
+    "display_name": "Tẩy Linh Quả",
+    "description": "Roll lại toàn bộ thiên phú, linh căn chính và điểm ngũ hành. Kết quả mới có thể thấp hơn.",
+    "category": "consumable",
+    "rarity": "mythic",
+    "icon_id": "consumable_spirit_root_reset",
+    "stackable": true,
+    "max_stack": 999,
+    "order": 501,
+    "expires_after_hours": 0,
+    "tags": [
+      "consumable",
+      "fruits"
+    ],
+    "attributes": {
+      "atlas_slot": 1,
+      "consumable_family": "fruits",
+      "use_action": "reroll_talent",
+      "enabled": true
+    }
+  },
+  {
+    "id": "metal_aptitude_fruit",
+    "display_name": "Kim Linh Quả",
+    "description": "Tăng vĩnh viễn 5 điểm tư chất hệ tương ứng, giới hạn nhận thêm đến 400. Giữ nguyên khi tẩy thiên phú.",
+    "category": "consumable",
+    "rarity": "legendary",
+    "icon_id": "consumable_metal_aptitude_fruit",
+    "stackable": true,
+    "max_stack": 999,
+    "order": 502,
+    "expires_after_hours": 0,
+    "tags": [
+      "consumable",
+      "fruits"
+    ],
+    "attributes": {
+      "atlas_slot": 2,
+      "consumable_family": "fruits",
+      "use_action": "use_consumable",
+      "enabled": true,
+      "effect": {
+        "context": "inventory",
+        "kind": "affinity",
+        "value": 5,
+        "element": "metal",
+        "cap": 400
+      }
+    }
+  },
+  {
+    "id": "wood_aptitude_fruit",
+    "display_name": "Mộc Linh Quả",
+    "description": "Tăng vĩnh viễn 5 điểm tư chất hệ tương ứng, giới hạn nhận thêm đến 400. Giữ nguyên khi tẩy thiên phú.",
+    "category": "consumable",
+    "rarity": "legendary",
+    "icon_id": "consumable_wood_aptitude_fruit",
+    "stackable": true,
+    "max_stack": 999,
+    "order": 503,
+    "expires_after_hours": 0,
+    "tags": [
+      "consumable",
+      "fruits"
+    ],
+    "attributes": {
+      "atlas_slot": 3,
+      "consumable_family": "fruits",
+      "use_action": "use_consumable",
+      "enabled": true,
+      "effect": {
+        "context": "inventory",
+        "kind": "affinity",
+        "value": 5,
+        "element": "wood",
+        "cap": 400
+      }
+    }
+  },
+  {
+    "id": "water_aptitude_fruit",
+    "display_name": "Thủy Linh Quả",
+    "description": "Tăng vĩnh viễn 5 điểm tư chất hệ tương ứng, giới hạn nhận thêm đến 400. Giữ nguyên khi tẩy thiên phú.",
+    "category": "consumable",
+    "rarity": "legendary",
+    "icon_id": "consumable_water_aptitude_fruit",
+    "stackable": true,
+    "max_stack": 999,
+    "order": 504,
+    "expires_after_hours": 0,
+    "tags": [
+      "consumable",
+      "fruits"
+    ],
+    "attributes": {
+      "atlas_slot": 4,
+      "consumable_family": "fruits",
+      "use_action": "use_consumable",
+      "enabled": true,
+      "effect": {
+        "context": "inventory",
+        "kind": "affinity",
+        "value": 5,
+        "element": "water",
+        "cap": 400
+      }
+    }
+  },
+  {
+    "id": "fire_aptitude_fruit",
+    "display_name": "Hỏa Linh Quả",
+    "description": "Tăng vĩnh viễn 5 điểm tư chất hệ tương ứng, giới hạn nhận thêm đến 400. Giữ nguyên khi tẩy thiên phú.",
+    "category": "consumable",
+    "rarity": "legendary",
+    "icon_id": "consumable_fire_aptitude_fruit",
+    "stackable": true,
+    "max_stack": 999,
+    "order": 505,
+    "expires_after_hours": 0,
+    "tags": [
+      "consumable",
+      "fruits"
+    ],
+    "attributes": {
+      "atlas_slot": 5,
+      "consumable_family": "fruits",
+      "use_action": "use_consumable",
+      "enabled": true,
+      "effect": {
+        "context": "inventory",
+        "kind": "affinity",
+        "value": 5,
+        "element": "fire",
+        "cap": 400
+      }
+    }
+  },
+  {
+    "id": "earth_aptitude_fruit",
+    "display_name": "Thổ Linh Quả",
+    "description": "Tăng vĩnh viễn 5 điểm tư chất hệ tương ứng, giới hạn nhận thêm đến 400. Giữ nguyên khi tẩy thiên phú.",
+    "category": "consumable",
+    "rarity": "legendary",
+    "icon_id": "consumable_earth_aptitude_fruit",
+    "stackable": true,
+    "max_stack": 999,
+    "order": 506,
+    "expires_after_hours": 0,
+    "tags": [
+      "consumable",
+      "fruits"
+    ],
+    "attributes": {
+      "atlas_slot": 6,
+      "consumable_family": "fruits",
+      "use_action": "use_consumable",
+      "enabled": true,
+      "effect": {
+        "context": "inventory",
+        "kind": "affinity",
+        "value": 5,
+        "element": "earth",
+        "cap": 400
+      }
+    }
+  },
+  {
+    "id": "wind_aptitude_fruit",
+    "display_name": "Phong Linh Quả",
+    "description": "Hệ Phong chưa được hỗ trợ; chưa thể mua hoặc sử dụng.",
+    "category": "consumable",
+    "rarity": "legendary",
+    "icon_id": "consumable_wind_aptitude_fruit",
+    "stackable": true,
+    "max_stack": 999,
+    "order": 507,
+    "expires_after_hours": 0,
+    "tags": [
+      "consumable",
+      "fruits"
+    ],
+    "attributes": {
+      "atlas_slot": 7,
+      "consumable_family": "fruits",
+      "use_action": "pending_consumable",
+      "enabled": false
+    }
+  },
+  {
+    "id": "thunder_aptitude_fruit",
+    "display_name": "Lôi Linh Quả",
+    "description": "Hệ Lôi chưa được hỗ trợ; chưa thể mua hoặc sử dụng.",
+    "category": "consumable",
+    "rarity": "legendary",
+    "icon_id": "consumable_thunder_aptitude_fruit",
+    "stackable": true,
+    "max_stack": 999,
+    "order": 508,
+    "expires_after_hours": 0,
+    "tags": [
+      "consumable",
+      "fruits"
+    ],
+    "attributes": {
+      "atlas_slot": 8,
+      "consumable_family": "fruits",
+      "use_action": "pending_consumable",
+      "enabled": false
+    }
+  },
+  {
+    "id": "space_aptitude_fruit",
+    "display_name": "Không Gian Linh Quả",
+    "description": "Hệ Không Gian chưa được hỗ trợ; chưa thể mua hoặc sử dụng.",
+    "category": "consumable",
+    "rarity": "legendary",
+    "icon_id": "consumable_space_aptitude_fruit",
+    "stackable": true,
+    "max_stack": 999,
+    "order": 509,
+    "expires_after_hours": 0,
+    "tags": [
+      "consumable",
+      "fruits"
+    ],
+    "attributes": {
+      "atlas_slot": 9,
+      "consumable_family": "fruits",
+      "use_action": "pending_consumable",
+      "enabled": false
+    }
+  },
+  {
+    "id": "exp_talisman",
+    "display_name": "Tu Vi Phù",
+    "description": "Nhận 10.000 EXP tài khoản. Tuân theo giới hạn cấp và cổng Độ Kiếp.",
+    "category": "consumable",
+    "rarity": "epic",
+    "icon_id": "consumable_exp_talisman",
+    "stackable": true,
+    "max_stack": 999,
+    "order": 510,
+    "expires_after_hours": 0,
+    "tags": [
+      "consumable",
+      "charms"
+    ],
+    "attributes": {
+      "atlas_slot": 10,
+      "consumable_family": "charms",
+      "use_action": "use_consumable",
+      "enabled": true,
+      "effect": {
+        "context": "inventory",
+        "kind": "exp",
+        "value": 10000
+      }
+    }
+  },
+  {
+    "id": "gold_talisman",
+    "display_name": "Kim Nguyên Phù",
+    "description": "Nhận 75.000 Vàng.",
+    "category": "consumable",
+    "rarity": "rare",
+    "icon_id": "consumable_gold_talisman",
+    "stackable": true,
+    "max_stack": 999,
+    "order": 511,
+    "expires_after_hours": 0,
+    "tags": [
+      "consumable",
+      "charms"
+    ],
+    "attributes": {
+      "atlas_slot": 11,
+      "consumable_family": "charms",
+      "use_action": "use_consumable",
+      "enabled": true,
+      "effect": {
+        "context": "inventory",
+        "kind": "gold",
+        "value": 75000
+      }
+    }
+  },
+  {
+    "id": "attack_talisman",
+    "display_name": "Công Kích Phù",
+    "description": "Tăng 30% công kích trong 30 giây.",
+    "category": "consumable",
+    "rarity": "rare",
+    "icon_id": "consumable_attack_talisman",
+    "stackable": true,
+    "max_stack": 999,
+    "order": 512,
+    "expires_after_hours": 0,
+    "tags": [
+      "consumable",
+      "charms"
+    ],
+    "attributes": {
+      "atlas_slot": 12,
+      "consumable_family": "charms",
+      "use_action": "use_consumable",
+      "enabled": true,
+      "effect": {
+        "context": "combat",
+        "kind": "attack",
+        "value": 0.3,
+        "duration": 30,
+        "cooldown": 15
+      }
+    }
+  },
+  {
+    "id": "defense_talisman",
+    "display_name": "Hộ Thân Phù",
+    "description": "Tăng 30% phòng thủ trong 30 giây.",
+    "category": "consumable",
+    "rarity": "rare",
+    "icon_id": "consumable_defense_talisman",
+    "stackable": true,
+    "max_stack": 999,
+    "order": 513,
+    "expires_after_hours": 0,
+    "tags": [
+      "consumable",
+      "charms"
+    ],
+    "attributes": {
+      "atlas_slot": 13,
+      "consumable_family": "charms",
+      "use_action": "use_consumable",
+      "enabled": true,
+      "effect": {
+        "context": "combat",
+        "kind": "defense",
+        "value": 0.3,
+        "duration": 30,
+        "cooldown": 15
+      }
+    }
+  },
+  {
+    "id": "cooldown_talisman",
+    "display_name": "Linh Chuyển Phù",
+    "description": "Giảm 20% hồi chiêu mới trong 30 giây.",
+    "category": "consumable",
+    "rarity": "rare",
+    "icon_id": "consumable_cooldown_talisman",
+    "stackable": true,
+    "max_stack": 999,
+    "order": 514,
+    "expires_after_hours": 0,
+    "tags": [
+      "consumable",
+      "charms"
+    ],
+    "attributes": {
+      "atlas_slot": 14,
+      "consumable_family": "charms",
+      "use_action": "use_consumable",
+      "enabled": true,
+      "effect": {
+        "context": "combat",
+        "kind": "cooldown",
+        "value": 0.2,
+        "duration": 30,
+        "cooldown": 15
+      }
+    }
+  },
+  {
+    "id": "resistance_talisman",
+    "display_name": "Ngũ Hành Hộ Phù",
+    "description": "Giảm 20% sát thương ngũ hành nhận trong 30 giây.",
+    "category": "consumable",
+    "rarity": "rare",
+    "icon_id": "consumable_resistance_talisman",
+    "stackable": true,
+    "max_stack": 999,
+    "order": 515,
+    "expires_after_hours": 0,
+    "tags": [
+      "consumable",
+      "charms"
+    ],
+    "attributes": {
+      "atlas_slot": 15,
+      "consumable_family": "charms",
+      "use_action": "use_consumable",
+      "enabled": true,
+      "effect": {
+        "context": "combat",
+        "kind": "resistance",
+        "value": 0.2,
+        "duration": 30,
+        "cooldown": 15
+      }
+    }
+  },
+  {
+    "id": "critical_talisman",
+    "display_name": "Bạo Kích Phù",
+    "description": "Tăng 10 điểm phần trăm chí mạng trong 30 giây.",
+    "category": "consumable",
+    "rarity": "rare",
+    "icon_id": "consumable_critical_talisman",
+    "stackable": true,
+    "max_stack": 999,
+    "order": 516,
+    "expires_after_hours": 0,
+    "tags": [
+      "consumable",
+      "charms"
+    ],
+    "attributes": {
+      "atlas_slot": 16,
+      "consumable_family": "charms",
+      "use_action": "use_consumable",
+      "enabled": true,
+      "effect": {
+        "context": "combat",
+        "kind": "critical",
+        "value": 0.1,
+        "duration": 30,
+        "cooldown": 15
+      }
+    }
+  },
+  {
+    "id": "attack_speed_talisman",
+    "display_name": "Tật Công Phù",
+    "description": "Giảm 25% chu kỳ đánh thường trong 30 giây.",
+    "category": "consumable",
+    "rarity": "rare",
+    "icon_id": "consumable_attack_speed_talisman",
+    "stackable": true,
+    "max_stack": 999,
+    "order": 517,
+    "expires_after_hours": 0,
+    "tags": [
+      "consumable",
+      "charms"
+    ],
+    "attributes": {
+      "atlas_slot": 17,
+      "consumable_family": "charms",
+      "use_action": "use_consumable",
+      "enabled": true,
+      "effect": {
+        "context": "combat",
+        "kind": "attack_speed",
+        "value": 0.25,
+        "duration": 30,
+        "cooldown": 15
+      }
+    }
+  },
+  {
+    "id": "revive_talisman",
+    "display_name": "Hồi Sinh Phù",
+    "description": "Hồi sinh với 50% HP và bất tử 3 giây. Tối đa 1 lần mỗi trận thường.",
+    "category": "consumable",
+    "rarity": "epic",
+    "icon_id": "consumable_revive_talisman",
+    "stackable": true,
+    "max_stack": 999,
+    "order": 518,
+    "expires_after_hours": 0,
+    "tags": [
+      "consumable",
+      "charms"
+    ],
+    "attributes": {
+      "atlas_slot": 18,
+      "consumable_family": "charms",
+      "use_action": "use_consumable",
+      "enabled": true,
+      "effect": {
+        "context": "combat",
+        "kind": "revive",
+        "value": 0.5,
+        "duration": 3,
+        "cooldown": 15
+      }
+    }
+  },
+  {
+    "id": "healing_elixir",
+    "display_name": "Hồi Xuân Đan",
+    "description": "Hồi ngay 30% HP tối đa trong trận.",
+    "category": "consumable",
+    "rarity": "rare",
+    "icon_id": "consumable_healing_elixir",
+    "stackable": true,
+    "max_stack": 999,
+    "order": 519,
+    "expires_after_hours": 0,
+    "tags": [
+      "consumable",
+      "elixirs"
+    ],
+    "attributes": {
+      "atlas_slot": 19,
+      "consumable_family": "elixirs",
+      "use_action": "use_consumable",
+      "enabled": true,
+      "effect": {
+        "context": "combat",
+        "kind": "heal",
+        "value": 0.3,
+        "duration": 0,
+        "cooldown": 15
+      }
+    }
+  },
+  {
+    "id": "shield_elixir",
+    "display_name": "Hộ Thuẫn Đan",
+    "description": "Tạo khiên bằng 30% HP tối đa trong 15 giây.",
+    "category": "consumable",
+    "rarity": "rare",
+    "icon_id": "consumable_shield_elixir",
+    "stackable": true,
+    "max_stack": 999,
+    "order": 520,
+    "expires_after_hours": 0,
+    "tags": [
+      "consumable",
+      "elixirs"
+    ],
+    "attributes": {
+      "atlas_slot": 20,
+      "consumable_family": "elixirs",
+      "use_action": "use_consumable",
+      "enabled": true,
+      "effect": {
+        "context": "combat",
+        "kind": "shield",
+        "value": 0.3,
+        "duration": 15,
+        "cooldown": 15
+      }
+    }
+  },
+  {
+    "id": "energy_elixir",
+    "display_name": "Thể Lực Đan",
+    "description": "Hồi 15 thể lực, tối đa 30.",
+    "category": "consumable",
+    "rarity": "rare",
+    "icon_id": "consumable_energy_elixir",
+    "stackable": true,
+    "max_stack": 999,
+    "order": 521,
+    "expires_after_hours": 0,
+    "tags": [
+      "consumable",
+      "elixirs"
+    ],
+    "attributes": {
+      "atlas_slot": 21,
+      "consumable_family": "elixirs",
+      "use_action": "use_consumable",
+      "enabled": true,
+      "effect": {
+        "context": "inventory",
+        "kind": "stamina",
+        "value": 15
+      }
+    }
+  },
+  {
+    "id": "slow_talisman",
+    "display_name": "Hàn Băng Phù",
+    "description": "Làm chậm 40% quái trong bán kính 400 trong 8 giây.",
+    "category": "consumable",
+    "rarity": "rare",
+    "icon_id": "consumable_slow_talisman",
+    "stackable": true,
+    "max_stack": 999,
+    "order": 522,
+    "expires_after_hours": 0,
+    "tags": [
+      "consumable",
+      "charms"
+    ],
+    "attributes": {
+      "atlas_slot": 22,
+      "consumable_family": "charms",
+      "use_action": "use_consumable",
+      "enabled": true,
+      "effect": {
+        "context": "combat",
+        "kind": "slow",
+        "value": 0.4,
+        "duration": 8,
+        "cooldown": 15,
+        "radius": 400
+      }
+    }
+  }
 ]

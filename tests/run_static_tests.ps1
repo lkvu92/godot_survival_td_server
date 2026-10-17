@@ -15,6 +15,8 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Player names regression failed' }
     & node tests/test_consumable_store.cjs
     if ($LASTEXITCODE -ne 0) { throw 'Consumable store regression failed' }
+    & node tests/test_consumable_use.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Consumable use regression failed' }
     & node --check services/monetization-verifier/src/server.js
     if ($LASTEXITCODE -ne 0) { throw 'Verifier syntax failed' }
     & python -B -m unittest discover -s tests -p 'test_*.py'

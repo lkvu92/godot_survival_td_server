@@ -165,6 +165,7 @@ function InitModule(
     initializer.registerRpc("get_compliance_profile", linkedRpc_get_compliance_profile);
     initializer.registerRpc("update_inventory", linkedRpc_update_inventory);
     initializer.registerRpc("talisman_action", linkedRpc_talisman_action);
+    initializer.registerRpc("use_consumable", accountGuardedRpc("use_consumable", gatedUseConsumable));
     initializer.registerRpc("talisman_cast", linkedRpc_talisman_cast);
     initializer.registerRpc("spend_resource", linkedRpc_spend_resource);
     initializer.registerRpc("purchase_stamina", linkedRpc_purchase_stamina);

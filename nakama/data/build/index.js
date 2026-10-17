@@ -1958,6 +1958,7 @@ const gatedLoadPlayerProfile = (ctx, logger, nk, payload) => invokeWithVersionGa
 const gatedUpdateInventory = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, updateInventory);
 const gatedTalismanAction = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, talismanAction);
 const gatedTalismanCast = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, talismanCast);
+const gatedUseConsumable = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, useConsumable);
 const gatedSpendResource = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, spendResource);
 const gatedPurchaseStamina = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, purchaseStamina);
 const gatedPurchaseHero = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, purchaseHero);
@@ -2973,6 +2974,111 @@ const confirmGoogleLink = (ctx, logger, nk, payload) => {
   }
 };
 
+const useConsumable = (ctx, _logger, nk, payload) => {
+  const fail = (message) => JSON.stringify({ success: false, message });
+  let req;
+  try {
+    req = JSON.parse(payload || "{}");
+  } catch (_) {
+    return fail("Invalid JSON");
+  }
+  if (!req || typeof req !== "object" || Array.isArray(req)) return fail("Invalid request");
+  const itemId = String(req.item_id || ""), requestId = String(req.request_id || ""), runId = String(req.run_id || "");
+  const quantity = req.quantity === void 0 ? 1 : req.quantity;
+  if (!/^[A-Za-z0-9_-]{1,128}$/.test(requestId) || !Number.isSafeInteger(quantity) || quantity < 1 || quantity > 99) return fail("Invalid request");
+  const fingerprint = JSON.stringify(["use_consumable", itemId, quantity, runId]);
+  const stored = nk.storageRead([
+    { collection: "player_profiles", key: "main", userId: ctx.userId },
+    { collection: "player_inventory", key: "items", userId: ctx.userId },
+    { collection: "player_item_requests", key: requestId, userId: ctx.userId },
+    { collection: "player_stage_runs", key: "active", userId: ctx.userId }
+  ]);
+  const profileObject = stored.find((row) => row.collection === "player_profiles");
+  const inventoryObject = stored.find((row) => row.collection === "player_inventory");
+  const previous = stored.find((row) => row.collection === "player_item_requests");
+  const runObject = stored.find((row) => row.collection === "player_stage_runs");
+  if (!profileObject || !inventoryObject) return fail("Profile is incomplete");
+  const profile = talismanJsonObject(profileObject.value), inventory = talismanJsonObject(inventoryObject.value);
+  const items = Array.isArray(inventory.items) ? inventory.items : [];
+  if (previous) {
+    if (previous.value.fingerprint !== fingerprint) return fail("Request ID conflict");
+    return JSON.stringify({ success: true, duplicate: true, inventory: items, profile, effect: previous.value.effect, receipt_id: requestId });
+  }
+  const rows = nk.sqlQuery("SELECT attributes FROM game_items WHERE id=$1", [itemId]);
+  if (!rows.length) return fail("Unknown item");
+  const attrs = talismanJsonObject(rows[0].attributes), effect = talismanJsonObject(attrs.effect);
+  const kind = String(effect.kind || ""), value = Number(effect.value);
+  if (attrs.enabled === false || attrs.use_action !== "use_consumable" || !Number.isFinite(value) || value <= 0) return fail("Item effect is unavailable");
+  if (talismanItemQuantity(items, itemId) < quantity) return fail("Not enough items");
+  const run = runObject ? talismanJsonObject(runObject.value) : {};
+  const now = Date.now(), combat = effect.context === "combat";
+  if (combat) {
+    if (!runId || quantity !== 1 || run.run_id !== runId || run.status !== "active" || now >= Number(run.expires_at_ms || 0)) return fail("No active stage run");
+    if (req.paused !== false || kind !== "revive" && req.alive !== true) return fail("Cannot use while paused or dead");
+    if ((profile.breakthrough || {}).in_tribulation) return fail("Items unavailable in tribulation");
+    const cooldowns = talismanJsonObject(run.item_cooldowns);
+    if (now < Number(cooldowns[itemId] || 0)) return fail("Item is on cooldown");
+    if (kind === "revive" && (req.alive !== false || Number(run.item_revives || 0) >= 1)) return fail("Revive unavailable");
+    if (["attack", "defense", "cooldown", "resistance", "critical", "attack_speed", "heal", "shield", "slow", "revive"].indexOf(kind) < 0) return fail("Unsupported combat effect");
+    if (!Number.isFinite(Number(effect.duration || 0)) || !Number.isFinite(Number(effect.cooldown)) || Number(effect.cooldown) < 0) return fail("Invalid combat config");
+    cooldowns[itemId] = now + Number(effect.cooldown) * 1e3;
+    run.item_cooldowns = cooldowns;
+    if (kind === "revive") run.item_revives = Number(run.item_revives || 0) + 1;
+  } else {
+    if (runId || run.status === "active" && now < Number(run.expires_at_ms || 0) || (profile.breakthrough || {}).in_tribulation) return fail("Use this item outside combat");
+    if (kind === "gold") {
+      const resources = talismanJsonObject(profile.resources);
+      const total = Number(resources.gold || 0) + value * quantity;
+      if (!Number.isSafeInteger(total)) return fail("Resource overflow");
+      resources.gold = total;
+      profile.resources = resources;
+    } else if (kind === "exp") {
+      const threshold = progressionNextUserExp(nk, Number(profile.level || 1));
+      if (Number(profile.level || 1) >= PROGRESSION_MAX_LEVEL || isBreakthroughMilestone(Number(profile.level || 1)) && Number(profile.exp || 0) >= threshold) return fail("Level or breakthrough cap reached");
+      if (quantity > 1) {
+        const preview = JSON.parse(JSON.stringify(profile));
+        progressionApplyUser(nk, preview, value * (quantity - 1));
+        if (preview.level >= PROGRESSION_MAX_LEVEL || isBreakthroughMilestone(preview.level) && preview.exp >= progressionNextUserExp(nk, preview.level)) return fail("Reduce quantity to avoid wasting items at the breakthrough cap");
+      }
+      progressionApplyUser(nk, profile, value * quantity);
+      cultivationEnsurePreview(nk, profile);
+      progressionReconcileLevelUnlocks(nk, profile);
+    } else if (kind === "stamina") {
+      const before = Number(profile.stamina || 0);
+      if (before >= 30 || quantity > 1 && before + (quantity - 1) * value >= 30) return fail("Stamina full or quantity exceeds capacity");
+      profile.stamina = Math.min(30, before + value * quantity);
+      if (profile.stamina === 30) profile.last_stamina_update = Math.floor(now / 1e3);
+    } else if (kind === "affinity") {
+      if (CULTIVATION_ELEMENTS.indexOf(String(effect.element)) < 0) return fail("Unsupported element");
+      cultivationEnsureSources(profile);
+      const element = String(effect.element), before = Number(profile.element_affinities[element] || 0);
+      const cap = Number(effect.cap);
+      if (!Number.isFinite(cap) || before >= cap || quantity > 1 && before + (quantity - 1) * value >= cap) return fail("Affinity cap reached");
+      profile.element_sources.fruit[element] = cultivationRound1(Number(profile.element_sources.fruit[element] || 0) + Math.min(value * quantity, cap - before));
+      cultivationRebuildSources(profile);
+    } else return fail("Unsupported item effect");
+  }
+  if (!talismanRemoveItems(items, itemId, quantity)) return fail("Inventory changed");
+  inventory.items = items;
+  const writes = [
+    { collection: "player_profiles", key: "main", userId: ctx.userId, value: profile, version: profileObject.version, permissionRead: 1, permissionWrite: 0 },
+    { collection: "player_inventory", key: "items", userId: ctx.userId, value: inventory, version: inventoryObject.version, permissionRead: 1, permissionWrite: 0 },
+    { collection: "player_item_requests", key: requestId, userId: ctx.userId, value: { fingerprint, effect, created_at: now }, version: "*", permissionRead: 1, permissionWrite: 0 }
+  ];
+  if (combat) writes.push({ collection: "player_stage_runs", key: "active", userId: ctx.userId, value: run, version: runObject.version, permissionRead: 1, permissionWrite: 0 });
+  try {
+    nk.storageWrite(writes);
+  } catch (_) {
+    return fail("Data changed; retry the same request");
+  }
+  if (!combat && typeof writePlayerLeaderboardRecords === "function") {
+    try {
+      writePlayerLeaderboardRecords(nk, ctx.userId, profile, profile.display_name);
+    } catch (_) {
+    }
+  }
+  return JSON.stringify({ success: true, inventory: items, profile, effect, receipt_id: requestId });
+};
 const updateInventory = (ctx, logger, nk, payload) => {
   const req = JSON.parse(payload);
   const action = req.action;
@@ -3358,7 +3464,10 @@ const talismanAction = (ctx, _logger, nk, payload) => {
     if (!catalog.length || talismanJsonObject(catalog[0].attributes).use_action !== "reroll_talent") return JSON.stringify({ success: false, message: "T\u1EA9y Linh Qu\u1EA3 ch\u01B0a \u0111\u01B0\u1EE3c c\u1EA5u h\xECnh" });
     if (!talismanRemoveItems(items, "spirit_root_reset", 1)) return JSON.stringify({ success: false, message: "C\u1EA7n 1 T\u1EA9y Linh Qu\u1EA3" });
     rerolledTalent = cultivationRollProfile();
-    Object.assign(profile, rerolledTalent);
+    const progressionRows = nk.sqlQuery("SELECT value FROM game_config WHERE key = 'progression'", []);
+    const rerollConfig = progressionRows.length ? talismanJsonObject(talismanJsonObject(progressionRows[0].value).consumables).reroll : null;
+    if (!rerollConfig || !Number.isFinite(rerollConfig.main_growth) || !Number.isFinite(rerollConfig.secondary_growth)) return JSON.stringify({ success: false, message: "Thi\u1EBFu c\u1EA5u h\xECnh t\u0103ng tr\u01B0\u1EDFng thi\xEAn ph\xFA" });
+    cultivationApplyReroll(profile, rerolledTalent, rerollConfig);
     if (profile.breakthrough) Object.assign(profile.breakthrough, { count_rolled: false, tribulation_count: 0, encounter_id: "", encounter_seed: 0, skill_set: [] });
     receipts.push({ request_id: requestId, rolled: rerolledTalent });
     inventoryValue._talent_reroll_receipts = receipts.slice(-100);
@@ -3567,6 +3676,12 @@ const talismanAction = (ctx, _logger, nk, payload) => {
     nk.storageWrite(actionWrites);
   } catch (_e) {
     return JSON.stringify({ success: false, message: "D\u1EEF li\u1EC7u \u0111\xE3 thay \u0111\u1ED5i. Vui l\xF2ng \u0111\u1ED3ng b\u1ED9 r\u1ED3i th\u1EED l\u1EA1i." });
+  }
+  if (rerolledTalent && typeof writePlayerLeaderboardRecords === "function") {
+    try {
+      writePlayerLeaderboardRecords(nk, ctx.userId, profile, profile.display_name);
+    } catch (_) {
+    }
   }
   if (action === "upgrade" && upgradeSucceeded) {
     eventRecord(
@@ -4002,6 +4117,47 @@ function cultivationConfig() {
 function cultivationRound1(value) {
   return Math.round(value * 10) / 10;
 }
+function cultivationEnsureSources(profile) {
+  if (profile.element_sources && profile.element_sources.version === 1) return;
+  const current = profile.element_affinities || {};
+  const tribulation = {}, fruit = {}, base = {}, growth = {};
+  const history = (profile.breakthrough || {}).history || [];
+  const unclassifiedHistory = history.some((row) => !row.gains && !(row.reward || {}).gains);
+  CULTIVATION_ELEMENTS.forEach((id) => {
+    tribulation[id] = cultivationRound1(history.reduce((sum, row) => sum + Math.max(0, Number((row.gains || (row.reward || {}).gains || {})[id] || 0)), 0));
+    tribulation[id] = Math.min(Math.max(0, Number(current[id] || 0)), tribulation[id]);
+  });
+  const remaining = CULTIVATION_ELEMENTS.reduce((sum, id) => sum + Math.max(0, Number(current[id] || 0) - tribulation[id]), 0);
+  const ratio = unclassifiedHistory ? 0 : remaining > 0 ? Math.min(1, Math.max(0, Number(profile.talent_score || remaining)) / remaining) : 1;
+  CULTIVATION_ELEMENTS.forEach((id) => {
+    const value = Math.max(0, Number(current[id] || 0) - tribulation[id]);
+    base[id] = cultivationRound1(value * ratio);
+    fruit[id] = cultivationRound1(value - base[id]);
+    growth[id] = 0;
+  });
+  profile.element_sources = { version: 1, base, growth_per_level: growth, growth_levels: Number(profile.level || 1), tribulation, fruit };
+}
+function cultivationRebuildSources(profile) {
+  const sources = profile.element_sources;
+  const totals = {};
+  CULTIVATION_ELEMENTS.forEach((id) => {
+    totals[id] = cultivationRound1(Math.max(0, Number(sources.base[id] || 0) + Number(sources.growth_per_level[id] || 0) * Number(sources.growth_levels || 0) + Number(sources.tribulation[id] || 0) + Number(sources.fruit[id] || 0)));
+  });
+  profile.element_affinities = totals;
+}
+function cultivationApplyReroll(profile, rolled, config) {
+  cultivationEnsureSources(profile);
+  const sources = profile.element_sources;
+  sources.base = rolled.element_affinities;
+  sources.growth_levels = Number(profile.level || 1);
+  CULTIVATION_ELEMENTS.forEach((id) => {
+    sources.growth_per_level[id] = Number(id === rolled.main_element ? config.main_growth : config.secondary_growth);
+  });
+  profile.talent_tier = rolled.talent_tier;
+  profile.talent_score = rolled.talent_score;
+  profile.main_element = rolled.main_element;
+  cultivationRebuildSources(profile);
+}
 function isBreakthroughMilestone(level) {
   return level < PROGRESSION_MAX_LEVEL && level % 10 === 9;
 }
@@ -4185,6 +4341,7 @@ function cultivationEnsurePreview(nk, profile) {
   return changed;
 }
 function cultivationReward(profile, waves, failures, hpRatio) {
+  cultivationEnsureSources(profile);
   const config = cultivationConfig();
   let multiplier = 1 + (Math.max(0, Math.min(1, hpRatio)) - 0.5) * config.performance_weight;
   multiplier -= failures * config.failure_penalty;
@@ -4202,9 +4359,10 @@ function cultivationReward(profile, waves, failures, hpRatio) {
     }
     const requested = cultivationRound1(base * multiplier);
     const before = Math.max(0, Number(affinities[id] || 0));
-    const after = Math.min(config.element_cap, before + requested);
+    const after = before + Math.max(0, Math.min(config.element_cap - before, requested));
     affinities[id] = cultivationRound1(after);
     gains[id] = cultivationRound1(after - before);
+    profile.element_sources.tribulation[id] = cultivationRound1(Number(profile.element_sources.tribulation[id] || 0) + gains[id]);
   });
   profile.element_affinities = affinities;
   return { multiplier: Math.round(multiplier * 100) / 100, gains };
@@ -4231,6 +4389,7 @@ function progressionNextUserExp(nk, level) {
   return progressionNextHeroExp(nk, level) * PROGRESSION_USER_RATIO;
 }
 function progressionApplyUser(nk, profile, awarded) {
+  cultivationEnsureSources(profile);
   let level = Math.max(1, Math.min(PROGRESSION_MAX_LEVEL, Number(profile.level || 1)));
   let exp = Math.max(0, Number(profile.exp || 0)) + awarded;
   let next = progressionNextUserExp(nk, level);
@@ -4250,6 +4409,8 @@ function progressionApplyUser(nk, profile, awarded) {
     next = 0;
   }
   profile.level = level;
+  profile.element_sources.growth_levels = level;
+  cultivationRebuildSources(profile);
   profile.exp = exp;
   profile.next_level_exp = next;
   profile.progression_version = PROGRESSION_VERSION;
@@ -4745,13 +4906,16 @@ const tribulationAction = (ctx, _logger, nk, payload) => {
   }
   const waves = Math.max(1, Math.min(9, Number(state.tribulation_count || 1)));
   const failures = Math.max(0, Number(state.failures || 0));
+  cultivationEnsureSources(profile);
   profile.level = Math.min(PROGRESSION_MAX_LEVEL, level + 1);
+  profile.element_sources.growth_levels = profile.level;
+  cultivationRebuildSources(profile);
   profile.exp = Math.max(0, Number(profile.exp || 0) - threshold);
   profile.next_level_exp = progressionNextUserExp(nk, profile.level);
   profile.progression_version = PROGRESSION_VERSION;
   const reward = cultivationReward(profile, waves, failures, hpRatio);
   const history = Array.isArray(state.history) ? state.history : [];
-  history.push({ level: profile.level, waves, failures });
+  history.push({ level: profile.level, waves, failures, gains: reward.gains });
   profile.breakthrough = cultivationDefaultBreakthrough(history);
   progressionReconcileLevelUnlocks(nk, profile);
   nk.storageWrite([{
@@ -6680,6 +6844,7 @@ function InitModule(ctx, logger, nk, initializer) {
   initializer.registerRpc("get_compliance_profile", linkedRpc_get_compliance_profile);
   initializer.registerRpc("update_inventory", linkedRpc_update_inventory);
   initializer.registerRpc("talisman_action", linkedRpc_talisman_action);
+  initializer.registerRpc("use_consumable", accountGuardedRpc("use_consumable", gatedUseConsumable));
   initializer.registerRpc("talisman_cast", linkedRpc_talisman_cast);
   initializer.registerRpc("spend_resource", linkedRpc_spend_resource);
   initializer.registerRpc("purchase_stamina", linkedRpc_purchase_stamina);

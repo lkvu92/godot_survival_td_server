@@ -1,5 +1,7 @@
 # Server documentation
 
+- [C130 Consumable use](contracts/C130_CONSUMABLE_USE.md) v1.0.0 — transactional use and permanent cultivation sources. [Item guide](items/CONSUMABLES.md).
+
 - [C129 Consumable store](contracts/C129_CONSUMABLE_STORE.md): item rarity/prices, Gold/Gem alternatives, item-paid renames and talent reroll.
 
 - [C124 Public proxy network](contracts/C124_PUBLIC_PROXY_NETWORK.md) v1.0.0: shared Nginx network and stable game service aliases.

@@ -2,28 +2,52 @@
   "progression_version": 2,
   "combat_power": {
     "version": 2,
-    "horizon_seconds": 30.0,
-    "offense_weight": 10.0,
+    "horizon_seconds": 30,
+    "offense_weight": 10,
     "survival_weight": 0.5,
     "movement_weight": 0.1,
     "range_weight": 0.05,
     "basic_damage_multiplier": 0.75,
     "min_defense_multiplier": 0.1,
-    "crit_damage_cap": 10.0,
+    "crit_damage_cap": 10,
     "regen_cap": 0.1,
     "dodge_cap": 0.6,
     "cooldown_multiplier_floor": 0.35,
     "minimum_cooldown": 0.1,
-    "durability_tiers": [{"max": 0, "factor": 0.0}, {"max": 20, "factor": 0.6}, {"max": 50, "factor": 0.85}, {"max": 100, "factor": 1.0}],
+    "durability_tiers": [
+      {
+        "max": 0,
+        "factor": 0
+      },
+      {
+        "max": 20,
+        "factor": 0.6
+      },
+      {
+        "max": 50,
+        "factor": 0.85
+      },
+      {
+        "max": 100,
+        "factor": 1
+      }
+    ],
     "skill_hit_weights": {
-      "damage_pct": 1.0,
-      "second_damage_pct": 1.0,
-      "explosion_damage_pct": 1.0
+      "damage_pct": 1,
+      "second_damage_pct": 1,
+      "explosion_damage_pct": 1
     },
     "skill_overrides": {
-      "skill_talisman_1": {"projectile_base": 3, "projectile_level_interval": 3},
-      "skill_talisman_2": {"center_hit_weight": 0.5},
-      "skill_talisman_8": {"projectile_factor": 0.5}
+      "skill_talisman_1": {
+        "projectile_base": 3,
+        "projectile_level_interval": 3
+      },
+      "skill_talisman_2": {
+        "center_hit_weight": 0.5
+      },
+      "skill_talisman_8": {
+        "projectile_factor": 0.5
+      }
     }
   },
   "persistent_leveling": {
@@ -65,23 +89,83 @@
   },
   "element_combat": {
     "ruleset_version": 2,
-    "supported_elements": ["metal", "wood", "water", "fire", "earth"],
+    "supported_elements": [
+      "metal",
+      "wood",
+      "water",
+      "fire",
+      "earth"
+    ],
     "affinity_resistance_ratio": 0.5,
-    "modifier_floor_pct": -80.0,
-    "defense_divisor": 1000.0,
-    "talisman_resistance_cap_pct": 75.0,
+    "modifier_floor_pct": -80,
+    "defense_divisor": 1000,
+    "talisman_resistance_cap_pct": 75,
     "level_amplification_tiers": [
-      {"level_min": 0, "level_max": 0, "base_pct": 0.0, "base_level": 0, "per_level_pct": 0.0},
-      {"level_min": 1, "level_max": 10, "base_pct": 0.0, "base_level": 0, "per_level_pct": 5.0},
-      {"level_min": 11, "level_max": 20, "base_pct": 50.0, "base_level": 10, "per_level_pct": 10.0},
-      {"level_min": 21, "level_max": 30, "base_pct": 150.0, "base_level": 20, "per_level_pct": 20.0}
+      {
+        "level_min": 0,
+        "level_max": 0,
+        "base_pct": 0,
+        "base_level": 0,
+        "per_level_pct": 0
+      },
+      {
+        "level_min": 1,
+        "level_max": 10,
+        "base_pct": 0,
+        "base_level": 0,
+        "per_level_pct": 5
+      },
+      {
+        "level_min": 11,
+        "level_max": 20,
+        "base_pct": 50,
+        "base_level": 10,
+        "per_level_pct": 10
+      },
+      {
+        "level_min": 21,
+        "level_max": 30,
+        "base_pct": 150,
+        "base_level": 20,
+        "per_level_pct": 20
+      }
     ],
     "matchup_modifier_pct": {
-      "metal": {"metal": 0.0, "wood": 0.0, "water": 50.0, "fire": 0.0, "earth": -50.0},
-      "wood": {"metal": 0.0, "wood": 0.0, "water": 0.0, "fire": -50.0, "earth": 50.0},
-      "water": {"metal": -50.0, "wood": 0.0, "water": 0.0, "fire": 50.0, "earth": 0.0},
-      "fire": {"metal": 0.0, "wood": 50.0, "water": -50.0, "fire": 0.0, "earth": 0.0},
-      "earth": {"metal": 50.0, "wood": -50.0, "water": 0.0, "fire": 0.0, "earth": 0.0}
+      "metal": {
+        "metal": 0,
+        "wood": 0,
+        "water": 50,
+        "fire": 0,
+        "earth": -50
+      },
+      "wood": {
+        "metal": 0,
+        "wood": 0,
+        "water": 0,
+        "fire": -50,
+        "earth": 50
+      },
+      "water": {
+        "metal": -50,
+        "wood": 0,
+        "water": 0,
+        "fire": 50,
+        "earth": 0
+      },
+      "fire": {
+        "metal": 0,
+        "wood": 50,
+        "water": -50,
+        "fire": 0,
+        "earth": 0
+      },
+      "earth": {
+        "metal": 50,
+        "wood": -50,
+        "water": 0,
+        "fire": 0,
+        "earth": 0
+      }
     }
   },
   "default_save": {
@@ -114,56 +198,338 @@
     "severe_break_gem_cost": 10,
     "severe_break_gold_multiplier": 2,
     "qualities": {
-      "low": { "name": "Hạ phẩm", "count": 15, "craft_fragments": 100, "craft_gold": 100000 },
-      "mid": { "name": "Trung phẩm", "count": 10, "craft_fragments": 100, "craft_gold": 200000 },
-      "high": { "name": "Thượng phẩm", "count": 5, "craft_fragments": 100, "craft_gold": 500000 },
-      "ancient": { "name": "Thượng cổ", "count": 0, "enabled": false },
-      "law": { "name": "Pháp tắc", "count": 0, "enabled": false }
+      "low": {
+        "name": "Hạ phẩm",
+        "count": 15,
+        "craft_fragments": 100,
+        "craft_gold": 100000
+      },
+      "mid": {
+        "name": "Trung phẩm",
+        "count": 10,
+        "craft_fragments": 100,
+        "craft_gold": 200000
+      },
+      "high": {
+        "name": "Thượng phẩm",
+        "count": 5,
+        "craft_fragments": 100,
+        "craft_gold": 500000
+      },
+      "ancient": {
+        "name": "Thượng cổ",
+        "count": 0,
+        "enabled": false
+      },
+      "law": {
+        "name": "Pháp tắc",
+        "count": 0,
+        "enabled": false
+      }
     },
     "fragment_drop": {
-      "eligible_stages": ["stage_1_10", "stage_2_10", "stage_3_10", "stage_4_10", "stage_5_10"],
-      "quantity_weights": { "0": 30, "1": 50, "2": 15, "3": 5 },
-      "quality_weights": { "low": 85, "mid": 15 },
+      "eligible_stages": [
+        "stage_1_10",
+        "stage_2_10",
+        "stage_3_10",
+        "stage_4_10",
+        "stage_5_10"
+      ],
+      "quantity_weights": {
+        "0": 30,
+        "1": 50,
+        "2": 15,
+        "3": 5
+      },
+      "quality_weights": {
+        "low": 85,
+        "mid": 15
+      },
       "matching_element_weight": 75,
       "other_element_weight": 25
     },
     "store": {
       "materials": [
-        {"item_id":"rename_talisman","category":"charms","currency":"gems","price":1000,"quantity":1,"enabled":true},
-        {"item_id":"spirit_root_reset","category":"fruits","currency":"gems","price":5000,"quantity":1,"enabled":true},
-        {"item_id":"metal_aptitude_fruit","category":"fruits","currency":"gems","price":2000,"quantity":1,"enabled":true},
-        {"item_id":"wood_aptitude_fruit","category":"fruits","currency":"gems","price":2000,"quantity":1,"enabled":true},
-        {"item_id":"water_aptitude_fruit","category":"fruits","currency":"gems","price":2000,"quantity":1,"enabled":true},
-        {"item_id":"fire_aptitude_fruit","category":"fruits","currency":"gems","price":2000,"quantity":1,"enabled":true},
-        {"item_id":"earth_aptitude_fruit","category":"fruits","currency":"gems","price":2000,"quantity":1,"enabled":true},
-        {"item_id":"wind_aptitude_fruit","category":"fruits","currency":"gems","price":2000,"quantity":1,"enabled":false},
-        {"item_id":"thunder_aptitude_fruit","category":"fruits","currency":"gems","price":2000,"quantity":1,"enabled":false},
-        {"item_id":"space_aptitude_fruit","category":"fruits","currency":"gems","price":2000,"quantity":1,"enabled":false},
-        {"item_id":"exp_talisman","category":"charms","currency":"gems","price":500,"quantity":1,"enabled":true},
-        {"item_id":"exp_talisman","category":"charms","currency":"gold","price":125000,"quantity":1,"enabled":true},
-        {"item_id":"gold_talisman","category":"charms","currency":"gems","price":300,"quantity":1,"enabled":true},
-        {"item_id":"attack_talisman","category":"charms","currency":"gems","price":200,"quantity":1,"enabled":true},
-        {"item_id":"attack_talisman","category":"charms","currency":"gold","price":50000,"quantity":1,"enabled":true},
-        {"item_id":"defense_talisman","category":"charms","currency":"gems","price":200,"quantity":1,"enabled":true},
-        {"item_id":"defense_talisman","category":"charms","currency":"gold","price":50000,"quantity":1,"enabled":true},
-        {"item_id":"cooldown_talisman","category":"charms","currency":"gems","price":200,"quantity":1,"enabled":true},
-        {"item_id":"cooldown_talisman","category":"charms","currency":"gold","price":50000,"quantity":1,"enabled":true},
-        {"item_id":"resistance_talisman","category":"charms","currency":"gems","price":300,"quantity":1,"enabled":true},
-        {"item_id":"resistance_talisman","category":"charms","currency":"gold","price":75000,"quantity":1,"enabled":true},
-        {"item_id":"critical_talisman","category":"charms","currency":"gems","price":100,"quantity":1,"enabled":true},
-        {"item_id":"critical_talisman","category":"charms","currency":"gold","price":25000,"quantity":1,"enabled":true},
-        {"item_id":"attack_speed_talisman","category":"charms","currency":"gems","price":200,"quantity":1,"enabled":true},
-        {"item_id":"attack_speed_talisman","category":"charms","currency":"gold","price":50000,"quantity":1,"enabled":true},
-        {"item_id":"revive_talisman","category":"charms","currency":"gems","price":500,"quantity":1,"enabled":true},
-        {"item_id":"revive_talisman","category":"charms","currency":"gold","price":125000,"quantity":1,"enabled":true},
-        {"item_id":"healing_elixir","category":"elixirs","currency":"gems","price":200,"quantity":1,"enabled":true},
-        {"item_id":"healing_elixir","category":"elixirs","currency":"gold","price":50000,"quantity":1,"enabled":true},
-        {"item_id":"shield_elixir","category":"elixirs","currency":"gems","price":100,"quantity":1,"enabled":true},
-        {"item_id":"shield_elixir","category":"elixirs","currency":"gold","price":25000,"quantity":1,"enabled":true},
-        {"item_id":"energy_elixir","category":"elixirs","currency":"gems","price":100,"quantity":1,"enabled":true},
-        {"item_id":"energy_elixir","category":"elixirs","currency":"gold","price":25000,"quantity":1,"enabled":true},
-        {"item_id":"slow_talisman","category":"charms","currency":"gems","price":200,"quantity":1,"enabled":true},
-        {"item_id":"slow_talisman","category":"charms","currency":"gold","price":50000,"quantity":1,"enabled":true},
+        {
+          "item_id": "rename_talisman",
+          "category": "charms",
+          "currency": "gems",
+          "price": 1000,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
+          "item_id": "spirit_root_reset",
+          "category": "fruits",
+          "currency": "gems",
+          "price": 5000,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
+          "item_id": "metal_aptitude_fruit",
+          "category": "fruits",
+          "currency": "gems",
+          "price": 2000,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
+          "item_id": "wood_aptitude_fruit",
+          "category": "fruits",
+          "currency": "gems",
+          "price": 2000,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
+          "item_id": "water_aptitude_fruit",
+          "category": "fruits",
+          "currency": "gems",
+          "price": 2000,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
+          "item_id": "fire_aptitude_fruit",
+          "category": "fruits",
+          "currency": "gems",
+          "price": 2000,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
+          "item_id": "earth_aptitude_fruit",
+          "category": "fruits",
+          "currency": "gems",
+          "price": 2000,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
+          "item_id": "wind_aptitude_fruit",
+          "category": "fruits",
+          "currency": "gems",
+          "price": 2000,
+          "quantity": 1,
+          "enabled": false
+        },
+        {
+          "item_id": "thunder_aptitude_fruit",
+          "category": "fruits",
+          "currency": "gems",
+          "price": 2000,
+          "quantity": 1,
+          "enabled": false
+        },
+        {
+          "item_id": "space_aptitude_fruit",
+          "category": "fruits",
+          "currency": "gems",
+          "price": 2000,
+          "quantity": 1,
+          "enabled": false
+        },
+        {
+          "item_id": "exp_talisman",
+          "category": "charms",
+          "currency": "gems",
+          "price": 500,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
+          "item_id": "exp_talisman",
+          "category": "charms",
+          "currency": "gold",
+          "price": 125000,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
+          "item_id": "gold_talisman",
+          "category": "charms",
+          "currency": "gems",
+          "price": 300,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
+          "item_id": "attack_talisman",
+          "category": "charms",
+          "currency": "gems",
+          "price": 200,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
+          "item_id": "attack_talisman",
+          "category": "charms",
+          "currency": "gold",
+          "price": 50000,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
+          "item_id": "defense_talisman",
+          "category": "charms",
+          "currency": "gems",
+          "price": 200,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
+          "item_id": "defense_talisman",
+          "category": "charms",
+          "currency": "gold",
+          "price": 50000,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
+          "item_id": "cooldown_talisman",
+          "category": "charms",
+          "currency": "gems",
+          "price": 200,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
+          "item_id": "cooldown_talisman",
+          "category": "charms",
+          "currency": "gold",
+          "price": 50000,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
+          "item_id": "resistance_talisman",
+          "category": "charms",
+          "currency": "gems",
+          "price": 300,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
+          "item_id": "resistance_talisman",
+          "category": "charms",
+          "currency": "gold",
+          "price": 75000,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
+          "item_id": "critical_talisman",
+          "category": "charms",
+          "currency": "gems",
+          "price": 100,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
+          "item_id": "critical_talisman",
+          "category": "charms",
+          "currency": "gold",
+          "price": 25000,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
+          "item_id": "attack_speed_talisman",
+          "category": "charms",
+          "currency": "gems",
+          "price": 200,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
+          "item_id": "attack_speed_talisman",
+          "category": "charms",
+          "currency": "gold",
+          "price": 50000,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
+          "item_id": "revive_talisman",
+          "category": "charms",
+          "currency": "gems",
+          "price": 500,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
+          "item_id": "revive_talisman",
+          "category": "charms",
+          "currency": "gold",
+          "price": 125000,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
+          "item_id": "healing_elixir",
+          "category": "elixirs",
+          "currency": "gems",
+          "price": 200,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
+          "item_id": "healing_elixir",
+          "category": "elixirs",
+          "currency": "gold",
+          "price": 50000,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
+          "item_id": "shield_elixir",
+          "category": "elixirs",
+          "currency": "gems",
+          "price": 100,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
+          "item_id": "shield_elixir",
+          "category": "elixirs",
+          "currency": "gold",
+          "price": 25000,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
+          "item_id": "energy_elixir",
+          "category": "elixirs",
+          "currency": "gems",
+          "price": 100,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
+          "item_id": "energy_elixir",
+          "category": "elixirs",
+          "currency": "gold",
+          "price": 25000,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
+          "item_id": "slow_talisman",
+          "category": "charms",
+          "currency": "gems",
+          "price": 200,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
+          "item_id": "slow_talisman",
+          "category": "charms",
+          "currency": "gold",
+          "price": 50000,
+          "quantity": 1,
+          "enabled": true
+        },
         {
           "item_id": "talisman_enhance_charm",
           "category": "charms",
@@ -184,8 +550,43 @@
       "material_quantity_per_level": 4,
       "max_level": 30,
       "level_up_mode": "chance",
-      "success_rates_by_current_level": [100, 100, 100, 100, 100, 80, 75, 70, 65, 60, 50, 48, 46, 44, 42, 40, 38, 36, 34, 32, 25, 23, 21, 19, 17, 15, 12, 9, 6, 3],
-      "fragment_milestones": { "10": 10, "20": 20, "30": 30 },
+      "success_rates_by_current_level": [
+        100,
+        100,
+        100,
+        100,
+        100,
+        80,
+        75,
+        70,
+        65,
+        60,
+        50,
+        48,
+        46,
+        44,
+        42,
+        40,
+        38,
+        36,
+        34,
+        32,
+        25,
+        23,
+        21,
+        19,
+        17,
+        15,
+        12,
+        9,
+        6,
+        3
+      ],
+      "fragment_milestones": {
+        "10": 10,
+        "20": 20,
+        "30": 30
+      },
       "tiers": [
         {
           "current_level_min": 1,
@@ -213,5 +614,12 @@
       }
     }
   },
-  "upgrades": []
+  "upgrades": [],
+  "consumables": {
+    "version": 1,
+    "reroll": {
+      "main_growth": 3,
+      "secondary_growth": 2
+    }
+  }
 }

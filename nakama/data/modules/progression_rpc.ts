@@ -32,6 +32,55 @@ function cultivationConfig(): any {
 }
 
 function cultivationRound1(value: number): number { return Math.round(value * 10) / 10; }
+
+// Independent permanent sources: reroll may replace innate/growth, never earned bonuses.
+function cultivationEnsureSources(profile: any): void {
+    if (profile.element_sources && profile.element_sources.version === 1) return;
+    const current = profile.element_affinities || {};
+    const tribulation: any = {}, fruit: any = {}, base: any = {}, growth: any = {};
+    const history = (profile.breakthrough || {}).history || [];
+    const unclassifiedHistory = history.some((row: any) => !row.gains && !(row.reward || {}).gains);
+    CULTIVATION_ELEMENTS.forEach(id => {
+        tribulation[id] = cultivationRound1(history.reduce((sum: number, row: any) => sum + Math.max(0, Number((row.gains || (row.reward || {}).gains || {})[id] || 0)), 0));
+        tribulation[id] = Math.min(Math.max(0, Number(current[id] || 0)), tribulation[id]);
+    });
+    const remaining = CULTIVATION_ELEMENTS.reduce((sum, id) => sum + Math.max(0, Number(current[id] || 0) - tribulation[id]), 0);
+    // Old histories stored wave counts only. Their rewards cannot be recovered:
+    // conservatively retain all unclassified points rather than erase an earned bonus.
+    const ratio = unclassifiedHistory ? 0 : (remaining > 0 ? Math.min(1, Math.max(0, Number(profile.talent_score || remaining)) / remaining) : 1);
+    CULTIVATION_ELEMENTS.forEach(id => {
+        const value = Math.max(0, Number(current[id] || 0) - tribulation[id]);
+        base[id] = cultivationRound1(value * ratio);
+        fruit[id] = cultivationRound1(value - base[id]); // Preserve unclassified legacy permanent gains.
+        growth[id] = 0;
+    });
+    profile.element_sources = {version: 1, base, growth_per_level: growth, growth_levels: Number(profile.level || 1), tribulation, fruit};
+}
+
+function cultivationRebuildSources(profile: any): void {
+    const sources = profile.element_sources;
+    const totals: any = {};
+    CULTIVATION_ELEMENTS.forEach(id => {
+        totals[id] = cultivationRound1(Math.max(0, Number(sources.base[id] || 0)
+            + Number(sources.growth_per_level[id] || 0) * Number(sources.growth_levels || 0)
+            + Number(sources.tribulation[id] || 0) + Number(sources.fruit[id] || 0)));
+    });
+    profile.element_affinities = totals;
+}
+
+function cultivationApplyReroll(profile: any, rolled: any, config: any): void {
+    cultivationEnsureSources(profile);
+    const sources = profile.element_sources;
+    sources.base = rolled.element_affinities;
+    sources.growth_levels = Number(profile.level || 1);
+    CULTIVATION_ELEMENTS.forEach(id => {
+        sources.growth_per_level[id] = Number(id === rolled.main_element ? config.main_growth : config.secondary_growth);
+    });
+    profile.talent_tier = rolled.talent_tier;
+    profile.talent_score = rolled.talent_score;
+    profile.main_element = rolled.main_element;
+    cultivationRebuildSources(profile);
+}
 function isBreakthroughMilestone(level: number): boolean { return level < PROGRESSION_MAX_LEVEL && level % 10 === 9; }
 
 function cultivationSplit(mainElement: string, mainPct: number): any {
@@ -170,6 +219,7 @@ function cultivationEnsurePreview(nk: nkruntime.Nakama, profile: any): boolean {
 }
 
 function cultivationReward(profile: any, waves: number, failures: number, hpRatio: number): any {
+    cultivationEnsureSources(profile);
     const config = cultivationConfig();
     let multiplier = 1 + (Math.max(0, Math.min(1, hpRatio)) - 0.5) * config.performance_weight;
     multiplier -= failures * config.failure_penalty;
@@ -186,9 +236,10 @@ function cultivationReward(profile: any, waves: number, failures: number, hpRati
         }
         const requested = cultivationRound1(base * multiplier);
         const before = Math.max(0, Number(affinities[id] || 0));
-        const after = Math.min(config.element_cap, before + requested);
+        const after = before + Math.max(0, Math.min(config.element_cap - before, requested));
         affinities[id] = cultivationRound1(after);
         gains[id] = cultivationRound1(after - before);
+        profile.element_sources.tribulation[id] = cultivationRound1(Number(profile.element_sources.tribulation[id] || 0) + gains[id]);
     });
     profile.element_affinities = affinities;
     return { multiplier: Math.round(multiplier * 100) / 100, gains };
@@ -222,6 +273,7 @@ function progressionNextUserExp(nk: nkruntime.Nakama, level: number): number {
 }
 
 function progressionApplyUser(nk: nkruntime.Nakama, profile: any, awarded: number): any {
+    cultivationEnsureSources(profile);
     let level = Math.max(1, Math.min(PROGRESSION_MAX_LEVEL, Number(profile.level || 1)));
     let exp = Math.max(0, Number(profile.exp || 0)) + awarded;
     let next = progressionNextUserExp(nk, level);
@@ -235,6 +287,8 @@ function progressionApplyUser(nk: nkruntime.Nakama, profile: any, awarded: numbe
     }
     if (level >= PROGRESSION_MAX_LEVEL) { exp = 0; next = 0; }
     profile.level = level;
+    profile.element_sources.growth_levels = level;
+    cultivationRebuildSources(profile);
     profile.exp = exp;
     profile.next_level_exp = next;
     profile.progression_version = PROGRESSION_VERSION;
@@ -703,13 +757,16 @@ const tribulationAction: nkruntime.RpcFunction = (
 
     const waves = Math.max(1, Math.min(9, Number(state.tribulation_count || 1)));
     const failures = Math.max(0, Number(state.failures || 0));
+    cultivationEnsureSources(profile);
     profile.level = Math.min(PROGRESSION_MAX_LEVEL, level + 1);
+    profile.element_sources.growth_levels = profile.level;
+    cultivationRebuildSources(profile);
     profile.exp = Math.max(0, Number(profile.exp || 0) - threshold);
     profile.next_level_exp = progressionNextUserExp(nk, profile.level);
     profile.progression_version = PROGRESSION_VERSION;
     const reward = cultivationReward(profile, waves, failures, hpRatio);
     const history = Array.isArray(state.history) ? state.history : [];
-    history.push({ level: profile.level, waves, failures });
+    history.push({ level: profile.level, waves, failures, gains: reward.gains });
     profile.breakthrough = cultivationDefaultBreakthrough(history);
     progressionReconcileLevelUnlocks(nk, profile);
     nk.storageWrite([{ collection: "player_profiles", key: "main", userId: ctx.userId, value: profile,

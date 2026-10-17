@@ -1,0 +1,54 @@
+const fs=require('fs'),path=require('path'),vm=require('vm'),assert=require('assert');
+const read=p=>JSON.parse(fs.readFileSync(path.join(__dirname,'..',p),'utf8'));
+const catalog=read('data/items.json'), progression=read('data/progression.json');
+const context=vm.createContext({});
+for(const f of ['config_rpc','progression_rpc','inventory_rpc']) vm.runInContext(fs.readFileSync(path.join(__dirname,'../nakama/data/modules/build/'+f+'.js'),'utf8'),context);
+const use=vm.runInContext('useConsumable',context),reroll=vm.runInContext('cultivationApplyReroll',context), reward=vm.runInContext('cultivationReward',context);
+const clone=x=>JSON.parse(JSON.stringify(x));
+let db,revision=0,conflict=false;
+const key=(c,k)=>c+':'+k;
+const row=(c,k,value)=>db[key(c,k)]={collection:c,key:k,userId:'u',value:clone(value),version:String(++revision)};
+const nk={
+ sqlQuery(sql,args){if(sql.includes('game_items'))return catalog.filter(i=>i.id===args[0]).map(clone);if(sql.includes('game_config'))return [{value:clone(progression)}];return [];},
+ storageRead(reads){return reads.flatMap(r=>db[key(r.collection,r.key)]?[clone(db[key(r.collection,r.key)])]:[]);},
+ storageWrite(writes){if(conflict)throw Error('conflict');for(const w of writes){const old=db[key(w.collection,w.key)];assert(w.version==='*'?!old:old&&old.version===w.version);}for(const w of writes)row(w.collection,w.key,w.value);}
+};
+const elements=['metal','wood','water','fire','earth'];
+const vector=n=>Object.fromEntries(elements.map(e=>[e,n]));
+const profile=()=>db['player_profiles:main'].value;
+const qty=id=>db['player_inventory:items'].value.items.filter(i=>i.item_id===id).reduce((n,i)=>n+i.quantity,0);
+function reset(){db={};conflict=false;row('player_profiles','main',{level:10,exp:0,resources:{gold:10,gems:100},stamina:0,elements:{fire:20},talent_score:25,main_element:'fire',element_affinities:vector(5),breakthrough:{history:[]}});row('player_inventory','items',{items:catalog.filter(i=>i.attributes?.atlas_slot!==undefined).map(i=>({item_id:i.id,quantity:10}))});}
+function request(id,request_id='one',extra={}){return JSON.parse(use({userId:'u'},{},nk,JSON.stringify({item_id:id,request_id,quantity:1,...extra})));}
+reset();assert(request('gold_talisman').success);assert.equal(profile().resources.gold,75010);assert.equal(qty('gold_talisman'),9);
+assert(request('gold_talisman').duplicate);assert.equal(profile().resources.gold,75010);assert(!request('energy_elixir').success);
+assert(request('energy_elixir','energy',{quantity:2}).success);assert.equal(profile().stamina,30);assert(!request('energy_elixir','full').success);assert.equal(qty('energy_elixir'),8);
+reset();assert(request('exp_talisman').success);assert(profile().exp>0);assert(!request('wind_aptitude_fruit','wind').success);
+assert(request('fire_aptitude_fruit','fruit').success);assert.equal(profile().element_affinities.fire,10);assert.equal(profile().element_sources.fruit.fire,5);
+profile().element_sources.tribulation.fire=7;profile().element_affinities.fire+=7;
+const sources=clone(profile().element_sources), roots=clone(profile().elements);
+const rolled={talent_tier:'new',talent_score:50,main_element:'fire',element_affinities:vector(10)};
+reroll(profile(),clone(rolled),{main_growth:3,secondary_growth:2});
+assert.equal(profile().element_affinities.fire,52,'10 + level10*3 + fruit5 + tribulation7');
+assert.deepEqual(profile().elements,roots);assert.deepEqual(profile().element_sources.fruit,sources.fruit);assert.deepEqual(profile().element_sources.tribulation,sources.tribulation);
+reroll(profile(),clone(rolled),{main_growth:3,secondary_growth:2});assert.equal(profile().element_affinities.fire,52,'repeated reroll must not duplicate bonuses');
+reset();profile().element_sources={version:1,base:vector(5),growth_per_level:vector(2),growth_levels:10,tribulation:vector(0),fruit:vector(0)};profile().element_affinities=vector(25);
+reroll(profile(),clone(rolled),{main_growth:3,secondary_growth:2});assert.equal(profile().element_affinities.fire,40,'exact user example 25 -> 40');
+profile().element_affinities.fire=450;profile().element_sources.fruit.fire=410;
+const gains=reward(profile(),3,0,1);assert.equal(profile().element_affinities.fire,450);assert.equal(gains.gains.fire,0,'cap must not remove earned points');
+reset();profile().breakthrough.history=[{level:10,waves:3}];const legacy=clone(profile().element_affinities);reroll(profile(),clone(rolled),{main_growth:3,secondary_growth:2});assert(profile().element_affinities.fire>=legacy.fire+40,'unknown legacy reward must not be erased');
+reset();const before=clone(db);conflict=true;assert(!request('gold_talisman').success);assert.deepEqual(db,before,'CAS failure cannot debit');
+reset();row('player_stage_runs','active',{run_id:'run',status:'active',expires_at_ms:Date.now()+60000});
+assert(!request('gold_talisman').success);assert(!request('attack_talisman','a',{run_id:'wrong',paused:false,alive:true}).success);
+assert(!request('attack_talisman','a',{run_id:'run',paused:true,alive:true}).success);
+assert(!request('attack_talisman','a',{run_id:'run',paused:false,alive:false}).success);
+const combat={run_id:'run',paused:false,alive:true};
+assert(request('attack_talisman','attack',combat).success);assert(request('attack_talisman','attack',combat).duplicate);assert.equal(qty('attack_talisman'),9);
+assert(!request('attack_talisman','attack2',combat).success);assert.equal(qty('attack_talisman'),9);
+for(const id of ['defense_talisman','cooldown_talisman','resistance_talisman','critical_talisman','attack_speed_talisman','healing_elixir','shield_elixir','slow_talisman'])assert(request(id,id,combat).success,id);
+assert(!request('revive_talisman','living',combat).success);
+assert(request('revive_talisman','revive',{...combat,alive:false}).success);
+assert(request('revive_talisman','revive',{...combat,alive:false}).duplicate);
+assert(!request('revive_talisman','revive2',{...combat,alive:false}).success);
+assert.equal(qty('revive_talisman'),9);
+assert(!request('healing_elixir','bulk',{...combat,quantity:2}).success);
+console.log('PASS C130: grants, caps, replay, CAS, source-safe reroll 25->40, legacy preservation, run/state/cooldown/revive guards');
