@@ -4131,7 +4131,7 @@ const PROGRESSION_VERSION = 2;
 const PROGRESSION_MAX_LEVEL = 50;
 const PROGRESSION_HERO_BASE_EXP = 1e3;
 const PROGRESSION_GROWTH = 1.25;
-const PROGRESSION_USER_RATIO = 10;
+const PROGRESSION_USER_RATIO = 5;
 const CULTIVATION_MAX_ATTEMPTS = 3;
 const CULTIVATION_ELEMENTS = ["metal", "wood", "water", "fire", "earth"];
 const CULTIVATION_TIERS = [
@@ -4682,7 +4682,11 @@ const awardStageProgression = (ctx, _logger, nk, payload) => {
   for (let i = 0; i < heroes.length; i++) if (heroes[i] && String(heroes[i].hero_id || "") === heroId) hero = heroes[i];
   if (!hero || hero.owned !== true) return JSON.stringify({ success: false, message: "Hero is not owned" });
   const multiplier = Math.max(0, Number(stageRows[0].exp_weight || 1)) * Math.max(0, Number(difficultyRows[0].exp_multiplier || 1));
-  const awardedExp = Math.max(0, Math.round(requestedBaseExp * multiplier));
+  const completed = Array.isArray(profile.completed_stage_levels) ? profile.completed_stage_levels : [];
+  const firstClear = won && !completed.some((entry) => entry && String(entry.stage_id) === stageId && String(entry.level_id) === difficultyId);
+  const ordinaryExp = Math.max(0, Math.round(requestedBaseExp * multiplier));
+  const firstClearBonusExp = firstClear ? ordinaryExp : 0;
+  const awardedExp = ordinaryExp + firstClearBonusExp;
   const userResult = progressionApplyUser(nk, profile, awardedExp);
   cultivationEnsurePreview(nk, profile);
   [
@@ -4851,6 +4855,8 @@ const awardStageProgression = (ctx, _logger, nk, payload) => {
   return JSON.stringify({
     success: true,
     exp_awarded: awardedExp,
+    first_clear: firstClear,
+    first_clear_bonus_exp: firstClearBonusExp,
     profile: userResult,
     inventory: inventoryValue,
     resources: profile.resources,

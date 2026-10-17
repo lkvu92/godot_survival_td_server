@@ -55,7 +55,7 @@
     "max_hero_level": 50,
     "hero_base_next_level_exp": 1000,
     "growth_multiplier": 1.25,
-    "user_to_hero_exp_ratio": 10,
+    "user_to_hero_exp_ratio": 5,
     "hero_level_capped_by_user_level": true,
     "stage_exp_award": "Both user and selected persistent hero receive the same final stage EXP. Hero EXP above its current account-level cap is banked until the account levels up."
   },

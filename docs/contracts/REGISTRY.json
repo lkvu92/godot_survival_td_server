@@ -1,6 +1,13 @@
 {
   "contracts": [
     {
+      "id": "C105_PROGRESSION",
+      "version": "1.2.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-17",
+      "contract_file": "docs/contracts/C105_PROGRESSION.md"
+    },
+    {
       "id": "C132_DOCKER_RUNTIME_BUILD",
       "version": "1.0.0",
       "status": "IN_PROGRESS",

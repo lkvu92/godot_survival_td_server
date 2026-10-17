@@ -3,7 +3,7 @@ const PROGRESSION_VERSION = 2;
 const PROGRESSION_MAX_LEVEL = 50;
 const PROGRESSION_HERO_BASE_EXP = 1000;
 const PROGRESSION_GROWTH = 1.25;
-const PROGRESSION_USER_RATIO = 10;
+const PROGRESSION_USER_RATIO = 5;
 
 const CULTIVATION_MAX_ATTEMPTS = 3;
 const CULTIVATION_ELEMENTS = ["metal", "wood", "water", "fire", "earth"];
@@ -524,7 +524,12 @@ const awardStageProgression: nkruntime.RpcFunction = (
     if (!hero || hero.owned !== true) return JSON.stringify({ success: false, message: "Hero is not owned" });
 
     const multiplier = Math.max(0, Number(stageRows[0].exp_weight || 1)) * Math.max(0, Number(difficultyRows[0].exp_multiplier || 1));
-    const awardedExp = Math.max(0, Math.round(requestedBaseExp * multiplier));
+    const completed: any[] = Array.isArray(profile.completed_stage_levels) ? profile.completed_stage_levels : [];
+    const firstClear = won && !completed.some((entry: any) => entry
+        && String(entry.stage_id) === stageId && String(entry.level_id) === difficultyId);
+    const ordinaryExp = Math.max(0, Math.round(requestedBaseExp * multiplier));
+    const firstClearBonusExp = firstClear ? ordinaryExp : 0;
+    const awardedExp = ordinaryExp + firstClearBonusExp;
     const userResult = progressionApplyUser(nk, profile, awardedExp);
 	cultivationEnsurePreview(nk, profile);
 	["talent_tier", "talent_score", "main_element", "element_affinities", "affinity_flags",
@@ -690,7 +695,8 @@ const awardStageProgression: nkruntime.RpcFunction = (
     userResult.unlocked_arcs = profile.unlocked_arcs;
     userResult.unlocked_stages = profile.unlocked_stages;
     userResult.completed_stage_levels = profile.completed_stage_levels;
-	return JSON.stringify({ success: true, exp_awarded: awardedExp, profile: userResult,
+	return JSON.stringify({ success: true, exp_awarded: awardedExp, first_clear: firstClear,
+        first_clear_bonus_exp: firstClearBonusExp, profile: userResult,
 		inventory: inventoryValue, resources: profile.resources, loot, talisman_durability: talismanDurability, hero: {
 
         hero_id: heroId, level: heroLevel, exp: heroExp, next_level_exp: heroNext, levels_gained: heroLevelsGained,
