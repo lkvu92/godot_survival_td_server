@@ -24,7 +24,7 @@ Các con số dưới đây là **cân bằng mặc định ban đầu**, cấu 
 
 Vật phẩm trong trận có cooldown thực 15 giây mỗi loại; buff dùng lại làm mới thời gian, không cộng dồn. Thời gian hiệu lực theo thời gian mô phỏng: pause dừng timer, tăng tốc game làm timer chạy theo trận. Cooldown server theo đồng hồ thực và hiển thị theo đồng hồ thực. Khiên vật phẩm độc lập với khiên kỹ năng. Kháng chỉ áp dụng sát thương có hệ ngũ hành.
 
-Thanh vật phẩm ở đáy HUD, cuộn ngang qua ScrollBarUI, dùng viền/rarity UiItemSlot của Inventory, số lượng góc dưới phải. Pause, đã chết, kết thúc trận hoặc mất mạng không dùng được. Hồi sinh dùng hộp riêng, không phải ngoại lệ click slot khi chết. Chưa mở vật phẩm chiến đấu trong Độ Kiếp.
+Thanh vật phẩm bên trái HUD, cuộn dọc qua ScrollBarUI tương tự cột kỹ năng đối diện; tối đa 6 slot nhìn thấy (ít hơn trên màn hình thấp). Giữ vị trí HP gốc. Slot dùng viền/rarity UiItemSlot của Inventory, số lượng góc dưới phải. Pause, đã chết, kết thúc trận hoặc mất mạng không dùng được. Hồi sinh dùng hộp riêng. Chưa mở vật phẩm chiến đấu trong Độ Kiếp.
 
 Tẩy Linh Quả tính: nền mới + cấp hiện tại × tăng trưởng mới + bonus Thiên Kiếp + bonus Linh Quả. Không thay đổi profile.elements hoặc dữ liệu nâng cấp tướng. Hồ sơ cũ được tách nguồn một lần từ tổng hiện có và lịch sử Độ Kiếp; thiếu lịch sử không thể suy ra chính xác nguồn cũ, vì vậy lưu toàn bộ phần không thể phân loại như nguồn vĩnh viễn trước khi roll để không làm mất chỉ số.
 

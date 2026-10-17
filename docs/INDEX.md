@@ -1,6 +1,8 @@
 # Server documentation
 
-- [C130 Consumable use](contracts/C130_CONSUMABLE_USE.md) v1.0.0 — transactional use and permanent cultivation sources. [Item guide](items/CONSUMABLES.md).
+- C129 v1.1.0: strict store_purchase currency protocol; C130 v1.0.1: left vertical client item rail and original HP position.
+
+- [C130 Consumable use](contracts/C130_CONSUMABLE_USE.md) v1.0.1 — transactional use, permanent cultivation sources and left vertical item rail. [Item guide](items/CONSUMABLES.md).
 
 - [C129 Consumable store](contracts/C129_CONSUMABLE_STORE.md): item rarity/prices, Gold/Gem alternatives, item-paid renames and talent reroll.
 

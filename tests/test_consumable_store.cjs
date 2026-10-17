@@ -23,8 +23,12 @@ for (const item of items) {
  }
 }
 const c=vm.createContext({});
+const mountedContext=vm.createContext({});
+vm.runInContext(fs.readFileSync(path.join(__dirname, '../nakama/data/build/index.js'),'utf8'),mountedContext);
+assert.equal(vm.runInContext('typeof storePurchase',mountedContext),'function','actual mounted runtime must include the strict purchase RPC');
 for(const file of ['config_rpc','progression_rpc','inventory_rpc','player_rpc']) vm.runInContext(fs.readFileSync(path.join(__dirname, '../nakama/data/modules/build/'+file+'.js'),'utf8'),c);
 const action=vm.runInContext('talismanAction',c), rename=vm.runInContext('renamePlayer',c);
+const storePurchase=vm.runInContext('storePurchase',c);
 const clone=x=>JSON.parse(JSON.stringify(x));
 let db, conflict=false, revision=0;
 const key=(collection,k)=>collection+':'+k;
@@ -70,3 +74,21 @@ row('player_stage_runs','active',{status:'active',expires_at_ms:Date.now()+60000
 reset();conflict=true;assert(!reroll('failed-roll').success);assert.equal(quantity('spirit_root_reset'),2);assert(!profile().talent_score);
 reset();profile().name_changes_used='invalid';assert(!renameTo('Invalid Quota').success);assert.equal(quantity('rename_talisman'),2);
 console.log('PASS consumables: 23 catalog entries, exact prices/rarities, disabled elements, atomic Gold/Gem purchases, replay binding, free/paid rename, stale quota, talent reroll and active-run/CAS guards');
+
+const purchase=(id,currency,request_id,protocol=2)=>JSON.parse(storePurchase({userId:'u'},{},nk,JSON.stringify({item_id:id,currency,request_id,purchase_protocol:protocol})));
+reset();const beforeMissingCurrency=clone(db);
+assert(!purchase('fire_aptitude_fruit',undefined,'missing-currency').success);
+assert(!purchase('fire_aptitude_fruit','gem','invalid-currency').success);
+assert(!purchase('fire_aptitude_fruit','gems','legacy',1).success);
+assert.deepEqual(db,beforeMissingCurrency,'invalid protocol/currency cannot debit anything');
+for(let i=0;i<2;i++){
+ const result=purchase('fire_aptitude_fruit','gems','gem-fruit-'+i);
+ assert(result.success);assert.equal(result.currency,'gems');assert.equal(result.purchase_protocol,2);
+ assert.equal(result.item_id,'fire_aptitude_fruit');
+}
+assert.equal(profile().resources.gems,16000);assert.equal(profile().resources.gold,1000000);assert.equal(quantity('fire_aptitude_fruit'),2);
+assert(purchase('fire_aptitude_fruit','gems','gem-fruit-0').duplicate);assert.equal(quantity('fire_aptitude_fruit'),2);
+assert(!purchase('fire_aptitude_fruit','gold','gem-fruit-0').success);
+assert(purchase('attack_talisman','gold','gold-charm').success);assert.equal(profile().resources.gold,950000);
+assert(purchase('attack_talisman','gems','gem-charm').success);assert.equal(profile().resources.gems,15800);
+console.log('PASS store_purchase v2: explicit currency, Gem-only fruit, both charm currencies, repeat/replay and no cross-currency debit');

@@ -2,14 +2,14 @@
   "contracts": [
     {
       "id": "C130_CONSUMABLE_USE",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "status": "IN_PROGRESS",
       "updated_at": "2026-10-17",
       "contract_file": "docs/contracts/C130_CONSUMABLE_USE.md"
     },
     {
       "id": "C129_CONSUMABLE_STORE",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "status": "IN_PROGRESS",
       "updated_at": "2026-10-17",
       "contract_file": "docs/contracts/C129_CONSUMABLE_STORE.md"

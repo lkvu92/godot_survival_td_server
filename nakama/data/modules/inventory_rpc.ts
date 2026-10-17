@@ -94,6 +94,19 @@ const useConsumable: nkruntime.RpcFunction = (ctx, _logger, nk, payload): string
     return JSON.stringify({success:true,inventory:items,profile,effect,receipt_id:requestId});
 };
 
+// A distinct endpoint prevents legacy Gold-only runtimes from handling new
+// clients' Gem requests. No implicit currency default is permitted here.
+const storePurchase: nkruntime.RpcFunction = (ctx, logger, nk, payload): string => {
+    let req: any;
+    try { req = JSON.parse(payload || "{}"); } catch (_) { return JSON.stringify({success:false,message:"Invalid JSON"}); }
+    if (!req || typeof req !== "object" || req.purchase_protocol !== 2 || !["gold", "gems"].includes(req.currency)
+        || typeof req.item_id !== "string" || !req.item_id || typeof req.request_id !== "string") {
+        return JSON.stringify({success:false,purchase_protocol:2,message:"Invalid store currency or purchase protocol"});
+    }
+    const response = JSON.parse(talismanAction(ctx, logger, nk, JSON.stringify(Object.assign({}, req, {action:"buy_material"}))));
+    return JSON.stringify(Object.assign(response, {purchase_protocol:2,item_id:req.item_id,currency:req.currency}));
+};
+
 const updateInventory: nkruntime.RpcFunction = (
     ctx: nkruntime.Context,
     logger: nkruntime.Logger,

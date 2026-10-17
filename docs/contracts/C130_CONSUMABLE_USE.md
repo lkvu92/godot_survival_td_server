@@ -1,6 +1,6 @@
 # C130 — Consumable use and permanent cultivation sources
 
-- Version: `1.0.0`
+- Version: `1.0.1`
 - Status: `IN_PROGRESS`
 - Date: `2026-10-17`
 
@@ -26,7 +26,7 @@ Permanent items are blocked during active stage or tribulation. Full stamina, ma
 EXP follows existing account progression and breakthrough gate, not in-run hero EXP.
 
 ## Battle UI/lifecycle
-Bottom HUD horizontal ScrollBarUI hosts inventory-style UiItemSlot rarity frames with bottom-right quantity (including 1).
+Left HUD vertical ScrollBarUI hosts inventory-style UiItemSlot rarity frames with bottom-right quantity (including 1), aligned to the opposite skill rail. The viewport fits at most six slots (fewer on short screens), with no horizontal scrolling. Restore the original hero HP bar offsets; item layout must not move the HP bar.
 Tap uses one. Paused/dead/finished/offline/empty/unsupported items are disabled.
 During a purchase/use network transaction temporarily freeze simulation; restore only the pause owned by that transaction, preventing death or manual pause racing a committed effect.
 Combat effects use separate temporary modifiers; refresh duration without stacking; timers use simulation delta and stop on pause. Existing skill/card stats are never rewritten.
@@ -40,11 +40,12 @@ Build backend, client/server static checks. Additive config patch generator only
 
 | Version | Date | Change |
 |---|---|---|
+| 1.0.1 | 2026-10-17 | Left vertical item rail, maximum six visible slots, original HP placement. |
 | 1.0.0 | 2026-10-17 | Full consumable activation, source-safe reroll and bottom battle item bar. |
 
 ## Verification and rollout (local, 2026-10-17)
 - Backend build and compiled C130/C129/name/password regressions pass; 14 Python tests pass.
-- Godot C130 tests pass: actual HUD attachment and status-strip clearance, mobile horizontal slots, rarity/quantity, pause/death guards, damage/defense/crit/attack-cycle buffs, heal/shield/slow, expiry, receipt deduplication and run-state restore.
+- Godot C130 tests pass: actual HUD attachment, original HP offset -152, left vertical rail aligned opposite skills with at most six visible slots, mobile fit, rarity/quantity, pause/death guards, damage/defense/crit/attack-cycle buffs, heal/shield/slow, expiry, receipt deduplication and run-state restore.
 - Real-catalog shop/reroll-confirmation test and client standalone/C113 static checks pass.
 - Full server static runner is blocked by its pre-existing missing tests/test_new_profile_inventory.cjs. C130 remains IN_PROGRESS until full gate/manual Android acceptance.
 - Rebuild runtime with npm run build in server/nakama. build_consumable_patch.cjs now emits both item effects and progression.consumables via additive SQL. Generate/review SQL, apply it through the normal operator workflow, then publish an immutable config release. Do not reseed player data.

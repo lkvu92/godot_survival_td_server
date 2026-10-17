@@ -1957,6 +1957,7 @@ const gatedSavePlayerProfile = (ctx, logger, nk, payload) => invokeWithVersionGa
 const gatedLoadPlayerProfile = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, loadPlayerProfile);
 const gatedUpdateInventory = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, updateInventory);
 const gatedTalismanAction = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, talismanAction);
+const gatedStorePurchase = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, storePurchase);
 const gatedTalismanCast = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, talismanCast);
 const gatedUseConsumable = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, useConsumable);
 const gatedSpendResource = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, spendResource);
@@ -3078,6 +3079,19 @@ const useConsumable = (ctx, _logger, nk, payload) => {
     }
   }
   return JSON.stringify({ success: true, inventory: items, profile, effect, receipt_id: requestId });
+};
+const storePurchase = (ctx, logger, nk, payload) => {
+  let req;
+  try {
+    req = JSON.parse(payload || "{}");
+  } catch (_) {
+    return JSON.stringify({ success: false, message: "Invalid JSON" });
+  }
+  if (!req || typeof req !== "object" || req.purchase_protocol !== 2 || !["gold", "gems"].includes(req.currency) || typeof req.item_id !== "string" || !req.item_id || typeof req.request_id !== "string") {
+    return JSON.stringify({ success: false, purchase_protocol: 2, message: "Invalid store currency or purchase protocol" });
+  }
+  const response = JSON.parse(talismanAction(ctx, logger, nk, JSON.stringify(Object.assign({}, req, { action: "buy_material" }))));
+  return JSON.stringify(Object.assign(response, { purchase_protocol: 2, item_id: req.item_id, currency: req.currency }));
 };
 const updateInventory = (ctx, logger, nk, payload) => {
   const req = JSON.parse(payload);
@@ -6844,6 +6858,8 @@ function InitModule(ctx, logger, nk, initializer) {
   initializer.registerRpc("get_compliance_profile", linkedRpc_get_compliance_profile);
   initializer.registerRpc("update_inventory", linkedRpc_update_inventory);
   initializer.registerRpc("talisman_action", linkedRpc_talisman_action);
+  initializer.registerRpc("store_purchase", accountGuardedRpc("store_purchase", gatedStorePurchase));
+  logger.info("Store purchase protocol v2 loaded: store_purchase requires explicit gold/gems");
   initializer.registerRpc("use_consumable", accountGuardedRpc("use_consumable", gatedUseConsumable));
   initializer.registerRpc("talisman_cast", linkedRpc_talisman_cast);
   initializer.registerRpc("spend_resource", linkedRpc_spend_resource);
