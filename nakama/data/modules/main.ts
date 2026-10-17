@@ -56,6 +56,12 @@ function linkedRpc_update_inventory(ctx: nkruntime.Context, logger: nkruntime.Lo
 function linkedRpc_talisman_action(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
     return accountGuardedRpc("talisman_action", gatedTalismanAction)(ctx, logger, nk, payload);
 }
+function linkedRpc_store_purchase(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("store_purchase", gatedStorePurchase)(ctx, logger, nk, payload);
+}
+function linkedRpc_use_consumable(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("use_consumable", gatedUseConsumable)(ctx, logger, nk, payload);
+}
 function linkedRpc_talisman_cast(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
     return accountGuardedRpc("talisman_cast", gatedTalismanCast)(ctx, logger, nk, payload);
 }
@@ -165,9 +171,9 @@ function InitModule(
     initializer.registerRpc("get_compliance_profile", linkedRpc_get_compliance_profile);
     initializer.registerRpc("update_inventory", linkedRpc_update_inventory);
     initializer.registerRpc("talisman_action", linkedRpc_talisman_action);
-    initializer.registerRpc("store_purchase", accountGuardedRpc("store_purchase", gatedStorePurchase));
+    initializer.registerRpc("store_purchase", linkedRpc_store_purchase);
     logger.info("Store purchase protocol v2 loaded: store_purchase requires explicit gold/gems");
-    initializer.registerRpc("use_consumable", accountGuardedRpc("use_consumable", gatedUseConsumable));
+    initializer.registerRpc("use_consumable", linkedRpc_use_consumable);
     initializer.registerRpc("talisman_cast", linkedRpc_talisman_cast);
     initializer.registerRpc("spend_resource", linkedRpc_spend_resource);
     initializer.registerRpc("purchase_stamina", linkedRpc_purchase_stamina);
