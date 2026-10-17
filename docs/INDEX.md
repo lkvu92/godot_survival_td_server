@@ -1,5 +1,7 @@
 # Server documentation
 
+- [C131 Single login](contracts/C131_SINGLE_LOGIN.md) v1.1.0: signed login generations and realtime login-change push without polling.
+
 - C129 v1.1.0: strict store_purchase currency protocol; C130 v1.0.1: left vertical client item rail and original HP position.
 
 - [C130 Consumable use](contracts/C130_CONSUMABLE_USE.md) v1.0.1 — transactional use, permanent cultivation sources and left vertical item rail. [Item guide](items/CONSUMABLES.md).

@@ -17,6 +17,7 @@ const nk = {
   },
   bcryptHash(password) { hashed++; assert.equal(typeof password, 'string'); return '$2a$hash'; },
   sqlQuery(sql, args) {
+	if (sql.includes('FROM player_login_sessions')) return [{generation:'test'}];
     if (sql.includes('INSERT INTO account_link_state')) { leases++; return [{user_id: userId}]; }
     if (sql.startsWith('SELECT')) return account ? [account] : [];
     assert(sql.startsWith('UPDATE users'));
@@ -34,7 +35,7 @@ const nk = {
   },
   sqlExec() { leases--; }
 };
-const ctx = {userId};
+const ctx = {userId, vars:{login_generation:'test'}};
 const body = (password = 'secure-password', id_token = 'valid-proof') => JSON.stringify({password, id_token});
 const setup = payload => invoke('setupAccountPassword', ctx, nk, payload);
 if (process.argv.includes('--update-sql')) { reset(); setup(body()); throw Error('No SQL captured'); }

@@ -4,6 +4,7 @@
     "stamina_dialog_ad": {"type": "stamina", "amount": 5, "daily_limit": 3},
     "daily_mission_talisman_fragment_ad": {"type": "daily_fragment", "amount": 1, "daily_limit": 3},
     "card_reroll_ad": {"type": "card_reroll", "amount": 1},
+    "combat_revive_ad": {"type": "combat_revive", "amount": 1},
     "talisman_enhance_charm_ad": {"type": "item", "amount": 1, "item_id": "talisman_enhance_charm", "daily_limit": 1},
     "element_enlightenment_charm_ad": {"type": "item", "amount": 1, "item_id": "element_enlightenment_charm", "daily_limit": 1}
   },

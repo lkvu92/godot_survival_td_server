@@ -2588,6 +2588,43 @@ const getComplianceProfile = (ctx, logger, nk, _payload) => {
   });
 };
 
+const LOGIN_REPLACED_MESSAGE = "T\xE0i kho\u1EA3n \u0111\xE3 \u0111\u01B0\u1EE3c \u0111\u0103ng nh\u1EADp \u1EDF thi\u1EBFt b\u1ECB kh\xE1c";
+function createSingleLoginTable(nk) {
+  nk.sqlExec(`CREATE TABLE IF NOT EXISTS player_login_sessions (
+        user_id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+        generation TEXT NOT NULL, updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )`, []);
+}
+function beforeSingleLogin(_ctx, _logger, nk, request) {
+  if (request && request.account) {
+    request.account.vars = Object.assign({}, request.account.vars || {}, { login_generation: nk.uuidv4() });
+  }
+  return request;
+}
+function beforeSingleLoginEmail(ctx, logger, nk, request) {
+  return beforeSingleLogin(ctx, logger, nk, beforeEmailPasswordSetup(ctx, logger, nk, request));
+}
+function afterSingleLogin(ctx, logger, nk, _session, request) {
+  const generation = String((ctx.vars || {}).login_generation || ((request.account || {}).vars || {}).login_generation || "");
+  if (!ctx.userId || !generation) throw Error("Missing server login generation");
+  nk.sqlExec(`INSERT INTO player_login_sessions(user_id,generation) VALUES($1::UUID,$2)
+        ON CONFLICT(user_id) DO UPDATE SET generation=EXCLUDED.generation,updated_at=NOW()`, [ctx.userId, generation]);
+  try {
+    nk.notificationSend(ctx.userId, "Session changed", { type: "session_changed" }, 131, void 0, false);
+  } catch (error) {
+    logger.warn("Login change push failed; reconnect/RPC guards remain authoritative: %s", String(error));
+  }
+}
+function requireCurrentLogin(ctx, nk) {
+  if (!ctx.userId) return null;
+  const generation = String((ctx.vars || {}).login_generation || "");
+  const rows = generation ? nk.sqlQuery("SELECT generation FROM player_login_sessions WHERE user_id=$1::UUID", [ctx.userId]) : [];
+  if (!generation || !rows.length || String(rows[0].generation) !== generation) {
+    return JSON.stringify({ success: false, status: "error", code: 401, reason: "SESSION_REPLACED", message: LOGIN_REPLACED_MESSAGE });
+  }
+  return null;
+}
+const sessionStatus = (_ctx, _logger, _nk) => JSON.stringify({ success: true });
 function createAccountLinkTables(nk) {
   nk.sqlExec(`CREATE TABLE IF NOT EXISTS account_link_state (
         user_id UUID PRIMARY KEY, status TEXT NOT NULL DEFAULT 'active',
@@ -2748,6 +2785,8 @@ function withActiveAccount(nk, userId, action) {
 }
 function accountGuardedRpc(id, handler) {
   return (ctx, logger, nk, payload) => {
+    const rejected = requireCurrentLogin(ctx, nk);
+    if (rejected) return rejected;
     if (id === "confirm_google_link") return handler(ctx, logger, nk, payload);
     let owner = ctx.userId;
     if (!owner && (id === "admob_ssv_confirm" || id === "google_play_rtdn_confirm")) {
@@ -4970,6 +5009,7 @@ const DEFAULT_REWARDED_PLACEMENTS = {
   main_menu_stamina: { type: "stamina", amount: 5 },
   stamina_dialog_ad: { type: "stamina", amount: 5 },
   card_reroll_ad: { type: "card_reroll", amount: 1 },
+  combat_revive_ad: { type: "combat_revive", amount: 1 },
   talisman_enhance_charm_ad: { type: "item", amount: 1, item_id: "talisman_enhance_charm", daily_limit: 1 },
   element_enlightenment_charm_ad: { type: "item", amount: 1, item_id: "element_enlightenment_charm", daily_limit: 1 }
 };
@@ -5658,9 +5698,24 @@ const prepareRewardedAd = (ctx, _logger, nk, payload) => {
     }
     rewardContext = { run_id: runId, offer_seq: offerSeq };
   }
+  if (placementId === "combat_revive_ad") {
+    rewardContext = objectValue(req.context);
+    const runId = String(rewardContext.run_id || "");
+    if (!runId) return monetizationError(400, "Combat revive requires an active run");
+    const activeRun = readActiveRun(nk, ctx.userId, runId);
+    if (!activeRun) return monetizationError(409, "Run is not active");
+    if (Math.max(0, Number(activeRun.run.item_revives || 0)) >= 1) {
+      return monetizationError(409, "Revive already used for this run");
+    }
+    rewardContext = { run_id: runId };
+  }
   if (sessions.length && placementId === "card_reroll_ad") {
     const oldContext = objectValue(parseJsonb(sessions[0].context));
     if (oldContext.run_id !== rewardContext.run_id || Number(oldContext.offer_seq) !== Number(rewardContext.offer_seq)) return monetizationError(409, "Reward request belongs to another card offer");
+  }
+  if (sessions.length && placementId === "combat_revive_ad") {
+    const oldContext = objectValue(parseJsonb(sessions[0].context));
+    if (oldContext.run_id !== rewardContext.run_id) return monetizationError(409, "Reward request belongs to another run");
   }
   let adSessionId = sessions.length ? String(sessions[0].ad_session_id) : nk.uuidv4();
   const customData = JSON.stringify({ ad_session_id: adSessionId, user_id: ctx.userId });
@@ -5683,6 +5738,10 @@ const prepareRewardedAd = (ctx, _logger, nk, payload) => {
   if (placementId === "card_reroll_ad") {
     const saved = objectValue(parseJsonb(sessions[0].context));
     if (saved.run_id !== rewardContext.run_id || Number(saved.offer_seq) !== Number(rewardContext.offer_seq)) return monetizationError(409, "Reward request belongs to another card offer");
+  }
+  if (placementId === "combat_revive_ad") {
+    const saved = objectValue(parseJsonb(sessions[0].context));
+    if (saved.run_id !== rewardContext.run_id) return monetizationError(409, "Reward request belongs to another run");
   }
   const skipAd = String(sessions[0].delivery_source) === "no_ads" || String(sessions[0].status) === "verified" || String(sessions[0].status) === "granted";
   const granted = skipAd ? grantPreparedReward(nk, ctx.userId, adSessionId, "") : {};
@@ -5782,12 +5841,12 @@ function grantPreparedReward(nk, userId, adSessionId, transactionId) {
     return { granted: false, message: "Daily reward quota reached" };
   }
   if (String(reward.reward_type) === "daily_fragment") return grantDailyMissionFragment(nk, userId, adSessionId, dailyClaim);
-  if (String(reward.reward_type) === "card_reroll") {
+  if (String(reward.reward_type) === "card_reroll" || String(reward.reward_type) === "combat_revive") {
     nk.sqlExec(
       "UPDATE monetization_ad_rewards SET status = 'granted', granted_at = NOW() WHERE ad_session_id = $1 AND status = 'verified'",
       [adSessionId]
     );
-    return { granted: true, reward_type: "card_reroll", reward_amount: 1 };
+    return { granted: true, reward_type: String(reward.reward_type), reward_amount: 1 };
   }
   if (String(reward.reward_type) === "item") {
     const itemId = String(rewardDefinition.item_id || "");
@@ -5896,7 +5955,7 @@ const consumeAdGameplayReward = (ctx, _logger, nk, payload) => {
   const adSessionId = String(req.ad_session_id || "");
   const runId = String(req.run_id || "");
   const rewardType = String(req.reward_type || "");
-  if (!adSessionId || !runId || rewardType !== "card_reroll") {
+  if (!adSessionId || !runId || rewardType !== "card_reroll" && rewardType !== "combat_revive") {
     return monetizationError(400, "Invalid gameplay reward request");
   }
   const rows = nk.sqlQuery(
@@ -5907,6 +5966,44 @@ const consumeAdGameplayReward = (ctx, _logger, nk, payload) => {
   if (rows.length === 0) return monetizationError(404, "Reward session not found");
   const ledger = rows[0];
   const storedContext = objectValue(parseJsonb(ledger.context));
+  if (rewardType === "combat_revive") {
+    if (String(ledger.placement_id) !== "combat_revive_ad" || String(ledger.reward_type) !== "combat_revive" || String(ledger.status) !== "granted" || ledger.consumed_at || String(storedContext.run_id || "") !== runId) {
+      return monetizationError(409, "Combat revive credit is invalid or already used");
+    }
+    const activeRun2 = readActiveRun(nk, ctx.userId, runId);
+    if (!activeRun2) return monetizationError(409, "Run is not active");
+    if (Math.max(0, Math.floor(Number(activeRun2.run.item_revives || 0))) >= 1) {
+      return monetizationError(409, "Revive already used for this run");
+    }
+    const definitions = nk.sqlQuery("SELECT attributes FROM game_items WHERE id='revive_talisman'", []);
+    const effect = definitions.length ? objectValue(objectValue(parseJsonb(definitions[0].attributes)).effect) : {};
+    if (String(effect.kind || "") !== "revive" || !Number.isFinite(Number(effect.value)) || Number(effect.value) <= 0) {
+      return monetizationError(409, "Revive effect configuration is unavailable");
+    }
+    activeRun2.run.item_revives = 1;
+    nk.storageWrite([{
+      collection: "player_stage_runs",
+      key: "active",
+      userId: ctx.userId,
+      value: activeRun2.run,
+      permissionRead: 1,
+      permissionWrite: 0,
+      version: activeRun2.object.version
+    }]);
+    const consumed2 = nk.sqlQuery(
+      `UPDATE monetization_ad_rewards SET consumed_at = NOW()
+             WHERE ad_session_id = $1 AND user_id = $2 AND status = 'granted' AND consumed_at IS NULL
+             RETURNING ad_session_id`,
+      [adSessionId, ctx.userId]
+    );
+    if (consumed2.length === 0) return monetizationError(409, "Combat revive credit is already used");
+    return JSON.stringify({ status: "success", data: {
+      consumed: true,
+      run_id: runId,
+      reward_type: "combat_revive",
+      effect
+    } });
+  }
   const offerSeq = Math.floor(Number(req.offer_seq || 0));
   if (String(ledger.placement_id) !== "card_reroll_ad" || String(ledger.reward_type) !== "card_reroll" || String(ledger.status) !== "granted" || ledger.consumed_at || String(storedContext.run_id || "") !== runId || Number(storedContext.offer_seq || 0) !== offerSeq) {
     return monetizationError(409, "Card reroll credit is invalid or already used");
@@ -6762,6 +6859,12 @@ function linkedRpc_update_inventory(ctx, logger, nk, payload) {
 function linkedRpc_talisman_action(ctx, logger, nk, payload) {
   return accountGuardedRpc("talisman_action", gatedTalismanAction)(ctx, logger, nk, payload);
 }
+function linkedRpc_store_purchase(ctx, logger, nk, payload) {
+  return accountGuardedRpc("store_purchase", gatedStorePurchase)(ctx, logger, nk, payload);
+}
+function linkedRpc_use_consumable(ctx, logger, nk, payload) {
+  return accountGuardedRpc("use_consumable", gatedUseConsumable)(ctx, logger, nk, payload);
+}
 function linkedRpc_talisman_cast(ctx, logger, nk, payload) {
   return accountGuardedRpc("talisman_cast", gatedTalismanCast)(ctx, logger, nk, payload);
 }
@@ -6834,12 +6937,24 @@ function linkedRpc_get_leaderboard_records(ctx, logger, nk, payload) {
 function linkedRpc_sync_all_leaderboards(ctx, logger, nk, payload) {
   return accountGuardedRpc("sync_all_leaderboards", rpcSyncAllLeaderboards)(ctx, logger, nk, payload);
 }
+function linkedRpc_session_status(ctx, logger, nk, payload) {
+  return accountGuardedRpc("session_status", sessionStatus)(ctx, logger, nk, payload);
+}
 function InitModule(ctx, logger, nk, initializer) {
   createGameConfigTables(nk, logger);
   createMonetizationTables(nk, logger);
   createAccountLinkTables(nk);
+  createSingleLoginTable(nk);
+  initializer.registerBeforeAuthenticateEmail(beforeSingleLoginEmail);
+  initializer.registerAfterAuthenticateEmail(afterSingleLogin);
+  initializer.registerBeforeAuthenticateGoogle(beforeSingleLogin);
+  initializer.registerAfterAuthenticateGoogle(afterSingleLogin);
+  initializer.registerBeforeAuthenticateDevice(beforeSingleLogin);
+  initializer.registerAfterAuthenticateDevice(afterSingleLogin);
+  initializer.registerBeforeAuthenticateCustom(beforeSingleLogin);
+  initializer.registerAfterAuthenticateCustom(afterSingleLogin);
+  initializer.registerRpc("session_status", linkedRpc_session_status);
   initializer.registerRpc("rename_player", linkedRpc_rename_player);
-  initializer.registerBeforeAuthenticateEmail(beforeEmailPasswordSetup);
   initializer.registerRpc("account_password_status", linkedRpc_account_password_status);
   initializer.registerRpc("setup_account_password", linkedRpc_setup_account_password);
   initializer.registerRpc("google_link_status", linkedRpc_google_link_status);
@@ -6858,9 +6973,9 @@ function InitModule(ctx, logger, nk, initializer) {
   initializer.registerRpc("get_compliance_profile", linkedRpc_get_compliance_profile);
   initializer.registerRpc("update_inventory", linkedRpc_update_inventory);
   initializer.registerRpc("talisman_action", linkedRpc_talisman_action);
-  initializer.registerRpc("store_purchase", accountGuardedRpc("store_purchase", gatedStorePurchase));
+  initializer.registerRpc("store_purchase", linkedRpc_store_purchase);
   logger.info("Store purchase protocol v2 loaded: store_purchase requires explicit gold/gems");
-  initializer.registerRpc("use_consumable", accountGuardedRpc("use_consumable", gatedUseConsumable));
+  initializer.registerRpc("use_consumable", linkedRpc_use_consumable);
   initializer.registerRpc("talisman_cast", linkedRpc_talisman_cast);
   initializer.registerRpc("spend_resource", linkedRpc_spend_resource);
   initializer.registerRpc("purchase_stamina", linkedRpc_purchase_stamina);

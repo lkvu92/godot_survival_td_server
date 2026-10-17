@@ -135,6 +135,10 @@ function linkedRpc_sync_all_leaderboards(ctx: nkruntime.Context, logger: nkrunti
     return accountGuardedRpc("sync_all_leaderboards", rpcSyncAllLeaderboards)(ctx, logger, nk, payload);
 }
 
+function linkedRpc_session_status(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("session_status", sessionStatus)(ctx, logger, nk, payload);
+}
+
 function InitModule(
     ctx: nkruntime.Context,
     logger: nkruntime.Logger,
@@ -145,8 +149,17 @@ function InitModule(
     createGameConfigTables(nk, logger);
     createMonetizationTables(nk, logger);
     createAccountLinkTables(nk);
+    createSingleLoginTable(nk);
+    initializer.registerBeforeAuthenticateEmail(beforeSingleLoginEmail);
+    initializer.registerAfterAuthenticateEmail(afterSingleLogin);
+    initializer.registerBeforeAuthenticateGoogle(beforeSingleLogin);
+    initializer.registerAfterAuthenticateGoogle(afterSingleLogin);
+    initializer.registerBeforeAuthenticateDevice(beforeSingleLogin);
+    initializer.registerAfterAuthenticateDevice(afterSingleLogin);
+    initializer.registerBeforeAuthenticateCustom(beforeSingleLogin);
+    initializer.registerAfterAuthenticateCustom(afterSingleLogin);
+    initializer.registerRpc("session_status", linkedRpc_session_status);
     initializer.registerRpc("rename_player", linkedRpc_rename_player);
-    initializer.registerBeforeAuthenticateEmail(beforeEmailPasswordSetup);
     initializer.registerRpc("account_password_status", linkedRpc_account_password_status);
     initializer.registerRpc("setup_account_password", linkedRpc_setup_account_password);
     initializer.registerRpc("google_link_status", linkedRpc_google_link_status);

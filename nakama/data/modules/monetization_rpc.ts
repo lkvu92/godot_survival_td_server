@@ -17,6 +17,7 @@ const DEFAULT_REWARDED_PLACEMENTS: { [key: string]: any } = {
     main_menu_stamina: { type: "stamina", amount: 5 },
     stamina_dialog_ad: { type: "stamina", amount: 5 },
     card_reroll_ad: { type: "card_reroll", amount: 1 },
+    combat_revive_ad: { type: "combat_revive", amount: 1 },
     talisman_enhance_charm_ad: { type: "item", amount: 1, item_id: "talisman_enhance_charm", daily_limit: 1 },
     element_enlightenment_charm_ad: { type: "item", amount: 1, item_id: "element_enlightenment_charm", daily_limit: 1 },
 };
@@ -673,9 +674,24 @@ const prepareRewardedAd: nkruntime.RpcFunction = (ctx, _logger, nk, payload) => 
         }
         rewardContext = { run_id: runId, offer_seq: offerSeq };
     }
+    if (placementId === "combat_revive_ad") {
+        rewardContext = objectValue(req.context);
+        const runId = String(rewardContext.run_id || "");
+        if (!runId) return monetizationError(400, "Combat revive requires an active run");
+        const activeRun = readActiveRun(nk, ctx.userId, runId);
+        if (!activeRun) return monetizationError(409, "Run is not active");
+        if (Math.max(0, Number(activeRun.run.item_revives || 0)) >= 1) {
+            return monetizationError(409, "Revive already used for this run");
+        }
+        rewardContext = { run_id: runId };
+    }
     if (sessions.length && placementId === "card_reroll_ad") {
         const oldContext = objectValue(parseJsonb(sessions[0].context));
         if (oldContext.run_id !== rewardContext.run_id || Number(oldContext.offer_seq) !== Number(rewardContext.offer_seq)) return monetizationError(409, "Reward request belongs to another card offer");
+    }
+    if (sessions.length && placementId === "combat_revive_ad") {
+        const oldContext = objectValue(parseJsonb(sessions[0].context));
+        if (oldContext.run_id !== rewardContext.run_id) return monetizationError(409, "Reward request belongs to another run");
     }
     let adSessionId = sessions.length ? String(sessions[0].ad_session_id) : nk.uuidv4();
     const customData = JSON.stringify({ ad_session_id: adSessionId, user_id: ctx.userId });
@@ -697,6 +713,10 @@ const prepareRewardedAd: nkruntime.RpcFunction = (ctx, _logger, nk, payload) => 
     if (placementId === "card_reroll_ad") {
         const saved = objectValue(parseJsonb(sessions[0].context));
         if (saved.run_id !== rewardContext.run_id || Number(saved.offer_seq) !== Number(rewardContext.offer_seq)) return monetizationError(409, "Reward request belongs to another card offer");
+    }
+    if (placementId === "combat_revive_ad") {
+        const saved = objectValue(parseJsonb(sessions[0].context));
+        if (saved.run_id !== rewardContext.run_id) return monetizationError(409, "Reward request belongs to another run");
     }
     const skipAd = String(sessions[0].delivery_source) === "no_ads" || String(sessions[0].status) === "verified" || String(sessions[0].status) === "granted";
     const granted = skipAd ? grantPreparedReward(nk, ctx.userId, adSessionId, "") : {};
@@ -793,12 +813,12 @@ function grantPreparedReward(nk: nkruntime.Nakama, userId: string, adSessionId: 
         return { granted: false, message: "Daily reward quota reached" };
     }
     if (String(reward.reward_type) === "daily_fragment") return grantDailyMissionFragment(nk, userId, adSessionId, dailyClaim);
-    if (String(reward.reward_type) === "card_reroll") {
+    if (String(reward.reward_type) === "card_reroll" || String(reward.reward_type) === "combat_revive") {
         nk.sqlExec(
             "UPDATE monetization_ad_rewards SET status = 'granted', granted_at = NOW() WHERE ad_session_id = $1 AND status = 'verified'",
             [adSessionId]
         );
-        return { granted: true, reward_type: "card_reroll", reward_amount: 1 };
+        return { granted: true, reward_type: String(reward.reward_type), reward_amount: 1 };
     }
     if (String(reward.reward_type) === "item") {
         const itemId = String(rewardDefinition.item_id || "");
@@ -889,7 +909,7 @@ const consumeAdGameplayReward: nkruntime.RpcFunction = (ctx, _logger, nk, payloa
     const adSessionId = String(req.ad_session_id || "");
     const runId = String(req.run_id || "");
     const rewardType = String(req.reward_type || "");
-    if (!adSessionId || !runId || rewardType !== "card_reroll") {
+    if (!adSessionId || !runId || (rewardType !== "card_reroll" && rewardType !== "combat_revive")) {
         return monetizationError(400, "Invalid gameplay reward request");
     }
     const rows = nk.sqlQuery(
@@ -900,6 +920,38 @@ const consumeAdGameplayReward: nkruntime.RpcFunction = (ctx, _logger, nk, payloa
     if (rows.length === 0) return monetizationError(404, "Reward session not found");
     const ledger = rows[0];
     const storedContext = objectValue(parseJsonb(ledger.context));
+    if (rewardType === "combat_revive") {
+        if (String(ledger.placement_id) !== "combat_revive_ad" || String(ledger.reward_type) !== "combat_revive"
+            || String(ledger.status) !== "granted" || ledger.consumed_at
+            || String(storedContext.run_id || "") !== runId) {
+            return monetizationError(409, "Combat revive credit is invalid or already used");
+        }
+        const activeRun = readActiveRun(nk, ctx.userId, runId);
+        if (!activeRun) return monetizationError(409, "Run is not active");
+        if (Math.max(0, Math.floor(Number(activeRun.run.item_revives || 0))) >= 1) {
+            return monetizationError(409, "Revive already used for this run");
+        }
+        const definitions = nk.sqlQuery("SELECT attributes FROM game_items WHERE id='revive_talisman'", []);
+        const effect = definitions.length ? objectValue(objectValue(parseJsonb(definitions[0].attributes)).effect) : {};
+        if (String(effect.kind || "") !== "revive" || !Number.isFinite(Number(effect.value)) || Number(effect.value) <= 0) {
+            return monetizationError(409, "Revive effect configuration is unavailable");
+        }
+        activeRun.run.item_revives = 1;
+        nk.storageWrite([{
+            collection: "player_stage_runs", key: "active", userId: ctx.userId, value: activeRun.run,
+            permissionRead: 1, permissionWrite: 0, version: activeRun.object.version,
+        }]);
+        const consumed = nk.sqlQuery(
+            `UPDATE monetization_ad_rewards SET consumed_at = NOW()
+             WHERE ad_session_id = $1 AND user_id = $2 AND status = 'granted' AND consumed_at IS NULL
+             RETURNING ad_session_id`,
+            [adSessionId, ctx.userId]
+        );
+        if (consumed.length === 0) return monetizationError(409, "Combat revive credit is already used");
+        return JSON.stringify({ status: "success", data: {
+            consumed: true, run_id: runId, reward_type: "combat_revive", effect,
+        }});
+    }
     const offerSeq = Math.floor(Number(req.offer_seq || 0));
     if (String(ledger.placement_id) !== "card_reroll_ad" || String(ledger.reward_type) !== "card_reroll"
         || String(ledger.status) !== "granted" || ledger.consumed_at

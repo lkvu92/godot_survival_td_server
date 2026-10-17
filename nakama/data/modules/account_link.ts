@@ -1,3 +1,50 @@
+// C131: signed per-login generation, never accepted from an RPC payload.
+const LOGIN_REPLACED_MESSAGE = "Tài khoản đã được đăng nhập ở thiết bị khác";
+
+function createSingleLoginTable(nk: nkruntime.Nakama): void {
+    nk.sqlExec(`CREATE TABLE IF NOT EXISTS player_login_sessions (
+        user_id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+        generation TEXT NOT NULL, updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )`, []);
+}
+
+function beforeSingleLogin(_ctx: nkruntime.Context, _logger: nkruntime.Logger, nk: nkruntime.Nakama, request: any): any {
+    if (request && request.account) {
+        request.account.vars = Object.assign({}, request.account.vars || {}, {login_generation:nk.uuidv4()});
+    }
+    return request;
+}
+
+function beforeSingleLoginEmail(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, request: any): any {
+    return beforeSingleLogin(ctx, logger, nk, beforeEmailPasswordSetup(ctx, logger, nk, request));
+}
+
+function afterSingleLogin(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, _session: any, request: any): void {
+    const generation = String((ctx.vars || {}).login_generation || ((request.account || {}).vars || {}).login_generation || "");
+    if (!ctx.userId || !generation) throw Error("Missing server login generation");
+    nk.sqlExec(`INSERT INTO player_login_sessions(user_id,generation) VALUES($1::UUID,$2)
+        ON CONFLICT(user_id) DO UPDATE SET generation=EXCLUDED.generation,updated_at=NOW()`, [ctx.userId,generation]);
+    // Broadcast an invalidation hint, not the secret generation. Receivers check
+    // ownership once; self/reordered notifications cannot evict the new owner.
+    try {
+        nk.notificationSend(ctx.userId, "Session changed", {type:"session_changed"}, 131, undefined, false);
+    } catch (error) {
+        logger.warn("Login change push failed; reconnect/RPC guards remain authoritative: %s", String(error));
+    }
+}
+
+function requireCurrentLogin(ctx: nkruntime.Context, nk: nkruntime.Nakama): string | null {
+    if (!ctx.userId) return null; // Internal HTTP-key callbacks retain existing guards.
+    const generation = String((ctx.vars || {}).login_generation || "");
+    const rows = generation ? nk.sqlQuery("SELECT generation FROM player_login_sessions WHERE user_id=$1::UUID", [ctx.userId]) : [];
+    if (!generation || !rows.length || String(rows[0].generation) !== generation) {
+        return JSON.stringify({success:false,status:"error",code:401,reason:"SESSION_REPLACED",message:LOGIN_REPLACED_MESSAGE});
+    }
+    return null;
+}
+
+const sessionStatus: nkruntime.RpcFunction = (_ctx, _logger, _nk) => JSON.stringify({success:true});
+
 // C117: Google proof stays in memory; account conflict commit is one SQL transaction.
 function createAccountLinkTables(nk: nkruntime.Nakama): void {
     nk.sqlExec(`CREATE TABLE IF NOT EXISTS account_link_state (
@@ -158,6 +205,8 @@ function withActiveAccount<T>(nk: nkruntime.Nakama, userId: string, action: () =
 
 function accountGuardedRpc(id: string, handler: nkruntime.RpcFunction): nkruntime.RpcFunction {
     return (ctx, logger, nk, payload) => {
+        const rejected = requireCurrentLogin(ctx, nk);
+        if (rejected) return rejected;
         if (id === "confirm_google_link") return handler(ctx, logger, nk, payload);
         let owner = ctx.userId;
         if (!owner && (id === "admob_ssv_confirm" || id === "google_play_rtdn_confirm")) {

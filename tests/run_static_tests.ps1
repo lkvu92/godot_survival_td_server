@@ -11,6 +11,8 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'New profile inventory regression failed' }
     & node tests/test_account_password.cjs
     if ($LASTEXITCODE -ne 0) { throw 'Account password regression failed' }
+    & node tests/test_single_login.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Single login regression failed' }
     & node tests/test_player_names.cjs
     if ($LASTEXITCODE -ne 0) { throw 'Player names regression failed' }
     & node tests/test_consumable_store.cjs
