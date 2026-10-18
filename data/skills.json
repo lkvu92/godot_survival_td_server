@@ -7601,20 +7601,24 @@
     },
     "skill_class": "active",
     "activation": "manual",
-    "skill_type": "projectile",
+    "skill_type": "layered_talisman",
     "positioning": {
-      "type": "from_hero_to_enemy",
-      "hit_rule": "end_on_hit"
+      "type": "enemy_ground"
     },
     "deployment": {
-      "type": "multi_target"
+      "type": "area"
     },
     "description": "Ngưng tụ kiếm trận băng giá, đóng băng kẻ địch diện rộng trong 3 giây.",
     "vfx_frames": [
-      "skill_flame_0",
-      "skill_flame_1",
-      "skill_flame_2",
-      "skill_flame_3"
+      "talisman_16_main_cold_ice_sword_0",
+      "talisman_16_main_cold_ice_sword_1",
+      "talisman_16_main_cold_ice_sword_2",
+      "talisman_16_main_cold_ice_sword_3",
+      "talisman_16_main_cold_ice_sword_4",
+      "talisman_16_main_cold_ice_sword_5",
+      "talisman_16_main_cold_ice_sword_6",
+      "talisman_16_main_cold_ice_sword_7",
+      "talisman_16_main_cold_ice_sword_8"
     ],
     "levels": [
       {
@@ -7625,15 +7629,108 @@
           "range": 665,
           "projectile_count": 1,
           "cooldown": 30,
-          "radius": 0,
+          "radius": 100,
           "vfx_scale": 0.26
         },
         "description_rows": [
           "Sát thương 120% Công Kích",
-          "Hồi chiêu 30.0s",
-          "Số lượng mục tiêu: 1"
+          "Hồi chiêu 30s",
+          "Bán kính 100 · Đóng băng 3s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "range": 665,
+          "damage_pct": 120,
+          "radius": 100,
+          "layers": {
+            "sword": {
+              "frames": [
+                "talisman_16_main_cold_ice_sword_0",
+                "talisman_16_main_cold_ice_sword_1",
+                "talisman_16_main_cold_ice_sword_2",
+                "talisman_16_main_cold_ice_sword_3",
+                "talisman_16_main_cold_ice_sword_4",
+                "talisman_16_main_cold_ice_sword_5",
+                "talisman_16_main_cold_ice_sword_6",
+                "talisman_16_main_cold_ice_sword_7",
+                "talisman_16_main_cold_ice_sword_8"
+              ],
+              "scale": [
+                0.9,
+                0.9
+              ],
+              "duration": 0.62,
+              "layer": 30,
+              "pivot": [
+                128,
+                235
+              ]
+            },
+            "array": {
+              "frames": [
+                "talisman_16_area_north_frost_array_0",
+                "talisman_16_area_north_frost_array_1",
+                "talisman_16_area_north_frost_array_2",
+                "talisman_16_area_north_frost_array_3",
+                "talisman_16_area_north_frost_array_4",
+                "talisman_16_area_north_frost_array_5",
+                "talisman_16_area_north_frost_array_6",
+                "talisman_16_area_north_frost_array_7",
+                "talisman_16_area_north_frost_array_8"
+              ],
+              "scale": [
+                0.8695652173913043,
+                0.8695652173913043
+              ],
+              "duration": 0.85,
+              "layer": 0,
+              "pivot": [
+                128,
+                128
+              ],
+              "grow_from": 0.4
+            },
+            "spikes": {
+              "frames": [
+                "talisman_16_impact_ice_spike_cluster_0",
+                "talisman_16_impact_ice_spike_cluster_1",
+                "talisman_16_impact_ice_spike_cluster_2",
+                "talisman_16_impact_ice_spike_cluster_3",
+                "talisman_16_impact_ice_spike_cluster_4",
+                "talisman_16_impact_ice_spike_cluster_5",
+                "talisman_16_impact_ice_spike_cluster_6",
+                "talisman_16_impact_ice_spike_cluster_7",
+                "talisman_16_impact_ice_spike_cluster_8"
+              ],
+              "scale": [
+                0.8333333333333334,
+                0.8333333333333334
+              ],
+              "duration": 0.65,
+              "layer": 20,
+              "pivot": [
+                128,
+                235
+              ]
+            },
+            "feet": {
+              "frames": [
+                "talisman_16_freeze_foot_overlay_0"
+              ],
+              "scale": [
+                0.28,
+                0.28
+              ],
+              "duration": 86400,
+              "layer": 3,
+              "pivot": [
+                128,
+                128
+              ],
+              "hold": true
+            }
+          }
+        }
       },
       {
         "level": 2,
@@ -7643,15 +7740,108 @@
           "range": 680,
           "projectile_count": 1,
           "cooldown": 28.5,
-          "radius": 0,
+          "radius": 110,
           "vfx_scale": 0.28
         },
         "description_rows": [
           "Sát thương 150% Công Kích",
           "Hồi chiêu 28.5s",
-          "Số lượng mục tiêu: 1"
+          "Bán kính 110 · Đóng băng 3s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "range": 680,
+          "damage_pct": 150,
+          "radius": 110,
+          "layers": {
+            "sword": {
+              "frames": [
+                "talisman_16_main_cold_ice_sword_0",
+                "talisman_16_main_cold_ice_sword_1",
+                "talisman_16_main_cold_ice_sword_2",
+                "talisman_16_main_cold_ice_sword_3",
+                "talisman_16_main_cold_ice_sword_4",
+                "talisman_16_main_cold_ice_sword_5",
+                "talisman_16_main_cold_ice_sword_6",
+                "talisman_16_main_cold_ice_sword_7",
+                "talisman_16_main_cold_ice_sword_8"
+              ],
+              "scale": [
+                0.9,
+                0.9
+              ],
+              "duration": 0.62,
+              "layer": 30,
+              "pivot": [
+                128,
+                235
+              ]
+            },
+            "array": {
+              "frames": [
+                "talisman_16_area_north_frost_array_0",
+                "talisman_16_area_north_frost_array_1",
+                "talisman_16_area_north_frost_array_2",
+                "talisman_16_area_north_frost_array_3",
+                "talisman_16_area_north_frost_array_4",
+                "talisman_16_area_north_frost_array_5",
+                "talisman_16_area_north_frost_array_6",
+                "talisman_16_area_north_frost_array_7",
+                "talisman_16_area_north_frost_array_8"
+              ],
+              "scale": [
+                0.9565217391304348,
+                0.9565217391304348
+              ],
+              "duration": 0.85,
+              "layer": 0,
+              "pivot": [
+                128,
+                128
+              ],
+              "grow_from": 0.4
+            },
+            "spikes": {
+              "frames": [
+                "talisman_16_impact_ice_spike_cluster_0",
+                "talisman_16_impact_ice_spike_cluster_1",
+                "talisman_16_impact_ice_spike_cluster_2",
+                "talisman_16_impact_ice_spike_cluster_3",
+                "talisman_16_impact_ice_spike_cluster_4",
+                "talisman_16_impact_ice_spike_cluster_5",
+                "talisman_16_impact_ice_spike_cluster_6",
+                "talisman_16_impact_ice_spike_cluster_7",
+                "talisman_16_impact_ice_spike_cluster_8"
+              ],
+              "scale": [
+                0.9166666666666666,
+                0.9166666666666666
+              ],
+              "duration": 0.65,
+              "layer": 20,
+              "pivot": [
+                128,
+                235
+              ]
+            },
+            "feet": {
+              "frames": [
+                "talisman_16_freeze_foot_overlay_0"
+              ],
+              "scale": [
+                0.28,
+                0.28
+              ],
+              "duration": 86400,
+              "layer": 3,
+              "pivot": [
+                128,
+                128
+              ],
+              "hold": true
+            }
+          }
+        }
       },
       {
         "level": 3,
@@ -7659,17 +7849,110 @@
           "damage_pct": 180,
           "speed_pct": 200,
           "range": 695,
-          "projectile_count": 2,
+          "projectile_count": 1,
           "cooldown": 27,
-          "radius": 0,
+          "radius": 120,
           "vfx_scale": 0.3
         },
         "description_rows": [
           "Sát thương 180% Công Kích",
-          "Hồi chiêu 27.0s",
-          "Số lượng mục tiêu: 2"
+          "Hồi chiêu 27s",
+          "Bán kính 120 · Đóng băng 3s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "range": 695,
+          "damage_pct": 180,
+          "radius": 120,
+          "layers": {
+            "sword": {
+              "frames": [
+                "talisman_16_main_cold_ice_sword_0",
+                "talisman_16_main_cold_ice_sword_1",
+                "talisman_16_main_cold_ice_sword_2",
+                "talisman_16_main_cold_ice_sword_3",
+                "talisman_16_main_cold_ice_sword_4",
+                "talisman_16_main_cold_ice_sword_5",
+                "talisman_16_main_cold_ice_sword_6",
+                "talisman_16_main_cold_ice_sword_7",
+                "talisman_16_main_cold_ice_sword_8"
+              ],
+              "scale": [
+                0.9,
+                0.9
+              ],
+              "duration": 0.62,
+              "layer": 30,
+              "pivot": [
+                128,
+                235
+              ]
+            },
+            "array": {
+              "frames": [
+                "talisman_16_area_north_frost_array_0",
+                "talisman_16_area_north_frost_array_1",
+                "talisman_16_area_north_frost_array_2",
+                "talisman_16_area_north_frost_array_3",
+                "talisman_16_area_north_frost_array_4",
+                "talisman_16_area_north_frost_array_5",
+                "talisman_16_area_north_frost_array_6",
+                "talisman_16_area_north_frost_array_7",
+                "talisman_16_area_north_frost_array_8"
+              ],
+              "scale": [
+                1.0434782608695652,
+                1.0434782608695652
+              ],
+              "duration": 0.85,
+              "layer": 0,
+              "pivot": [
+                128,
+                128
+              ],
+              "grow_from": 0.4
+            },
+            "spikes": {
+              "frames": [
+                "talisman_16_impact_ice_spike_cluster_0",
+                "talisman_16_impact_ice_spike_cluster_1",
+                "talisman_16_impact_ice_spike_cluster_2",
+                "talisman_16_impact_ice_spike_cluster_3",
+                "talisman_16_impact_ice_spike_cluster_4",
+                "talisman_16_impact_ice_spike_cluster_5",
+                "talisman_16_impact_ice_spike_cluster_6",
+                "talisman_16_impact_ice_spike_cluster_7",
+                "talisman_16_impact_ice_spike_cluster_8"
+              ],
+              "scale": [
+                1.0,
+                1.0
+              ],
+              "duration": 0.65,
+              "layer": 20,
+              "pivot": [
+                128,
+                235
+              ]
+            },
+            "feet": {
+              "frames": [
+                "talisman_16_freeze_foot_overlay_0"
+              ],
+              "scale": [
+                0.28,
+                0.28
+              ],
+              "duration": 86400,
+              "layer": 3,
+              "pivot": [
+                128,
+                128
+              ],
+              "hold": true
+            }
+          }
+        }
       },
       {
         "level": 4,
@@ -7677,17 +7960,110 @@
           "damage_pct": 210,
           "speed_pct": 200,
           "range": 710,
-          "projectile_count": 2,
+          "projectile_count": 1,
           "cooldown": 25.5,
-          "radius": 0,
+          "radius": 130,
           "vfx_scale": 0.32
         },
         "description_rows": [
           "Sát thương 210% Công Kích",
           "Hồi chiêu 25.5s",
-          "Số lượng mục tiêu: 2"
+          "Bán kính 130 · Đóng băng 3s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "range": 710,
+          "damage_pct": 210,
+          "radius": 130,
+          "layers": {
+            "sword": {
+              "frames": [
+                "talisman_16_main_cold_ice_sword_0",
+                "talisman_16_main_cold_ice_sword_1",
+                "talisman_16_main_cold_ice_sword_2",
+                "talisman_16_main_cold_ice_sword_3",
+                "talisman_16_main_cold_ice_sword_4",
+                "talisman_16_main_cold_ice_sword_5",
+                "talisman_16_main_cold_ice_sword_6",
+                "talisman_16_main_cold_ice_sword_7",
+                "talisman_16_main_cold_ice_sword_8"
+              ],
+              "scale": [
+                0.9,
+                0.9
+              ],
+              "duration": 0.62,
+              "layer": 30,
+              "pivot": [
+                128,
+                235
+              ]
+            },
+            "array": {
+              "frames": [
+                "talisman_16_area_north_frost_array_0",
+                "talisman_16_area_north_frost_array_1",
+                "talisman_16_area_north_frost_array_2",
+                "talisman_16_area_north_frost_array_3",
+                "talisman_16_area_north_frost_array_4",
+                "talisman_16_area_north_frost_array_5",
+                "talisman_16_area_north_frost_array_6",
+                "talisman_16_area_north_frost_array_7",
+                "talisman_16_area_north_frost_array_8"
+              ],
+              "scale": [
+                1.1304347826086956,
+                1.1304347826086956
+              ],
+              "duration": 0.85,
+              "layer": 0,
+              "pivot": [
+                128,
+                128
+              ],
+              "grow_from": 0.4
+            },
+            "spikes": {
+              "frames": [
+                "talisman_16_impact_ice_spike_cluster_0",
+                "talisman_16_impact_ice_spike_cluster_1",
+                "talisman_16_impact_ice_spike_cluster_2",
+                "talisman_16_impact_ice_spike_cluster_3",
+                "talisman_16_impact_ice_spike_cluster_4",
+                "talisman_16_impact_ice_spike_cluster_5",
+                "talisman_16_impact_ice_spike_cluster_6",
+                "talisman_16_impact_ice_spike_cluster_7",
+                "talisman_16_impact_ice_spike_cluster_8"
+              ],
+              "scale": [
+                1.0833333333333333,
+                1.0833333333333333
+              ],
+              "duration": 0.65,
+              "layer": 20,
+              "pivot": [
+                128,
+                235
+              ]
+            },
+            "feet": {
+              "frames": [
+                "talisman_16_freeze_foot_overlay_0"
+              ],
+              "scale": [
+                0.28,
+                0.28
+              ],
+              "duration": 86400,
+              "layer": 3,
+              "pivot": [
+                128,
+                128
+              ],
+              "hold": true
+            }
+          }
+        }
       },
       {
         "level": 5,
@@ -7695,17 +8071,110 @@
           "damage_pct": 240,
           "speed_pct": 200,
           "range": 725,
-          "projectile_count": 3,
+          "projectile_count": 1,
           "cooldown": 24,
-          "radius": 0,
+          "radius": 140,
           "vfx_scale": 0.34
         },
         "description_rows": [
           "Sát thương 240% Công Kích",
-          "Hồi chiêu 24.0s",
-          "Số lượng mục tiêu: 3"
+          "Hồi chiêu 24s",
+          "Bán kính 140 · Đóng băng 3s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "range": 725,
+          "damage_pct": 240,
+          "radius": 140,
+          "layers": {
+            "sword": {
+              "frames": [
+                "talisman_16_main_cold_ice_sword_0",
+                "talisman_16_main_cold_ice_sword_1",
+                "talisman_16_main_cold_ice_sword_2",
+                "talisman_16_main_cold_ice_sword_3",
+                "talisman_16_main_cold_ice_sword_4",
+                "talisman_16_main_cold_ice_sword_5",
+                "talisman_16_main_cold_ice_sword_6",
+                "talisman_16_main_cold_ice_sword_7",
+                "talisman_16_main_cold_ice_sword_8"
+              ],
+              "scale": [
+                0.9,
+                0.9
+              ],
+              "duration": 0.62,
+              "layer": 30,
+              "pivot": [
+                128,
+                235
+              ]
+            },
+            "array": {
+              "frames": [
+                "talisman_16_area_north_frost_array_0",
+                "talisman_16_area_north_frost_array_1",
+                "talisman_16_area_north_frost_array_2",
+                "talisman_16_area_north_frost_array_3",
+                "talisman_16_area_north_frost_array_4",
+                "talisman_16_area_north_frost_array_5",
+                "talisman_16_area_north_frost_array_6",
+                "talisman_16_area_north_frost_array_7",
+                "talisman_16_area_north_frost_array_8"
+              ],
+              "scale": [
+                1.2173913043478262,
+                1.2173913043478262
+              ],
+              "duration": 0.85,
+              "layer": 0,
+              "pivot": [
+                128,
+                128
+              ],
+              "grow_from": 0.4
+            },
+            "spikes": {
+              "frames": [
+                "talisman_16_impact_ice_spike_cluster_0",
+                "talisman_16_impact_ice_spike_cluster_1",
+                "talisman_16_impact_ice_spike_cluster_2",
+                "talisman_16_impact_ice_spike_cluster_3",
+                "talisman_16_impact_ice_spike_cluster_4",
+                "talisman_16_impact_ice_spike_cluster_5",
+                "talisman_16_impact_ice_spike_cluster_6",
+                "talisman_16_impact_ice_spike_cluster_7",
+                "talisman_16_impact_ice_spike_cluster_8"
+              ],
+              "scale": [
+                1.1666666666666667,
+                1.1666666666666667
+              ],
+              "duration": 0.65,
+              "layer": 20,
+              "pivot": [
+                128,
+                235
+              ]
+            },
+            "feet": {
+              "frames": [
+                "talisman_16_freeze_foot_overlay_0"
+              ],
+              "scale": [
+                0.28,
+                0.28
+              ],
+              "duration": 86400,
+              "layer": 3,
+              "pivot": [
+                128,
+                128
+              ],
+              "hold": true
+            }
+          }
+        }
       }
     ],
     "sfx_events": [
@@ -7713,7 +8182,111 @@
         "sfx_id": "talisman-skill-16",
         "timing": "cast"
       }
-    ]
+    ],
+    "element": "water",
+    "cast_config": {
+      "behavior": "ice",
+      "duration": 1.1,
+      "range": 665,
+      "damage_pct": 120,
+      "radius": 100,
+      "sword_radius": 28,
+      "sword_ratio": 0.3,
+      "spikes_ratio": 0.7,
+      "fall_height": 220,
+      "sword_at": 0.18,
+      "spikes_at": 0.32,
+      "freeze_at": 0.43,
+      "freeze_duration": 3,
+      "layers": {
+        "sword": {
+          "frames": [
+            "talisman_16_main_cold_ice_sword_0",
+            "talisman_16_main_cold_ice_sword_1",
+            "talisman_16_main_cold_ice_sword_2",
+            "talisman_16_main_cold_ice_sword_3",
+            "talisman_16_main_cold_ice_sword_4",
+            "talisman_16_main_cold_ice_sword_5",
+            "talisman_16_main_cold_ice_sword_6",
+            "talisman_16_main_cold_ice_sword_7",
+            "talisman_16_main_cold_ice_sword_8"
+          ],
+          "scale": [
+            0.9,
+            0.9
+          ],
+          "duration": 0.62,
+          "layer": 30,
+          "pivot": [
+            128,
+            235
+          ]
+        },
+        "array": {
+          "frames": [
+            "talisman_16_area_north_frost_array_0",
+            "talisman_16_area_north_frost_array_1",
+            "talisman_16_area_north_frost_array_2",
+            "talisman_16_area_north_frost_array_3",
+            "talisman_16_area_north_frost_array_4",
+            "talisman_16_area_north_frost_array_5",
+            "talisman_16_area_north_frost_array_6",
+            "talisman_16_area_north_frost_array_7",
+            "talisman_16_area_north_frost_array_8"
+          ],
+          "scale": [
+            1.1,
+            1.1
+          ],
+          "duration": 0.85,
+          "layer": 0,
+          "pivot": [
+            128,
+            128
+          ],
+          "grow_from": 0.4
+        },
+        "spikes": {
+          "frames": [
+            "talisman_16_impact_ice_spike_cluster_0",
+            "talisman_16_impact_ice_spike_cluster_1",
+            "talisman_16_impact_ice_spike_cluster_2",
+            "talisman_16_impact_ice_spike_cluster_3",
+            "talisman_16_impact_ice_spike_cluster_4",
+            "talisman_16_impact_ice_spike_cluster_5",
+            "talisman_16_impact_ice_spike_cluster_6",
+            "talisman_16_impact_ice_spike_cluster_7",
+            "talisman_16_impact_ice_spike_cluster_8"
+          ],
+          "scale": [
+            0.9,
+            0.9
+          ],
+          "duration": 0.65,
+          "layer": 20,
+          "pivot": [
+            128,
+            235
+          ]
+        },
+        "feet": {
+          "frames": [
+            "talisman_16_freeze_foot_overlay_0"
+          ],
+          "scale": [
+            0.28,
+            0.28
+          ],
+          "duration": 86400,
+          "layer": 3,
+          "pivot": [
+            128,
+            128
+          ],
+          "hold": true
+        }
+      }
+    }
   },
   {
     "id": "skill_talisman_17",
@@ -8878,7 +9451,7 @@
   },
   {
     "id": "skill_talisman_26",
-    "display_name": "Tru Tiên Diệt Ma Diệt Tuyệt Trảm",
+    "display_name": "Tru Tiên Diệt Tuyệt Trảm",
     "category": "talisman",
     "createria_unlock": {
       "level": 1,
@@ -8886,20 +9459,16 @@
     },
     "skill_class": "active",
     "activation": "manual",
-    "skill_type": "projectile",
+    "skill_type": "layered_talisman",
     "positioning": {
-      "type": "from_hero_to_enemy",
-      "hit_rule": "end_on_hit"
+      "type": "from_hero_to_enemy"
     },
     "deployment": {
-      "type": "multi_target"
+      "type": "line_area"
     },
     "description": "Chém ra kiếm khí hủy thiên diệt địa, bỏ qua 100% giáp hộ thể và kết liễu kẻ địch dưới 15% máu.",
     "vfx_frames": [
-      "skill_flame_0",
-      "skill_flame_1",
-      "skill_flame_2",
-      "skill_flame_3"
+      "talisman_26_main_xuanyuan_sword_0"
     ],
     "levels": [
       {
@@ -8915,10 +9484,102 @@
         },
         "description_rows": [
           "Sát thương 120% Công Kích",
-          "Hồi chiêu 30.0s",
-          "Số lượng mục tiêu: 1"
+          "Hồi chiêu 30s",
+          "Xuyên 100% giáp · Kết liễu dưới 15% HP"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "range": 665,
+          "damage_pct": 120,
+          "layers": {
+            "sword": {
+              "frames": [
+                "talisman_26_main_xuanyuan_sword_0"
+              ],
+              "scale": [
+                1,
+                1
+              ],
+              "duration": 0.45,
+              "layer": 30,
+              "pivot": [
+                128,
+                128
+              ],
+              "opacity": 0.65
+            },
+            "wave": {
+              "frames": [
+                "talisman_26_main_slash_wave_0",
+                "talisman_26_main_slash_wave_1",
+                "talisman_26_main_slash_wave_2",
+                "talisman_26_main_slash_wave_3",
+                "talisman_26_main_slash_wave_4",
+                "talisman_26_main_slash_wave_5",
+                "talisman_26_main_slash_wave_6",
+                "talisman_26_main_slash_wave_7",
+                "talisman_26_main_slash_wave_8"
+              ],
+              "scale": [
+                1.05,
+                1.05
+              ],
+              "duration": 0.65,
+              "layer": 35,
+              "pivot": [
+                128,
+                128
+              ]
+            },
+            "rift": {
+              "frames": [
+                "talisman_26_ground_rift_0",
+                "talisman_26_ground_rift_1",
+                "talisman_26_ground_rift_2",
+                "talisman_26_ground_rift_3",
+                "talisman_26_ground_rift_4",
+                "talisman_26_ground_rift_5",
+                "talisman_26_ground_rift_6",
+                "talisman_26_ground_rift_7",
+                "talisman_26_ground_rift_8"
+              ],
+              "scale": [
+                1,
+                1
+              ],
+              "duration": 1.05,
+              "layer": 0,
+              "pivot": [
+                128,
+                128
+              ]
+            },
+            "rays": {
+              "frames": [
+                "talisman_26_sword_intent_particles_0",
+                "talisman_26_sword_intent_particles_1",
+                "talisman_26_sword_intent_particles_2",
+                "talisman_26_sword_intent_particles_3",
+                "talisman_26_sword_intent_particles_4",
+                "talisman_26_sword_intent_particles_5",
+                "talisman_26_sword_intent_particles_6",
+                "talisman_26_sword_intent_particles_7",
+                "talisman_26_sword_intent_particles_8"
+              ],
+              "scale": [
+                1.4,
+                1.4
+              ],
+              "duration": 0.65,
+              "layer": 40,
+              "pivot": [
+                128,
+                128
+              ],
+              "opacity": 0.8
+            }
+          }
+        }
       },
       {
         "level": 2,
@@ -8934,9 +9595,101 @@
         "description_rows": [
           "Sát thương 150% Công Kích",
           "Hồi chiêu 28.5s",
-          "Số lượng mục tiêu: 1"
+          "Xuyên 100% giáp · Kết liễu dưới 15% HP"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "range": 680,
+          "damage_pct": 150,
+          "layers": {
+            "sword": {
+              "frames": [
+                "talisman_26_main_xuanyuan_sword_0"
+              ],
+              "scale": [
+                1,
+                1
+              ],
+              "duration": 0.45,
+              "layer": 30,
+              "pivot": [
+                128,
+                128
+              ],
+              "opacity": 0.65
+            },
+            "wave": {
+              "frames": [
+                "talisman_26_main_slash_wave_0",
+                "talisman_26_main_slash_wave_1",
+                "talisman_26_main_slash_wave_2",
+                "talisman_26_main_slash_wave_3",
+                "talisman_26_main_slash_wave_4",
+                "talisman_26_main_slash_wave_5",
+                "talisman_26_main_slash_wave_6",
+                "talisman_26_main_slash_wave_7",
+                "talisman_26_main_slash_wave_8"
+              ],
+              "scale": [
+                1.05,
+                1.05
+              ],
+              "duration": 0.65,
+              "layer": 35,
+              "pivot": [
+                128,
+                128
+              ]
+            },
+            "rift": {
+              "frames": [
+                "talisman_26_ground_rift_0",
+                "talisman_26_ground_rift_1",
+                "talisman_26_ground_rift_2",
+                "talisman_26_ground_rift_3",
+                "talisman_26_ground_rift_4",
+                "talisman_26_ground_rift_5",
+                "talisman_26_ground_rift_6",
+                "talisman_26_ground_rift_7",
+                "talisman_26_ground_rift_8"
+              ],
+              "scale": [
+                1,
+                1
+              ],
+              "duration": 1.05,
+              "layer": 0,
+              "pivot": [
+                128,
+                128
+              ]
+            },
+            "rays": {
+              "frames": [
+                "talisman_26_sword_intent_particles_0",
+                "talisman_26_sword_intent_particles_1",
+                "talisman_26_sword_intent_particles_2",
+                "talisman_26_sword_intent_particles_3",
+                "talisman_26_sword_intent_particles_4",
+                "talisman_26_sword_intent_particles_5",
+                "talisman_26_sword_intent_particles_6",
+                "talisman_26_sword_intent_particles_7",
+                "talisman_26_sword_intent_particles_8"
+              ],
+              "scale": [
+                1.4,
+                1.4
+              ],
+              "duration": 0.65,
+              "layer": 40,
+              "pivot": [
+                128,
+                128
+              ],
+              "opacity": 0.8
+            }
+          }
+        }
       },
       {
         "level": 3,
@@ -8944,17 +9697,109 @@
           "damage_pct": 180,
           "speed_pct": 200,
           "range": 695,
-          "projectile_count": 2,
+          "projectile_count": 1,
           "cooldown": 27,
           "radius": 0,
           "vfx_scale": 0.3
         },
         "description_rows": [
           "Sát thương 180% Công Kích",
-          "Hồi chiêu 27.0s",
-          "Số lượng mục tiêu: 2"
+          "Hồi chiêu 27s",
+          "Xuyên 100% giáp · Kết liễu dưới 15% HP"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "range": 695,
+          "damage_pct": 180,
+          "layers": {
+            "sword": {
+              "frames": [
+                "talisman_26_main_xuanyuan_sword_0"
+              ],
+              "scale": [
+                1,
+                1
+              ],
+              "duration": 0.45,
+              "layer": 30,
+              "pivot": [
+                128,
+                128
+              ],
+              "opacity": 0.65
+            },
+            "wave": {
+              "frames": [
+                "talisman_26_main_slash_wave_0",
+                "talisman_26_main_slash_wave_1",
+                "talisman_26_main_slash_wave_2",
+                "talisman_26_main_slash_wave_3",
+                "talisman_26_main_slash_wave_4",
+                "talisman_26_main_slash_wave_5",
+                "talisman_26_main_slash_wave_6",
+                "talisman_26_main_slash_wave_7",
+                "talisman_26_main_slash_wave_8"
+              ],
+              "scale": [
+                1.05,
+                1.05
+              ],
+              "duration": 0.65,
+              "layer": 35,
+              "pivot": [
+                128,
+                128
+              ]
+            },
+            "rift": {
+              "frames": [
+                "talisman_26_ground_rift_0",
+                "talisman_26_ground_rift_1",
+                "talisman_26_ground_rift_2",
+                "talisman_26_ground_rift_3",
+                "talisman_26_ground_rift_4",
+                "talisman_26_ground_rift_5",
+                "talisman_26_ground_rift_6",
+                "talisman_26_ground_rift_7",
+                "talisman_26_ground_rift_8"
+              ],
+              "scale": [
+                1,
+                1
+              ],
+              "duration": 1.05,
+              "layer": 0,
+              "pivot": [
+                128,
+                128
+              ]
+            },
+            "rays": {
+              "frames": [
+                "talisman_26_sword_intent_particles_0",
+                "talisman_26_sword_intent_particles_1",
+                "talisman_26_sword_intent_particles_2",
+                "talisman_26_sword_intent_particles_3",
+                "talisman_26_sword_intent_particles_4",
+                "talisman_26_sword_intent_particles_5",
+                "talisman_26_sword_intent_particles_6",
+                "talisman_26_sword_intent_particles_7",
+                "talisman_26_sword_intent_particles_8"
+              ],
+              "scale": [
+                1.4,
+                1.4
+              ],
+              "duration": 0.65,
+              "layer": 40,
+              "pivot": [
+                128,
+                128
+              ],
+              "opacity": 0.8
+            }
+          }
+        }
       },
       {
         "level": 4,
@@ -8962,7 +9807,7 @@
           "damage_pct": 210,
           "speed_pct": 200,
           "range": 710,
-          "projectile_count": 2,
+          "projectile_count": 1,
           "cooldown": 25.5,
           "radius": 0,
           "vfx_scale": 0.32
@@ -8970,9 +9815,101 @@
         "description_rows": [
           "Sát thương 210% Công Kích",
           "Hồi chiêu 25.5s",
-          "Số lượng mục tiêu: 2"
+          "Xuyên 100% giáp · Kết liễu dưới 15% HP"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "range": 710,
+          "damage_pct": 210,
+          "layers": {
+            "sword": {
+              "frames": [
+                "talisman_26_main_xuanyuan_sword_0"
+              ],
+              "scale": [
+                1,
+                1
+              ],
+              "duration": 0.45,
+              "layer": 30,
+              "pivot": [
+                128,
+                128
+              ],
+              "opacity": 0.65
+            },
+            "wave": {
+              "frames": [
+                "talisman_26_main_slash_wave_0",
+                "talisman_26_main_slash_wave_1",
+                "talisman_26_main_slash_wave_2",
+                "talisman_26_main_slash_wave_3",
+                "talisman_26_main_slash_wave_4",
+                "talisman_26_main_slash_wave_5",
+                "talisman_26_main_slash_wave_6",
+                "talisman_26_main_slash_wave_7",
+                "talisman_26_main_slash_wave_8"
+              ],
+              "scale": [
+                1.05,
+                1.05
+              ],
+              "duration": 0.65,
+              "layer": 35,
+              "pivot": [
+                128,
+                128
+              ]
+            },
+            "rift": {
+              "frames": [
+                "talisman_26_ground_rift_0",
+                "talisman_26_ground_rift_1",
+                "talisman_26_ground_rift_2",
+                "talisman_26_ground_rift_3",
+                "talisman_26_ground_rift_4",
+                "talisman_26_ground_rift_5",
+                "talisman_26_ground_rift_6",
+                "talisman_26_ground_rift_7",
+                "talisman_26_ground_rift_8"
+              ],
+              "scale": [
+                1,
+                1
+              ],
+              "duration": 1.05,
+              "layer": 0,
+              "pivot": [
+                128,
+                128
+              ]
+            },
+            "rays": {
+              "frames": [
+                "talisman_26_sword_intent_particles_0",
+                "talisman_26_sword_intent_particles_1",
+                "talisman_26_sword_intent_particles_2",
+                "talisman_26_sword_intent_particles_3",
+                "talisman_26_sword_intent_particles_4",
+                "talisman_26_sword_intent_particles_5",
+                "talisman_26_sword_intent_particles_6",
+                "talisman_26_sword_intent_particles_7",
+                "talisman_26_sword_intent_particles_8"
+              ],
+              "scale": [
+                1.4,
+                1.4
+              ],
+              "duration": 0.65,
+              "layer": 40,
+              "pivot": [
+                128,
+                128
+              ],
+              "opacity": 0.8
+            }
+          }
+        }
       },
       {
         "level": 5,
@@ -8980,17 +9917,109 @@
           "damage_pct": 240,
           "speed_pct": 200,
           "range": 725,
-          "projectile_count": 3,
+          "projectile_count": 1,
           "cooldown": 24,
           "radius": 0,
           "vfx_scale": 0.34
         },
         "description_rows": [
           "Sát thương 240% Công Kích",
-          "Hồi chiêu 24.0s",
-          "Số lượng mục tiêu: 3"
+          "Hồi chiêu 24s",
+          "Xuyên 100% giáp · Kết liễu dưới 15% HP"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "range": 725,
+          "damage_pct": 240,
+          "layers": {
+            "sword": {
+              "frames": [
+                "talisman_26_main_xuanyuan_sword_0"
+              ],
+              "scale": [
+                1,
+                1
+              ],
+              "duration": 0.45,
+              "layer": 30,
+              "pivot": [
+                128,
+                128
+              ],
+              "opacity": 0.65
+            },
+            "wave": {
+              "frames": [
+                "talisman_26_main_slash_wave_0",
+                "talisman_26_main_slash_wave_1",
+                "talisman_26_main_slash_wave_2",
+                "talisman_26_main_slash_wave_3",
+                "talisman_26_main_slash_wave_4",
+                "talisman_26_main_slash_wave_5",
+                "talisman_26_main_slash_wave_6",
+                "talisman_26_main_slash_wave_7",
+                "talisman_26_main_slash_wave_8"
+              ],
+              "scale": [
+                1.05,
+                1.05
+              ],
+              "duration": 0.65,
+              "layer": 35,
+              "pivot": [
+                128,
+                128
+              ]
+            },
+            "rift": {
+              "frames": [
+                "talisman_26_ground_rift_0",
+                "talisman_26_ground_rift_1",
+                "talisman_26_ground_rift_2",
+                "talisman_26_ground_rift_3",
+                "talisman_26_ground_rift_4",
+                "talisman_26_ground_rift_5",
+                "talisman_26_ground_rift_6",
+                "talisman_26_ground_rift_7",
+                "talisman_26_ground_rift_8"
+              ],
+              "scale": [
+                1,
+                1
+              ],
+              "duration": 1.05,
+              "layer": 0,
+              "pivot": [
+                128,
+                128
+              ]
+            },
+            "rays": {
+              "frames": [
+                "talisman_26_sword_intent_particles_0",
+                "talisman_26_sword_intent_particles_1",
+                "talisman_26_sword_intent_particles_2",
+                "talisman_26_sword_intent_particles_3",
+                "talisman_26_sword_intent_particles_4",
+                "talisman_26_sword_intent_particles_5",
+                "talisman_26_sword_intent_particles_6",
+                "talisman_26_sword_intent_particles_7",
+                "talisman_26_sword_intent_particles_8"
+              ],
+              "scale": [
+                1.4,
+                1.4
+              ],
+              "duration": 0.65,
+              "layer": 40,
+              "pivot": [
+                128,
+                128
+              ],
+              "opacity": 0.8
+            }
+          }
+        }
       }
     ],
     "sfx_events": [
@@ -8998,7 +10027,111 @@
         "sfx_id": "talisman-skill-26",
         "timing": "cast"
       }
-    ]
+    ],
+    "element": "metal",
+    "cast_config": {
+      "behavior": "slash",
+      "duration": 1.35,
+      "range": 665,
+      "damage_pct": 120,
+      "width": 62,
+      "authored_angle": 0.7853981633974483,
+      "wave_at": 0.1,
+      "travel_duration": 0.65,
+      "rift_at": 0.22,
+      "rays_at": 0.24,
+      "sword_offset": 100,
+      "defense_ignore_pct": 1,
+      "execute_threshold": 0.15,
+      "layers": {
+        "sword": {
+          "frames": [
+            "talisman_26_main_xuanyuan_sword_0"
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "duration": 0.45,
+          "layer": 30,
+          "pivot": [
+            128,
+            128
+          ],
+          "opacity": 0.65
+        },
+        "wave": {
+          "frames": [
+            "talisman_26_main_slash_wave_0",
+            "talisman_26_main_slash_wave_1",
+            "talisman_26_main_slash_wave_2",
+            "talisman_26_main_slash_wave_3",
+            "talisman_26_main_slash_wave_4",
+            "talisman_26_main_slash_wave_5",
+            "talisman_26_main_slash_wave_6",
+            "talisman_26_main_slash_wave_7",
+            "talisman_26_main_slash_wave_8"
+          ],
+          "scale": [
+            1.05,
+            1.05
+          ],
+          "duration": 0.65,
+          "layer": 35,
+          "pivot": [
+            128,
+            128
+          ]
+        },
+        "rift": {
+          "frames": [
+            "talisman_26_ground_rift_0",
+            "talisman_26_ground_rift_1",
+            "talisman_26_ground_rift_2",
+            "talisman_26_ground_rift_3",
+            "talisman_26_ground_rift_4",
+            "talisman_26_ground_rift_5",
+            "talisman_26_ground_rift_6",
+            "talisman_26_ground_rift_7",
+            "talisman_26_ground_rift_8"
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "duration": 1.05,
+          "layer": 0,
+          "pivot": [
+            128,
+            128
+          ]
+        },
+        "rays": {
+          "frames": [
+            "talisman_26_sword_intent_particles_0",
+            "talisman_26_sword_intent_particles_1",
+            "talisman_26_sword_intent_particles_2",
+            "talisman_26_sword_intent_particles_3",
+            "talisman_26_sword_intent_particles_4",
+            "talisman_26_sword_intent_particles_5",
+            "talisman_26_sword_intent_particles_6",
+            "talisman_26_sword_intent_particles_7",
+            "talisman_26_sword_intent_particles_8"
+          ],
+          "scale": [
+            1.4,
+            1.4
+          ],
+          "duration": 0.65,
+          "layer": 40,
+          "pivot": [
+            128,
+            128
+          ],
+          "opacity": 0.8
+        }
+      }
+    }
   },
   {
     "id": "skill_talisman_27",
@@ -9010,20 +10143,24 @@
     },
     "skill_class": "active",
     "activation": "manual",
-    "skill_type": "ground_aoe",
+    "skill_type": "layered_talisman",
     "positioning": {
-      "type": "from_hero_to_enemy",
-      "hit_rule": "penetrate"
+      "type": "from_hero_to_enemy"
     },
     "deployment": {
       "type": "area"
     },
     "description": "Rung chuông làm ngưng đọng thời gian và không gian toàn map trong 2.5 giây.",
     "vfx_frames": [
-      "skill_frost_0",
-      "skill_frost_1",
-      "skill_frost_2",
-      "skill_frost_3"
+      "talisman_27_chaos_bell_phantom_0",
+      "talisman_27_chaos_bell_phantom_1",
+      "talisman_27_chaos_bell_phantom_2",
+      "talisman_27_chaos_bell_phantom_3",
+      "talisman_27_chaos_bell_phantom_4",
+      "talisman_27_chaos_bell_phantom_5",
+      "talisman_27_chaos_bell_phantom_6",
+      "talisman_27_chaos_bell_phantom_7",
+      "talisman_27_chaos_bell_phantom_8"
     ],
     "levels": [
       {
@@ -9039,16 +10176,14 @@
         },
         "description_rows": [
           "Sát thương 90% Công Kích",
-          "Hồi chiêu 30.0s",
-          "Số lượng mục tiêu: 1"
+          "Hồi chiêu 30s",
+          "Ngưng thời toàn bản đồ 2.5s"
         ],
-        "effects": [
-          {
-            "id": "slow",
-            "duration": 1.5,
-            "slow_percent": 0.25
-          }
-        ]
+        "effects": [],
+        "cast_config": {
+          "range": 665,
+          "damage_pct": 90
+        }
       },
       {
         "level": 2,
@@ -9064,15 +10199,13 @@
         "description_rows": [
           "Sát thương 112% Công Kích",
           "Hồi chiêu 28.5s",
-          "Số lượng mục tiêu: 1"
+          "Ngưng thời toàn bản đồ 2.5s"
         ],
-        "effects": [
-          {
-            "id": "slow",
-            "duration": 1.5,
-            "slow_percent": 0.25
-          }
-        ]
+        "effects": [],
+        "cast_config": {
+          "range": 680,
+          "damage_pct": 112
+        }
       },
       {
         "level": 3,
@@ -9080,23 +10213,21 @@
           "damage_pct": 135,
           "speed_pct": 200,
           "range": 695,
-          "projectile_count": 2,
+          "projectile_count": 1,
           "cooldown": 27,
           "radius": 120,
           "vfx_scale": 0.3
         },
         "description_rows": [
           "Sát thương 135% Công Kích",
-          "Hồi chiêu 27.0s",
-          "Số lượng mục tiêu: 2"
+          "Hồi chiêu 27s",
+          "Ngưng thời toàn bản đồ 2.5s"
         ],
-        "effects": [
-          {
-            "id": "slow",
-            "duration": 1.5,
-            "slow_percent": 0.25
-          }
-        ]
+        "effects": [],
+        "cast_config": {
+          "range": 695,
+          "damage_pct": 135
+        }
       },
       {
         "level": 4,
@@ -9104,7 +10235,7 @@
           "damage_pct": 157,
           "speed_pct": 200,
           "range": 710,
-          "projectile_count": 2,
+          "projectile_count": 1,
           "cooldown": 25.5,
           "radius": 120,
           "vfx_scale": 0.32
@@ -9112,15 +10243,13 @@
         "description_rows": [
           "Sát thương 157% Công Kích",
           "Hồi chiêu 25.5s",
-          "Số lượng mục tiêu: 2"
+          "Ngưng thời toàn bản đồ 2.5s"
         ],
-        "effects": [
-          {
-            "id": "slow",
-            "duration": 1.5,
-            "slow_percent": 0.25
-          }
-        ]
+        "effects": [],
+        "cast_config": {
+          "range": 710,
+          "damage_pct": 157
+        }
       },
       {
         "level": 5,
@@ -9128,23 +10257,21 @@
           "damage_pct": 180,
           "speed_pct": 200,
           "range": 725,
-          "projectile_count": 3,
+          "projectile_count": 1,
           "cooldown": 24,
           "radius": 120,
           "vfx_scale": 0.34
         },
         "description_rows": [
           "Sát thương 180% Công Kích",
-          "Hồi chiêu 24.0s",
-          "Số lượng mục tiêu: 3"
+          "Hồi chiêu 24s",
+          "Ngưng thời toàn bản đồ 2.5s"
         ],
-        "effects": [
-          {
-            "id": "slow",
-            "duration": 1.5,
-            "slow_percent": 0.25
-          }
-        ]
+        "effects": [],
+        "cast_config": {
+          "range": 725,
+          "damage_pct": 180
+        }
       }
     ],
     "sfx_events": [
@@ -9152,7 +10279,124 @@
         "sfx_id": "talisman-skill-27",
         "timing": "cast"
       }
-    ]
+    ],
+    "element": "earth",
+    "cast_config": {
+      "behavior": "stasis",
+      "duration": 3.1,
+      "range": 665,
+      "damage_pct": 90,
+      "fall_height": 200,
+      "impact_at": 0.28,
+      "wave_at": 0.34,
+      "dust_at": 0.38,
+      "ring_count": 3,
+      "ring_interval": 0.07,
+      "stasis_duration": 2.5,
+      "layers": {
+        "bell": {
+          "frames": [
+            "talisman_27_chaos_bell_phantom_0",
+            "talisman_27_chaos_bell_phantom_1",
+            "talisman_27_chaos_bell_phantom_2",
+            "talisman_27_chaos_bell_phantom_3",
+            "talisman_27_chaos_bell_phantom_4",
+            "talisman_27_chaos_bell_phantom_5",
+            "talisman_27_chaos_bell_phantom_6",
+            "talisman_27_chaos_bell_phantom_7",
+            "talisman_27_chaos_bell_phantom_8"
+          ],
+          "scale": [
+            1.65,
+            1.65
+          ],
+          "duration": 2.85,
+          "layer": 30,
+          "pivot": [
+            128,
+            235
+          ],
+          "opacity": 0.58,
+          "cycle": 0.35,
+          "hold": true
+        },
+        "formation": {
+          "frames": [
+            "talisman_27_stasis_formation_0",
+            "talisman_27_stasis_formation_1",
+            "talisman_27_stasis_formation_2",
+            "talisman_27_stasis_formation_3",
+            "talisman_27_stasis_formation_4",
+            "talisman_27_stasis_formation_5",
+            "talisman_27_stasis_formation_6",
+            "talisman_27_stasis_formation_7",
+            "talisman_27_stasis_formation_8"
+          ],
+          "scale": [
+            1.8,
+            1.8
+          ],
+          "duration": 2.65,
+          "layer": 0,
+          "pivot": [
+            128,
+            128
+          ],
+          "cycle": 0.35,
+          "hold": true
+        },
+        "ring": {
+          "frames": [
+            "talisman_27_time_ripple_ring_0",
+            "talisman_27_time_ripple_ring_1",
+            "talisman_27_time_ripple_ring_2",
+            "talisman_27_time_ripple_ring_3",
+            "talisman_27_time_ripple_ring_4",
+            "talisman_27_time_ripple_ring_5",
+            "talisman_27_time_ripple_ring_6",
+            "talisman_27_time_ripple_ring_7",
+            "talisman_27_time_ripple_ring_8"
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "duration": 1.1,
+          "layer": 2,
+          "pivot": [
+            128,
+            128
+          ],
+          "opacity": 0.65
+        },
+        "dust": {
+          "frames": [
+            "talisman_27_frozen_time_dust_0",
+            "talisman_27_frozen_time_dust_1",
+            "talisman_27_frozen_time_dust_2",
+            "talisman_27_frozen_time_dust_3",
+            "talisman_27_frozen_time_dust_4",
+            "talisman_27_frozen_time_dust_5",
+            "talisman_27_frozen_time_dust_6",
+            "talisman_27_frozen_time_dust_7",
+            "talisman_27_frozen_time_dust_8"
+          ],
+          "scale": [
+            2.2,
+            2.2
+          ],
+          "duration": 2.5,
+          "layer": 35,
+          "pivot": [
+            128,
+            128
+          ],
+          "cycle": 0.25,
+          "hold": true,
+          "opacity": 0.65
+        }
+      }
+    }
   },
   {
     "id": "skill_talisman_28",
@@ -9164,17 +10408,24 @@
     },
     "skill_class": "active",
     "activation": "manual",
-    "skill_type": "chain",
+    "skill_type": "layered_talisman",
     "positioning": {
-      "type": "from_hero_to_enemy",
-      "hit_rule": "end_on_hit"
+      "type": "self"
     },
     "deployment": {
-      "type": "multi_target"
+      "type": "self_buff"
     },
-    "description": "Chuyển đổi 70% sát thương phải gánh chịu thành sinh lực và phản lại 30% sát thương cho kẻ tấn công.",
+    "description": "Trong 8 giây, hấp thụ 70% sát thương nhận sau giảm trừ thành sinh lực; phản kích 30% sát thương nhận bằng 8 tia sát thương chuẩn.",
     "vfx_frames": [
-      "skill_lightning_chain"
+      "talisman_28_taiji_ground_formation_0",
+      "talisman_28_taiji_ground_formation_1",
+      "talisman_28_taiji_ground_formation_2",
+      "talisman_28_taiji_ground_formation_3",
+      "talisman_28_taiji_ground_formation_4",
+      "talisman_28_taiji_ground_formation_5",
+      "talisman_28_taiji_ground_formation_6",
+      "talisman_28_taiji_ground_formation_7",
+      "talisman_28_taiji_ground_formation_8"
     ],
     "levels": [
       {
@@ -9189,11 +10440,15 @@
           "vfx_scale": 0.26
         },
         "description_rows": [
-          "Sát thương 110% Công Kích",
-          "Hồi chiêu 30.0s",
-          "Số lượng mục tiêu: 1"
+          "Hấp thụ 70% sát thương thành hồi phục",
+          "Phản kích sát thương chuẩn 30%",
+          "Duy trì 8s · Hồi chiêu 30s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "range": 665,
+          "damage_pct": 0
+        }
       },
       {
         "level": 2,
@@ -9207,11 +10462,15 @@
           "vfx_scale": 0.28
         },
         "description_rows": [
-          "Sát thương 137% Công Kích",
-          "Hồi chiêu 28.5s",
-          "Số lượng mục tiêu: 1"
+          "Hấp thụ 70% sát thương thành hồi phục",
+          "Phản kích sát thương chuẩn 30%",
+          "Duy trì 8s · Hồi chiêu 28.5s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "range": 680,
+          "damage_pct": 0
+        }
       },
       {
         "level": 3,
@@ -9219,17 +10478,21 @@
           "damage_pct": 165,
           "speed_pct": 200,
           "range": 695,
-          "projectile_count": 2,
+          "projectile_count": 1,
           "cooldown": 27,
           "radius": 0,
           "vfx_scale": 0.3
         },
         "description_rows": [
-          "Sát thương 165% Công Kích",
-          "Hồi chiêu 27.0s",
-          "Số lượng mục tiêu: 2"
+          "Hấp thụ 70% sát thương thành hồi phục",
+          "Phản kích sát thương chuẩn 30%",
+          "Duy trì 8s · Hồi chiêu 27s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "range": 695,
+          "damage_pct": 0
+        }
       },
       {
         "level": 4,
@@ -9237,17 +10500,21 @@
           "damage_pct": 192,
           "speed_pct": 200,
           "range": 710,
-          "projectile_count": 2,
+          "projectile_count": 1,
           "cooldown": 25.5,
           "radius": 0,
           "vfx_scale": 0.32
         },
         "description_rows": [
-          "Sát thương 192% Công Kích",
-          "Hồi chiêu 25.5s",
-          "Số lượng mục tiêu: 2"
+          "Hấp thụ 70% sát thương thành hồi phục",
+          "Phản kích sát thương chuẩn 30%",
+          "Duy trì 8s · Hồi chiêu 25.5s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "range": 710,
+          "damage_pct": 0
+        }
       },
       {
         "level": 5,
@@ -9255,17 +10522,21 @@
           "damage_pct": 220,
           "speed_pct": 200,
           "range": 725,
-          "projectile_count": 3,
+          "projectile_count": 1,
           "cooldown": 24,
           "radius": 0,
           "vfx_scale": 0.34
         },
         "description_rows": [
-          "Sát thương 220% Công Kích",
-          "Hồi chiêu 24.0s",
-          "Số lượng mục tiêu: 3"
+          "Hấp thụ 70% sát thương thành hồi phục",
+          "Phản kích sát thương chuẩn 30%",
+          "Duy trì 8s · Hồi chiêu 24s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "range": 725,
+          "damage_pct": 0
+        }
       }
     ],
     "sfx_events": [
@@ -9273,7 +10544,123 @@
         "sfx_id": "talisman-skill-28",
         "timing": "cast"
       }
-    ]
+    ],
+    "element": "water",
+    "cast_config": {
+      "behavior": "reversal",
+      "duration": 8,
+      "range": 665,
+      "damage_pct": 0,
+      "absorb_ratio": 0.7,
+      "reflect_ratio": 0.3,
+      "aura_at": 0.08,
+      "aura_height": 48,
+      "counter_directions": 8,
+      "counter_range": 200,
+      "counter_width": 24,
+      "counter_interval": 0.2,
+      "layers": {
+        "formation": {
+          "frames": [
+            "talisman_28_taiji_ground_formation_0",
+            "talisman_28_taiji_ground_formation_1",
+            "talisman_28_taiji_ground_formation_2",
+            "talisman_28_taiji_ground_formation_3",
+            "talisman_28_taiji_ground_formation_4",
+            "talisman_28_taiji_ground_formation_5",
+            "talisman_28_taiji_ground_formation_6",
+            "talisman_28_taiji_ground_formation_7",
+            "talisman_28_taiji_ground_formation_8"
+          ],
+          "scale": [
+            0.9,
+            0.9
+          ],
+          "duration": 8,
+          "layer": 0,
+          "pivot": [
+            128,
+            128
+          ],
+          "cycle": 0.9,
+          "loop": true,
+          "hold": true
+        },
+        "aura": {
+          "frames": [
+            "talisman_28_yin_yang_fish_aura_0",
+            "talisman_28_yin_yang_fish_aura_1",
+            "talisman_28_yin_yang_fish_aura_2",
+            "talisman_28_yin_yang_fish_aura_3",
+            "talisman_28_yin_yang_fish_aura_4",
+            "talisman_28_yin_yang_fish_aura_5",
+            "talisman_28_yin_yang_fish_aura_6",
+            "talisman_28_yin_yang_fish_aura_7",
+            "talisman_28_yin_yang_fish_aura_8"
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "duration": 7.92,
+          "layer": 30,
+          "pivot": [
+            128,
+            128
+          ],
+          "cycle": 0.9,
+          "loop": true,
+          "hold": true
+        },
+        "heal": {
+          "frames": [
+            "talisman_28_healing_reversal_0",
+            "talisman_28_healing_reversal_1",
+            "talisman_28_healing_reversal_2",
+            "talisman_28_healing_reversal_3",
+            "talisman_28_healing_reversal_4",
+            "talisman_28_healing_reversal_5",
+            "talisman_28_healing_reversal_6",
+            "talisman_28_healing_reversal_7",
+            "talisman_28_healing_reversal_8"
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "duration": 0.5,
+          "layer": 35,
+          "pivot": [
+            128,
+            128
+          ]
+        },
+        "counter": {
+          "frames": [
+            "talisman_28_counterattack_spikes_0",
+            "talisman_28_counterattack_spikes_1",
+            "talisman_28_counterattack_spikes_2",
+            "talisman_28_counterattack_spikes_3",
+            "talisman_28_counterattack_spikes_4",
+            "talisman_28_counterattack_spikes_5",
+            "talisman_28_counterattack_spikes_6",
+            "talisman_28_counterattack_spikes_7",
+            "talisman_28_counterattack_spikes_8"
+          ],
+          "scale": [
+            1.6,
+            1.6
+          ],
+          "duration": 0.35,
+          "layer": 40,
+          "pivot": [
+            128,
+            128
+          ]
+        }
+      },
+      "counter_travel": 0.25
+    }
   },
   {
     "id": "skill_talisman_29",
@@ -9285,17 +10672,24 @@
     },
     "skill_class": "active",
     "activation": "manual",
-    "skill_type": "two_phase_aoe",
+    "skill_type": "layered_talisman",
     "positioning": {
-      "type": "from_hero_to_enemy",
-      "hit_rule": "penetrate"
+      "type": "enemy_ground"
     },
     "deployment": {
       "type": "area"
     },
-    "description": "Hút toàn bộ kẻ địch vào không gian bức họa, gây sát thương nghiền nát nguyên thần và giảm vĩnh viễn 20% công kích của chúng.",
+    "description": "Hút kẻ địch vào họa cảnh, gây sát thương nghiền nát và giảm vĩnh viễn 20% công kích, tốc chạy của chúng.",
     "vfx_frames": [
-      "skill_meteor"
+      "talisman_29_landscape_scroll_0",
+      "talisman_29_landscape_scroll_1",
+      "talisman_29_landscape_scroll_2",
+      "talisman_29_landscape_scroll_3",
+      "talisman_29_landscape_scroll_4",
+      "talisman_29_landscape_scroll_5",
+      "talisman_29_landscape_scroll_6",
+      "talisman_29_landscape_scroll_7",
+      "talisman_29_landscape_scroll_8"
     ],
     "levels": [
       {
@@ -9306,15 +10700,19 @@
           "range": 665,
           "projectile_count": 1,
           "cooldown": 30,
-          "radius": 120,
+          "radius": 220,
           "vfx_scale": 0.26
         },
         "description_rows": [
           "Sát thương 140% Công Kích",
-          "Hồi chiêu 30.0s",
-          "Số lượng mục tiêu: 1"
+          "Hồi chiêu 30s",
+          "Hút quái · Giảm vĩnh viễn 20% công và tốc chạy"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "range": 665,
+          "damage_pct": 140
+        }
       },
       {
         "level": 2,
@@ -9324,15 +10722,19 @@
           "range": 680,
           "projectile_count": 1,
           "cooldown": 28.5,
-          "radius": 120,
+          "radius": 220,
           "vfx_scale": 0.28
         },
         "description_rows": [
           "Sát thương 175% Công Kích",
           "Hồi chiêu 28.5s",
-          "Số lượng mục tiêu: 1"
+          "Hút quái · Giảm vĩnh viễn 20% công và tốc chạy"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "range": 680,
+          "damage_pct": 175
+        }
       },
       {
         "level": 3,
@@ -9340,17 +10742,21 @@
           "damage_pct": 210,
           "speed_pct": 200,
           "range": 695,
-          "projectile_count": 2,
+          "projectile_count": 1,
           "cooldown": 27,
-          "radius": 120,
+          "radius": 220,
           "vfx_scale": 0.3
         },
         "description_rows": [
           "Sát thương 210% Công Kích",
-          "Hồi chiêu 27.0s",
-          "Số lượng mục tiêu: 2"
+          "Hồi chiêu 27s",
+          "Hút quái · Giảm vĩnh viễn 20% công và tốc chạy"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "range": 695,
+          "damage_pct": 210
+        }
       },
       {
         "level": 4,
@@ -9358,17 +10764,21 @@
           "damage_pct": 245,
           "speed_pct": 200,
           "range": 710,
-          "projectile_count": 2,
+          "projectile_count": 1,
           "cooldown": 25.5,
-          "radius": 120,
+          "radius": 220,
           "vfx_scale": 0.32
         },
         "description_rows": [
           "Sát thương 245% Công Kích",
           "Hồi chiêu 25.5s",
-          "Số lượng mục tiêu: 2"
+          "Hút quái · Giảm vĩnh viễn 20% công và tốc chạy"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "range": 710,
+          "damage_pct": 245
+        }
       },
       {
         "level": 5,
@@ -9376,17 +10786,21 @@
           "damage_pct": 280,
           "speed_pct": 200,
           "range": 725,
-          "projectile_count": 3,
+          "projectile_count": 1,
           "cooldown": 24,
-          "radius": 120,
+          "radius": 220,
           "vfx_scale": 0.34
         },
         "description_rows": [
           "Sát thương 280% Công Kích",
-          "Hồi chiêu 24.0s",
-          "Số lượng mục tiêu: 3"
+          "Hồi chiêu 24s",
+          "Hút quái · Giảm vĩnh viễn 20% công và tốc chạy"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "range": 725,
+          "damage_pct": 280
+        }
       }
     ],
     "sfx_events": [
@@ -9394,7 +10808,124 @@
         "sfx_id": "talisman-skill-29",
         "timing": "cast"
       }
-    ]
+    ],
+    "element": "wood",
+    "cast_config": {
+      "behavior": "painting",
+      "duration": 1.8,
+      "range": 665,
+      "damage_pct": 140,
+      "radius": 220,
+      "pull_at": 0.18,
+      "pull_duration": 1.2,
+      "pull_speed": 180,
+      "impact_at": 0.35,
+      "bind_at": 0.45,
+      "scroll_height": 140,
+      "attack_reduction": 0.2,
+      "speed_reduction": 0.2,
+      "layers": {
+        "scroll": {
+          "frames": [
+            "talisman_29_landscape_scroll_0",
+            "talisman_29_landscape_scroll_1",
+            "talisman_29_landscape_scroll_2",
+            "talisman_29_landscape_scroll_3",
+            "talisman_29_landscape_scroll_4",
+            "talisman_29_landscape_scroll_5",
+            "talisman_29_landscape_scroll_6",
+            "talisman_29_landscape_scroll_7",
+            "talisman_29_landscape_scroll_8"
+          ],
+          "scale": [
+            1.25,
+            1.25
+          ],
+          "duration": 1.65,
+          "layer": 35,
+          "pivot": [
+            128,
+            128
+          ],
+          "cycle": 0.45,
+          "hold": true
+        },
+        "vortex": {
+          "frames": [
+            "talisman_29_creation_vortex_0",
+            "talisman_29_creation_vortex_1",
+            "talisman_29_creation_vortex_2",
+            "talisman_29_creation_vortex_3",
+            "talisman_29_creation_vortex_4",
+            "talisman_29_creation_vortex_5",
+            "talisman_29_creation_vortex_6",
+            "talisman_29_creation_vortex_7",
+            "talisman_29_creation_vortex_8"
+          ],
+          "scale": [
+            1.85,
+            1.2
+          ],
+          "duration": 1.4,
+          "layer": 0,
+          "pivot": [
+            128,
+            128
+          ],
+          "cycle": 0.6,
+          "hold": true
+        },
+        "mountain": {
+          "frames": [
+            "talisman_29_mountain_mirage_0",
+            "talisman_29_mountain_mirage_1",
+            "talisman_29_mountain_mirage_2",
+            "talisman_29_mountain_mirage_3",
+            "talisman_29_mountain_mirage_4",
+            "talisman_29_mountain_mirage_5",
+            "talisman_29_mountain_mirage_6",
+            "talisman_29_mountain_mirage_7",
+            "talisman_29_mountain_mirage_8"
+          ],
+          "scale": [
+            1.6,
+            1.6
+          ],
+          "duration": 1.25,
+          "layer": 20,
+          "pivot": [
+            128,
+            228
+          ],
+          "opacity": 0.65
+        },
+        "vines": {
+          "frames": [
+            "talisman_29_life_drain_vines_0",
+            "talisman_29_life_drain_vines_1",
+            "talisman_29_life_drain_vines_2",
+            "talisman_29_life_drain_vines_3",
+            "talisman_29_life_drain_vines_4",
+            "talisman_29_life_drain_vines_5",
+            "talisman_29_life_drain_vines_6",
+            "talisman_29_life_drain_vines_7",
+            "talisman_29_life_drain_vines_8"
+          ],
+          "scale": [
+            0.4,
+            0.4
+          ],
+          "duration": 86400,
+          "layer": 5,
+          "pivot": [
+            128,
+            220
+          ],
+          "cycle": 0.5,
+          "hold": true
+        }
+      }
+    }
   },
   {
     "id": "skill_talisman_30",
@@ -9406,20 +10937,24 @@
     },
     "skill_class": "active",
     "activation": "manual",
-    "skill_type": "projectile",
+    "skill_type": "layered_talisman",
     "positioning": {
-      "type": "from_hero_to_enemy",
-      "hit_rule": "end_on_hit"
+      "type": "from_hero_to_enemy"
     },
     "deployment": {
-      "type": "multi_target"
+      "type": "line_area"
     },
     "description": "Bổ đôi hư không tạo ra vết nứt không gian, gây sát thương chuẩn cực đại lên toàn bộ kẻ địch theo đường thẳng.",
     "vfx_frames": [
-      "skill_flame_0",
-      "skill_flame_1",
-      "skill_flame_2",
-      "skill_flame_3"
+      "talisman_30_pangu_axe_0",
+      "talisman_30_pangu_axe_1",
+      "talisman_30_pangu_axe_2",
+      "talisman_30_pangu_axe_3",
+      "talisman_30_pangu_axe_4",
+      "talisman_30_pangu_axe_5",
+      "talisman_30_pangu_axe_6",
+      "talisman_30_pangu_axe_7",
+      "talisman_30_pangu_axe_8"
     ],
     "levels": [
       {
@@ -9435,10 +10970,110 @@
         },
         "description_rows": [
           "Sát thương 120% Công Kích",
-          "Hồi chiêu 30.0s",
-          "Số lượng mục tiêu: 1"
+          "Hồi chiêu 30s",
+          "Sát thương chuẩn theo đường thẳng · 4 cột lửa"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "range": 665,
+          "damage_pct": 120,
+          "layers": {
+            "axe": {
+              "frames": [
+                "talisman_30_pangu_axe_0",
+                "talisman_30_pangu_axe_1",
+                "talisman_30_pangu_axe_2",
+                "talisman_30_pangu_axe_3",
+                "talisman_30_pangu_axe_4",
+                "talisman_30_pangu_axe_5",
+                "talisman_30_pangu_axe_6",
+                "talisman_30_pangu_axe_7",
+                "talisman_30_pangu_axe_8"
+              ],
+              "scale": [
+                1.35,
+                1.35
+              ],
+              "duration": 0.65,
+              "layer": 35,
+              "pivot": [
+                128,
+                128
+              ]
+            },
+            "rift": {
+              "frames": [
+                "talisman_30_primordial_void_rift_0",
+                "talisman_30_primordial_void_rift_1",
+                "talisman_30_primordial_void_rift_2",
+                "talisman_30_primordial_void_rift_3",
+                "talisman_30_primordial_void_rift_4",
+                "talisman_30_primordial_void_rift_5",
+                "talisman_30_primordial_void_rift_6",
+                "talisman_30_primordial_void_rift_7",
+                "talisman_30_primordial_void_rift_8"
+              ],
+              "scale": [
+                1,
+                1
+              ],
+              "duration": 1.25,
+              "layer": 0,
+              "pivot": [
+                128,
+                128
+              ]
+            },
+            "pillar": {
+              "frames": [
+                "talisman_30_fire_pillar_0",
+                "talisman_30_fire_pillar_1",
+                "talisman_30_fire_pillar_2",
+                "talisman_30_fire_pillar_3",
+                "talisman_30_fire_pillar_4",
+                "talisman_30_fire_pillar_5",
+                "talisman_30_fire_pillar_6",
+                "talisman_30_fire_pillar_7",
+                "talisman_30_fire_pillar_8"
+              ],
+              "scale": [
+                0.8,
+                0.8
+              ],
+              "duration": 0.8,
+              "layer": 25,
+              "pivot": [
+                128,
+                240
+              ]
+            },
+            "ash": {
+              "frames": [
+                "talisman_30_heat_ash_0",
+                "talisman_30_heat_ash_1",
+                "talisman_30_heat_ash_2",
+                "talisman_30_heat_ash_3",
+                "talisman_30_heat_ash_4",
+                "talisman_30_heat_ash_5",
+                "talisman_30_heat_ash_6",
+                "talisman_30_heat_ash_7",
+                "talisman_30_heat_ash_8"
+              ],
+              "scale": [
+                1,
+                1
+              ],
+              "duration": 1.2,
+              "layer": 40,
+              "pivot": [
+                128,
+                128
+              ],
+              "opacity": 0.55,
+              "heat_haze": true
+            }
+          }
+        }
       },
       {
         "level": 2,
@@ -9454,9 +11089,109 @@
         "description_rows": [
           "Sát thương 150% Công Kích",
           "Hồi chiêu 28.5s",
-          "Số lượng mục tiêu: 1"
+          "Sát thương chuẩn theo đường thẳng · 4 cột lửa"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "range": 680,
+          "damage_pct": 150,
+          "layers": {
+            "axe": {
+              "frames": [
+                "talisman_30_pangu_axe_0",
+                "talisman_30_pangu_axe_1",
+                "talisman_30_pangu_axe_2",
+                "talisman_30_pangu_axe_3",
+                "talisman_30_pangu_axe_4",
+                "talisman_30_pangu_axe_5",
+                "talisman_30_pangu_axe_6",
+                "talisman_30_pangu_axe_7",
+                "talisman_30_pangu_axe_8"
+              ],
+              "scale": [
+                1.35,
+                1.35
+              ],
+              "duration": 0.65,
+              "layer": 35,
+              "pivot": [
+                128,
+                128
+              ]
+            },
+            "rift": {
+              "frames": [
+                "talisman_30_primordial_void_rift_0",
+                "talisman_30_primordial_void_rift_1",
+                "talisman_30_primordial_void_rift_2",
+                "talisman_30_primordial_void_rift_3",
+                "talisman_30_primordial_void_rift_4",
+                "talisman_30_primordial_void_rift_5",
+                "talisman_30_primordial_void_rift_6",
+                "talisman_30_primordial_void_rift_7",
+                "talisman_30_primordial_void_rift_8"
+              ],
+              "scale": [
+                1,
+                1
+              ],
+              "duration": 1.25,
+              "layer": 0,
+              "pivot": [
+                128,
+                128
+              ]
+            },
+            "pillar": {
+              "frames": [
+                "talisman_30_fire_pillar_0",
+                "talisman_30_fire_pillar_1",
+                "talisman_30_fire_pillar_2",
+                "talisman_30_fire_pillar_3",
+                "talisman_30_fire_pillar_4",
+                "talisman_30_fire_pillar_5",
+                "talisman_30_fire_pillar_6",
+                "talisman_30_fire_pillar_7",
+                "talisman_30_fire_pillar_8"
+              ],
+              "scale": [
+                0.8,
+                0.8
+              ],
+              "duration": 0.8,
+              "layer": 25,
+              "pivot": [
+                128,
+                240
+              ]
+            },
+            "ash": {
+              "frames": [
+                "talisman_30_heat_ash_0",
+                "talisman_30_heat_ash_1",
+                "talisman_30_heat_ash_2",
+                "talisman_30_heat_ash_3",
+                "talisman_30_heat_ash_4",
+                "talisman_30_heat_ash_5",
+                "talisman_30_heat_ash_6",
+                "talisman_30_heat_ash_7",
+                "talisman_30_heat_ash_8"
+              ],
+              "scale": [
+                1,
+                1
+              ],
+              "duration": 1.2,
+              "layer": 40,
+              "pivot": [
+                128,
+                128
+              ],
+              "opacity": 0.55,
+              "heat_haze": true
+            }
+          }
+        }
       },
       {
         "level": 3,
@@ -9464,17 +11199,117 @@
           "damage_pct": 180,
           "speed_pct": 200,
           "range": 695,
-          "projectile_count": 2,
+          "projectile_count": 1,
           "cooldown": 27,
           "radius": 0,
           "vfx_scale": 0.3
         },
         "description_rows": [
           "Sát thương 180% Công Kích",
-          "Hồi chiêu 27.0s",
-          "Số lượng mục tiêu: 2"
+          "Hồi chiêu 27s",
+          "Sát thương chuẩn theo đường thẳng · 4 cột lửa"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "range": 695,
+          "damage_pct": 180,
+          "layers": {
+            "axe": {
+              "frames": [
+                "talisman_30_pangu_axe_0",
+                "talisman_30_pangu_axe_1",
+                "talisman_30_pangu_axe_2",
+                "talisman_30_pangu_axe_3",
+                "talisman_30_pangu_axe_4",
+                "talisman_30_pangu_axe_5",
+                "talisman_30_pangu_axe_6",
+                "talisman_30_pangu_axe_7",
+                "talisman_30_pangu_axe_8"
+              ],
+              "scale": [
+                1.35,
+                1.35
+              ],
+              "duration": 0.65,
+              "layer": 35,
+              "pivot": [
+                128,
+                128
+              ]
+            },
+            "rift": {
+              "frames": [
+                "talisman_30_primordial_void_rift_0",
+                "talisman_30_primordial_void_rift_1",
+                "talisman_30_primordial_void_rift_2",
+                "talisman_30_primordial_void_rift_3",
+                "talisman_30_primordial_void_rift_4",
+                "talisman_30_primordial_void_rift_5",
+                "talisman_30_primordial_void_rift_6",
+                "talisman_30_primordial_void_rift_7",
+                "talisman_30_primordial_void_rift_8"
+              ],
+              "scale": [
+                1,
+                1
+              ],
+              "duration": 1.25,
+              "layer": 0,
+              "pivot": [
+                128,
+                128
+              ]
+            },
+            "pillar": {
+              "frames": [
+                "talisman_30_fire_pillar_0",
+                "talisman_30_fire_pillar_1",
+                "talisman_30_fire_pillar_2",
+                "talisman_30_fire_pillar_3",
+                "talisman_30_fire_pillar_4",
+                "talisman_30_fire_pillar_5",
+                "talisman_30_fire_pillar_6",
+                "talisman_30_fire_pillar_7",
+                "talisman_30_fire_pillar_8"
+              ],
+              "scale": [
+                0.8,
+                0.8
+              ],
+              "duration": 0.8,
+              "layer": 25,
+              "pivot": [
+                128,
+                240
+              ]
+            },
+            "ash": {
+              "frames": [
+                "talisman_30_heat_ash_0",
+                "talisman_30_heat_ash_1",
+                "talisman_30_heat_ash_2",
+                "talisman_30_heat_ash_3",
+                "talisman_30_heat_ash_4",
+                "talisman_30_heat_ash_5",
+                "talisman_30_heat_ash_6",
+                "talisman_30_heat_ash_7",
+                "talisman_30_heat_ash_8"
+              ],
+              "scale": [
+                1,
+                1
+              ],
+              "duration": 1.2,
+              "layer": 40,
+              "pivot": [
+                128,
+                128
+              ],
+              "opacity": 0.55,
+              "heat_haze": true
+            }
+          }
+        }
       },
       {
         "level": 4,
@@ -9482,7 +11317,7 @@
           "damage_pct": 210,
           "speed_pct": 200,
           "range": 710,
-          "projectile_count": 2,
+          "projectile_count": 1,
           "cooldown": 25.5,
           "radius": 0,
           "vfx_scale": 0.32
@@ -9490,9 +11325,109 @@
         "description_rows": [
           "Sát thương 210% Công Kích",
           "Hồi chiêu 25.5s",
-          "Số lượng mục tiêu: 2"
+          "Sát thương chuẩn theo đường thẳng · 4 cột lửa"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "range": 710,
+          "damage_pct": 210,
+          "layers": {
+            "axe": {
+              "frames": [
+                "talisman_30_pangu_axe_0",
+                "talisman_30_pangu_axe_1",
+                "talisman_30_pangu_axe_2",
+                "talisman_30_pangu_axe_3",
+                "talisman_30_pangu_axe_4",
+                "talisman_30_pangu_axe_5",
+                "talisman_30_pangu_axe_6",
+                "talisman_30_pangu_axe_7",
+                "talisman_30_pangu_axe_8"
+              ],
+              "scale": [
+                1.35,
+                1.35
+              ],
+              "duration": 0.65,
+              "layer": 35,
+              "pivot": [
+                128,
+                128
+              ]
+            },
+            "rift": {
+              "frames": [
+                "talisman_30_primordial_void_rift_0",
+                "talisman_30_primordial_void_rift_1",
+                "talisman_30_primordial_void_rift_2",
+                "talisman_30_primordial_void_rift_3",
+                "talisman_30_primordial_void_rift_4",
+                "talisman_30_primordial_void_rift_5",
+                "talisman_30_primordial_void_rift_6",
+                "talisman_30_primordial_void_rift_7",
+                "talisman_30_primordial_void_rift_8"
+              ],
+              "scale": [
+                1,
+                1
+              ],
+              "duration": 1.25,
+              "layer": 0,
+              "pivot": [
+                128,
+                128
+              ]
+            },
+            "pillar": {
+              "frames": [
+                "talisman_30_fire_pillar_0",
+                "talisman_30_fire_pillar_1",
+                "talisman_30_fire_pillar_2",
+                "talisman_30_fire_pillar_3",
+                "talisman_30_fire_pillar_4",
+                "talisman_30_fire_pillar_5",
+                "talisman_30_fire_pillar_6",
+                "talisman_30_fire_pillar_7",
+                "talisman_30_fire_pillar_8"
+              ],
+              "scale": [
+                0.8,
+                0.8
+              ],
+              "duration": 0.8,
+              "layer": 25,
+              "pivot": [
+                128,
+                240
+              ]
+            },
+            "ash": {
+              "frames": [
+                "talisman_30_heat_ash_0",
+                "talisman_30_heat_ash_1",
+                "talisman_30_heat_ash_2",
+                "talisman_30_heat_ash_3",
+                "talisman_30_heat_ash_4",
+                "talisman_30_heat_ash_5",
+                "talisman_30_heat_ash_6",
+                "talisman_30_heat_ash_7",
+                "talisman_30_heat_ash_8"
+              ],
+              "scale": [
+                1,
+                1
+              ],
+              "duration": 1.2,
+              "layer": 40,
+              "pivot": [
+                128,
+                128
+              ],
+              "opacity": 0.55,
+              "heat_haze": true
+            }
+          }
+        }
       },
       {
         "level": 5,
@@ -9500,17 +11435,117 @@
           "damage_pct": 240,
           "speed_pct": 200,
           "range": 725,
-          "projectile_count": 3,
+          "projectile_count": 1,
           "cooldown": 24,
           "radius": 0,
           "vfx_scale": 0.34
         },
         "description_rows": [
           "Sát thương 240% Công Kích",
-          "Hồi chiêu 24.0s",
-          "Số lượng mục tiêu: 3"
+          "Hồi chiêu 24s",
+          "Sát thương chuẩn theo đường thẳng · 4 cột lửa"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "range": 725,
+          "damage_pct": 240,
+          "layers": {
+            "axe": {
+              "frames": [
+                "talisman_30_pangu_axe_0",
+                "talisman_30_pangu_axe_1",
+                "talisman_30_pangu_axe_2",
+                "talisman_30_pangu_axe_3",
+                "talisman_30_pangu_axe_4",
+                "talisman_30_pangu_axe_5",
+                "talisman_30_pangu_axe_6",
+                "talisman_30_pangu_axe_7",
+                "talisman_30_pangu_axe_8"
+              ],
+              "scale": [
+                1.35,
+                1.35
+              ],
+              "duration": 0.65,
+              "layer": 35,
+              "pivot": [
+                128,
+                128
+              ]
+            },
+            "rift": {
+              "frames": [
+                "talisman_30_primordial_void_rift_0",
+                "talisman_30_primordial_void_rift_1",
+                "talisman_30_primordial_void_rift_2",
+                "talisman_30_primordial_void_rift_3",
+                "talisman_30_primordial_void_rift_4",
+                "talisman_30_primordial_void_rift_5",
+                "talisman_30_primordial_void_rift_6",
+                "talisman_30_primordial_void_rift_7",
+                "talisman_30_primordial_void_rift_8"
+              ],
+              "scale": [
+                1,
+                1
+              ],
+              "duration": 1.25,
+              "layer": 0,
+              "pivot": [
+                128,
+                128
+              ]
+            },
+            "pillar": {
+              "frames": [
+                "talisman_30_fire_pillar_0",
+                "talisman_30_fire_pillar_1",
+                "talisman_30_fire_pillar_2",
+                "talisman_30_fire_pillar_3",
+                "talisman_30_fire_pillar_4",
+                "talisman_30_fire_pillar_5",
+                "talisman_30_fire_pillar_6",
+                "talisman_30_fire_pillar_7",
+                "talisman_30_fire_pillar_8"
+              ],
+              "scale": [
+                0.8,
+                0.8
+              ],
+              "duration": 0.8,
+              "layer": 25,
+              "pivot": [
+                128,
+                240
+              ]
+            },
+            "ash": {
+              "frames": [
+                "talisman_30_heat_ash_0",
+                "talisman_30_heat_ash_1",
+                "talisman_30_heat_ash_2",
+                "talisman_30_heat_ash_3",
+                "talisman_30_heat_ash_4",
+                "talisman_30_heat_ash_5",
+                "talisman_30_heat_ash_6",
+                "talisman_30_heat_ash_7",
+                "talisman_30_heat_ash_8"
+              ],
+              "scale": [
+                1,
+                1
+              ],
+              "duration": 1.2,
+              "layer": 40,
+              "pivot": [
+                128,
+                128
+              ],
+              "opacity": 0.55,
+              "heat_haze": true
+            }
+          }
+        }
       }
     ],
     "sfx_events": [
@@ -9518,6 +11553,126 @@
         "sfx_id": "talisman-skill-30",
         "timing": "cast"
       }
-    ]
+    ],
+    "element": "fire",
+    "cast_config": {
+      "behavior": "axe",
+      "duration": 1.6,
+      "range": 665,
+      "damage_pct": 120,
+      "width": 52,
+      "authored_angle": 0.7853981633974483,
+      "ash_authored_angle": -0.7853981633974483,
+      "axe_offset": 130,
+      "impact_at": 0.2,
+      "pillar_at": 0.28,
+      "pillar_interval": 0.08,
+      "pillar_positions": [
+        0.15,
+        0.38,
+        0.62,
+        0.85
+      ],
+      "pillar_radius": 115,
+      "axe_ratio": 0.3,
+      "pillar_ratio": 0.7,
+      "ash_at": 0.3,
+      "layers": {
+        "axe": {
+          "frames": [
+            "talisman_30_pangu_axe_0",
+            "talisman_30_pangu_axe_1",
+            "talisman_30_pangu_axe_2",
+            "talisman_30_pangu_axe_3",
+            "talisman_30_pangu_axe_4",
+            "talisman_30_pangu_axe_5",
+            "talisman_30_pangu_axe_6",
+            "talisman_30_pangu_axe_7",
+            "talisman_30_pangu_axe_8"
+          ],
+          "scale": [
+            1.35,
+            1.35
+          ],
+          "duration": 0.65,
+          "layer": 35,
+          "pivot": [
+            128,
+            128
+          ]
+        },
+        "rift": {
+          "frames": [
+            "talisman_30_primordial_void_rift_0",
+            "talisman_30_primordial_void_rift_1",
+            "talisman_30_primordial_void_rift_2",
+            "talisman_30_primordial_void_rift_3",
+            "talisman_30_primordial_void_rift_4",
+            "talisman_30_primordial_void_rift_5",
+            "talisman_30_primordial_void_rift_6",
+            "talisman_30_primordial_void_rift_7",
+            "talisman_30_primordial_void_rift_8"
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "duration": 1.25,
+          "layer": 0,
+          "pivot": [
+            128,
+            128
+          ]
+        },
+        "pillar": {
+          "frames": [
+            "talisman_30_fire_pillar_0",
+            "talisman_30_fire_pillar_1",
+            "talisman_30_fire_pillar_2",
+            "talisman_30_fire_pillar_3",
+            "talisman_30_fire_pillar_4",
+            "talisman_30_fire_pillar_5",
+            "talisman_30_fire_pillar_6",
+            "talisman_30_fire_pillar_7",
+            "talisman_30_fire_pillar_8"
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "duration": 0.8,
+          "layer": 25,
+          "pivot": [
+            128,
+            240
+          ]
+        },
+        "ash": {
+          "frames": [
+            "talisman_30_heat_ash_0",
+            "talisman_30_heat_ash_1",
+            "talisman_30_heat_ash_2",
+            "talisman_30_heat_ash_3",
+            "talisman_30_heat_ash_4",
+            "talisman_30_heat_ash_5",
+            "talisman_30_heat_ash_6",
+            "talisman_30_heat_ash_7",
+            "talisman_30_heat_ash_8"
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "duration": 1.2,
+          "layer": 40,
+          "pivot": [
+            128,
+            128
+          ],
+          "opacity": 0.55,
+          "heat_haze": true
+        }
+      }
+    }
   }
 ]

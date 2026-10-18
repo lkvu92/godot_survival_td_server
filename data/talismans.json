@@ -671,7 +671,7 @@
     "severe_repair_item_id": "talisman_heavenly_crystal",
     "severe_repair_item_quantity": 2,
     "quality": "mid",
-    "element": "metal"
+    "element": "water"
   },
   {
     "id": 17,
@@ -1078,7 +1078,7 @@
     "max_level": 30,
     "is_equipped": false,
     "description": "Thần kiếm thượng cổ do thánh nhân lưu lại, hàm chứa thiên uy sát phạt vô song.",
-    "skill": "Tru Tiên Diệt Ma Diệt Tuyệt Trảm: Chém ra kiếm khí hủy thiên diệt địa, bỏ qua 100% giáp hộ thể và kết liễu kẻ địch dưới 15% máu.",
+    "skill": "Tru Tiên Diệt Tuyệt Trảm: Chém ra kiếm khí hủy thiên diệt địa, bỏ qua 100% giáp hộ thể và kết liễu kẻ địch dưới 15% máu.",
     "stats": {
       "atk": 48,
       "speed_pct": 11,
@@ -1159,7 +1159,7 @@
     "severe_repair_item_id": "talisman_heavenly_crystal",
     "severe_repair_item_quantity": 2,
     "quality": "high",
-    "element": "wood"
+    "element": "earth"
   },
   {
     "id": 28,
@@ -1170,7 +1170,7 @@
     "max_level": 30,
     "is_equipped": false,
     "description": "Đạo đồ bao hàm quy luật âm dương luân chuyển, đảo ngược càn khôn biến hóa.",
-    "skill": "Âm Dương Nghịch Chuyển: Chuyển đổi 70% sát thương phải gánh chịu thành sinh lực và phản lại 30% sát thương cho kẻ tấn công.",
+    "skill": "Âm Dương Nghịch Chuyển: Trong 8 giây, hấp thụ 70% sát thương nhận sau giảm trừ thành sinh lực; phản kích 30% sát thương nhận bằng 8 tia sát thương chuẩn.",
     "stats": {
       "spirit": 72,
       "dodge_rate": 0.04,
@@ -1216,7 +1216,7 @@
     "max_level": 30,
     "is_equipped": false,
     "description": "Bức họa tiên giới vô tận chứa đựng non sông cẩm tú tự thành một tiểu thế giới.",
-    "skill": "Họa Trung Càn Khôn: Hút toàn bộ kẻ địch vào không gian bức họa, gây sát thương nghiền nát nguyên thần và giảm vĩnh viễn 20% công kích của chúng.",
+    "skill": "Họa Trung Càn Khôn: Hút kẻ địch vào họa cảnh, gây sát thương nghiền nát và giảm vĩnh viễn 20% công kích, tốc chạy của chúng.",
     "stats": {
       "atk": 42,
       "spirit": 70,
@@ -1251,7 +1251,7 @@
     "severe_repair_item_id": "talisman_heavenly_crystal",
     "severe_repair_item_quantity": 2,
     "quality": "high",
-    "element": "fire"
+    "element": "wood"
   },
   {
     "id": 30,
@@ -1297,6 +1297,6 @@
     "severe_repair_item_id": "talisman_heavenly_crystal",
     "severe_repair_item_quantity": 2,
     "quality": "high",
-    "element": "earth"
+    "element": "fire"
   }
 ]

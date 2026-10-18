@@ -9,6 +9,8 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Runtime syntax failed' }
     & node tests/test_run_lifecycle.cjs
     if ($LASTEXITCODE -ne 0) { throw 'Run lifecycle regression failed' }
+    & node tests/test_layered_talisman_config.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Layered talisman config regression failed' }
     & node tests/test_weekly_leaderboard_config.cjs
     if ($LASTEXITCODE -ne 0) { throw 'Weekly leaderboard config regression failed' }
     & node tests/test_stage_reward_ads.cjs

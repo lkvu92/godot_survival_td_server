@@ -1,5 +1,6 @@
 {
   "contracts": [
+    {"id":"C137_LAYERED_TALISMAN_SKILLS","version":"1.0.0","status":"ACTIVE","updated_at":"2026-10-18","contract_file":"docs/contracts/C137_LAYERED_TALISMAN_SKILLS.md"},
     {"id":"C135_WEEKLY_LEADERBOARD_REWARDS","version":"1.0.1","status":"IN_PROGRESS","updated_at":"2026-10-18","contract_file":"docs/contracts/C135_WEEKLY_LEADERBOARD_REWARDS.md"},
     {"id":"C134_RESULT_AD_SYSTEM_CONFIG","version":"1.0.0","status":"IN_PROGRESS","updated_at":"2026-10-18","contract_file":"docs/contracts/C134_RESULT_AD_SYSTEM_CONFIG.md"},
     {"id":"C109_STORE_CATALOG_PURCHASE_ORDER","version":"1.1.1","status":"ACTIVE","updated_at":"2026-10-18","contract_file":"docs/contracts/C109_STORE_CATALOG_PURCHASE_ORDER.md"},

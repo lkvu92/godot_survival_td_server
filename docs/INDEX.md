@@ -42,3 +42,5 @@
 - [Weekly rewards operations and Settings](WEEKLY_LEADERBOARD_REWARDS.md): approved reward table, configuration, publication and scheduler installation.
 
 - C135 v1.0.1: production users.display_name ambiguity regression and retryable weekly dialog errors.
+
+- [C137 Layered talisman skills](contracts/C137_LAYERED_TALISMAN_SKILLS.md): skills 16, 26-30, phase damage, statuses and four-layer assets.
