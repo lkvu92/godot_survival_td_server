@@ -9,6 +9,14 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Runtime syntax failed' }
     & node tests/test_run_lifecycle.cjs
     if ($LASTEXITCODE -ne 0) { throw 'Run lifecycle regression failed' }
+    & node tests/test_weekly_leaderboard_config.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Weekly leaderboard config regression failed' }
+    & node tests/test_stage_reward_ads.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Stage reward/System ad config regression failed' }
+    & node tests/test_daily_pack_entitlements.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Daily pack entitlement regression failed' }
+    & node tests/test_daily_pack_rewards.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Legacy pack reward regression failed' }
     & node tests/test_new_profile_inventory.cjs
     if ($LASTEXITCODE -ne 0) { throw 'New profile inventory regression failed' }
     & node tests/test_account_password.cjs
@@ -26,6 +34,8 @@ try {
     & python -B -m unittest discover -s tests -p 'test_*.py'
     if ($LASTEXITCODE -ne 0) { throw 'Seed CLI regressions failed' }
     if ($env:SEED_TEST_PSQL -and $env:SEED_TEST_PORT) {
+        & node tests/test_weekly_leaderboard.cjs
+        if ($LASTEXITCODE -ne 0) { throw 'Weekly leaderboard PostgreSQL regressions failed' }
         & node tests/test_seed_integrity.cjs
         if ($LASTEXITCODE -ne 0) { throw 'PostgreSQL regressions failed' }
     }

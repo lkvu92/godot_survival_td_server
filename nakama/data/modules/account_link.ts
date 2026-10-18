@@ -174,13 +174,13 @@ function createAccountLinkTables(nk: nkruntime.Nakama): void {
         UPDATE player_vip_credits SET user_id=w.id::TEXT WHERE user_id=l.id::TEXT;
         IF EXISTS(SELECT 1 FROM monetization_daily_reward_claims c WHERE c.user_id IN(a.id::TEXT,b.id::TEXT)
             AND c.reward_date=(NOW() AT TIME ZONE 'UTC')::DATE
-            AND COALESCE((SELECT (payload->'placements'->(CASE WHEN c.placement_id='main_menu_stamina' THEN 'stamina_dialog_ad' ELSE c.placement_id END)->>'daily_limit')::INT
-                FROM game_content_configs WHERE id='rewarded_ads'),0)<=0) THEN RAISE EXCEPTION 'Reward quota config unavailable; retry after server config update'; END IF;
+            AND COALESCE((SELECT (snapshot->'system'->'rewarded_ads'->'placements'->(CASE WHEN c.placement_id='main_menu_stamina' THEN 'stamina_dialog_ad' ELSE c.placement_id END)->>'daily_limit')::INT
+                FROM remote_config_releases ORDER BY config_version DESC LIMIT 1),0)<=0) THEN RAISE EXCEPTION 'Reward quota config unavailable; retry after server config update'; END IF;
         -- Conservative spent quota is reserved under fresh marker sessions; do not grant any reward.
         INSERT INTO monetization_daily_reward_claims(user_id,placement_id,reward_date,claim_slot,ad_session_id)
         SELECT w.id::TEXT,p.placement_id,(NOW() AT TIME ZONE 'UTC')::DATE,s.slot,'merge:'||t.id::TEXT||':'||p.placement_id||':'||s.slot
         FROM (SELECT DISTINCT CASE WHEN placement_id='main_menu_stamina' THEN 'stamina_dialog_ad' ELSE placement_id END AS placement_id FROM monetization_daily_reward_claims WHERE user_id IN(a.id::TEXT,b.id::TEXT) AND reward_date=(NOW() AT TIME ZONE 'UTC')::DATE) p
-        CROSS JOIN LATERAL generate_series(1,COALESCE((SELECT (payload->'placements'->p.placement_id->>'daily_limit')::INT FROM game_content_configs WHERE id='rewarded_ads'),1)) s(slot)
+        CROSS JOIN LATERAL generate_series(1,COALESCE((SELECT (snapshot->'system'->'rewarded_ads'->'placements'->p.placement_id->>'daily_limit')::INT FROM remote_config_releases ORDER BY config_version DESC LIMIT 1),0)) s(slot)
         ON CONFLICT DO NOTHING;
         -- Clear loser credentials before assigning unique provider/email columns to winner.
         UPDATE users SET email=NULL,password=NULL,google_id=NULL,custom_id=NULL,disable_time=NOW(),update_time=NOW() WHERE id=l.id;

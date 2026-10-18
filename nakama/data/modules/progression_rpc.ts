@@ -527,7 +527,9 @@ const awardStageProgression: nkruntime.RpcFunction = (
     const completed: any[] = Array.isArray(profile.completed_stage_levels) ? profile.completed_stage_levels : [];
     const firstClear = won && !completed.some((entry: any) => entry
         && String(entry.stage_id) === stageId && String(entry.level_id) === difficultyId);
-    const ordinaryExp = Math.max(0, Math.round(requestedBaseExp * multiplier));
+    // The skill-testing arena may grant temporary run levels, never persistent EXP.
+    const isTrainingStage = stageId === "stage_0_1" || String(stageRows[0].arc_id || "") === "arc_0";
+    const ordinaryExp = isTrainingStage ? 0 : Math.max(0, Math.round(requestedBaseExp * multiplier));
     const firstClearBonusExp = firstClear ? ordinaryExp : 0;
     const awardedExp = ordinaryExp + firstClearBonusExp;
     const userResult = progressionApplyUser(nk, profile, awardedExp);
@@ -669,6 +671,9 @@ const awardStageProgression: nkruntime.RpcFunction = (
 	run.status = "settled";
 	run.settled_at_ms = Date.now();
 	run.won = won;
+	run.stage_reward = { eligible: won && !isTrainingStage && (awardedExp > 0 || loot.length > 0),
+        hero_id: heroId, base_exp: awardedExp, first_clear_bonus_exp: firstClearBonusExp,
+        base_loot: loot, claimed: false };
 
     nk.storageWrite([
         { collection: "player_profiles", key: "main", userId: ctx.userId, value: profile, permissionRead: 1, permissionWrite: 0, version: profileObject.version },
@@ -695,7 +700,7 @@ const awardStageProgression: nkruntime.RpcFunction = (
     userResult.unlocked_arcs = profile.unlocked_arcs;
     userResult.unlocked_stages = profile.unlocked_stages;
     userResult.completed_stage_levels = profile.completed_stage_levels;
-	return JSON.stringify({ success: true, exp_awarded: awardedExp, first_clear: firstClear,
+	return JSON.stringify({ success: true, stage_reward: stageRewardSummary(run), exp_awarded: awardedExp, first_clear: firstClear,
         first_clear_bonus_exp: firstClearBonusExp, profile: userResult,
 		inventory: inventoryValue, resources: profile.resources, loot, talisman_durability: talismanDurability, hero: {
 
@@ -703,6 +708,85 @@ const awardStageProgression: nkruntime.RpcFunction = (
         current_attribute: hero.current_attribute || {}
     }});
 };
+
+function stageRewardSummary(run: any): any {
+    const snapshot = run.stage_reward || {};
+    const factor = snapshot.claimed === true ? Number(snapshot.multiplier || 1) : 1;
+    return { run_id: String(run.run_id || ""), eligible: snapshot.eligible === true, claimed: snapshot.claimed === true,
+        multiplier: factor, total_exp: Math.max(0, Number(snapshot.base_exp || 0)) * factor,
+        first_clear_bonus_exp: Math.max(0, Number(snapshot.first_clear_bonus_exp || 0)) * factor,
+        total_loot: (Array.isArray(snapshot.base_loot) ? snapshot.base_loot : []).map((r: any) => Object.assign({}, r, { quantity: Number(r.quantity) * factor })) };
+}
+
+function readSettledRewardRun(nk: nkruntime.Nakama, userId: string, runId: string): any {
+    const rows = nk.storageRead([{collection: "player_stage_runs", key: "active", userId}]);
+    if (!rows.length) return null;
+    const run = rows[0].value;
+    if (String(run.run_id || "") !== runId || run.status !== "settled" || run.won !== true
+        || !run.stage_reward || run.stage_reward.eligible !== true) return null;
+    return {object: rows[0], run};
+}
+
+function grantStageRewardMultiplier(nk: nkruntime.Nakama, userId: string, adSessionId: string, multiplier: number, limit: number): any {
+    const sessions = nk.sqlQuery("SELECT context FROM monetization_ad_rewards WHERE ad_session_id=$1 AND user_id=$2", [adSessionId, userId]);
+    const context = sessions.length ? objectValue(parseJsonb(sessions[0].context)) : {};
+    const stored = readSettledRewardRun(nk, userId, String(context.run_id || ""));
+    if (!stored) return {granted: false, message: "Winning result is no longer available"};
+    const run = stored.run, snapshot = run.stage_reward;
+    if (snapshot.claimed) {
+        if (snapshot.ad_session_id === adSessionId) return {granted: true, reward_type: "stage_reward_x2", stage_reward: stageRewardSummary(run)};
+        // A different verified session lost the storage CAS race. It did not
+        // grant rewards, so its reservation must not spend another daily use.
+        nk.sqlExec("DELETE FROM monetization_daily_reward_claims WHERE ad_session_id=$1 AND user_id=$2", [adSessionId, userId]);
+        nk.sqlExec("UPDATE monetization_ad_rewards SET status='rejected' WHERE ad_session_id=$1 AND status='verified'", [adSessionId]);
+        return {granted: false, message: "This victory already received its multiplier"};
+    }
+    if (!Number.isSafeInteger(multiplier) || multiplier < 2 || multiplier > 10 || limit <= 0) return {granted: false, message: "Reward multiplier config is disabled"};
+    const rows = nk.storageRead([
+        {collection: "player_profiles", key: "main", userId},
+        {collection: "player_heroes", key: "states", userId},
+        {collection: "player_inventory", key: "items", userId}
+    ]);
+    const p = rows.find((r: any) => r.collection === "player_profiles"), h = rows.find((r: any) => r.collection === "player_heroes"),
+        inv = rows.find((r: any) => r.collection === "player_inventory");
+    if (!p || !h || !inv) return {granted: false, message: "Player reward state missing"};
+    const hero = (h.value.heroes || []).find((r: any) => String(r.hero_id) === snapshot.hero_id && r.owned === true);
+    if (!hero) return {granted: false, message: "Reward hero is not owned"};
+    const claim = reserveDailyRewardClaim(nk, userId, "stage_reward_x2_ad", adSessionId, limit);
+    if (!claim) return {granted: false, message: "Daily victory reward quota reached"};
+    const extraExp = Number(snapshot.base_exp) * (multiplier - 1);
+    const profile = p.value;
+    const userResult = progressionApplyUser(nk, profile, extraExp);
+    cultivationEnsurePreview(nk, profile);
+    progressionReconcileLevelUnlocks(nk, profile);
+    let level = Math.max(1, Math.min(PROGRESSION_MAX_LEVEL, Number(hero.level || 1)));
+    let exp = Math.max(0, Number(hero.exp || 0)) + extraExp;
+    let next = progressionNextHeroExp(nk, level);
+    const beforeLevel = level;
+    while (level < Math.min(PROGRESSION_MAX_LEVEL, userResult.level) && next > 0 && exp >= next) {
+        exp -= next; level++; next = progressionNextHeroExp(nk, level);
+    }
+    if (level >= PROGRESSION_MAX_LEVEL) { exp = 0; next = 0; }
+    hero.level = level; hero.exp = exp; hero.next_level_exp = next;
+    if (level > beforeLevel) hero.current_attribute = progressionHeroAttributes(nk, snapshot.hero_id, level);
+    inv.value.items = Array.isArray(inv.value.items) ? inv.value.items : [];
+    profile.resources = profile.resources || {};
+    for (const reward of snapshot.base_loot) {
+        const quantity = Number(reward.quantity) * (multiplier - 1);
+        if (!Number.isSafeInteger(quantity) || quantity <= 0) throw Error("Invalid settled reward quantity");
+        if (reward.item_id) addStoreInventoryItem(nk, inv.value.items, String(reward.item_id), quantity);
+        else if (["gold", "gems"].indexOf(String(reward.resource_id)) >= 0) profile.resources[reward.resource_id] = Math.max(0, Number(profile.resources[reward.resource_id] || 0)) + quantity;
+        else throw Error("Unknown settled reward");
+    }
+    snapshot.claimed = true; snapshot.multiplier = multiplier; snapshot.ad_session_id = adSessionId;
+    nk.storageWrite([
+        {collection: "player_profiles", key: "main", userId, value: profile, version: p.version, permissionRead: 1, permissionWrite: 0},
+        {collection: "player_heroes", key: "states", userId, value: h.value, version: h.version, permissionRead: 1, permissionWrite: 0},
+        {collection: "player_inventory", key: "items", userId, value: inv.value, version: inv.version, permissionRead: 1, permissionWrite: 0},
+        {collection: "player_stage_runs", key: "active", userId, value: run, version: stored.object.version, permissionRead: 1, permissionWrite: 0}
+    ]);
+    return {granted: true, reward_type: "stage_reward_x2", reward_amount: multiplier, stage_reward: stageRewardSummary(run)};
+}
 
 const tribulationAction: nkruntime.RpcFunction = (
     ctx: nkruntime.Context, _logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string

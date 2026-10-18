@@ -1,0 +1,16 @@
+[Unit]
+Description=Finalize weekly leaderboard rewards
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+# Adapt the checkout path and environment-file path to the host.
+WorkingDirectory=/opt/survival_td_godot/server/nakama
+EnvironmentFile=/etc/survival-td/weekly-leaderboard.env
+ExecStart=/usr/bin/python3 -B weekly_leaderboard_tick.py
+TimeoutStartSec=90
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true

@@ -1,0 +1,11 @@
+[Unit]
+Description=Check weekly leaderboard cutoff every minute
+
+[Timer]
+OnBootSec=30s
+OnUnitActiveSec=60s
+AccuracySec=1s
+Unit=weekly-leaderboard.service
+
+[Install]
+WantedBy=timers.target

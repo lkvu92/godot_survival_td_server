@@ -282,7 +282,7 @@ const getGameConfig: nkruntime.RpcFunction = (
             result.enemy_skills = readContentConfig(nk, "enemy_skills");
             result.boss_skills = readContentConfig(nk, "boss_skills");
             result.vip = readContentConfig(nk, "vip");
-            result.rewarded_ads = readContentConfig(nk, "rewarded_ads");
+            result.rewarded_ads = rewardedAdsConfig(nk);
             result.talismans = nk.sqlQuery("SELECT * FROM game_talismans ORDER BY id", []).map(processTalisman);
 
 
@@ -397,6 +397,8 @@ const gatedUpgradeElement: nkruntime.RpcFunction = (ctx, logger, nk, payload) =>
 const gatedAwardStageProgression: nkruntime.RpcFunction = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, awardStageProgression);
 const gatedTribulationAction: nkruntime.RpcFunction = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, tribulationAction);
 const gatedGetMonetizationStatus: nkruntime.RpcFunction = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, getMonetizationStatus);
+const gatedGetDailyPackStatus: nkruntime.RpcFunction = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, getDailyPackStatus);
+const gatedClaimDailyPack: nkruntime.RpcFunction = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, claimDailyPack);
 const gatedCreatePurchaseOrder: nkruntime.RpcFunction = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, createPurchaseOrder);
 const gatedSyncPlayPurchase: nkruntime.RpcFunction = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, syncPlayPurchase);
 const gatedIapGoogleClaim: nkruntime.RpcFunction = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, iapGoogleClaim);
@@ -441,6 +443,9 @@ const publishConfigRelease: nkruntime.RpcFunction = (
         rows.forEach((row: any) => { snapshot[String(row.module)][String(row.key)] = parseRemoteSetting(String(row.value_type), String(row.value)); });
     } catch (e) { return JSON.stringify({ status: "error", code: 422, message: String(e) }); }
     const minVersion = String(snapshot.system.min_app_version || "");
+    if (!validRewardedAdsConfig(snapshot.system.rewarded_ads)) return JSON.stringify({ status: "error", code: 422, message: "Missing or invalid system.rewarded_ads" });
+    if (snapshot.system.leaderboard_rewards !== undefined && (!validWeeklyLeaderboardConfig(snapshot.system.leaderboard_rewards)
+        || !weeklyConfigItemsExist(nk,snapshot.system.leaderboard_rewards))) return JSON.stringify({status:"error",code:422,message:"Invalid system.leaderboard_rewards or unknown reward items"});
     const latestVersion = String(snapshot.system.latest_app_version || "");
     if (typeof snapshot.system.ads_enabled !== "boolean" || typeof snapshot.system.payment_enabled !== "boolean") {
         return JSON.stringify({status: "error", code: 422, message: "Missing or invalid monetization flags"});

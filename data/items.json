@@ -427,20 +427,14 @@
       "skill_name": "Phong Nhận",
       "skill_description": "Phong Nhận: Triệu hồi Thanh Phong Kiếm, phóng ra kiếm khí cuồng phong truy sát mục tiêu gần nhất.",
       "base_stats": {
-        "atk": 180,
+        "atk": 20,
         "speed_pct": 8,
-        "spirit": 60,
-        "hp": 120,
-        "def": 20
+        "skill_range_bonus_pct": 5
       },
       "stat_growth": {
-        "atk": 22,
-        "speed_pct": 0.8,
-        "spirit": 8,
-        "hp": 20,
-        "def": 4,
-        "skill_range_bonus_pct": 0.5,
-        "cooldown_reduction_pct": 0.2
+        "atk": 1.6,
+        "speed_pct": 0.4,
+        "skill_range_bonus_pct": 0.25
       },
       "upgrade_materials": [],
       "element": "metal",
@@ -485,20 +479,14 @@
       "skill_name": "Xích Viêm Trảm",
       "skill_description": "Xích Viêm Trảm: Vung đao chém ra luồng sóng lửa xuyên thẳng qua bầy quái, để lại vệt lửa thiêu đốt 3s.",
       "base_stats": {
-        "atk": 200,
-        "speed_pct": 3,
-        "spirit": 50,
+        "atk": 22,
         "hp": 180,
-        "def": 25
+        "spirit": 20
       },
       "stat_growth": {
-        "atk": 25,
-        "speed_pct": 0.4,
-        "spirit": 6,
-        "hp": 30,
-        "def": 5,
-        "skill_range_bonus_pct": 0.4,
-        "cooldown_reduction_pct": 0.2
+        "atk": 1.6,
+        "hp": 12,
+        "spirit": 1.2
       },
       "upgrade_materials": [],
       "element": "fire",
@@ -543,20 +531,14 @@
       "skill_name": "Bách Luyện Phá Giáp",
       "skill_description": "Bách Luyện Phá Giáp: Đâm thẳng phá vỡ 25% phòng thủ của mục tiêu trên đường bay trong 4s.",
       "base_stats": {
-        "atk": 210,
-        "speed_pct": 4,
-        "spirit": 40,
-        "hp": 140,
-        "def": 25
+        "atk": 22,
+        "def": 5,
+        "skill_range_bonus_pct": 6
       },
       "stat_growth": {
-        "atk": 24,
-        "speed_pct": 0.5,
-        "spirit": 5,
-        "hp": 25,
-        "def": 5,
-        "skill_range_bonus_pct": 0.5,
-        "cooldown_reduction_pct": 0.2
+        "atk": 1.6,
+        "def": 0.35,
+        "skill_range_bonus_pct": 0.25
       },
       "upgrade_materials": [],
       "element": "metal",
@@ -601,20 +583,14 @@
       "skill_name": "Ô Thiết Hộ Bích",
       "skill_description": "Ô Thiết Hộ Bích: Tạo lá chắn hấp thụ sát thương bằng 25% HP tối đa trong 5s.",
       "base_stats": {
-        "atk": 60,
-        "speed_pct": 2,
-        "spirit": 50,
-        "hp": 850,
-        "def": 120
+        "hp": 340,
+        "def": 9,
+        "atk": 8
       },
       "stat_growth": {
-        "atk": 8,
-        "speed_pct": 0.2,
-        "spirit": 8,
-        "hp": 110,
-        "def": 16,
-        "skill_range_bonus_pct": 0.2,
-        "cooldown_reduction_pct": 0.2
+        "hp": 22,
+        "def": 0.5,
+        "atk": 0.6
       },
       "upgrade_materials": [],
       "element": "metal",
@@ -659,20 +635,14 @@
       "skill_name": "Thủy Ba Tẩy Lễ",
       "skill_description": "Thủy Ba Tẩy Lễ: Xóa sạch toàn bộ hiệu ứng xấu và nhận màng nước giảm 25% sát thương trong 3s.",
       "base_stats": {
-        "atk": 80,
-        "speed_pct": 12,
-        "spirit": 90,
-        "hp": 280,
-        "def": 35
+        "speed_pct": 9,
+        "cooldown_reduction_pct": 4,
+        "hp": 200
       },
       "stat_growth": {
-        "atk": 10,
-        "speed_pct": 1.2,
-        "spirit": 12,
-        "hp": 35,
-        "def": 6,
-        "skill_range_bonus_pct": 0.6,
-        "cooldown_reduction_pct": 0.3
+        "speed_pct": 0.45,
+        "cooldown_reduction_pct": 0.15,
+        "hp": 12
       },
       "upgrade_materials": [],
       "element": "water",
@@ -717,20 +687,14 @@
       "skill_name": "Hồi Xuân Quyết",
       "skill_description": "Hồi Xuân Quyết: Trị liệu khẩn cấp hồi phục tức thì 25% HP và hồi thêm 3% HP/giây trong 5s.",
       "base_stats": {
-        "atk": 90,
-        "speed_pct": 3,
-        "spirit": 120,
-        "hp": 420,
-        "def": 30
+        "spirit": 32,
+        "hp": 300,
+        "def": 6
       },
       "stat_growth": {
-        "atk": 12,
-        "speed_pct": 0.3,
-        "spirit": 15,
-        "hp": 60,
-        "def": 6,
-        "skill_range_bonus_pct": 0.4,
-        "cooldown_reduction_pct": 0.3
+        "spirit": 2.0,
+        "hp": 18,
+        "def": 0.35
       },
       "upgrade_materials": [],
       "element": "wood",
@@ -775,20 +739,14 @@
       "skill_name": "Liệt Địa Trọng Kích",
       "skill_description": "Liệt Địa Trọng Kích: Nện mạnh chùy xuống đất tạo địa chấn bán kính 260px, đẩy dạt quái áp sát (không choáng).",
       "base_stats": {
-        "atk": 190,
-        "speed_pct": 2,
-        "spirit": 45,
-        "hp": 350,
-        "def": 40
+        "atk": 19,
+        "hp": 260,
+        "def": 6
       },
       "stat_growth": {
-        "atk": 23,
-        "speed_pct": 0.3,
-        "spirit": 6,
-        "hp": 45,
-        "def": 7,
-        "skill_range_bonus_pct": 0.4,
-        "cooldown_reduction_pct": 0.2
+        "atk": 1.5,
+        "hp": 15,
+        "def": 0.4
       },
       "upgrade_materials": [],
       "element": "earth",
@@ -833,20 +791,14 @@
       "skill_name": "Hàn Băng Thần Châm",
       "skill_description": "Hàn Băng Thần Châm: Bắn chùm 6 kim băng tầm xa xuyên thấu, làm chậm 20% tốc chạy quái 2s (không đóng băng).",
       "base_stats": {
-        "atk": 130,
-        "speed_pct": 7,
-        "spirit": 70,
-        "hp": 160,
-        "def": 20
+        "atk": 16,
+        "speed_pct": 8,
+        "skill_range_bonus_pct": 6
       },
       "stat_growth": {
-        "atk": 16,
-        "speed_pct": 0.8,
-        "spirit": 8,
-        "hp": 22,
-        "def": 4,
-        "skill_range_bonus_pct": 0.6,
-        "cooldown_reduction_pct": 0.3
+        "atk": 1.3,
+        "speed_pct": 0.4,
+        "skill_range_bonus_pct": 0.25
       },
       "upgrade_materials": [],
       "element": "water",
@@ -891,20 +843,14 @@
       "skill_name": "Hỏa Diễm Tản",
       "skill_description": "Hỏa Diễm Tản: Quạt ra bão lửa góc 60 độ càn quét bầy quái, gây sát thương diện rộng và thiêu đốt liên tục 3s.",
       "base_stats": {
-        "atk": 185,
-        "speed_pct": 3,
-        "spirit": 110,
-        "hp": 200,
-        "def": 25
+        "atk": 18,
+        "spirit": 30,
+        "skill_range_bonus_pct": 5
       },
       "stat_growth": {
-        "atk": 22,
-        "speed_pct": 0.4,
-        "spirit": 14,
-        "hp": 28,
-        "def": 5,
-        "skill_range_bonus_pct": 0.5,
-        "cooldown_reduction_pct": 0.2
+        "atk": 1.4,
+        "spirit": 1.8,
+        "skill_range_bonus_pct": 0.25
       },
       "upgrade_materials": [],
       "element": "fire",
@@ -949,20 +895,14 @@
       "skill_name": "Kim Cang Định Tâm",
       "skill_description": "Kim Cang Định Tâm: Chuông vang tịnh hóa tâm thần, miễn nhiễm 100% mọi hiệu ứng khống chế trong 4s và tăng 35% DEF.",
       "base_stats": {
-        "atk": 70,
-        "speed_pct": 3,
-        "spirit": 130,
-        "hp": 320,
-        "def": 50
+        "spirit": 34,
+        "def": 8,
+        "hp": 260
       },
       "stat_growth": {
-        "atk": 10,
-        "speed_pct": 0.4,
-        "spirit": 16,
-        "hp": 45,
-        "def": 9,
-        "skill_range_bonus_pct": 0.4,
-        "cooldown_reduction_pct": 0.3
+        "spirit": 2.2,
+        "def": 0.45,
+        "hp": 16
       },
       "upgrade_materials": [],
       "element": "earth",
@@ -1007,20 +947,14 @@
       "skill_name": "Tật Phong Liên Hoàn Tiễn",
       "skill_description": "Tật Phong Liên Hoàn Tiễn: Bắn liên thanh 5 mũi tên gió tự truy lùng kẻ địch có HP cao nhất để dồn sát thương.",
       "base_stats": {
-        "atk": 140,
-        "speed_pct": 10,
-        "spirit": 60,
-        "hp": 220,
-        "def": 25
+        "atk": 17,
+        "speed_pct": 9,
+        "cooldown_reduction_pct": 3
       },
       "stat_growth": {
-        "atk": 18,
-        "speed_pct": 1,
-        "spirit": 8,
-        "hp": 25,
-        "def": 5,
-        "skill_range_bonus_pct": 0.5,
-        "cooldown_reduction_pct": 0.3
+        "atk": 1.4,
+        "speed_pct": 0.45,
+        "cooldown_reduction_pct": 0.12
       },
       "upgrade_materials": [],
       "element": "wood",
@@ -1065,20 +999,14 @@
       "skill_name": "Thái Sơn Hộ Thể",
       "skill_description": "Thái Sơn Hộ Thể: Đại ấn bay quanh hộ thể, giảm 40% sát thương nhận vào trong 5s và phản lại 20% sát thương.",
       "base_stats": {
-        "atk": 65,
-        "speed_pct": 2,
-        "spirit": 60,
-        "hp": 650,
-        "def": 90
+        "def": 9,
+        "hp": 350,
+        "atk": 10
       },
       "stat_growth": {
-        "atk": 9,
-        "speed_pct": 0.2,
-        "spirit": 9,
-        "hp": 85,
-        "def": 13,
-        "skill_range_bonus_pct": 0.3,
-        "cooldown_reduction_pct": 0.2
+        "def": 0.5,
+        "hp": 24,
+        "atk": 0.8
       },
       "upgrade_materials": [],
       "element": "earth",
@@ -1123,20 +1051,14 @@
       "skill_name": "Cửu Thiên Lôi Giật",
       "skill_description": "Cửu Thiên Lôi Giật: Phóng tia sét đánh trúng mục tiêu và nảy xích qua 5 kẻ địch xung quanh (thuần công, không gây tê liệt).",
       "base_stats": {
-        "atk": 195,
-        "speed_pct": 4,
-        "spirit": 100,
-        "hp": 210,
-        "def": 28
+        "atk": 20,
+        "spirit": 28,
+        "cooldown_reduction_pct": 4
       },
       "stat_growth": {
-        "atk": 23,
-        "speed_pct": 0.5,
-        "spirit": 12,
-        "hp": 26,
-        "def": 5,
-        "skill_range_bonus_pct": 0.5,
-        "cooldown_reduction_pct": 0.25
+        "atk": 1.5,
+        "spirit": 1.6,
+        "cooldown_reduction_pct": 0.15
       },
       "upgrade_materials": [],
       "element": "fire",
@@ -1181,20 +1103,14 @@
       "skill_name": "Huyết Đằng Hộ Mệnh",
       "skill_description": "Huyết Đằng Hộ Mệnh: Phóng gai mộc quấn lấy 3 quái áp sát, rút máu chuyển 50% sát thương thành sinh lực hồi phục.",
       "base_stats": {
-        "atk": 120,
-        "speed_pct": 3,
-        "spirit": 90,
-        "hp": 300,
-        "def": 32
+        "atk": 16,
+        "hp": 250,
+        "spirit": 26
       },
       "stat_growth": {
-        "atk": 15,
-        "speed_pct": 0.4,
-        "spirit": 11,
-        "hp": 40,
-        "def": 6,
-        "skill_range_bonus_pct": 0.4,
-        "cooldown_reduction_pct": 0.25
+        "atk": 1.3,
+        "hp": 15,
+        "spirit": 1.5
       },
       "upgrade_materials": [],
       "element": "wood",
@@ -1239,20 +1155,14 @@
       "skill_name": "Mãng Quang Hộ Linh",
       "skill_description": "Mãng Quang Hộ Linh: Ánh sáng huyền ảo bao bọc thân thể, tăng 60% tỉ lệ né tránh đòn đánh trong 4s giúp thoát khỏi vòng vây.",
       "base_stats": {
-        "atk": 70,
-        "speed_pct": 6,
-        "spirit": 120,
-        "hp": 240,
-        "def": 35
+        "dodge_rate": 0.03,
+        "spirit": 32,
+        "speed_pct": 7
       },
       "stat_growth": {
-        "atk": 9,
-        "speed_pct": 0.7,
-        "spirit": 15,
-        "hp": 35,
-        "def": 6,
-        "skill_range_bonus_pct": 0.4,
-        "cooldown_reduction_pct": 0.3
+        "dodge_rate": 0.001,
+        "spirit": 2.0,
+        "speed_pct": 0.35
       },
       "upgrade_materials": [],
       "element": "water",
@@ -1296,23 +1206,15 @@
       "skill_name": "Tuyết Lạc Băng Phong",
       "skill_description": "Tuyết Lạc Băng Phong: Ngưng tụ kiếm trận băng giá, đóng băng kẻ địch diện rộng trong 3 giây.",
       "base_stats": {
-        "atk": 332,
-        "speed_pct": 3,
-        "spirit": 75,
-        "hp": 376,
-        "def": 52,
-        "skill_range_bonus_pct": 5,
-        "cooldown_reduction_pct": 4,
-        "dodge_rate": 0.02,
-        "element_resist_pct": 0
+        "atk": 32,
+        "speed_pct": 8,
+        "skill_range_bonus_pct": 8,
+        "cooldown_reduction_pct": 5
       },
       "stat_growth": {
-        "atk": 20,
-        "speed_pct": 1,
-        "spirit": 10,
-        "hp": 50,
-        "def": 8,
-        "skill_range_bonus_pct": 0.5,
+        "atk": 2.5,
+        "speed_pct": 0.4,
+        "skill_range_bonus_pct": 0.4,
         "cooldown_reduction_pct": 0.2
       },
       "upgrade_materials": [],
@@ -1355,24 +1257,16 @@
       "skill_name": "Phệ Hồn Trảm",
       "skill_description": "Phệ Hồn Trảm: Nhát chém gây vết thương sâu xé rách linh hồn, cấm hồi máu trong 6 giây.",
       "base_stats": {
-        "atk": 256,
-        "speed_pct": 3,
-        "spirit": 56,
-        "hp": 280,
-        "def": 40,
-        "skill_range_bonus_pct": 5,
-        "cooldown_reduction_pct": 4,
-        "dodge_rate": 0.02,
-        "element_resist_pct": 0
+        "atk": 30,
+        "hp": 380,
+        "def": 9,
+        "spirit": 35
       },
       "stat_growth": {
-        "atk": 20,
-        "speed_pct": 1,
-        "spirit": 10,
-        "hp": 50,
-        "def": 8,
-        "skill_range_bonus_pct": 0.5,
-        "cooldown_reduction_pct": 0.2
+        "atk": 2.4,
+        "hp": 22,
+        "def": 0.5,
+        "spirit": 2.0
       },
       "upgrade_materials": [],
       "quality": "mid",
@@ -1414,24 +1308,16 @@
       "skill_name": "Tử Lôi Phá Diệt",
       "skill_description": "Tử Lôi Phá Diệt: Phóng ra cột sét tím hủy diệt từ trên cao đánh thẳng vào mục tiêu chỉ định.",
       "base_stats": {
-        "atk": 236,
-        "speed_pct": 2,
-        "spirit": 118,
-        "hp": 256,
-        "def": 36,
+        "atk": 28,
+        "spirit": 48,
         "skill_range_bonus_pct": 10,
-        "cooldown_reduction_pct": 4,
-        "dodge_rate": 0.02,
-        "element_resist_pct": 0
+        "cooldown_reduction_pct": 6
       },
       "stat_growth": {
-        "atk": 20,
-        "speed_pct": 1,
-        "spirit": 10,
-        "hp": 50,
-        "def": 8,
-        "skill_range_bonus_pct": 0.5,
-        "cooldown_reduction_pct": 0.2
+        "atk": 2.2,
+        "spirit": 3.0,
+        "skill_range_bonus_pct": 0.45,
+        "cooldown_reduction_pct": 0.22
       },
       "upgrade_materials": [],
       "quality": "mid",
@@ -1473,24 +1359,16 @@
       "skill_name": "Phần Thiên Chướng",
       "skill_description": "Phần Thiên Chướng: Thổi ra biển lửa thiêu đốt toàn bộ kẻ địch xung quanh liên tục.",
       "base_stats": {
-        "atk": 294,
-        "speed_pct": 3,
-        "spirit": 147,
-        "hp": 328,
-        "def": 46,
-        "skill_range_bonus_pct": 10,
-        "cooldown_reduction_pct": 4,
-        "dodge_rate": 0.02,
-        "element_resist_pct": 0
+        "atk": 31,
+        "spirit": 52,
+        "skill_range_bonus_pct": 9,
+        "hp": 350
       },
       "stat_growth": {
-        "atk": 20,
-        "speed_pct": 1,
-        "spirit": 10,
-        "hp": 50,
-        "def": 8,
-        "skill_range_bonus_pct": 0.5,
-        "cooldown_reduction_pct": 0.2
+        "atk": 2.4,
+        "spirit": 3.2,
+        "skill_range_bonus_pct": 0.4,
+        "hp": 20
       },
       "upgrade_materials": [],
       "quality": "mid",
@@ -1532,24 +1410,16 @@
       "skill_name": "Kim Thân Bất Diệt",
       "skill_description": "Kim Thân Bất Diệt: Kháng toàn bộ sát thương khống chế và giảm 50% sát thương nhận vào trong 4 giây.",
       "base_stats": {
-        "atk": 80,
-        "speed_pct": 2,
-        "spirit": 41,
-        "hp": 592,
-        "def": 99,
-        "skill_range_bonus_pct": 5,
-        "cooldown_reduction_pct": 4,
-        "dodge_rate": 0.02,
-        "element_resist_pct": 5
+        "hp": 550,
+        "def": 14,
+        "element_resist_pct": 6,
+        "spirit": 35
       },
       "stat_growth": {
-        "atk": 20,
-        "speed_pct": 1,
-        "spirit": 10,
-        "hp": 50,
-        "def": 8,
-        "skill_range_bonus_pct": 0.5,
-        "cooldown_reduction_pct": 0.2
+        "hp": 32,
+        "def": 0.8,
+        "element_resist_pct": 0.2,
+        "spirit": 2.0
       },
       "upgrade_materials": [],
       "quality": "mid",
@@ -1591,24 +1461,16 @@
       "skill_name": "Bách Quỷ Dạ Hành",
       "skill_description": "Bách Quỷ Dạ Hành: Triệu hồi đàn quỷ ám tấn công và trừ độc liên tục lên các kẻ địch.",
       "base_stats": {
-        "atk": 128,
-        "speed_pct": 3,
-        "spirit": 156,
-        "hp": 352,
-        "def": 49,
-        "skill_range_bonus_pct": 5,
-        "cooldown_reduction_pct": 4,
-        "dodge_rate": 0.02,
-        "element_resist_pct": 0
+        "spirit": 50,
+        "atk": 24,
+        "speed_pct": 8,
+        "hp": 360
       },
       "stat_growth": {
-        "atk": 20,
-        "speed_pct": 1,
-        "spirit": 10,
-        "hp": 50,
-        "def": 8,
-        "skill_range_bonus_pct": 0.5,
-        "cooldown_reduction_pct": 0.2
+        "spirit": 3.0,
+        "atk": 1.8,
+        "speed_pct": 0.4,
+        "hp": 22
       },
       "upgrade_materials": [],
       "quality": "mid",
@@ -1650,24 +1512,16 @@
       "skill_name": "Thần Mộc Trói Buộc",
       "skill_description": "Thần Mộc Trói Buộc: Rễ cây trồi lên từ lòng đất trói chặt kẻ địch và liên tục hút chân khí.",
       "base_stats": {
-        "atk": 275,
-        "speed_pct": 3,
-        "spirit": 137,
-        "hp": 304,
-        "def": 43,
-        "skill_range_bonus_pct": 10,
-        "cooldown_reduction_pct": 4,
-        "dodge_rate": 0.02,
-        "element_resist_pct": 0
+        "spirit": 48,
+        "hp": 450,
+        "def": 10,
+        "skill_range_bonus_pct": 8
       },
       "stat_growth": {
-        "atk": 20,
-        "speed_pct": 1,
-        "spirit": 10,
-        "hp": 50,
-        "def": 8,
-        "skill_range_bonus_pct": 0.5,
-        "cooldown_reduction_pct": 0.2
+        "spirit": 2.8,
+        "hp": 26,
+        "def": 0.6,
+        "skill_range_bonus_pct": 0.4
       },
       "upgrade_materials": [],
       "quality": "mid",
@@ -1709,24 +1563,16 @@
       "skill_name": "Thất Tinh Liên Châu",
       "skill_description": "Thất Tinh Liên Châu: Bắn liên tiếp 7 đợt tinh quang kiếm khí với sát thương tăng dần.",
       "base_stats": {
-        "atk": 352,
-        "speed_pct": 4,
-        "spirit": 80,
-        "hp": 400,
-        "def": 56,
-        "skill_range_bonus_pct": 5,
-        "cooldown_reduction_pct": 4,
-        "dodge_rate": 0.02,
-        "element_resist_pct": 0
+        "atk": 32,
+        "speed_pct": 9,
+        "skill_range_bonus_pct": 8,
+        "spirit": 38
       },
       "stat_growth": {
-        "atk": 20,
-        "speed_pct": 1,
-        "spirit": 10,
-        "hp": 50,
-        "def": 8,
-        "skill_range_bonus_pct": 0.5,
-        "cooldown_reduction_pct": 0.2
+        "atk": 2.5,
+        "speed_pct": 0.45,
+        "skill_range_bonus_pct": 0.4,
+        "spirit": 2.2
       },
       "upgrade_materials": [],
       "quality": "mid",
@@ -1768,24 +1614,16 @@
       "skill_name": "Thiên La Địa Võng",
       "skill_description": "Thiên La Địa Võng: Vung dây trói định thân kẻ địch, phong ấn toàn bộ kỹ năng kích hoạt trong 3 giây.",
       "base_stats": {
-        "atk": 88,
-        "speed_pct": 2,
-        "spirit": 108,
-        "hp": 232,
-        "def": 33,
-        "skill_range_bonus_pct": 5,
-        "cooldown_reduction_pct": 4,
-        "dodge_rate": 0.02,
-        "element_resist_pct": 0
+        "spirit": 45,
+        "speed_pct": 10,
+        "cooldown_reduction_pct": 5,
+        "def": 9
       },
       "stat_growth": {
-        "atk": 20,
-        "speed_pct": 1,
-        "spirit": 10,
-        "hp": 50,
-        "def": 8,
-        "skill_range_bonus_pct": 0.5,
-        "cooldown_reduction_pct": 0.2
+        "spirit": 2.6,
+        "speed_pct": 0.5,
+        "cooldown_reduction_pct": 0.2,
+        "def": 0.55
       },
       "upgrade_materials": [],
       "quality": "mid",
@@ -1827,24 +1665,16 @@
       "skill_name": "Thái Sơn Áp Đỉnh",
       "skill_description": "Thái Sơn Áp Đỉnh: Ấn biến to che trời đập xuống, gây sát thương chấn động và đánh ngã toàn bộ mục tiêu.",
       "base_stats": {
-        "atk": 104,
-        "speed_pct": 3,
-        "spirit": 56,
-        "hp": 760,
-        "def": 128,
-        "skill_range_bonus_pct": 5,
-        "cooldown_reduction_pct": 4,
-        "dodge_rate": 0.02,
+        "hp": 520,
+        "def": 13,
+        "atk": 20,
         "element_resist_pct": 5
       },
       "stat_growth": {
-        "atk": 20,
-        "speed_pct": 1,
-        "spirit": 10,
-        "hp": 50,
-        "def": 8,
-        "skill_range_bonus_pct": 0.5,
-        "cooldown_reduction_pct": 0.2
+        "hp": 30,
+        "def": 0.75,
+        "atk": 1.5,
+        "element_resist_pct": 0.2
       },
       "upgrade_materials": [],
       "quality": "mid",
@@ -1886,24 +1716,18 @@
       "skill_name": "Tru Tiên Diệt Ma Diệt Tuyệt Trảm",
       "skill_description": "Tru Tiên Diệt Ma Diệt Tuyệt Trảm: Chém ra kiếm khí hủy thiên diệt địa, bỏ qua 100% giáp hộ thể và kết liễu kẻ địch dưới 15% máu.",
       "base_stats": {
-        "atk": 700,
-        "speed_pct": 5,
-        "spirit": 162,
-        "hp": 812,
-        "def": 112,
-        "skill_range_bonus_pct": 5,
-        "cooldown_reduction_pct": 4,
-        "dodge_rate": 0.02,
-        "element_resist_pct": 0
+        "atk": 48,
+        "speed_pct": 11,
+        "skill_range_bonus_pct": 12,
+        "spirit": 55,
+        "def": 12
       },
       "stat_growth": {
-        "atk": 20,
-        "speed_pct": 1,
-        "spirit": 10,
-        "hp": 50,
-        "def": 8,
-        "skill_range_bonus_pct": 0.5,
-        "cooldown_reduction_pct": 0.2
+        "atk": 3.6,
+        "speed_pct": 0.55,
+        "skill_range_bonus_pct": 0.6,
+        "spirit": 3.5,
+        "def": 0.8
       },
       "upgrade_materials": [],
       "quality": "high",
@@ -1945,24 +1769,18 @@
       "skill_name": "Hỗn Độn Định Thế Giới",
       "skill_description": "Hỗn Độn Định Thế Giới: Rung chuông làm ngưng đọng thời gian và không gian toàn map trong 2.5 giây.",
       "base_stats": {
-        "atk": 250,
-        "speed_pct": 4,
-        "spirit": 140,
-        "hp": 1800,
-        "def": 305,
-        "skill_range_bonus_pct": 5,
-        "cooldown_reduction_pct": 4,
-        "dodge_rate": 0.02,
-        "element_resist_pct": 5
+        "hp": 780,
+        "def": 19,
+        "element_resist_pct": 9,
+        "spirit": 65,
+        "cooldown_reduction_pct": 7
       },
       "stat_growth": {
-        "atk": 20,
-        "speed_pct": 1,
-        "spirit": 10,
-        "hp": 50,
-        "def": 8,
-        "skill_range_bonus_pct": 0.5,
-        "cooldown_reduction_pct": 0.2
+        "hp": 48,
+        "def": 1.15,
+        "element_resist_pct": 0.28,
+        "spirit": 4.0,
+        "cooldown_reduction_pct": 0.3
       },
       "upgrade_materials": [],
       "quality": "high",
@@ -2004,24 +1822,18 @@
       "skill_name": "Âm Dương Nghịch Chuyển",
       "skill_description": "Âm Dương Nghịch Chuyển: Chuyển đổi 70% sát thương phải gánh chịu thành sinh lực và phản lại 30% sát thương cho kẻ tấn công.",
       "base_stats": {
-        "atk": 275,
-        "speed_pct": 4,
-        "spirit": 335,
-        "hp": 775,
-        "def": 107,
-        "skill_range_bonus_pct": 5,
-        "cooldown_reduction_pct": 4,
-        "dodge_rate": 0.02,
-        "element_resist_pct": 0
+        "spirit": 72,
+        "dodge_rate": 0.04,
+        "hp": 650,
+        "element_resist_pct": 8,
+        "def": 14
       },
       "stat_growth": {
-        "atk": 20,
-        "speed_pct": 1,
-        "spirit": 10,
-        "hp": 50,
-        "def": 8,
-        "skill_range_bonus_pct": 0.5,
-        "cooldown_reduction_pct": 0.2
+        "spirit": 4.5,
+        "dodge_rate": 0.0015,
+        "hp": 40,
+        "element_resist_pct": 0.25,
+        "def": 0.9
       },
       "upgrade_materials": [],
       "quality": "high",
@@ -2063,24 +1875,18 @@
       "skill_name": "Họa Trung Càn Khôn",
       "skill_description": "Họa Trung Càn Khôn: Hút toàn bộ kẻ địch vào không gian bức họa, gây sát thương nghiền nát nguyên thần và giảm vĩnh viễn 20% công kích của chúng.",
       "base_stats": {
-        "atk": 580,
-        "speed_pct": 4,
-        "spirit": 290,
-        "hp": 662,
-        "def": 92,
-        "skill_range_bonus_pct": 10,
-        "cooldown_reduction_pct": 4,
-        "dodge_rate": 0.02,
-        "element_resist_pct": 0
+        "atk": 42,
+        "spirit": 70,
+        "skill_range_bonus_pct": 14,
+        "cooldown_reduction_pct": 7,
+        "hp": 580
       },
       "stat_growth": {
-        "atk": 20,
-        "speed_pct": 1,
-        "spirit": 10,
-        "hp": 50,
-        "def": 8,
-        "skill_range_bonus_pct": 0.5,
-        "cooldown_reduction_pct": 0.2
+        "atk": 3.2,
+        "spirit": 4.2,
+        "skill_range_bonus_pct": 0.65,
+        "cooldown_reduction_pct": 0.3,
+        "hp": 36
       },
       "upgrade_materials": [],
       "quality": "high",
@@ -2122,24 +1928,18 @@
       "skill_name": "Khai Thiên Phách Địa",
       "skill_description": "Khai Thiên Phách Địa: Bổ đôi hư không tạo ra vết nứt không gian, gây sát thương chuẩn cực đại lên toàn bộ kẻ địch theo đường thẳng.",
       "base_stats": {
-        "atk": 730,
-        "speed_pct": 5,
-        "spirit": 170,
-        "hp": 850,
-        "def": 117,
-        "skill_range_bonus_pct": 5,
-        "cooldown_reduction_pct": 4,
-        "dodge_rate": 0.02,
-        "element_resist_pct": 0
+        "atk": 50,
+        "hp": 680,
+        "def": 15,
+        "skill_range_bonus_pct": 12,
+        "speed_pct": 10
       },
       "stat_growth": {
-        "atk": 20,
-        "speed_pct": 1,
-        "spirit": 10,
-        "hp": 50,
-        "def": 8,
-        "skill_range_bonus_pct": 0.5,
-        "cooldown_reduction_pct": 0.2
+        "atk": 3.8,
+        "hp": 42,
+        "def": 0.95,
+        "skill_range_bonus_pct": 0.55,
+        "speed_pct": 0.5
       },
       "upgrade_materials": [],
       "quality": "high",

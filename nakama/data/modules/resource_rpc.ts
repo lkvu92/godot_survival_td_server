@@ -180,6 +180,7 @@ const purchaseStamina: nkruntime.RpcFunction = (
             purchases_today: purchasesToday
         });
     }
+    if (Number(profile.stamina || 0) >= STAMINA_CAP_RESOURCE) return JSON.stringify({ success: false, message: "Stamina is already full" });
     const gemCost = prices[purchasesToday];
     const debit = debitResource(profile, "gems", gemCost);
     if (!debit.success) {
@@ -338,7 +339,7 @@ const startStage: nkruntime.RpcFunction = (ctx, _logger, nk, payload): string =>
     const rows = nk.sqlQuery("SELECT stamina_cost FROM game_stage_levels WHERE stage_id = $1 AND level_id = $2", [stageId, levelId]);
     if (rows.length === 0) return JSON.stringify({ success: false, message: "Unknown stage level" });
     const cost = Math.max(0, Number(rows[0].stamina_cost || 0));
-    const stamina = Math.max(0, Math.min(STAMINA_CAP_RESOURCE, Number(profile.stamina || 0)));
+    const stamina = Math.max(0, Number(profile.stamina || 0));
     if (stamina < cost) return JSON.stringify({ success: false, message: "Not enough stamina", stamina_cost: cost, stamina });
     profile.stamina = stamina - cost;
 	const runState = talismanCreateStageRun(nk, ctx.userId, stageId, levelId);

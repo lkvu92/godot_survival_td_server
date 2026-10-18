@@ -13,34 +13,44 @@ const MONETIZATION_PRODUCTS: { [key: string]: number } = {
     remove_ads_permanent: 100 * 365 * 24 * 60 * 60,
 };
 
-const DEFAULT_REWARDED_PLACEMENTS: { [key: string]: any } = {
-    main_menu_stamina: { type: "stamina", amount: 5 },
-    stamina_dialog_ad: { type: "stamina", amount: 5 },
-    card_reroll_ad: { type: "card_reroll", amount: 1 },
-    combat_revive_ad: { type: "combat_revive", amount: 1 },
-    talisman_enhance_charm_ad: { type: "item", amount: 1, item_id: "talisman_enhance_charm", daily_limit: 1 },
-    element_enlightenment_charm_ad: { type: "item", amount: 1, item_id: "element_enlightenment_charm", daily_limit: 1 },
-};
-
-function rewardedAdsConfig(nk: nkruntime.Nakama): any {
-    const rows = nk.sqlQuery("SELECT payload FROM game_content_configs WHERE id='rewarded_ads' AND active=TRUE", []);
-    const config = rows.length ? objectValue(parseJsonb(rows[0].payload)) : {};
+function validRewardedAdsConfig(config: any): boolean {
+    if (!config || config.schema_version !== 2) return false;
     const placements = objectValue(config.placements);
+    if (!Object.keys(placements).length) return false;
+    const expectedTypes: any = {stamina_dialog_ad:"stamina",daily_mission_talisman_fragment_ad:"daily_fragment",card_reroll_ad:"card_reroll",combat_revive_ad:"combat_revive",stage_reward_x2_ad:"stage_reward_x2",talisman_enhance_charm_ad:"item",element_enlightenment_charm_ad:"item"};
     for (const id of Object.keys(placements)) {
         const entry = placements[id];
         if (!entry || !Number.isSafeInteger(entry.amount) || entry.amount <= 0
-            || (entry.daily_limit !== undefined && (!Number.isSafeInteger(entry.daily_limit) || entry.daily_limit <= 0))) return {};
+            || (expectedTypes[id] && entry.type !== expectedTypes[id])
+            || ["stamina", "item", "daily_fragment", "card_reroll", "combat_revive", "stage_reward_x2"].indexOf(entry.type) < 0
+            || (entry.daily_limit !== undefined && (!Number.isSafeInteger(entry.daily_limit) || entry.daily_limit < 0 || entry.daily_limit > 1000))
+            || (entry.run_limit !== undefined && (!Number.isSafeInteger(entry.run_limit) || entry.run_limit < 0 || entry.run_limit > 100))
+            || (entry.enabled !== undefined && typeof entry.enabled !== "boolean")
+            || (entry.type === "item" && !entry.item_id)
+            || (["stamina", "item", "daily_fragment", "stage_reward_x2"].indexOf(entry.type) >= 0 && entry.daily_limit === undefined)
+            || (["card_reroll", "combat_revive"].indexOf(entry.type) >= 0 && (entry.amount !== 1 || entry.run_limit === undefined))
+            || (entry.type === "stage_reward_x2" && (entry.amount < 2 || entry.amount > 10 || entry.daily_limit === undefined))) return false;
     }
     const mission = placements.daily_mission_talisman_fragment_ad;
-    if (mission && (!config.daily_mission || config.daily_mission.completion_count !== mission.daily_limit)) return {};
-    return config;
+    if (mission && (!config.daily_mission || !Number.isSafeInteger(config.daily_mission.completion_count)
+        || config.daily_mission.completion_count <= 0 || (mission.daily_limit > 0 && config.daily_mission.completion_count > mission.daily_limit))) return false;
+    return true;
+}
+
+function rewardedAdsConfig(nk: nkruntime.Nakama): any {
+    const config = getRemoteConfigValue(nk, "system", "rewarded_ads", null);
+    return validRewardedAdsConfig(config) ? config : {};
+}
+
+function rewardedRunLimit(nk: nkruntime.Nakama, placement: string): number {
+    const definition = objectValue(rewardedAdsConfig(nk).placements)[placement];
+    return definition && definition.enabled !== false ? Math.max(0, Number(definition.run_limit || 0)) : 0;
 }
 
 function canonicalRewardPlacement(id: string): string {
     return id === "main_menu_stamina" ? "stamina_dialog_ad" : id;
 }
 
-const MAX_CARD_REROLLS_PER_RUN = 3;
 let vipRuntimeMode = "production";
 
 function objectValue(value: any): any {
@@ -133,7 +143,7 @@ function readEntitlementRow(nk: nkruntime.Nakama, userId: string): any {
 
 function buildDailyRewardStatus(nk: nkruntime.Nakama, userId: string): any {
     const interrupted = nk.sqlQuery(`SELECT ad_session_id FROM monetization_ad_rewards
-        WHERE user_id=$1 AND status='verified' AND reward_type IN ('stamina','item','daily_fragment')
+        WHERE user_id=$1 AND status='verified' AND reward_type IN ('stamina','item','daily_fragment','stage_reward_x2')
         ORDER BY created_at LIMIT 32`, [userId]);
     for (const session of interrupted) {
         try { grantPreparedReward(nk, userId, String(session.ad_session_id), ""); }
@@ -369,6 +379,82 @@ function addStoreInventoryItem(nk: nkruntime.Nakama, inventory: any[], itemId: s
     }
 }
 
+const DAILY_PACK_DAY_MS = 86400000;
+const DAILY_PACK_IDS = ["daily_deal", "flash_sale"];
+
+function dailyPackState(profile: any, now: number): any {
+    const result: any = {};
+    for (const id of DAILY_PACK_IDS) {
+        const pack = (profile.daily_packs || {})[id];
+        const active = !!pack && now >= Number(pack.started_at_ms) && now < Number(pack.expires_at_ms);
+        const day = active ? Math.floor((now - Number(pack.started_at_ms)) / DAILY_PACK_DAY_MS) : -1;
+        result[id] = { active, claimable: active && day > Number(pack.last_claim_day), day: day + 1,
+            days_remaining: active ? 30 - day : 0, expires_at: pack ? Math.floor(Number(pack.expires_at_ms) / 1000) : 0,
+            next_claim_at: active ? Math.floor((Number(pack.started_at_ms) + (day + 1) * DAILY_PACK_DAY_MS) / 1000) : 0 };
+    }
+    return result;
+}
+
+function dailyPackResponse(userId: string, profile: any, now: number): any {
+    return { user_id: userId, server_time: Math.floor(now / 1000), packs: dailyPackState(profile, now) };
+}
+
+const getDailyPackStatus: nkruntime.RpcFunction = (ctx, _logger, nk, _payload) => {
+    if (!ctx.userId) return monetizationError(401, "Authentication required");
+    const rows = nk.storageRead([{ collection: "player_profiles", key: "main", userId: ctx.userId }]);
+    if (!rows.length) return monetizationError(404, "Player profile missing");
+    return JSON.stringify({ status: "success", data: dailyPackResponse(ctx.userId, rows[0].value, Date.now()) });
+};
+
+const claimDailyPack: nkruntime.RpcFunction = (ctx, _logger, nk, payload) => {
+    if (!ctx.userId) return monetizationError(401, "Authentication required");
+    let req: any;
+    try { req = JSON.parse(payload || "{}"); } catch (_) { return monetizationError(400, "Invalid JSON"); }
+    if (!req || typeof req !== "object" || Array.isArray(req)) return monetizationError(400, "Invalid JSON object");
+    const id = String(req.product_id || "");
+    if (DAILY_PACK_IDS.indexOf(id) < 0) return monetizationError(400, "Unknown daily pack");
+    const rows = nk.storageRead([
+        { collection: "player_profiles", key: "main", userId: ctx.userId },
+        { collection: "player_inventory", key: "items", userId: ctx.userId },
+        { collection: "player_stage_runs", key: "active", userId: ctx.userId }
+    ]);
+    const profileRow = rows.find((r: any) => r.collection === "player_profiles");
+    const inventoryRow = rows.find((r: any) => r.collection === "player_inventory");
+    const run = rows.find((r: any) => r.collection === "player_stage_runs");
+    if (!profileRow || !inventoryRow) return monetizationError(404, "Player state missing");
+    const now = Date.now();
+    if (run && run.value.status === "active" && Number(run.value.expires_at_ms) > now) return monetizationError(409, "Finish combat before claiming pack rewards");
+    const profile: any = profileRow.value;
+    if (profile.breakthrough && profile.breakthrough.in_tribulation === true) return monetizationError(409, "Finish tribulation before claiming pack rewards");
+    const status = dailyPackState(profile, now)[id];
+    if (!status.active) return monetizationError(409, "Pack is not active");
+    if (!status.claimable) return JSON.stringify({ status: "success", idempotent: true, data: dailyPackResponse(ctx.userId, profile, now) });
+    const pack = profile.daily_packs[id];
+    if (!Array.isArray(pack.rewards) || !pack.rewards.length) return monetizationError(409, "Pack rewards missing");
+    const inventory: any = inventoryRow.value;
+    inventory.items = Array.isArray(inventory.items) ? inventory.items : [];
+    profile.resources = profile.resources || {};
+    try {
+        for (const reward of pack.rewards) {
+            if (!Number.isSafeInteger(reward.quantity) || reward.quantity <= 0) throw Error("Invalid reward quantity");
+            if (reward.reward_type === "currency" && ["gold", "gems"].indexOf(reward.reward_id) >= 0) {
+                profile.resources[reward.reward_id] = Math.max(0, Number(profile.resources[reward.reward_id] || 0)) + reward.quantity;
+            } else if (reward.reward_type === "stamina" && reward.reward_id === "stamina") {
+                profile.stamina = Math.max(0, Number(profile.stamina || 0)) + reward.quantity;
+                profile.last_stamina_update = Math.floor(now / 1000);
+            } else if (reward.reward_type === "item") {
+                addStoreInventoryItem(nk, inventory.items, String(reward.reward_id), reward.quantity);
+            } else throw Error("Unsupported pack reward");
+        }
+        pack.last_claim_day = status.day - 1;
+        nk.storageWrite([
+            { collection: "player_profiles", key: "main", userId: ctx.userId, value: profile, version: profileRow.version, permissionRead: 1, permissionWrite: 0 },
+            { collection: "player_inventory", key: "items", userId: ctx.userId, value: inventory, version: inventoryRow.version, permissionRead: 1, permissionWrite: 0 }
+        ]);
+        return JSON.stringify({ status: "success", data: Object.assign(dailyPackResponse(ctx.userId, profile, now), { profile, inventory, rewards: pack.rewards }) });
+    } catch (_) { return monetizationError(409, "Pack reward claim failed; refresh and retry"); }
+};
+
 function applyPurchaseStorageRewards(
     nk: nkruntime.Nakama, userId: string, grantId: string, productId: string,
     fulfillmentType: string, rewards: StoreRewardLine[]
@@ -376,6 +462,21 @@ function applyPurchaseStorageRewards(
     const profileObjects = nk.storageRead([{ collection: "player_profiles", key: "main", userId }]);
     if (profileObjects.length === 0) throw new Error("Player profile does not exist");
     const profile = profileObjects[0].value || {};
+    const recurring = DAILY_PACK_IDS.indexOf(productId) >= 0 && rewards.length > 0
+        && rewards.every(line => line.metadata && Number(line.metadata.daily_pack_days) === 30);
+    if (recurring) {
+        profile.daily_packs = profile.daily_packs || {};
+        const existing = profile.daily_packs[productId];
+        if (existing && existing.grant_id === grantId) return { daily_pack: existing };
+        const now = Date.now();
+        if (dailyPackState(profile, now)[productId].active) throw Error("Daily pack already active");
+        const pack = { grant_id: grantId, started_at_ms: now, expires_at_ms: now + 30 * DAILY_PACK_DAY_MS, last_claim_day: -1,
+            rewards: rewards.map(line => ({ reward_type: line.reward_type, reward_id: line.reward_id, quantity: line.quantity })) };
+        profile.daily_packs[productId] = pack;
+        nk.storageWrite([{ collection: "player_profiles", key: "main", userId, value: profile,
+            permissionRead: 1, permissionWrite: 0, version: profileObjects[0].version }]);
+        return { daily_pack: pack };
+    }
     const profileGrants: string[] = Array.isArray(profile._iap_reward_ids)
         ? profile._iap_reward_ids.map((value: any) => String(value)) : [];
     if (profileGrants.indexOf(grantId) < 0) {
@@ -385,7 +486,7 @@ function applyPurchaseStorageRewards(
         });
         profile.resources = resources;
         rewards.filter(line => line.reward_type === "stamina").forEach(line => {
-            profile.stamina = Math.min(30, Math.max(0, Number(profile.stamina || 0)) + Number(line.quantity));
+            profile.stamina = Math.max(Number(profile.stamina || 0), Math.min(30, Math.max(0, Number(profile.stamina || 0)) + Number(line.quantity)));
         });
         const entitlements = profile.iap_entitlements || {};
         rewards.filter(line => line.reward_type === "entitlement" && line.reward_id !== "no_ads_seconds").forEach(line => {
@@ -459,8 +560,12 @@ const createPurchaseOrder: nkruntime.RpcFunction = (ctx, _logger, nk, payload) =
     if (products.length === 0) return monetizationError(404, "Product is unavailable");
     const product = products[0];
 
+    if (DAILY_PACK_IDS.indexOf(productId) >= 0) {
+        const profiles = nk.storageRead([{ collection: "player_profiles", key: "main", userId: ctx.userId }]);
+        if (profiles.length && dailyPackState(profiles[0].value, Date.now())[productId].active) return monetizationError(409, "Daily pack already active; claim its daily reward instead");
+    }
     const previous = nk.sqlQuery(
-        "SELECT id, status, fulfillment_type FROM monetization_purchase_orders WHERE user_id = $1 AND product_id = $2 AND status IN ('pending','fulfilled') ORDER BY created_at DESC",
+        "SELECT id, status, fulfillment_type, reward_snapshot FROM monetization_purchase_orders WHERE user_id = $1 AND product_id = $2 AND status IN ('pending','fulfilled') ORDER BY created_at DESC",
         [ctx.userId, productId]
     );
     const fulfilled = previous.filter((row: any) => String(row.status) === "fulfilled");
@@ -477,7 +582,12 @@ const createPurchaseOrder: nkruntime.RpcFunction = (ctx, _logger, nk, payload) =
             purchase_order_id: "", product_id: productId, fulfillment_type: String(product.fulfillment_type),
             already_fulfilled: true }, idempotent: true });
     }
-    const pending = previous.find((row: any) => String(row.status) === "pending");
+    const monthlyCatalog = DAILY_PACK_IDS.indexOf(productId) >= 0 && Number((parseJsonb(product.ui) || {}).duration_days) === 30;
+    // Never launch a newly advertised monthly purchase against an older one-time
+    // pending snapshot. Keep old orders claimable for already-paid receipts.
+    const pending = previous.find((row: any) => String(row.status) === "pending" && (!monthlyCatalog || (
+        Array.isArray(parseJsonb(row.reward_snapshot)) && parseJsonb(row.reward_snapshot).length > 0
+        && parseJsonb(row.reward_snapshot).every((line: any) => Number((line.metadata || {}).daily_pack_days) === 30))));
     if (pending) {
         return JSON.stringify({ status: "success", data: { purchase_order_id: String(pending.id),
             product_id: productId, fulfillment_type: String(product.fulfillment_type) }, idempotent: true });
@@ -645,6 +755,7 @@ const prepareRewardedAd: nkruntime.RpcFunction = (ctx, _logger, nk, payload) => 
     const placementId = canonicalRewardPlacement(String(req.placement_id || ""));
     const reward = objectValue(rewardedAdsConfig(nk).placements)[placementId];
     if (!reward) return monetizationError(400, "Unknown rewarded placement or missing rewarded_ads config");
+    if (reward.enabled === false || reward.daily_limit === 0 || reward.run_limit === 0) return monetizationError(403, "Rewarded placement is disabled");
     const requestId = String(req.request_id || nk.uuidv4());
     if (requestId.length > 128) return monetizationError(400, "Invalid reward request ID");
     let sessions = nk.sqlQuery("SELECT * FROM monetization_ad_rewards WHERE user_id=$1 AND client_request_id=$2", [ctx.userId, requestId]);
@@ -660,6 +771,13 @@ const prepareRewardedAd: nkruntime.RpcFunction = (ctx, _logger, nk, payload) => 
         }
     }
     let rewardContext: any = {};
+    if (placementId === "stage_reward_x2_ad") {
+        const runId = String(objectValue(req.context).run_id || "");
+        const settled = readSettledRewardRun(nk, ctx.userId, runId);
+        if (!settled) return monetizationError(409, "A settled winning result is required");
+        if (settled.run.stage_reward.claimed && (!sessions.length || settled.run.stage_reward.ad_session_id !== String(sessions[0].ad_session_id))) return monetizationError(409, "Victory multiplier already claimed");
+        rewardContext = {run_id: runId};
+    }
     if (placementId === "card_reroll_ad") {
         rewardContext = objectValue(req.context);
         const runId = String(rewardContext.run_id || "");
@@ -669,7 +787,7 @@ const prepareRewardedAd: nkruntime.RpcFunction = (ctx, _logger, nk, payload) => 
         }
         const activeRun = readActiveRun(nk, ctx.userId, runId);
         if (!activeRun) return monetizationError(409, "Run is not active");
-        if (Math.max(0, Number(activeRun.run.ad_card_rerolls_used || 0)) >= MAX_CARD_REROLLS_PER_RUN) {
+        if (Math.max(0, Number(activeRun.run.ad_card_rerolls_used || 0)) >= rewardedRunLimit(nk, placementId)) {
             return monetizationError(409, "Card reroll quota reached");
         }
         rewardContext = { run_id: runId, offer_seq: offerSeq };
@@ -680,7 +798,7 @@ const prepareRewardedAd: nkruntime.RpcFunction = (ctx, _logger, nk, payload) => 
         if (!runId) return monetizationError(400, "Combat revive requires an active run");
         const activeRun = readActiveRun(nk, ctx.userId, runId);
         if (!activeRun) return monetizationError(409, "Run is not active");
-        if (Math.max(0, Number(activeRun.run.item_revives || 0)) >= 1) {
+        if (Math.max(0, Number(activeRun.run.item_revives || 0)) >= rewardedRunLimit(nk, placementId)) {
             return monetizationError(409, "Revive already used for this run");
         }
         rewardContext = { run_id: runId };
@@ -689,7 +807,7 @@ const prepareRewardedAd: nkruntime.RpcFunction = (ctx, _logger, nk, payload) => 
         const oldContext = objectValue(parseJsonb(sessions[0].context));
         if (oldContext.run_id !== rewardContext.run_id || Number(oldContext.offer_seq) !== Number(rewardContext.offer_seq)) return monetizationError(409, "Reward request belongs to another card offer");
     }
-    if (sessions.length && placementId === "combat_revive_ad") {
+    if (sessions.length && ["combat_revive_ad", "stage_reward_x2_ad"].indexOf(placementId) >= 0) {
         const oldContext = objectValue(parseJsonb(sessions[0].context));
         if (oldContext.run_id !== rewardContext.run_id) return monetizationError(409, "Reward request belongs to another run");
     }
@@ -714,7 +832,7 @@ const prepareRewardedAd: nkruntime.RpcFunction = (ctx, _logger, nk, payload) => 
         const saved = objectValue(parseJsonb(sessions[0].context));
         if (saved.run_id !== rewardContext.run_id || Number(saved.offer_seq) !== Number(rewardContext.offer_seq)) return monetizationError(409, "Reward request belongs to another card offer");
     }
-    if (placementId === "combat_revive_ad") {
+    if (["combat_revive_ad", "stage_reward_x2_ad"].indexOf(placementId) >= 0) {
         const saved = objectValue(parseJsonb(sessions[0].context));
         if (saved.run_id !== rewardContext.run_id) return monetizationError(409, "Reward request belongs to another run");
     }
@@ -790,6 +908,7 @@ function grantPreparedReward(nk: nkruntime.Nakama, userId: string, adSessionId: 
         );
         if (existing.length === 0) return { granted: false };
         if (existing[0].status === "granted") {
+            if (String(existing[0].reward_type) === "stage_reward_x2") return grantStageRewardMultiplier(nk, userId, adSessionId, Number(existing[0].reward_amount), 0);
             return {
                 granted: true,
                 reward_type: String(existing[0].reward_type),
@@ -806,7 +925,13 @@ function grantPreparedReward(nk: nkruntime.Nakama, userId: string, adSessionId: 
     const placementId = String(reward.placement_id || "");
     const rewardDefinition = objectValue(rewardedAdsConfig(nk).placements)[canonicalRewardPlacement(placementId)];
     if (!rewardDefinition) return { granted: false, message: "Unknown rewarded placement" };
+    if (rewardDefinition.enabled === false || rewardDefinition.daily_limit === 0 || rewardDefinition.run_limit === 0) return {granted: false, message: "Rewarded placement disabled"};
     const limit = Number(rewardDefinition.daily_limit || 0);
+    if (String(reward.reward_type) === "stage_reward_x2") {
+        const granted = grantStageRewardMultiplier(nk, userId, adSessionId, Number(reward.reward_amount), limit);
+        if (granted.granted) nk.sqlExec("UPDATE monetization_ad_rewards SET status='granted', granted_at=NOW() WHERE ad_session_id=$1 AND status='verified'", [adSessionId]);
+        return granted;
+    }
     const dailyClaim = limit > 0 ? reserveDailyRewardClaim(nk, userId, placementId, adSessionId, limit) : null;
     if (limit > 0 && !dailyClaim) {
         nk.sqlExec("UPDATE monetization_ad_rewards SET status='rejected' WHERE ad_session_id=$1 AND status='verified'", [adSessionId]);
@@ -854,7 +979,7 @@ function grantPreparedReward(nk: nkruntime.Nakama, userId: string, adSessionId: 
         : [];
     if (rewardIds.indexOf(adSessionId) < 0) {
         if (String(reward.reward_type) === "stamina") {
-            profile.stamina = Math.min(30, Math.max(0, Number(profile.stamina || 0)) + Number(reward.reward_amount || 0));
+            profile.stamina = Math.max(Number(profile.stamina || 0), Math.min(30, Math.max(0, Number(profile.stamina || 0)) + Number(reward.reward_amount || 0)));
         } else {
             const resources = profile.resources || {};
             resources[String(reward.reward_type)] = Math.max(0, Number(resources[String(reward.reward_type)] || 0)) + Number(reward.reward_amount || 0);
@@ -899,6 +1024,10 @@ const confirmRewardedAd: nkruntime.RpcFunction = (ctx, _logger, nk, payload) => 
         [adSessionId, ctx.userId]
     );
     if (rows.length === 0) return monetizationError(404, "Reward session not found");
+    if (String(rows[0].reward_type) === "stage_reward_x2" && ["verified", "granted"].indexOf(String(rows[0].status)) >= 0) {
+        const reward = grantPreparedReward(nk, ctx.userId, adSessionId, "");
+        return JSON.stringify({status: reward.granted ? "success" : "error", data: reward, code: reward.granted ? undefined : 409});
+    }
     return JSON.stringify({ status: "success", data: rows[0] });
 };
 
@@ -928,7 +1057,7 @@ const consumeAdGameplayReward: nkruntime.RpcFunction = (ctx, _logger, nk, payloa
         }
         const activeRun = readActiveRun(nk, ctx.userId, runId);
         if (!activeRun) return monetizationError(409, "Run is not active");
-        if (Math.max(0, Math.floor(Number(activeRun.run.item_revives || 0))) >= 1) {
+        if (Math.max(0, Math.floor(Number(activeRun.run.item_revives || 0))) >= rewardedRunLimit(nk, "combat_revive_ad")) {
             return monetizationError(409, "Revive already used for this run");
         }
         const definitions = nk.sqlQuery("SELECT attributes FROM game_items WHERE id='revive_talisman'", []);
@@ -936,7 +1065,7 @@ const consumeAdGameplayReward: nkruntime.RpcFunction = (ctx, _logger, nk, payloa
         if (String(effect.kind || "") !== "revive" || !Number.isFinite(Number(effect.value)) || Number(effect.value) <= 0) {
             return monetizationError(409, "Revive effect configuration is unavailable");
         }
-        activeRun.run.item_revives = 1;
+        activeRun.run.item_revives = Math.max(0, Math.floor(Number(activeRun.run.item_revives || 0))) + 1;
         nk.storageWrite([{
             collection: "player_stage_runs", key: "active", userId: ctx.userId, value: activeRun.run,
             permissionRead: 1, permissionWrite: 0, version: activeRun.object.version,
@@ -962,7 +1091,8 @@ const consumeAdGameplayReward: nkruntime.RpcFunction = (ctx, _logger, nk, payloa
     const activeRun = readActiveRun(nk, ctx.userId, runId);
     if (!activeRun) return monetizationError(409, "Run is not active");
     const used = Math.max(0, Math.floor(Number(activeRun.run.ad_card_rerolls_used || 0)));
-    if (used >= MAX_CARD_REROLLS_PER_RUN) return monetizationError(409, "Card reroll quota reached");
+    const maxRerolls = rewardedRunLimit(nk, "card_reroll_ad");
+    if (used >= maxRerolls) return monetizationError(409, "Card reroll quota reached");
     activeRun.run.ad_card_rerolls_used = used + 1;
     nk.storageWrite([{
         collection: "player_stage_runs", key: "active", userId: ctx.userId, value: activeRun.run,
@@ -977,7 +1107,7 @@ const consumeAdGameplayReward: nkruntime.RpcFunction = (ctx, _logger, nk, payloa
     if (consumed.length === 0) return monetizationError(409, "Card reroll credit is already used");
     return JSON.stringify({ status: "success", data: {
         consumed: true, run_id: runId, offer_seq: offerSeq,
-        rerolls_used: used + 1, rerolls_remaining: MAX_CARD_REROLLS_PER_RUN - used - 1,
+        rerolls_used: used + 1, rerolls_remaining: maxRerolls - used - 1,
     }});
 };
 

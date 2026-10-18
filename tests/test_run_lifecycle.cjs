@@ -65,4 +65,17 @@ for (const payload of ['null', '[]', '{']) {
   assert.equal(JSON.parse(fn('abandonRun')({userId: 'u'}, {}, nk, payload)).success, false);
   assert.equal(JSON.parse(fn('loadPlayerProfile')({userId: 'u'}, {}, nk, payload)).success, false);
 }
-console.log('PASS run lifecycle: exit/retry/stale/terminal/expired/CAS, tribulation penalty once, fresh login vs ordinary refresh');
+reset(); profile().stamina = 80; profile().last_stamina_update = 1;
+profile().daily_packs = {flash_sale:{grant_id:'paid',started_at_ms:Date.now(),expires_at_ms:Date.now()+86400000,last_claim_day:0,rewards:[]}};
+load({}); assert.equal(profile().stamina,80,'Profile refresh must preserve paid stamina overflow');
+load({fresh_login:true}); assert.equal(profile().stamina,80,'Login must preserve paid stamina overflow');
+assert.equal(profile().daily_packs.flash_sale.grant_id,'paid','Login must preserve daily-pack entitlement/claim state');
+vm.runInContext(fs.readFileSync(path.join(__dirname,'../nakama/data/modules/build/resource_rpc.js'),'utf8'),c);
+c.parseJsonb = x => typeof x === 'string' ? JSON.parse(x) : x;
+c.progressionReconcileLevelUnlocks = () => {};
+c.eventRecord = () => {};
+c.talismanCreateStageRun = () => ({run:{run_id:'new-run',status:'active'},version:db['player_stage_runs:active'].version});
+const stageNk={...nk,sqlQuery(sql,args){return sql.includes('stamina_cost')?[{stamina_cost:5}]:nk.sqlQuery(sql,args);}};
+const started=JSON.parse(fn('startStage')({userId:'u'},{},stageNk,JSON.stringify({stage_id:'stage_0_1',level_id:'normal'})));
+assert(started.success); assert.equal(profile().stamina,75,'Starting a stage must debit from the full paid stamina balance');
+console.log('PASS run lifecycle: exit/retry/stale/terminal/expired/CAS, tribulation penalty once, fresh login vs refresh, paid stamina and daily-pack preservation');

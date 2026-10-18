@@ -133,7 +133,7 @@ function checkinApplyGrants(nk: nkruntime.Nakama, profile: any, items: any[], gr
             profile.resources[id] = Math.max(0, Number(profile.resources[id] || 0)) + amount;
             issued.push({ type, id, amount });
         } else if (type === "stamina") {
-            profile.stamina = Math.min(30, Math.max(0, Number(profile.stamina || 0)) + amount);
+            profile.stamina = Math.max(Number(profile.stamina || 0), Math.min(30, Math.max(0, Number(profile.stamina || 0)) + amount));
             issued.push({ type, amount });
         } else if (type === "item" || type === "random_item") {
             let itemId = String(raw.id || "");

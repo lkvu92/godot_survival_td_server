@@ -14,7 +14,7 @@ function sql(query) {
   return result.stdout.trim();
 }
 const sandbox = vm.createContext({console});
-for (const file of ['config_tables','monetization_tables','seed','event_service_rpc','config_rpc']) {
+for (const file of ['config_tables','monetization_tables','seed','event_service_rpc','config_rpc','monetization_rpc','weekly_leaderboard']) {
   vm.runInContext(fs.readFileSync(path.join(root,'nakama/data/modules/build',file+'.js'),'utf8'), sandbox);
 }
 const api = vm.runInContext('({seedGameData,createGameConfigTables,createMonetizationTables,seedBindSql,processHero,processArc,processCard,processTalisman,processSkill,processStage,processEffect,publishConfigRelease,getGameConfig})',sandbox);

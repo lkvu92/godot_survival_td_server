@@ -1,8 +1,14 @@
 # Server documentation
 
+- [System Settings — quảng cáo nhận thưởng](SYSTEM_SETTINGS.md): trường cấu hình, mặc định, quota, ví dụ chỉnh và publish.
+
+- [C134 Result ads and System config](contracts/C134_RESULT_AD_SYSTEM_CONFIG.md): victory x2 rewards (five/day) and centralized ad amounts/limits.
+
+- [C109 Store catalog](contracts/C109_STORE_CATALOG_PURCHASE_ORDER.md) v1.1.1: Gem Sack 1000 (2000 first purchase), Gem Chest 5000, Gold Vault 1000000; daily-tab packs retain 30 daily claim windows.
+
 - [C133 Run lifecycle](contracts/C133_RUN_LIFECYCLE.md): explicit abandon and login recovery; refresh never ends combat.
 
-- [C105 Progression](contracts/C105_PROGRESSION.md) v1.2.0: User EXP thresholds x5 and first-clear EXP x2.
+- [C105 Progression](contracts/C105_PROGRESSION.md) v1.2.1: Diễn Võ Trường grants no permanent EXP; ordinary stages retain User EXP thresholds x5 and first-clear EXP x2.
 
 - [C131 Single login](contracts/C131_SINGLE_LOGIN.md) v1.1.0: signed login generations and realtime login-change push without polling.
 
@@ -30,3 +36,7 @@
 - [C123 Account password setup](contracts/C123_ACCOUNT_PASSWORD.md) v1.1.0 IN_PROGRESS - Google proof, same account email login and Login-style UI.
 
 - [C125 Player names](contracts/C125_PLAYER_NAMES.md) v1.0.0 - persistent Google game names and one-time rename.
+
+- [C135 Weekly leaderboard rewards](contracts/C135_WEEKLY_LEADERBOARD_REWARDS.md): weekly snapshots, 3 categories, top500 rewards and System configuration.
+
+- [Weekly rewards operations and Settings](WEEKLY_LEADERBOARD_REWARDS.md): approved reward table, configuration, publication and scheduler installation.

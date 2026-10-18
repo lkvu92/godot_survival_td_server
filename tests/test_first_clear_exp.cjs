@@ -17,7 +17,7 @@ progressionCompleteStage = (_nk, p, stage_id, level_id) => {
 eventRecord = () => {};
 `, context);
 const award = vm.runInContext('awardStageProgression', context);
-let db, version = 0, conflict = false;
+let db, version = 0, conflict = false, stageId = 'stage_1_1', arcId = 'arc_1';
 function row(collection, key, value) {
   db[collection] = {collection, key, value: clone(value), version: String(++version)};
 }
@@ -29,7 +29,7 @@ const nk = {
     for (const w of writes) row(w.collection, w.key, w.value);
   },
   sqlQuery(sql) {
-    if (sql.includes('exp_weight')) return [{exp_weight: 1.1, is_boss: false}];
+    if (sql.includes('exp_weight')) return [{exp_weight: 1.1, is_boss: false, arc_id: arcId}];
     if (sql.includes('exp_multiplier')) return [{exp_multiplier: 1.25, gold_reward: 0, loot_table: [], boss_loot_table: []}];
     return [];
   }
@@ -37,7 +37,7 @@ const nk = {
 context.parseJsonb = x => x;
 context.getRemoteConfigValue = (_nk, _key, _field, fallback) => fallback;
 function run(id, difficulty = 'normal') {
-  row('player_stage_runs', 'active', {run_id: id, status: 'active', stage_id: 'stage_1_1', difficulty_id: difficulty, expires_at_ms: Date.now() + 60000});
+  row('player_stage_runs', 'active', {run_id: id, status: 'active', stage_id: stageId, difficulty_id: difficulty, expires_at_ms: Date.now() + 60000});
 }
 function reset(completed = []) {
   db = {}; conflict = false;
@@ -47,7 +47,7 @@ function reset(completed = []) {
   run('one');
 }
 function settle(id, won = true, difficulty = 'normal', base_exp = 101) {
-  return JSON.parse(award({userId: 'u'}, {}, nk, JSON.stringify({stage_id: 'stage_1_1', difficulty_id: difficulty, hero_id: 'hero', run_id: id, won, base_exp})));
+  return JSON.parse(award({userId: 'u'}, {}, nk, JSON.stringify({stage_id: stageId, difficulty_id: difficulty, hero_id: 'hero', run_id: id, won, base_exp})));
 }
 reset();
 let result = settle('one');
@@ -76,4 +76,25 @@ assert.equal(db.player_profiles.value.completed_stage_levels.length, 0);
 conflict = false; assert(settle('one').first_clear);
 reset(); result = settle('one', true, 'normal', 0);
 assert(result.first_clear); assert.equal(result.exp_awarded, 0);
-console.log('PASS first-clear EXP: first/repeat, difficulty, loss, legacy completion, replay, conflict, zero, x5 threshold');
+for (const training of [{stage: 'stage_0_1', arc: 'arc_0'}, {stage: 'stage_0_1', arc: 'arc_1'}, {stage: 'arena_fixture', arc: 'arc_0'}]) {
+  stageId = training.stage; arcId = training.arc;
+  for (const won of [true, false]) {
+    reset();
+    db.player_profiles.value.exp = 123;
+    db.player_heroes.value.heroes[0].exp = 45;
+    for (const id of ['one', 'repeat']) {
+      if (id !== 'one') run(id);
+      result = settle(id, won, 'normal', 999);
+      assert(result.success);
+      assert.equal(result.exp_awarded, 0);
+      assert.equal(result.first_clear_bonus_exp, 0);
+      assert.equal(result.profile.exp, 123);
+      assert.equal(result.hero.exp, 45);
+      assert.equal(db.player_profiles.value.exp, 123);
+      assert.equal(db.player_heroes.value.heroes[0].exp, 45);
+      assert.equal(db.player_stage_runs.value.status, 'settled');
+      assert.equal(settle(id, won).success, false);
+    }
+  }
+}
+console.log('PASS first-clear EXP: normal first/repeat/difficulty/loss/replay/conflict; training victory/defeat/repeat grant zero User/Hero EXP');

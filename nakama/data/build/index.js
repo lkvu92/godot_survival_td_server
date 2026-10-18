@@ -311,7 +311,21 @@ function createGameConfigTables(nk, logger) {
       stamina_regen_amount: 1,
       ads_enabled: false,
       ads_interval_sec: 120,
-      payment_enabled: false
+      payment_enabled: false,
+      leaderboard_rewards: { "schema_version": 1, "enabled": true, "claim_days": 30, "boards": { "cultivation_realm": { "enabled": true, "tiers": [{ "from": 1, "to": 1, "rewards": [{ "type": "resource", "id": "gems", "amount": 300 }, { "type": "resource", "id": "gold", "amount": 1e5 }, { "type": "item", "id": "element_enlightenment_charm", "amount": 3 }] }, { "from": 2, "to": 2, "rewards": [{ "type": "resource", "id": "gems", "amount": 250 }, { "type": "resource", "id": "gold", "amount": 9e4 }, { "type": "item", "id": "element_enlightenment_charm", "amount": 3 }] }, { "from": 3, "to": 3, "rewards": [{ "type": "resource", "id": "gems", "amount": 220 }, { "type": "resource", "id": "gold", "amount": 8e4 }, { "type": "item", "id": "element_enlightenment_charm", "amount": 2 }] }, { "from": 4, "to": 4, "rewards": [{ "type": "resource", "id": "gems", "amount": 200 }, { "type": "resource", "id": "gold", "amount": 75e3 }, { "type": "item", "id": "element_enlightenment_charm", "amount": 2 }] }, { "from": 5, "to": 5, "rewards": [{ "type": "resource", "id": "gems", "amount": 180 }, { "type": "resource", "id": "gold", "amount": 7e4 }, { "type": "item", "id": "element_enlightenment_charm", "amount": 2 }] }, { "from": 6, "to": 6, "rewards": [{ "type": "resource", "id": "gems", "amount": 160 }, { "type": "resource", "id": "gold", "amount": 65e3 }, { "type": "item", "id": "element_enlightenment_charm", "amount": 2 }] }, { "from": 7, "to": 7, "rewards": [{ "type": "resource", "id": "gems", "amount": 140 }, { "type": "resource", "id": "gold", "amount": 6e4 }, { "type": "item", "id": "element_enlightenment_charm", "amount": 1 }] }, { "from": 8, "to": 8, "rewards": [{ "type": "resource", "id": "gems", "amount": 120 }, { "type": "resource", "id": "gold", "amount": 55e3 }, { "type": "item", "id": "element_enlightenment_charm", "amount": 1 }] }, { "from": 9, "to": 9, "rewards": [{ "type": "resource", "id": "gems", "amount": 110 }, { "type": "resource", "id": "gold", "amount": 5e4 }, { "type": "item", "id": "element_enlightenment_charm", "amount": 1 }] }, { "from": 10, "to": 10, "rewards": [{ "type": "resource", "id": "gems", "amount": 100 }, { "type": "resource", "id": "gold", "amount": 45e3 }, { "type": "item", "id": "element_enlightenment_charm", "amount": 1 }] }, { "from": 11, "to": 50, "rewards": [{ "type": "resource", "id": "gems", "amount": 80 }, { "type": "resource", "id": "gold", "amount": 35e3 }, { "type": "item", "id": "element_enlightenment_charm", "amount": 1 }] }, { "from": 51, "to": 200, "rewards": [{ "type": "resource", "id": "gems", "amount": 50 }, { "type": "resource", "id": "gold", "amount": 25e3 }, { "type": "item", "id": "element_enlightenment_charm", "amount": 1 }] }, { "from": 201, "to": 500, "rewards": [{ "type": "resource", "id": "gems", "amount": 30 }, { "type": "resource", "id": "gold", "amount": 15e3 }] }] }, "campaign_stage": { "enabled": true, "tiers": [{ "from": 1, "to": 1, "rewards": [{ "type": "resource", "id": "gems", "amount": 300 }, { "type": "resource", "id": "gold", "amount": 1e5 }, { "type": "random_item", "pool": ["talisman_fragment_1", "talisman_fragment_2", "talisman_fragment_3", "talisman_fragment_4", "talisman_fragment_5", "talisman_fragment_6", "talisman_fragment_7", "talisman_fragment_8", "talisman_fragment_9", "talisman_fragment_10", "talisman_fragment_11", "talisman_fragment_12", "talisman_fragment_13", "talisman_fragment_14", "talisman_fragment_15"], "amount": 15 }] }, { "from": 2, "to": 2, "rewards": [{ "type": "resource", "id": "gems", "amount": 250 }, { "type": "resource", "id": "gold", "amount": 9e4 }, { "type": "random_item", "pool": ["talisman_fragment_1", "talisman_fragment_2", "talisman_fragment_3", "talisman_fragment_4", "talisman_fragment_5", "talisman_fragment_6", "talisman_fragment_7", "talisman_fragment_8", "talisman_fragment_9", "talisman_fragment_10", "talisman_fragment_11", "talisman_fragment_12", "talisman_fragment_13", "talisman_fragment_14", "talisman_fragment_15"], "amount": 12 }] }, { "from": 3, "to": 3, "rewards": [{ "type": "resource", "id": "gems", "amount": 220 }, { "type": "resource", "id": "gold", "amount": 8e4 }, { "type": "random_item", "pool": ["talisman_fragment_1", "talisman_fragment_2", "talisman_fragment_3", "talisman_fragment_4", "talisman_fragment_5", "talisman_fragment_6", "talisman_fragment_7", "talisman_fragment_8", "talisman_fragment_9", "talisman_fragment_10", "talisman_fragment_11", "talisman_fragment_12", "talisman_fragment_13", "talisman_fragment_14", "talisman_fragment_15"], "amount": 10 }] }, { "from": 4, "to": 4, "rewards": [{ "type": "resource", "id": "gems", "amount": 200 }, { "type": "resource", "id": "gold", "amount": 75e3 }, { "type": "random_item", "pool": ["talisman_fragment_1", "talisman_fragment_2", "talisman_fragment_3", "talisman_fragment_4", "talisman_fragment_5", "talisman_fragment_6", "talisman_fragment_7", "talisman_fragment_8", "talisman_fragment_9", "talisman_fragment_10", "talisman_fragment_11", "talisman_fragment_12", "talisman_fragment_13", "talisman_fragment_14", "talisman_fragment_15"], "amount": 9 }] }, { "from": 5, "to": 5, "rewards": [{ "type": "resource", "id": "gems", "amount": 180 }, { "type": "resource", "id": "gold", "amount": 7e4 }, { "type": "random_item", "pool": ["talisman_fragment_1", "talisman_fragment_2", "talisman_fragment_3", "talisman_fragment_4", "talisman_fragment_5", "talisman_fragment_6", "talisman_fragment_7", "talisman_fragment_8", "talisman_fragment_9", "talisman_fragment_10", "talisman_fragment_11", "talisman_fragment_12", "talisman_fragment_13", "talisman_fragment_14", "talisman_fragment_15"], "amount": 8 }] }, { "from": 6, "to": 6, "rewards": [{ "type": "resource", "id": "gems", "amount": 160 }, { "type": "resource", "id": "gold", "amount": 65e3 }, { "type": "random_item", "pool": ["talisman_fragment_1", "talisman_fragment_2", "talisman_fragment_3", "talisman_fragment_4", "talisman_fragment_5", "talisman_fragment_6", "talisman_fragment_7", "talisman_fragment_8", "talisman_fragment_9", "talisman_fragment_10", "talisman_fragment_11", "talisman_fragment_12", "talisman_fragment_13", "talisman_fragment_14", "talisman_fragment_15"], "amount": 7 }] }, { "from": 7, "to": 7, "rewards": [{ "type": "resource", "id": "gems", "amount": 140 }, { "type": "resource", "id": "gold", "amount": 6e4 }, { "type": "random_item", "pool": ["talisman_fragment_1", "talisman_fragment_2", "talisman_fragment_3", "talisman_fragment_4", "talisman_fragment_5", "talisman_fragment_6", "talisman_fragment_7", "talisman_fragment_8", "talisman_fragment_9", "talisman_fragment_10", "talisman_fragment_11", "talisman_fragment_12", "talisman_fragment_13", "talisman_fragment_14", "talisman_fragment_15"], "amount": 6 }] }, { "from": 8, "to": 8, "rewards": [{ "type": "resource", "id": "gems", "amount": 120 }, { "type": "resource", "id": "gold", "amount": 55e3 }, { "type": "random_item", "pool": ["talisman_fragment_1", "talisman_fragment_2", "talisman_fragment_3", "talisman_fragment_4", "talisman_fragment_5", "talisman_fragment_6", "talisman_fragment_7", "talisman_fragment_8", "talisman_fragment_9", "talisman_fragment_10", "talisman_fragment_11", "talisman_fragment_12", "talisman_fragment_13", "talisman_fragment_14", "talisman_fragment_15"], "amount": 5 }] }, { "from": 9, "to": 9, "rewards": [{ "type": "resource", "id": "gems", "amount": 110 }, { "type": "resource", "id": "gold", "amount": 5e4 }, { "type": "random_item", "pool": ["talisman_fragment_1", "talisman_fragment_2", "talisman_fragment_3", "talisman_fragment_4", "talisman_fragment_5", "talisman_fragment_6", "talisman_fragment_7", "talisman_fragment_8", "talisman_fragment_9", "talisman_fragment_10", "talisman_fragment_11", "talisman_fragment_12", "talisman_fragment_13", "talisman_fragment_14", "talisman_fragment_15"], "amount": 4 }] }, { "from": 10, "to": 10, "rewards": [{ "type": "resource", "id": "gems", "amount": 100 }, { "type": "resource", "id": "gold", "amount": 45e3 }, { "type": "random_item", "pool": ["talisman_fragment_1", "talisman_fragment_2", "talisman_fragment_3", "talisman_fragment_4", "talisman_fragment_5", "talisman_fragment_6", "talisman_fragment_7", "talisman_fragment_8", "talisman_fragment_9", "talisman_fragment_10", "talisman_fragment_11", "talisman_fragment_12", "talisman_fragment_13", "talisman_fragment_14", "talisman_fragment_15"], "amount": 3 }] }, { "from": 11, "to": 50, "rewards": [{ "type": "resource", "id": "gems", "amount": 80 }, { "type": "resource", "id": "gold", "amount": 35e3 }, { "type": "random_item", "pool": ["talisman_fragment_1", "talisman_fragment_2", "talisman_fragment_3", "talisman_fragment_4", "talisman_fragment_5", "talisman_fragment_6", "talisman_fragment_7", "talisman_fragment_8", "talisman_fragment_9", "talisman_fragment_10", "talisman_fragment_11", "talisman_fragment_12", "talisman_fragment_13", "talisman_fragment_14", "talisman_fragment_15"], "amount": 3 }] }, { "from": 51, "to": 200, "rewards": [{ "type": "resource", "id": "gems", "amount": 50 }, { "type": "resource", "id": "gold", "amount": 25e3 }, { "type": "random_item", "pool": ["talisman_fragment_1", "talisman_fragment_2", "talisman_fragment_3", "talisman_fragment_4", "talisman_fragment_5", "talisman_fragment_6", "talisman_fragment_7", "talisman_fragment_8", "talisman_fragment_9", "talisman_fragment_10", "talisman_fragment_11", "talisman_fragment_12", "talisman_fragment_13", "talisman_fragment_14", "talisman_fragment_15"], "amount": 2 }] }, { "from": 201, "to": 500, "rewards": [{ "type": "resource", "id": "gems", "amount": 30 }, { "type": "resource", "id": "gold", "amount": 15e3 }, { "type": "random_item", "pool": ["talisman_fragment_1", "talisman_fragment_2", "talisman_fragment_3", "talisman_fragment_4", "talisman_fragment_5", "talisman_fragment_6", "talisman_fragment_7", "talisman_fragment_8", "talisman_fragment_9", "talisman_fragment_10", "talisman_fragment_11", "talisman_fragment_12", "talisman_fragment_13", "talisman_fragment_14", "talisman_fragment_15"], "amount": 1 }] }] }, "combat_power": { "enabled": true, "tiers": [{ "from": 1, "to": 1, "rewards": [{ "type": "resource", "id": "gems", "amount": 300 }, { "type": "resource", "id": "gold", "amount": 1e5 }, { "type": "item", "id": "talisman_enhance_charm", "amount": 3 }] }, { "from": 2, "to": 2, "rewards": [{ "type": "resource", "id": "gems", "amount": 250 }, { "type": "resource", "id": "gold", "amount": 9e4 }, { "type": "item", "id": "talisman_enhance_charm", "amount": 3 }] }, { "from": 3, "to": 3, "rewards": [{ "type": "resource", "id": "gems", "amount": 220 }, { "type": "resource", "id": "gold", "amount": 8e4 }, { "type": "item", "id": "talisman_enhance_charm", "amount": 2 }] }, { "from": 4, "to": 4, "rewards": [{ "type": "resource", "id": "gems", "amount": 200 }, { "type": "resource", "id": "gold", "amount": 75e3 }, { "type": "item", "id": "talisman_enhance_charm", "amount": 2 }] }, { "from": 5, "to": 5, "rewards": [{ "type": "resource", "id": "gems", "amount": 180 }, { "type": "resource", "id": "gold", "amount": 7e4 }, { "type": "item", "id": "talisman_enhance_charm", "amount": 2 }] }, { "from": 6, "to": 6, "rewards": [{ "type": "resource", "id": "gems", "amount": 160 }, { "type": "resource", "id": "gold", "amount": 65e3 }, { "type": "item", "id": "talisman_enhance_charm", "amount": 2 }] }, { "from": 7, "to": 7, "rewards": [{ "type": "resource", "id": "gems", "amount": 140 }, { "type": "resource", "id": "gold", "amount": 6e4 }, { "type": "item", "id": "talisman_enhance_charm", "amount": 1 }] }, { "from": 8, "to": 8, "rewards": [{ "type": "resource", "id": "gems", "amount": 120 }, { "type": "resource", "id": "gold", "amount": 55e3 }, { "type": "item", "id": "talisman_enhance_charm", "amount": 1 }] }, { "from": 9, "to": 9, "rewards": [{ "type": "resource", "id": "gems", "amount": 110 }, { "type": "resource", "id": "gold", "amount": 5e4 }, { "type": "item", "id": "talisman_enhance_charm", "amount": 1 }] }, { "from": 10, "to": 10, "rewards": [{ "type": "resource", "id": "gems", "amount": 100 }, { "type": "resource", "id": "gold", "amount": 45e3 }, { "type": "item", "id": "talisman_enhance_charm", "amount": 1 }] }, { "from": 11, "to": 50, "rewards": [{ "type": "resource", "id": "gems", "amount": 80 }, { "type": "resource", "id": "gold", "amount": 35e3 }, { "type": "item", "id": "talisman_enhance_charm", "amount": 1 }] }, { "from": 51, "to": 200, "rewards": [{ "type": "resource", "id": "gems", "amount": 50 }, { "type": "resource", "id": "gold", "amount": 25e3 }, { "type": "item", "id": "talisman_enhance_charm", "amount": 1 }] }, { "from": 201, "to": 500, "rewards": [{ "type": "resource", "id": "gems", "amount": 30 }, { "type": "resource", "id": "gold", "amount": 15e3 }] }] } } },
+      rewarded_ads: {
+        schema_version: 2,
+        placements: {
+          stamina_dialog_ad: { type: "stamina", amount: 5, daily_limit: 3 },
+          daily_mission_talisman_fragment_ad: { type: "daily_fragment", amount: 1, daily_limit: 3 },
+          card_reroll_ad: { type: "card_reroll", amount: 1, run_limit: 3 },
+          combat_revive_ad: { type: "combat_revive", amount: 1, run_limit: 1 },
+          stage_reward_x2_ad: { type: "stage_reward_x2", amount: 2, daily_limit: 5 },
+          talisman_enhance_charm_ad: { type: "item", amount: 1, item_id: "talisman_enhance_charm", daily_limit: 1 },
+          element_enlightenment_charm_ad: { type: "item", amount: 1, item_id: "element_enlightenment_charm", daily_limit: 1 }
+        },
+        daily_mission: { completion_count: 3, fragment_quality: "low" }
+      }
     },
     game_play: {
       boss_enrage_after_sec: 90,
@@ -1447,7 +1461,7 @@ function eventApplyGrants(nk, profile, items, grants) {
       profile.resources[id] = Math.max(0, Number(profile.resources[id] || 0)) + amount;
       issued.push({ type, id, amount });
     } else if (type === "stamina") {
-      profile.stamina = Math.min(30, Math.max(0, Number(profile.stamina || 0)) + amount);
+      profile.stamina = Math.max(Number(profile.stamina || 0), Math.min(30, Math.max(0, Number(profile.stamina || 0)) + amount));
       issued.push({ type, amount });
     } else if (type === "item" || type === "random_item") {
       let id = String(grant.id || "");
@@ -1852,7 +1866,7 @@ const getGameConfig = (ctx, logger, nk, payload) => {
       result.enemy_skills = readContentConfig(nk, "enemy_skills");
       result.boss_skills = readContentConfig(nk, "boss_skills");
       result.vip = readContentConfig(nk, "vip");
-      result.rewarded_ads = readContentConfig(nk, "rewarded_ads");
+      result.rewarded_ads = rewardedAdsConfig(nk);
       result.talismans = nk.sqlQuery("SELECT * FROM game_talismans ORDER BY id", []).map(processTalisman);
       return JSON.stringify(result);
     }
@@ -1969,6 +1983,8 @@ const gatedUpgradeElement = (ctx, logger, nk, payload) => invokeWithVersionGate(
 const gatedAwardStageProgression = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, awardStageProgression);
 const gatedTribulationAction = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, tribulationAction);
 const gatedGetMonetizationStatus = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, getMonetizationStatus);
+const gatedGetDailyPackStatus = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, getDailyPackStatus);
+const gatedClaimDailyPack = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, claimDailyPack);
 const gatedCreatePurchaseOrder = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, createPurchaseOrder);
 const gatedSyncPlayPurchase = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, syncPlayPurchase);
 const gatedIapGoogleClaim = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, iapGoogleClaim);
@@ -2020,6 +2036,8 @@ const publishConfigRelease = (ctx, _logger, nk, payload) => {
     return JSON.stringify({ status: "error", code: 422, message: String(e) });
   }
   const minVersion = String(snapshot.system.min_app_version || "");
+  if (!validRewardedAdsConfig(snapshot.system.rewarded_ads)) return JSON.stringify({ status: "error", code: 422, message: "Missing or invalid system.rewarded_ads" });
+  if (snapshot.system.leaderboard_rewards !== void 0 && (!validWeeklyLeaderboardConfig(snapshot.system.leaderboard_rewards) || !weeklyConfigItemsExist(nk, snapshot.system.leaderboard_rewards))) return JSON.stringify({ status: "error", code: 422, message: "Invalid system.leaderboard_rewards or unknown reward items" });
   const latestVersion = String(snapshot.system.latest_app_version || "");
   if (typeof snapshot.system.ads_enabled !== "boolean" || typeof snapshot.system.payment_enabled !== "boolean") {
     return JSON.stringify({ status: "error", code: 422, message: "Missing or invalid monetization flags" });
@@ -2551,14 +2569,14 @@ const loadPlayerProfile = (ctx, logger, nk, payload) => {
     const amount = Math.max(0, Number(getRemoteConfigValue(nk, "system", "stamina_regen_amount", 1)));
     const hasLastStaminaUpdate = Number(result.profile.last_stamina_update || 0) > 0;
     const last = hasLastStaminaUpdate ? Math.max(0, Number(result.profile.last_stamina_update)) : now;
-    const currentStamina = Math.max(0, Math.min(30, Number(result.profile.stamina || 0)));
+    const currentStamina = Math.max(0, Number(result.profile.stamina || 0));
     const ticks = currentStamina < 30 && now > last ? Math.floor((now - last) / interval) : 0;
     if (ticks > 0 && amount > 0) {
       result.profile.stamina = Math.min(30, currentStamina + ticks * amount);
       result.profile.last_stamina_update = result.profile.stamina >= 30 ? now : last + ticks * interval;
       profileChanged = true;
-    } else if (currentStamina >= 30 && (Number(result.profile.stamina || 0) !== 30 || last !== now)) {
-      result.profile.stamina = 30;
+    } else if (currentStamina >= 30 && last !== now) {
+      result.profile.stamina = currentStamina;
       result.profile.last_stamina_update = now;
       profileChanged = true;
     } else if (!hasLastStaminaUpdate) {
@@ -2602,6 +2620,13 @@ const loadPlayerProfile = (ctx, logger, nk, payload) => {
         permissionWrite: 0,
         version: profileObject.version
       }]);
+    }
+  }
+  if (result.profile && typeof writePlayerLeaderboardRecords === "function") {
+    try {
+      writePlayerLeaderboardRecords(nk, ctx.userId, result.profile, result.profile.display_name);
+    } catch (e) {
+      logger.warn("Weekly/profile leaderboard sync deferred: " + String(e));
     }
   }
   const vip = result.monetization.vip;
@@ -2839,13 +2864,13 @@ function createAccountLinkTables(nk) {
         UPDATE player_vip_credits SET user_id=w.id::TEXT WHERE user_id=l.id::TEXT;
         IF EXISTS(SELECT 1 FROM monetization_daily_reward_claims c WHERE c.user_id IN(a.id::TEXT,b.id::TEXT)
             AND c.reward_date=(NOW() AT TIME ZONE 'UTC')::DATE
-            AND COALESCE((SELECT (payload->'placements'->(CASE WHEN c.placement_id='main_menu_stamina' THEN 'stamina_dialog_ad' ELSE c.placement_id END)->>'daily_limit')::INT
-                FROM game_content_configs WHERE id='rewarded_ads'),0)<=0) THEN RAISE EXCEPTION 'Reward quota config unavailable; retry after server config update'; END IF;
+            AND COALESCE((SELECT (snapshot->'system'->'rewarded_ads'->'placements'->(CASE WHEN c.placement_id='main_menu_stamina' THEN 'stamina_dialog_ad' ELSE c.placement_id END)->>'daily_limit')::INT
+                FROM remote_config_releases ORDER BY config_version DESC LIMIT 1),0)<=0) THEN RAISE EXCEPTION 'Reward quota config unavailable; retry after server config update'; END IF;
         -- Conservative spent quota is reserved under fresh marker sessions; do not grant any reward.
         INSERT INTO monetization_daily_reward_claims(user_id,placement_id,reward_date,claim_slot,ad_session_id)
         SELECT w.id::TEXT,p.placement_id,(NOW() AT TIME ZONE 'UTC')::DATE,s.slot,'merge:'||t.id::TEXT||':'||p.placement_id||':'||s.slot
         FROM (SELECT DISTINCT CASE WHEN placement_id='main_menu_stamina' THEN 'stamina_dialog_ad' ELSE placement_id END AS placement_id FROM monetization_daily_reward_claims WHERE user_id IN(a.id::TEXT,b.id::TEXT) AND reward_date=(NOW() AT TIME ZONE 'UTC')::DATE) p
-        CROSS JOIN LATERAL generate_series(1,COALESCE((SELECT (payload->'placements'->p.placement_id->>'daily_limit')::INT FROM game_content_configs WHERE id='rewarded_ads'),1)) s(slot)
+        CROSS JOIN LATERAL generate_series(1,COALESCE((SELECT (snapshot->'system'->'rewarded_ads'->'placements'->p.placement_id->>'daily_limit')::INT FROM remote_config_releases ORDER BY config_version DESC LIMIT 1),0)) s(slot)
         ON CONFLICT DO NOTHING;
         -- Clear loser credentials before assigning unique provider/email columns to winner.
         UPDATE users SET email=NULL,password=NULL,google_id=NULL,custom_id=NULL,disable_time=NOW(),update_time=NOW() WHERE id=l.id;
@@ -3343,6 +3368,21 @@ function talismanConfig(nk) {
   if (rows.length === 0) return {};
   return talismanJsonObject(talismanJsonObject(rows[0].value).talisman_system);
 }
+function talismanDurabilityFactor(config, durability) {
+  const tiers = Array.isArray(config.durability_tiers) ? config.durability_tiers : [];
+  const value = Math.max(0, Math.min(100, Number(durability || 0)));
+  for (const tier of tiers) if (tier && value <= Number(tier.max)) return Number(tier.factor || 0);
+  return 1;
+}
+function talismanEffectiveStats(stats, factor) {
+  const result = {};
+  const source = talismanJsonObject(stats);
+  for (const key of Object.keys(source)) {
+    const value = Number(source[key]);
+    if (Number.isFinite(value)) result[key] = value * factor;
+  }
+  return result;
+}
 function talismanUpgradeSuccessRate(upgrade, currentLevel) {
   const configured = Array.isArray(upgrade.success_rates_by_current_level) ? upgrade.success_rates_by_current_level : [];
   if (currentLevel >= 0 && currentLevel < configured.length) {
@@ -3832,6 +3872,8 @@ const talismanAction = (ctx, _logger, nk, payload) => {
       requestId || `${talismanId}:${Number(target ? target.level : 0)}`
     );
   }
+  const durabilityFactor = target ? talismanDurabilityFactor(talismanConfig(nk), Number(target.durability || 0)) : 0;
+  const effectiveStats = target ? talismanEffectiveStats(target.current_stats, durabilityFactor) : {};
   return JSON.stringify({
     success: action === "upgrade" ? upgradeSucceeded : true,
     attempted: upgradeAttempted,
@@ -3847,6 +3889,8 @@ const talismanAction = (ctx, _logger, nk, payload) => {
     exp: target ? Number(target.exp || 0) : 0,
     max_exp: target ? Number(target.max_exp || 20) : 0,
     durability: target ? Number(target.durability || 0) : 0,
+    durability_factor: durabilityFactor,
+    effective_stats: effectiveStats,
     quote: target ? talismanUpgradeQuote(nk, Number(target.level || 1), items, resources, talismanId) : {}
   });
 };
@@ -4021,6 +4065,7 @@ const purchaseStamina = (ctx, _logger, nk, _payload) => {
       purchases_today: purchasesToday
     });
   }
+  if (Number(profile.stamina || 0) >= STAMINA_CAP_RESOURCE) return JSON.stringify({ success: false, message: "Stamina is already full" });
   const gemCost = prices[purchasesToday];
   const debit = debitResource(profile, "gems", gemCost);
   if (!debit.success) {
@@ -4172,7 +4217,7 @@ const startStage = (ctx, _logger, nk, payload) => {
   const rows = nk.sqlQuery("SELECT stamina_cost FROM game_stage_levels WHERE stage_id = $1 AND level_id = $2", [stageId, levelId]);
   if (rows.length === 0) return JSON.stringify({ success: false, message: "Unknown stage level" });
   const cost = Math.max(0, Number(rows[0].stamina_cost || 0));
-  const stamina = Math.max(0, Math.min(STAMINA_CAP_RESOURCE, Number(profile.stamina || 0)));
+  const stamina = Math.max(0, Number(profile.stamina || 0));
   if (stamina < cost) return JSON.stringify({ success: false, message: "Not enough stamina", stamina_cost: cost, stamina });
   profile.stamina = stamina - cost;
   const runState = talismanCreateStageRun(nk, ctx.userId, stageId, levelId);
@@ -4770,7 +4815,8 @@ const awardStageProgression = (ctx, _logger, nk, payload) => {
   const multiplier = Math.max(0, Number(stageRows[0].exp_weight || 1)) * Math.max(0, Number(difficultyRows[0].exp_multiplier || 1));
   const completed = Array.isArray(profile.completed_stage_levels) ? profile.completed_stage_levels : [];
   const firstClear = won && !completed.some((entry) => entry && String(entry.stage_id) === stageId && String(entry.level_id) === difficultyId);
-  const ordinaryExp = Math.max(0, Math.round(requestedBaseExp * multiplier));
+  const isTrainingStage = stageId === "stage_0_1" || String(stageRows[0].arc_id || "") === "arc_0";
+  const ordinaryExp = isTrainingStage ? 0 : Math.max(0, Math.round(requestedBaseExp * multiplier));
   const firstClearBonusExp = firstClear ? ordinaryExp : 0;
   const awardedExp = ordinaryExp + firstClearBonusExp;
   const userResult = progressionApplyUser(nk, profile, awardedExp);
@@ -4912,6 +4958,14 @@ const awardStageProgression = (ctx, _logger, nk, payload) => {
   run.status = "settled";
   run.settled_at_ms = Date.now();
   run.won = won;
+  run.stage_reward = {
+    eligible: won && !isTrainingStage && (awardedExp > 0 || loot.length > 0),
+    hero_id: heroId,
+    base_exp: awardedExp,
+    first_clear_bonus_exp: firstClearBonusExp,
+    base_loot: loot,
+    claimed: false
+  };
   nk.storageWrite([
     { collection: "player_profiles", key: "main", userId: ctx.userId, value: profile, permissionRead: 1, permissionWrite: 0, version: profileObject.version },
     { collection: "player_heroes", key: "states", userId: ctx.userId, value: { heroes }, permissionRead: 1, permissionWrite: 0, version: heroesObject.version },
@@ -4940,6 +4994,7 @@ const awardStageProgression = (ctx, _logger, nk, payload) => {
   userResult.completed_stage_levels = profile.completed_stage_levels;
   return JSON.stringify({
     success: true,
+    stage_reward: stageRewardSummary(run),
     exp_awarded: awardedExp,
     first_clear: firstClear,
     first_clear_bonus_exp: firstClearBonusExp,
@@ -4958,6 +5013,92 @@ const awardStageProgression = (ctx, _logger, nk, payload) => {
     }
   });
 };
+function stageRewardSummary(run) {
+  const snapshot = run.stage_reward || {};
+  const factor = snapshot.claimed === true ? Number(snapshot.multiplier || 1) : 1;
+  return {
+    run_id: String(run.run_id || ""),
+    eligible: snapshot.eligible === true,
+    claimed: snapshot.claimed === true,
+    multiplier: factor,
+    total_exp: Math.max(0, Number(snapshot.base_exp || 0)) * factor,
+    first_clear_bonus_exp: Math.max(0, Number(snapshot.first_clear_bonus_exp || 0)) * factor,
+    total_loot: (Array.isArray(snapshot.base_loot) ? snapshot.base_loot : []).map((r) => Object.assign({}, r, { quantity: Number(r.quantity) * factor }))
+  };
+}
+function readSettledRewardRun(nk, userId, runId) {
+  const rows = nk.storageRead([{ collection: "player_stage_runs", key: "active", userId }]);
+  if (!rows.length) return null;
+  const run = rows[0].value;
+  if (String(run.run_id || "") !== runId || run.status !== "settled" || run.won !== true || !run.stage_reward || run.stage_reward.eligible !== true) return null;
+  return { object: rows[0], run };
+}
+function grantStageRewardMultiplier(nk, userId, adSessionId, multiplier, limit) {
+  const sessions = nk.sqlQuery("SELECT context FROM monetization_ad_rewards WHERE ad_session_id=$1 AND user_id=$2", [adSessionId, userId]);
+  const context = sessions.length ? objectValue(parseJsonb(sessions[0].context)) : {};
+  const stored = readSettledRewardRun(nk, userId, String(context.run_id || ""));
+  if (!stored) return { granted: false, message: "Winning result is no longer available" };
+  const run = stored.run, snapshot = run.stage_reward;
+  if (snapshot.claimed) {
+    if (snapshot.ad_session_id === adSessionId) return { granted: true, reward_type: "stage_reward_x2", stage_reward: stageRewardSummary(run) };
+    nk.sqlExec("DELETE FROM monetization_daily_reward_claims WHERE ad_session_id=$1 AND user_id=$2", [adSessionId, userId]);
+    nk.sqlExec("UPDATE monetization_ad_rewards SET status='rejected' WHERE ad_session_id=$1 AND status='verified'", [adSessionId]);
+    return { granted: false, message: "This victory already received its multiplier" };
+  }
+  if (!Number.isSafeInteger(multiplier) || multiplier < 2 || multiplier > 10 || limit <= 0) return { granted: false, message: "Reward multiplier config is disabled" };
+  const rows = nk.storageRead([
+    { collection: "player_profiles", key: "main", userId },
+    { collection: "player_heroes", key: "states", userId },
+    { collection: "player_inventory", key: "items", userId }
+  ]);
+  const p = rows.find((r) => r.collection === "player_profiles"), h = rows.find((r) => r.collection === "player_heroes"), inv = rows.find((r) => r.collection === "player_inventory");
+  if (!p || !h || !inv) return { granted: false, message: "Player reward state missing" };
+  const hero = (h.value.heroes || []).find((r) => String(r.hero_id) === snapshot.hero_id && r.owned === true);
+  if (!hero) return { granted: false, message: "Reward hero is not owned" };
+  const claim = reserveDailyRewardClaim(nk, userId, "stage_reward_x2_ad", adSessionId, limit);
+  if (!claim) return { granted: false, message: "Daily victory reward quota reached" };
+  const extraExp = Number(snapshot.base_exp) * (multiplier - 1);
+  const profile = p.value;
+  const userResult = progressionApplyUser(nk, profile, extraExp);
+  cultivationEnsurePreview(nk, profile);
+  progressionReconcileLevelUnlocks(nk, profile);
+  let level = Math.max(1, Math.min(PROGRESSION_MAX_LEVEL, Number(hero.level || 1)));
+  let exp = Math.max(0, Number(hero.exp || 0)) + extraExp;
+  let next = progressionNextHeroExp(nk, level);
+  const beforeLevel = level;
+  while (level < Math.min(PROGRESSION_MAX_LEVEL, userResult.level) && next > 0 && exp >= next) {
+    exp -= next;
+    level++;
+    next = progressionNextHeroExp(nk, level);
+  }
+  if (level >= PROGRESSION_MAX_LEVEL) {
+    exp = 0;
+    next = 0;
+  }
+  hero.level = level;
+  hero.exp = exp;
+  hero.next_level_exp = next;
+  if (level > beforeLevel) hero.current_attribute = progressionHeroAttributes(nk, snapshot.hero_id, level);
+  inv.value.items = Array.isArray(inv.value.items) ? inv.value.items : [];
+  profile.resources = profile.resources || {};
+  for (const reward of snapshot.base_loot) {
+    const quantity = Number(reward.quantity) * (multiplier - 1);
+    if (!Number.isSafeInteger(quantity) || quantity <= 0) throw Error("Invalid settled reward quantity");
+    if (reward.item_id) addStoreInventoryItem(nk, inv.value.items, String(reward.item_id), quantity);
+    else if (["gold", "gems"].indexOf(String(reward.resource_id)) >= 0) profile.resources[reward.resource_id] = Math.max(0, Number(profile.resources[reward.resource_id] || 0)) + quantity;
+    else throw Error("Unknown settled reward");
+  }
+  snapshot.claimed = true;
+  snapshot.multiplier = multiplier;
+  snapshot.ad_session_id = adSessionId;
+  nk.storageWrite([
+    { collection: "player_profiles", key: "main", userId, value: profile, version: p.version, permissionRead: 1, permissionWrite: 0 },
+    { collection: "player_heroes", key: "states", userId, value: h.value, version: h.version, permissionRead: 1, permissionWrite: 0 },
+    { collection: "player_inventory", key: "items", userId, value: inv.value, version: inv.version, permissionRead: 1, permissionWrite: 0 },
+    { collection: "player_stage_runs", key: "active", userId, value: run, version: stored.object.version, permissionRead: 1, permissionWrite: 0 }
+  ]);
+  return { granted: true, reward_type: "stage_reward_x2", reward_amount: multiplier, stage_reward: stageRewardSummary(run) };
+}
 const tribulationAction = (ctx, _logger, nk, payload) => {
   let request = {};
   try {
@@ -5097,30 +5238,30 @@ const MONETIZATION_PRODUCTS = {
   remove_ads_30d: 30 * 24 * 60 * 60,
   remove_ads_permanent: 100 * 365 * 24 * 60 * 60
 };
-const DEFAULT_REWARDED_PLACEMENTS = {
-  main_menu_stamina: { type: "stamina", amount: 5 },
-  stamina_dialog_ad: { type: "stamina", amount: 5 },
-  card_reroll_ad: { type: "card_reroll", amount: 1 },
-  combat_revive_ad: { type: "combat_revive", amount: 1 },
-  talisman_enhance_charm_ad: { type: "item", amount: 1, item_id: "talisman_enhance_charm", daily_limit: 1 },
-  element_enlightenment_charm_ad: { type: "item", amount: 1, item_id: "element_enlightenment_charm", daily_limit: 1 }
-};
-function rewardedAdsConfig(nk) {
-  const rows = nk.sqlQuery("SELECT payload FROM game_content_configs WHERE id='rewarded_ads' AND active=TRUE", []);
-  const config = rows.length ? objectValue(parseJsonb(rows[0].payload)) : {};
+function validRewardedAdsConfig(config) {
+  if (!config || config.schema_version !== 2) return false;
   const placements = objectValue(config.placements);
+  if (!Object.keys(placements).length) return false;
+  const expectedTypes = { stamina_dialog_ad: "stamina", daily_mission_talisman_fragment_ad: "daily_fragment", card_reroll_ad: "card_reroll", combat_revive_ad: "combat_revive", stage_reward_x2_ad: "stage_reward_x2", talisman_enhance_charm_ad: "item", element_enlightenment_charm_ad: "item" };
   for (const id of Object.keys(placements)) {
     const entry = placements[id];
-    if (!entry || !Number.isSafeInteger(entry.amount) || entry.amount <= 0 || entry.daily_limit !== void 0 && (!Number.isSafeInteger(entry.daily_limit) || entry.daily_limit <= 0)) return {};
+    if (!entry || !Number.isSafeInteger(entry.amount) || entry.amount <= 0 || expectedTypes[id] && entry.type !== expectedTypes[id] || ["stamina", "item", "daily_fragment", "card_reroll", "combat_revive", "stage_reward_x2"].indexOf(entry.type) < 0 || entry.daily_limit !== void 0 && (!Number.isSafeInteger(entry.daily_limit) || entry.daily_limit < 0 || entry.daily_limit > 1e3) || entry.run_limit !== void 0 && (!Number.isSafeInteger(entry.run_limit) || entry.run_limit < 0 || entry.run_limit > 100) || entry.enabled !== void 0 && typeof entry.enabled !== "boolean" || entry.type === "item" && !entry.item_id || ["stamina", "item", "daily_fragment", "stage_reward_x2"].indexOf(entry.type) >= 0 && entry.daily_limit === void 0 || ["card_reroll", "combat_revive"].indexOf(entry.type) >= 0 && (entry.amount !== 1 || entry.run_limit === void 0) || entry.type === "stage_reward_x2" && (entry.amount < 2 || entry.amount > 10 || entry.daily_limit === void 0)) return false;
   }
   const mission = placements.daily_mission_talisman_fragment_ad;
-  if (mission && (!config.daily_mission || config.daily_mission.completion_count !== mission.daily_limit)) return {};
-  return config;
+  if (mission && (!config.daily_mission || !Number.isSafeInteger(config.daily_mission.completion_count) || config.daily_mission.completion_count <= 0 || mission.daily_limit > 0 && config.daily_mission.completion_count > mission.daily_limit)) return false;
+  return true;
+}
+function rewardedAdsConfig(nk) {
+  const config = getRemoteConfigValue(nk, "system", "rewarded_ads", null);
+  return validRewardedAdsConfig(config) ? config : {};
+}
+function rewardedRunLimit(nk, placement) {
+  const definition = objectValue(rewardedAdsConfig(nk).placements)[placement];
+  return definition && definition.enabled !== false ? Math.max(0, Number(definition.run_limit || 0)) : 0;
 }
 function canonicalRewardPlacement(id) {
   return id === "main_menu_stamina" ? "stamina_dialog_ad" : id;
 }
-const MAX_CARD_REROLLS_PER_RUN = 3;
 let vipRuntimeMode = "production";
 function objectValue(value) {
   return value && typeof value === "object" && !Array.isArray(value) ? value : {};
@@ -5201,7 +5342,7 @@ function readEntitlementRow(nk, userId) {
 }
 function buildDailyRewardStatus(nk, userId) {
   const interrupted = nk.sqlQuery(`SELECT ad_session_id FROM monetization_ad_rewards
-        WHERE user_id=$1 AND status='verified' AND reward_type IN ('stamina','item','daily_fragment')
+        WHERE user_id=$1 AND status='verified' AND reward_type IN ('stamina','item','daily_fragment','stage_reward_x2')
         ORDER BY created_at LIMIT 32`, [userId]);
   for (const session of interrupted) {
     try {
@@ -5432,10 +5573,118 @@ function addStoreInventoryItem(nk, inventory, itemId, quantity) {
     remaining -= amount;
   }
 }
+const DAILY_PACK_DAY_MS = 864e5;
+const DAILY_PACK_IDS = ["daily_deal", "flash_sale"];
+function dailyPackState(profile, now) {
+  const result = {};
+  for (const id of DAILY_PACK_IDS) {
+    const pack = (profile.daily_packs || {})[id];
+    const active = !!pack && now >= Number(pack.started_at_ms) && now < Number(pack.expires_at_ms);
+    const day = active ? Math.floor((now - Number(pack.started_at_ms)) / DAILY_PACK_DAY_MS) : -1;
+    result[id] = {
+      active,
+      claimable: active && day > Number(pack.last_claim_day),
+      day: day + 1,
+      days_remaining: active ? 30 - day : 0,
+      expires_at: pack ? Math.floor(Number(pack.expires_at_ms) / 1e3) : 0,
+      next_claim_at: active ? Math.floor((Number(pack.started_at_ms) + (day + 1) * DAILY_PACK_DAY_MS) / 1e3) : 0
+    };
+  }
+  return result;
+}
+function dailyPackResponse(userId, profile, now) {
+  return { user_id: userId, server_time: Math.floor(now / 1e3), packs: dailyPackState(profile, now) };
+}
+const getDailyPackStatus = (ctx, _logger, nk, _payload) => {
+  if (!ctx.userId) return monetizationError(401, "Authentication required");
+  const rows = nk.storageRead([{ collection: "player_profiles", key: "main", userId: ctx.userId }]);
+  if (!rows.length) return monetizationError(404, "Player profile missing");
+  return JSON.stringify({ status: "success", data: dailyPackResponse(ctx.userId, rows[0].value, Date.now()) });
+};
+const claimDailyPack = (ctx, _logger, nk, payload) => {
+  if (!ctx.userId) return monetizationError(401, "Authentication required");
+  let req;
+  try {
+    req = JSON.parse(payload || "{}");
+  } catch (_) {
+    return monetizationError(400, "Invalid JSON");
+  }
+  if (!req || typeof req !== "object" || Array.isArray(req)) return monetizationError(400, "Invalid JSON object");
+  const id = String(req.product_id || "");
+  if (DAILY_PACK_IDS.indexOf(id) < 0) return monetizationError(400, "Unknown daily pack");
+  const rows = nk.storageRead([
+    { collection: "player_profiles", key: "main", userId: ctx.userId },
+    { collection: "player_inventory", key: "items", userId: ctx.userId },
+    { collection: "player_stage_runs", key: "active", userId: ctx.userId }
+  ]);
+  const profileRow = rows.find((r) => r.collection === "player_profiles");
+  const inventoryRow = rows.find((r) => r.collection === "player_inventory");
+  const run = rows.find((r) => r.collection === "player_stage_runs");
+  if (!profileRow || !inventoryRow) return monetizationError(404, "Player state missing");
+  const now = Date.now();
+  if (run && run.value.status === "active" && Number(run.value.expires_at_ms) > now) return monetizationError(409, "Finish combat before claiming pack rewards");
+  const profile = profileRow.value;
+  if (profile.breakthrough && profile.breakthrough.in_tribulation === true) return monetizationError(409, "Finish tribulation before claiming pack rewards");
+  const status = dailyPackState(profile, now)[id];
+  if (!status.active) return monetizationError(409, "Pack is not active");
+  if (!status.claimable) return JSON.stringify({ status: "success", idempotent: true, data: dailyPackResponse(ctx.userId, profile, now) });
+  const pack = profile.daily_packs[id];
+  if (!Array.isArray(pack.rewards) || !pack.rewards.length) return monetizationError(409, "Pack rewards missing");
+  const inventory = inventoryRow.value;
+  inventory.items = Array.isArray(inventory.items) ? inventory.items : [];
+  profile.resources = profile.resources || {};
+  try {
+    for (const reward of pack.rewards) {
+      if (!Number.isSafeInteger(reward.quantity) || reward.quantity <= 0) throw Error("Invalid reward quantity");
+      if (reward.reward_type === "currency" && ["gold", "gems"].indexOf(reward.reward_id) >= 0) {
+        profile.resources[reward.reward_id] = Math.max(0, Number(profile.resources[reward.reward_id] || 0)) + reward.quantity;
+      } else if (reward.reward_type === "stamina" && reward.reward_id === "stamina") {
+        profile.stamina = Math.max(0, Number(profile.stamina || 0)) + reward.quantity;
+        profile.last_stamina_update = Math.floor(now / 1e3);
+      } else if (reward.reward_type === "item") {
+        addStoreInventoryItem(nk, inventory.items, String(reward.reward_id), reward.quantity);
+      } else throw Error("Unsupported pack reward");
+    }
+    pack.last_claim_day = status.day - 1;
+    nk.storageWrite([
+      { collection: "player_profiles", key: "main", userId: ctx.userId, value: profile, version: profileRow.version, permissionRead: 1, permissionWrite: 0 },
+      { collection: "player_inventory", key: "items", userId: ctx.userId, value: inventory, version: inventoryRow.version, permissionRead: 1, permissionWrite: 0 }
+    ]);
+    return JSON.stringify({ status: "success", data: Object.assign(dailyPackResponse(ctx.userId, profile, now), { profile, inventory, rewards: pack.rewards }) });
+  } catch (_) {
+    return monetizationError(409, "Pack reward claim failed; refresh and retry");
+  }
+};
 function applyPurchaseStorageRewards(nk, userId, grantId, productId, fulfillmentType, rewards) {
   const profileObjects = nk.storageRead([{ collection: "player_profiles", key: "main", userId }]);
   if (profileObjects.length === 0) throw new Error("Player profile does not exist");
   const profile = profileObjects[0].value || {};
+  const recurring = DAILY_PACK_IDS.indexOf(productId) >= 0 && rewards.length > 0 && rewards.every((line) => line.metadata && Number(line.metadata.daily_pack_days) === 30);
+  if (recurring) {
+    profile.daily_packs = profile.daily_packs || {};
+    const existing = profile.daily_packs[productId];
+    if (existing && existing.grant_id === grantId) return { daily_pack: existing };
+    const now = Date.now();
+    if (dailyPackState(profile, now)[productId].active) throw Error("Daily pack already active");
+    const pack = {
+      grant_id: grantId,
+      started_at_ms: now,
+      expires_at_ms: now + 30 * DAILY_PACK_DAY_MS,
+      last_claim_day: -1,
+      rewards: rewards.map((line) => ({ reward_type: line.reward_type, reward_id: line.reward_id, quantity: line.quantity }))
+    };
+    profile.daily_packs[productId] = pack;
+    nk.storageWrite([{
+      collection: "player_profiles",
+      key: "main",
+      userId,
+      value: profile,
+      permissionRead: 1,
+      permissionWrite: 0,
+      version: profileObjects[0].version
+    }]);
+    return { daily_pack: pack };
+  }
   const profileGrants = Array.isArray(profile._iap_reward_ids) ? profile._iap_reward_ids.map((value) => String(value)) : [];
   if (profileGrants.indexOf(grantId) < 0) {
     const resources = profile.resources || {};
@@ -5444,7 +5693,7 @@ function applyPurchaseStorageRewards(nk, userId, grantId, productId, fulfillment
     });
     profile.resources = resources;
     rewards.filter((line) => line.reward_type === "stamina").forEach((line) => {
-      profile.stamina = Math.min(30, Math.max(0, Number(profile.stamina || 0)) + Number(line.quantity));
+      profile.stamina = Math.max(Number(profile.stamina || 0), Math.min(30, Math.max(0, Number(profile.stamina || 0)) + Number(line.quantity)));
     });
     const entitlements = profile.iap_entitlements || {};
     rewards.filter((line) => line.reward_type === "entitlement" && line.reward_id !== "no_ads_seconds").forEach((line) => {
@@ -5533,8 +5782,12 @@ const createPurchaseOrder = (ctx, _logger, nk, payload) => {
   const products = nk.sqlQuery("SELECT * FROM game_store_products WHERE product_id = $1 AND active = TRUE", [productId]);
   if (products.length === 0) return monetizationError(404, "Product is unavailable");
   const product = products[0];
+  if (DAILY_PACK_IDS.indexOf(productId) >= 0) {
+    const profiles = nk.storageRead([{ collection: "player_profiles", key: "main", userId: ctx.userId }]);
+    if (profiles.length && dailyPackState(profiles[0].value, Date.now())[productId].active) return monetizationError(409, "Daily pack already active; claim its daily reward instead");
+  }
   const previous = nk.sqlQuery(
-    "SELECT id, status, fulfillment_type FROM monetization_purchase_orders WHERE user_id = $1 AND product_id = $2 AND status IN ('pending','fulfilled') ORDER BY created_at DESC",
+    "SELECT id, status, fulfillment_type, reward_snapshot FROM monetization_purchase_orders WHERE user_id = $1 AND product_id = $2 AND status IN ('pending','fulfilled') ORDER BY created_at DESC",
     [ctx.userId, productId]
   );
   const fulfilled = previous.filter((row) => String(row.status) === "fulfilled");
@@ -5558,7 +5811,8 @@ const createPurchaseOrder = (ctx, _logger, nk, payload) => {
       already_fulfilled: true
     }, idempotent: true });
   }
-  const pending = previous.find((row) => String(row.status) === "pending");
+  const monthlyCatalog = DAILY_PACK_IDS.indexOf(productId) >= 0 && Number((parseJsonb(product.ui) || {}).duration_days) === 30;
+  const pending = previous.find((row) => String(row.status) === "pending" && (!monthlyCatalog || Array.isArray(parseJsonb(row.reward_snapshot)) && parseJsonb(row.reward_snapshot).length > 0 && parseJsonb(row.reward_snapshot).every((line) => Number((line.metadata || {}).daily_pack_days) === 30)));
   if (pending) {
     return JSON.stringify({ status: "success", data: {
       purchase_order_id: String(pending.id),
@@ -5761,6 +6015,7 @@ const prepareRewardedAd = (ctx, _logger, nk, payload) => {
   const placementId = canonicalRewardPlacement(String(req.placement_id || ""));
   const reward = objectValue(rewardedAdsConfig(nk).placements)[placementId];
   if (!reward) return monetizationError(400, "Unknown rewarded placement or missing rewarded_ads config");
+  if (reward.enabled === false || reward.daily_limit === 0 || reward.run_limit === 0) return monetizationError(403, "Rewarded placement is disabled");
   const requestId = String(req.request_id || nk.uuidv4());
   if (requestId.length > 128) return monetizationError(400, "Invalid reward request ID");
   let sessions = nk.sqlQuery("SELECT * FROM monetization_ad_rewards WHERE user_id=$1 AND client_request_id=$2", [ctx.userId, requestId]);
@@ -5776,6 +6031,13 @@ const prepareRewardedAd = (ctx, _logger, nk, payload) => {
     }
   }
   let rewardContext = {};
+  if (placementId === "stage_reward_x2_ad") {
+    const runId = String(objectValue(req.context).run_id || "");
+    const settled = readSettledRewardRun(nk, ctx.userId, runId);
+    if (!settled) return monetizationError(409, "A settled winning result is required");
+    if (settled.run.stage_reward.claimed && (!sessions.length || settled.run.stage_reward.ad_session_id !== String(sessions[0].ad_session_id))) return monetizationError(409, "Victory multiplier already claimed");
+    rewardContext = { run_id: runId };
+  }
   if (placementId === "card_reroll_ad") {
     rewardContext = objectValue(req.context);
     const runId = String(rewardContext.run_id || "");
@@ -5785,7 +6047,7 @@ const prepareRewardedAd = (ctx, _logger, nk, payload) => {
     }
     const activeRun = readActiveRun(nk, ctx.userId, runId);
     if (!activeRun) return monetizationError(409, "Run is not active");
-    if (Math.max(0, Number(activeRun.run.ad_card_rerolls_used || 0)) >= MAX_CARD_REROLLS_PER_RUN) {
+    if (Math.max(0, Number(activeRun.run.ad_card_rerolls_used || 0)) >= rewardedRunLimit(nk, placementId)) {
       return monetizationError(409, "Card reroll quota reached");
     }
     rewardContext = { run_id: runId, offer_seq: offerSeq };
@@ -5796,7 +6058,7 @@ const prepareRewardedAd = (ctx, _logger, nk, payload) => {
     if (!runId) return monetizationError(400, "Combat revive requires an active run");
     const activeRun = readActiveRun(nk, ctx.userId, runId);
     if (!activeRun) return monetizationError(409, "Run is not active");
-    if (Math.max(0, Number(activeRun.run.item_revives || 0)) >= 1) {
+    if (Math.max(0, Number(activeRun.run.item_revives || 0)) >= rewardedRunLimit(nk, placementId)) {
       return monetizationError(409, "Revive already used for this run");
     }
     rewardContext = { run_id: runId };
@@ -5805,7 +6067,7 @@ const prepareRewardedAd = (ctx, _logger, nk, payload) => {
     const oldContext = objectValue(parseJsonb(sessions[0].context));
     if (oldContext.run_id !== rewardContext.run_id || Number(oldContext.offer_seq) !== Number(rewardContext.offer_seq)) return monetizationError(409, "Reward request belongs to another card offer");
   }
-  if (sessions.length && placementId === "combat_revive_ad") {
+  if (sessions.length && ["combat_revive_ad", "stage_reward_x2_ad"].indexOf(placementId) >= 0) {
     const oldContext = objectValue(parseJsonb(sessions[0].context));
     if (oldContext.run_id !== rewardContext.run_id) return monetizationError(409, "Reward request belongs to another run");
   }
@@ -5831,7 +6093,7 @@ const prepareRewardedAd = (ctx, _logger, nk, payload) => {
     const saved = objectValue(parseJsonb(sessions[0].context));
     if (saved.run_id !== rewardContext.run_id || Number(saved.offer_seq) !== Number(rewardContext.offer_seq)) return monetizationError(409, "Reward request belongs to another card offer");
   }
-  if (placementId === "combat_revive_ad") {
+  if (["combat_revive_ad", "stage_reward_x2_ad"].indexOf(placementId) >= 0) {
     const saved = objectValue(parseJsonb(sessions[0].context));
     if (saved.run_id !== rewardContext.run_id) return monetizationError(409, "Reward request belongs to another run");
   }
@@ -5913,6 +6175,7 @@ function grantPreparedReward(nk, userId, adSessionId, transactionId) {
     );
     if (existing.length === 0) return { granted: false };
     if (existing[0].status === "granted") {
+      if (String(existing[0].reward_type) === "stage_reward_x2") return grantStageRewardMultiplier(nk, userId, adSessionId, Number(existing[0].reward_amount), 0);
       return {
         granted: true,
         reward_type: String(existing[0].reward_type),
@@ -5926,7 +6189,13 @@ function grantPreparedReward(nk, userId, adSessionId, transactionId) {
   const placementId = String(reward.placement_id || "");
   const rewardDefinition = objectValue(rewardedAdsConfig(nk).placements)[canonicalRewardPlacement(placementId)];
   if (!rewardDefinition) return { granted: false, message: "Unknown rewarded placement" };
+  if (rewardDefinition.enabled === false || rewardDefinition.daily_limit === 0 || rewardDefinition.run_limit === 0) return { granted: false, message: "Rewarded placement disabled" };
   const limit = Number(rewardDefinition.daily_limit || 0);
+  if (String(reward.reward_type) === "stage_reward_x2") {
+    const granted = grantStageRewardMultiplier(nk, userId, adSessionId, Number(reward.reward_amount), limit);
+    if (granted.granted) nk.sqlExec("UPDATE monetization_ad_rewards SET status='granted', granted_at=NOW() WHERE ad_session_id=$1 AND status='verified'", [adSessionId]);
+    return granted;
+  }
   const dailyClaim = limit > 0 ? reserveDailyRewardClaim(nk, userId, placementId, adSessionId, limit) : null;
   if (limit > 0 && !dailyClaim) {
     nk.sqlExec("UPDATE monetization_ad_rewards SET status='rejected' WHERE ad_session_id=$1 AND status='verified'", [adSessionId]);
@@ -5981,7 +6250,7 @@ function grantPreparedReward(nk, userId, adSessionId, transactionId) {
   const rewardIds = Array.isArray(profile._monetization_reward_ids) ? profile._monetization_reward_ids.map((value) => String(value)) : [];
   if (rewardIds.indexOf(adSessionId) < 0) {
     if (String(reward.reward_type) === "stamina") {
-      profile.stamina = Math.min(30, Math.max(0, Number(profile.stamina || 0)) + Number(reward.reward_amount || 0));
+      profile.stamina = Math.max(Number(profile.stamina || 0), Math.min(30, Math.max(0, Number(profile.stamina || 0)) + Number(reward.reward_amount || 0)));
     } else {
       const resources = profile.resources || {};
       resources[String(reward.reward_type)] = Math.max(0, Number(resources[String(reward.reward_type)] || 0)) + Number(reward.reward_amount || 0);
@@ -6034,6 +6303,10 @@ const confirmRewardedAd = (ctx, _logger, nk, payload) => {
     [adSessionId, ctx.userId]
   );
   if (rows.length === 0) return monetizationError(404, "Reward session not found");
+  if (String(rows[0].reward_type) === "stage_reward_x2" && ["verified", "granted"].indexOf(String(rows[0].status)) >= 0) {
+    const reward = grantPreparedReward(nk, ctx.userId, adSessionId, "");
+    return JSON.stringify({ status: reward.granted ? "success" : "error", data: reward, code: reward.granted ? void 0 : 409 });
+  }
   return JSON.stringify({ status: "success", data: rows[0] });
 };
 const consumeAdGameplayReward = (ctx, _logger, nk, payload) => {
@@ -6064,7 +6337,7 @@ const consumeAdGameplayReward = (ctx, _logger, nk, payload) => {
     }
     const activeRun2 = readActiveRun(nk, ctx.userId, runId);
     if (!activeRun2) return monetizationError(409, "Run is not active");
-    if (Math.max(0, Math.floor(Number(activeRun2.run.item_revives || 0))) >= 1) {
+    if (Math.max(0, Math.floor(Number(activeRun2.run.item_revives || 0))) >= rewardedRunLimit(nk, "combat_revive_ad")) {
       return monetizationError(409, "Revive already used for this run");
     }
     const definitions = nk.sqlQuery("SELECT attributes FROM game_items WHERE id='revive_talisman'", []);
@@ -6072,7 +6345,7 @@ const consumeAdGameplayReward = (ctx, _logger, nk, payload) => {
     if (String(effect.kind || "") !== "revive" || !Number.isFinite(Number(effect.value)) || Number(effect.value) <= 0) {
       return monetizationError(409, "Revive effect configuration is unavailable");
     }
-    activeRun2.run.item_revives = 1;
+    activeRun2.run.item_revives = Math.max(0, Math.floor(Number(activeRun2.run.item_revives || 0))) + 1;
     nk.storageWrite([{
       collection: "player_stage_runs",
       key: "active",
@@ -6103,7 +6376,8 @@ const consumeAdGameplayReward = (ctx, _logger, nk, payload) => {
   const activeRun = readActiveRun(nk, ctx.userId, runId);
   if (!activeRun) return monetizationError(409, "Run is not active");
   const used = Math.max(0, Math.floor(Number(activeRun.run.ad_card_rerolls_used || 0)));
-  if (used >= MAX_CARD_REROLLS_PER_RUN) return monetizationError(409, "Card reroll quota reached");
+  const maxRerolls = rewardedRunLimit(nk, "card_reroll_ad");
+  if (used >= maxRerolls) return monetizationError(409, "Card reroll quota reached");
   activeRun.run.ad_card_rerolls_used = used + 1;
   nk.storageWrite([{
     collection: "player_stage_runs",
@@ -6126,7 +6400,7 @@ const consumeAdGameplayReward = (ctx, _logger, nk, payload) => {
     run_id: runId,
     offer_seq: offerSeq,
     rerolls_used: used + 1,
-    rerolls_remaining: MAX_CARD_REROLLS_PER_RUN - used - 1
+    rerolls_remaining: maxRerolls - used - 1
   } });
 };
 const admobSsvConfirm = (ctx, _logger, nk, payload) => {
@@ -6318,7 +6592,7 @@ function checkinApplyGrants(nk, profile, items, grants) {
       profile.resources[id] = Math.max(0, Number(profile.resources[id] || 0)) + amount;
       issued.push({ type, id, amount });
     } else if (type === "stamina") {
-      profile.stamina = Math.min(30, Math.max(0, Number(profile.stamina || 0)) + amount);
+      profile.stamina = Math.max(Number(profile.stamina || 0), Math.min(30, Math.max(0, Number(profile.stamina || 0)) + amount));
       issued.push({ type, amount });
     } else if (type === "item" || type === "random_item") {
       let itemId = String(raw.id || "");
@@ -6709,7 +6983,7 @@ function syncAllStoredProfilesToLeaderboards(nk, logger) {
       const userId = obj.userId;
       const profile = obj.value || {};
       const displayName = String(profile.display_name || usernameMap[userId] || "\u0110\u1EA1o H\u1EEFu");
-      writePlayerLeaderboardRecords(nk, userId, profile, displayName);
+      writePlayerLeaderboardRecords(nk, userId, profile, displayName, false);
       count++;
     }
     logger.info(`Synced ${count} real player profiles from DB to leaderboards.`);
@@ -6719,7 +6993,7 @@ function syncAllStoredProfilesToLeaderboards(nk, logger) {
     return -1;
   }
 }
-function writePlayerLeaderboardRecords(nk, userId, profile, displayName) {
+function writePlayerLeaderboardRecords(nk, userId, profile, displayName, weeklyActive = true) {
   const level = Math.max(1, Math.min(50, Number(profile.level || 1)));
   const vip = Number(profile.vip || (profile.vip_progress ? profile.vip_progress.level : 0) || 0);
   const heroId = String(profile.avatar_url || "hero_1");
@@ -6737,10 +7011,10 @@ function writePlayerLeaderboardRecords(nk, userId, profile, displayName) {
     highestStage = Math.max(1, profile.unlocked_stages.length);
   }
   let power = { score: 0, version: 2, hero_id: heroId };
-  try {
-    const catalog = readCombatPowerCatalog(nk);
-    power = readPlayerCombatPower(nk, userId, profile, catalog);
-  } catch (_e) {
+  const catalog = readCombatPowerCatalog(nk);
+  power = readPlayerCombatPower(nk, userId, profile, catalog);
+  if (!power || power.configured !== true || !Number.isSafeInteger(power.score) || power.score < 0) {
+    throw new Error("Combat power configuration unavailable");
   }
   const combatPower = Number(power.score || 0);
   const realmTitle = getLeaderboardRealmTitle(level);
@@ -6759,6 +7033,9 @@ function writePlayerLeaderboardRecords(nk, userId, profile, displayName) {
   nk.leaderboardRecordWrite("cultivation_realm", userId, name, level, 0, metadata);
   nk.leaderboardRecordWrite("campaign_stage", userId, name, highestStage, 0, metadata);
   nk.leaderboardRecordWrite("combat_power_v2", userId, name, combatPower, 0, metadata);
+  if (weeklyActive && typeof recordWeeklyLeaderboardScores === "function") {
+    recordWeeklyLeaderboardScores(nk, userId, name, { cultivation_realm: level, campaign_stage: highestStage, combat_power: combatPower });
+  }
   return { metadata, power, level, highestStage, combatPower, name };
 }
 const syncPlayerLeaderboards = (ctx, logger, nk, _payload) => {
@@ -6773,8 +7050,8 @@ const syncPlayerLeaderboards = (ctx, logger, nk, _payload) => {
   try {
     result = writePlayerLeaderboardRecords(nk, ctx.userId, profile, displayName);
   } catch (e) {
-    logger.error("Failed to write leaderboard records: " + String(e.message || e));
-    return JSON.stringify({ success: false, code: 500, message: "Failed to write leaderboard" });
+    if (logger && logger.error) logger.error("Failed to write leaderboard records: " + String(e.message || e));
+    return JSON.stringify({ success: false, code: 503, message: "Leaderboard sync unavailable; please retry" });
   }
   return JSON.stringify({
     success: true,
@@ -6897,6 +7174,252 @@ function createLeaderboards(nk, logger) {
   }
 }
 
+var __defProp = Object.defineProperty;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+const WEEKLY_BOARDS = ["cultivation_realm", "campaign_stage", "combat_power"];
+function validWeeklyLeaderboardConfig(cfg) {
+  if (!cfg || cfg.schema_version !== 1 || typeof cfg.enabled !== "boolean" || !Number.isSafeInteger(cfg.claim_days) || cfg.claim_days < 1 || cfg.claim_days > 90 || !cfg.boards || typeof cfg.boards !== "object" || Array.isArray(cfg.boards) || Object.keys(cfg.boards).some((id) => WEEKLY_BOARDS.indexOf(id) < 0)) return false;
+  for (const id of WEEKLY_BOARDS) {
+    const board = cfg.boards[id];
+    if (!board || typeof board.enabled !== "boolean" || !Array.isArray(board.tiers) || board.tiers.length !== 13) return false;
+    let next = 1;
+    for (let i = 0; i < board.tiers.length; i++) {
+      const tier = board.tiers[i], end = i < 10 ? i + 1 : [50, 200, 500][i - 10];
+      if (!tier || tier.from !== next || tier.to !== end || !Array.isArray(tier.rewards) || !tier.rewards.length || tier.rewards.length > 8) return false;
+      next = end + 1;
+      for (const reward of tier.rewards) {
+        if (!reward || !Number.isSafeInteger(reward.amount) || reward.amount <= 0 || reward.amount > 1e7) return false;
+        if (reward.type === "resource") {
+          if (["gold", "gems"].indexOf(reward.id) < 0) return false;
+        } else if (reward.type === "item") {
+          if (typeof reward.id !== "string" || !/^[a-z0-9_]{1,100}$/.test(reward.id) || reward.amount > 1e3) return false;
+        } else if (reward.type === "random_item") {
+          if (!Array.isArray(reward.pool) || !reward.pool.length || reward.pool.length > 128 || reward.amount > 1e3 || reward.pool.some((item) => typeof item !== "string" || !/^[a-z0-9_]{1,100}$/.test(item))) return false;
+        } else return false;
+      }
+    }
+  }
+  return true;
+}
+function weeklyConfigItemsExist(nk, config) {
+  const ids = [];
+  for (const id of WEEKLY_BOARDS) for (const tier of config.boards[id].tiers) for (const reward of tier.rewards) {
+    for (const item of reward.type === "item" ? [reward.id] : reward.type === "random_item" ? reward.pool : []) {
+      if (ids.indexOf(item) < 0) ids.push(item);
+    }
+  }
+  if (!ids.length) return true;
+  const found = nk.sqlQuery("SELECT id FROM game_items WHERE id IN (SELECT jsonb_array_elements_text($1::JSONB))", [JSON.stringify(ids)]);
+  return found.length === ids.length;
+}
+function createWeeklyLeaderboardTables(nk) {
+  nk.sqlExec(`
+CREATE TABLE IF NOT EXISTS weekly_leaderboard_periods (
+    period_id BIGINT PRIMARY KEY, starts_at TIMESTAMPTZ NOT NULL, closes_at TIMESTAMPTZ NOT NULL,
+    config_version BIGINT NOT NULL, config JSONB NOT NULL, status TEXT NOT NULL DEFAULT 'open', finalized_at TIMESTAMPTZ
+);
+CREATE TABLE IF NOT EXISTS weekly_leaderboard_scores (
+    period_id BIGINT NOT NULL REFERENCES weekly_leaderboard_periods(period_id), board_id TEXT NOT NULL,
+    user_id UUID NOT NULL, score BIGINT NOT NULL CHECK(score >= 0), achieved_at TIMESTAMPTZ NOT NULL,
+    display_name TEXT NOT NULL, PRIMARY KEY(period_id,board_id,user_id)
+);
+CREATE INDEX IF NOT EXISTS weekly_leaderboard_rank_idx ON weekly_leaderboard_scores(period_id,board_id,score DESC,achieved_at,user_id);
+CREATE TABLE IF NOT EXISTS weekly_leaderboard_awards (
+    period_id BIGINT NOT NULL REFERENCES weekly_leaderboard_periods(period_id), board_id TEXT NOT NULL,
+    user_id UUID NOT NULL, rank INT NOT NULL, score BIGINT NOT NULL, rewards JSONB NOT NULL,
+    expires_at TIMESTAMPTZ NOT NULL, PRIMARY KEY(period_id,board_id,user_id)
+);
+CREATE INDEX IF NOT EXISTS weekly_leaderboard_awards_user_idx ON weekly_leaderboard_awards(user_id,board_id,period_id DESC);
+CREATE OR REPLACE FUNCTION weekly_leaderboard_tick(cfg JSONB, release_version BIGINT) RETURNS BIGINT
+LANGUAGE plpgsql AS $weekly$
+DECLARE p RECORD; ts TIMESTAMPTZ; start_at TIMESTAMPTZ; active_id BIGINT;
+BEGIN
+    -- Shared by recording and finalization. Commands after this lock get fresh
+    -- snapshots: a score committed before the cutoff cannot disappear in a race.
+    PERFORM pg_advisory_xact_lock(135,1);
+    ts := clock_timestamp();
+    FOR p IN SELECT * FROM weekly_leaderboard_periods WHERE status='open' AND closes_at<=ts ORDER BY period_id LOOP
+        INSERT INTO weekly_leaderboard_awards(period_id,board_id,user_id,rank,score,rewards,expires_at)
+        SELECT p.period_id, ranked.board_id, ranked.user_id, ranked.position, ranked.score,
+            (SELECT jsonb_agg(CASE WHEN reward->>'type'='random_item' THEN
+                jsonb_build_object('type','item','id',(reward->'pool')->>(get_byte(decode(md5(p.period_id::TEXT||ranked.board_id||ranked.user_id::TEXT||ordinality::TEXT),'hex'),0) % jsonb_array_length(reward->'pool')),
+                    'amount',reward->'amount') ELSE reward END ORDER BY ordinality)
+             FROM jsonb_array_elements(tier->'rewards') WITH ORDINALITY r(reward,ordinality)),
+            p.closes_at + make_interval(days => (p.config->>'claim_days')::INT)
+        FROM (
+            SELECT s.*, ROW_NUMBER() OVER(PARTITION BY board_id ORDER BY score DESC,achieved_at,user_id) AS position
+            FROM weekly_leaderboard_scores s JOIN users u ON u.id=s.user_id
+            WHERE s.period_id=p.period_id AND COALESCE(u.disable_time,to_timestamp(0))<=to_timestamp(0)
+                AND NOT EXISTS(SELECT 1 FROM account_link_state a WHERE a.user_id=s.user_id AND a.status='archived')
+        ) ranked
+        CROSS JOIN LATERAL jsonb_array_elements(p.config->'boards'->ranked.board_id->'tiers') tier
+        WHERE ranked.position BETWEEN (tier->>'from')::INT AND (tier->>'to')::INT
+            AND (p.config->'boards'->ranked.board_id->>'enabled')::BOOL
+        ON CONFLICT DO NOTHING;
+        UPDATE weekly_leaderboard_periods SET status='finalized',finalized_at=ts WHERE period_id=p.period_id;
+    END LOOP;
+    IF cfg IS NULL THEN RETURN NULL; END IF;
+    start_at := date_trunc('week',ts AT TIME ZONE 'UTC') AT TIME ZONE 'UTC';
+    active_id := EXTRACT(EPOCH FROM start_at)::BIGINT;
+    -- Settings edits apply next week; an existing period keeps its rules.
+    IF EXISTS(SELECT 1 FROM weekly_leaderboard_periods WHERE period_id=active_id AND status='open') THEN RETURN active_id; END IF;
+    IF NOT COALESCE((cfg->>'enabled')::BOOL,FALSE) THEN RETURN NULL; END IF;
+    INSERT INTO weekly_leaderboard_periods(period_id,starts_at,closes_at,config_version,config)
+        VALUES(active_id,start_at,start_at+INTERVAL '7 days',release_version,cfg) ON CONFLICT DO NOTHING;
+    RETURN active_id;
+END $weekly$;
+CREATE OR REPLACE FUNCTION weekly_leaderboard_record(uid UUID, points JSONB, player_name TEXT, cfg JSONB, release_version BIGINT) RETURNS BIGINT
+LANGUAGE plpgsql AS $weekly$
+DECLARE active_id BIGINT; entry RECORD; frozen JSONB; ts TIMESTAMPTZ;
+BEGIN
+    active_id := weekly_leaderboard_tick(cfg,release_version);
+    IF active_id IS NULL THEN RETURN NULL; END IF;
+    SELECT config INTO frozen FROM weekly_leaderboard_periods WHERE period_id=active_id AND status='open';
+    IF frozen IS NULL THEN RETURN NULL; END IF;
+    ts := clock_timestamp();
+    FOR entry IN SELECT key,value FROM jsonb_each_text(points) LOOP
+        IF COALESCE((frozen->'boards'->entry.key->>'enabled')::BOOL,FALSE) AND entry.value::BIGINT>=0 THEN
+            INSERT INTO weekly_leaderboard_scores(period_id,board_id,user_id,score,achieved_at,display_name)
+            VALUES(active_id,entry.key,uid,entry.value::BIGINT,ts,player_name)
+            ON CONFLICT(period_id,board_id,user_id) DO UPDATE SET score=EXCLUDED.score,
+                achieved_at=CASE WHEN weekly_leaderboard_scores.score=EXCLUDED.score THEN weekly_leaderboard_scores.achieved_at ELSE EXCLUDED.achieved_at END,
+                display_name=EXCLUDED.display_name;
+        END IF;
+    END LOOP;
+    RETURN active_id;
+END $weekly$;`, []);
+}
+function weeklyPublishedConfig(nk) {
+  const release = getActiveRemoteConfig(nk);
+  const cfg = release.config && release.config.system && release.config.system.leaderboard_rewards;
+  return { config: validWeeklyLeaderboardConfig(cfg) ? cfg : null, version: release.version };
+}
+function recordWeeklyLeaderboardScores(nk, userId, name, scores) {
+  for (const board of WEEKLY_BOARDS) if (!Number.isSafeInteger(scores[board]) || scores[board] < 0) throw new Error("Invalid weekly score");
+  const settings = weeklyPublishedConfig(nk);
+  nk.sqlQuery(
+    "SELECT weekly_leaderboard_record($1::UUID,$2::JSONB,$3,$4::JSONB,$5::BIGINT) AS period_id",
+    [userId, JSON.stringify(scores), name, settings.config ? JSON.stringify(settings.config) : null, settings.version]
+  );
+}
+function tickWeeklyLeaderboards(nk) {
+  const settings = weeklyPublishedConfig(nk);
+  return nk.sqlQuery(
+    "SELECT weekly_leaderboard_tick($1::JSONB,$2::BIGINT) AS period_id, EXTRACT(EPOCH FROM clock_timestamp())*1000 AS server_time_ms",
+    [settings.config ? JSON.stringify(settings.config) : null, settings.version]
+  )[0];
+}
+function weeklyClaimKey(period, board) {
+  return String(period) + "_" + board;
+}
+const getWeeklyLeaderboardRewards = (ctx, _logger, nk, payload) => {
+  if (!ctx.userId) return JSON.stringify({ success: false, code: 401, message: "Authentication required" });
+  let req;
+  try {
+    req = JSON.parse(payload || "{}");
+  } catch (_) {
+    return JSON.stringify({ success: false, code: 400, message: "Invalid JSON" });
+  }
+  const board = String(req.board_id || "");
+  if (WEEKLY_BOARDS.indexOf(board) < 0) return JSON.stringify({ success: false, code: 400, message: "Unknown category" });
+  const tick = tickWeeklyLeaderboards(nk);
+  const periods = tick.period_id ? nk.sqlQuery("SELECT period_id,EXTRACT(EPOCH FROM starts_at)*1000 AS starts_at_ms,EXTRACT(EPOCH FROM closes_at)*1000 AS closes_at_ms,config_version,config FROM weekly_leaderboard_periods WHERE period_id=$1", [tick.period_id]) : [];
+  const period = periods[0];
+  if (period) period.config = parseJsonb(period.config);
+  const boardConfig = period && period.config.boards[board];
+  const ranks = period ? nk.sqlQuery(`SELECT * FROM (
+        SELECT user_id::TEXT,display_name,score,ROW_NUMBER() OVER(ORDER BY score DESC,achieved_at,s.user_id) AS rank
+        FROM weekly_leaderboard_scores s JOIN users u ON u.id=s.user_id
+        WHERE period_id=$1 AND board_id=$2 AND COALESCE(u.disable_time,to_timestamp(0))<=to_timestamp(0)
+            AND NOT EXISTS(SELECT 1 FROM account_link_state a WHERE a.user_id=s.user_id AND a.status='archived')
+        ) ranked WHERE rank<=50 OR user_id=$3 ORDER BY rank`, [period.period_id, board, ctx.userId]) : [];
+  const awards = nk.sqlQuery(`SELECT period_id,board_id,rank,score,rewards,EXTRACT(EPOCH FROM expires_at)*1000 AS expires_at_ms,
+        expires_at<=clock_timestamp() AS expired FROM weekly_leaderboard_awards WHERE user_id=$1::UUID AND board_id=$2 ORDER BY period_id DESC LIMIT 14`, [ctx.userId, board]);
+  const markers = awards.length ? nk.storageRead(awards.map((a) => ({ collection: "weekly_leaderboard_claims", key: weeklyClaimKey(a.period_id, board), userId: ctx.userId }))) : [];
+  for (const award of awards) {
+    award.rewards = parseJsonb(award.rewards);
+    award.claimed = markers.some((o) => o.key === weeklyClaimKey(award.period_id, board));
+  }
+  return JSON.stringify({
+    success: true,
+    server_time_ms: Number(tick.server_time_ms),
+    enabled: !!(boardConfig && boardConfig.enabled),
+    period: period ? { period_id: period.period_id, starts_at_ms: Number(period.starts_at_ms), closes_at_ms: Number(period.closes_at_ms), config_version: period.config_version } : null,
+    claim_days: period ? period.config.claim_days : null,
+    tiers: boardConfig ? boardConfig.tiers : [],
+    records: ranks.filter((r) => Number(r.rank) <= 50),
+    my_record: ranks.find((r) => r.user_id === ctx.userId) || null,
+    awards
+  });
+};
+const claimWeeklyLeaderboardReward = (ctx, _logger, nk, payload) => {
+  const fail = (code, message) => JSON.stringify({ success: false, code, message });
+  if (!ctx.userId) return fail(401, "Authentication required");
+  let req;
+  try {
+    req = JSON.parse(payload || "{}");
+  } catch (_) {
+    return fail(400, "Invalid JSON");
+  }
+  const board = String(req.board_id || ""), period = String(req.period_id || "");
+  if (WEEKLY_BOARDS.indexOf(board) < 0 || !/^[0-9]{1,12}$/.test(period)) return fail(400, "Invalid weekly reward");
+  const awards = nk.sqlQuery(`SELECT rewards,expires_at>clock_timestamp() AS available FROM weekly_leaderboard_awards
+        WHERE period_id=$1::BIGINT AND board_id=$2 AND user_id=$3::UUID`, [period, board, ctx.userId]);
+  if (!awards.length) return fail(404, "Kh\xF4ng c\xF3 ph\u1EA7n th\u01B0\u1EDFng tu\u1EA7n n\xE0y.");
+  awards[0].rewards = parseJsonb(awards[0].rewards);
+  const key = weeklyClaimKey(period, board);
+  const reads = nk.storageRead([
+    { collection: "weekly_leaderboard_claims", key, userId: ctx.userId },
+    { collection: "player_profiles", key: "main", userId: ctx.userId },
+    { collection: "player_inventory", key: "items", userId: ctx.userId }
+  ]);
+  const claimed = reads.find((o) => o.collection === "weekly_leaderboard_claims");
+  const profileObject = reads.find((o) => o.collection === "player_profiles"), inventoryObject = reads.find((o) => o.collection === "player_inventory");
+  if (!profileObject || !inventoryObject) return fail(409, "Player data is incomplete");
+  if (claimed) return JSON.stringify({ success: true, already_claimed: true, rewards: awards[0].rewards, profile: profileObject.value, inventory: inventoryObject.value.items });
+  if (!awards[0].available) return fail(410, "Ph\u1EA7n th\u01B0\u1EDFng \u0111\xE3 h\u1EBFt h\u1EA1n nh\u1EADn.");
+  const profile = profileObject.value, inventory = inventoryObject.value;
+  if (!Array.isArray(inventory.items)) return fail(409, "Invalid inventory");
+  profile.resources = profile.resources || {};
+  for (const reward of awards[0].rewards) {
+    if (reward.type === "resource" && ["gold", "gems"].indexOf(reward.id) >= 0) {
+      const total = Number(profile.resources[reward.id] || 0) + Number(reward.amount);
+      if (!Number.isSafeInteger(total)) return fail(409, "Resource limit reached");
+      profile.resources[reward.id] = total;
+    } else if (reward.type === "item") addStoreInventoryItem(nk, inventory.items, reward.id, reward.amount);
+    else return fail(409, "Invalid stored reward");
+  }
+  try {
+    nk.storageWrite([
+      { collection: "player_profiles", key: "main", userId: ctx.userId, value: profile, version: profileObject.version, permissionRead: 1, permissionWrite: 0 },
+      { collection: "player_inventory", key: "items", userId: ctx.userId, value: inventory, version: inventoryObject.version, permissionRead: 1, permissionWrite: 0 },
+      { collection: "weekly_leaderboard_claims", key, userId: ctx.userId, value: { period_id: period, board_id: board, rewards: awards[0].rewards }, version: "*", permissionRead: 1, permissionWrite: 0 }
+    ]);
+  } catch (_) {
+    return fail(409, "D\u1EEF li\u1EC7u v\u1EEBa thay \u0111\u1ED5i. Vui l\xF2ng t\u1EA3i l\u1EA1i v\xE0 th\u1EED nh\u1EADn th\u01B0\u1EDFng.");
+  }
+  return JSON.stringify({ success: true, already_claimed: false, rewards: awards[0].rewards, profile, inventory: inventory.items });
+};
+const weeklyLeaderboardTickRpc = (ctx, _logger, nk, _payload) => {
+  if (ctx.userId && ctx.userId !== String(ctx.env.CONFIG_ADMIN_USER_ID || "")) return JSON.stringify({ success: false, code: 403, message: "Forbidden" });
+  const result = tickWeeklyLeaderboards(nk);
+  return JSON.stringify(__spreadValues({ success: true }, result));
+};
+
 function linkedRpc_rename_player(ctx, logger, nk, payload) {
   return accountGuardedRpc("rename_player", renamePlayer)(ctx, logger, nk, payload);
 }
@@ -6999,6 +7522,12 @@ function linkedRpc_tribulation_action(ctx, logger, nk, payload) {
 function linkedRpc_get_monetization_status(ctx, logger, nk, payload) {
   return accountGuardedRpc("get_monetization_status", gatedGetMonetizationStatus)(ctx, logger, nk, payload);
 }
+function linkedRpc_get_daily_pack_status(ctx, logger, nk, payload) {
+  return accountGuardedRpc("get_daily_pack_status", gatedGetDailyPackStatus)(ctx, logger, nk, payload);
+}
+function linkedRpc_claim_daily_pack(ctx, logger, nk, payload) {
+  return accountGuardedRpc("claim_daily_pack", gatedClaimDailyPack)(ctx, logger, nk, payload);
+}
 function linkedRpc_create_purchase_order(ctx, logger, nk, payload) {
   return accountGuardedRpc("create_purchase_order", gatedCreatePurchaseOrder)(ctx, logger, nk, payload);
 }
@@ -7022,6 +7551,15 @@ function linkedRpc_admob_ssv_confirm(ctx, logger, nk, payload) {
 }
 function linkedRpc_google_play_rtdn_confirm(ctx, logger, nk, payload) {
   return accountGuardedRpc("google_play_rtdn_confirm", googlePlayRtdnConfirm)(ctx, logger, nk, payload);
+}
+function linkedRpc_weekly_leaderboard_tick(ctx, logger, nk, payload) {
+  return weeklyLeaderboardTickRpc(ctx, logger, nk, payload);
+}
+function linkedRpc_get_weekly_leaderboard_rewards(ctx, logger, nk, payload) {
+  return accountGuardedRpc("get_weekly_leaderboard_rewards", (c, l, n, p) => invokeWithVersionGate(c, l, n, p, getWeeklyLeaderboardRewards))(ctx, logger, nk, payload);
+}
+function linkedRpc_claim_weekly_leaderboard_reward(ctx, logger, nk, payload) {
+  return accountGuardedRpc("claim_weekly_leaderboard_reward", (c, l, n, p) => invokeWithVersionGate(c, l, n, p, claimWeeklyLeaderboardReward))(ctx, logger, nk, payload);
 }
 function linkedRpc_sync_player_leaderboards(ctx, logger, nk, payload) {
   return accountGuardedRpc("sync_player_leaderboards", gatedSyncPlayerLeaderboards)(ctx, logger, nk, payload);
@@ -7085,6 +7623,8 @@ function InitModule(ctx, logger, nk, initializer) {
   initializer.registerRpc("award_stage_progression", linkedRpc_award_stage_progression);
   initializer.registerRpc("tribulation_action", linkedRpc_tribulation_action);
   initializer.registerRpc("get_monetization_status", linkedRpc_get_monetization_status);
+  initializer.registerRpc("get_daily_pack_status", linkedRpc_get_daily_pack_status);
+  initializer.registerRpc("claim_daily_pack", linkedRpc_claim_daily_pack);
   initializer.registerRpc("create_purchase_order", linkedRpc_create_purchase_order);
   initializer.registerRpc("sync_play_purchase", linkedRpc_sync_play_purchase);
   initializer.registerRpc("iap_google_claim", linkedRpc_iap_google_claim);
@@ -7093,7 +7633,12 @@ function InitModule(ctx, logger, nk, initializer) {
   initializer.registerRpc("consume_ad_gameplay_reward", linkedRpc_consume_ad_gameplay_reward);
   initializer.registerRpc("admob_ssv_confirm", linkedRpc_admob_ssv_confirm);
   initializer.registerRpc("google_play_rtdn_confirm", linkedRpc_google_play_rtdn_confirm);
+  createWeeklyLeaderboardTables(nk);
+  tickWeeklyLeaderboards(nk);
   createLeaderboards(nk, logger);
+  initializer.registerRpc("get_weekly_leaderboard_rewards", linkedRpc_get_weekly_leaderboard_rewards);
+  initializer.registerRpc("claim_weekly_leaderboard_reward", linkedRpc_claim_weekly_leaderboard_reward);
+  initializer.registerRpc("weekly_leaderboard_tick", linkedRpc_weekly_leaderboard_tick);
   initializer.registerRpc("sync_player_leaderboards", linkedRpc_sync_player_leaderboards);
   initializer.registerRpc("get_leaderboard_records", linkedRpc_get_leaderboard_records);
   initializer.registerRpc("sync_all_leaderboards", linkedRpc_sync_all_leaderboards);

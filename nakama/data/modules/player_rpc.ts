@@ -404,14 +404,14 @@ const loadPlayerProfile: nkruntime.RpcFunction = (
         const last = hasLastStaminaUpdate
             ? Math.max(0, Number(result.profile.last_stamina_update))
             : now;
-        const currentStamina = Math.max(0, Math.min(30, Number(result.profile.stamina || 0)));
+        const currentStamina = Math.max(0, Number(result.profile.stamina || 0));
         const ticks = currentStamina < 30 && now > last ? Math.floor((now - last) / interval) : 0;
         if (ticks > 0 && amount > 0) {
             result.profile.stamina = Math.min(30, currentStamina + ticks * amount);
             result.profile.last_stamina_update = result.profile.stamina >= 30 ? now : last + ticks * interval;
 			profileChanged = true;
-		} else if (currentStamina >= 30 && (Number(result.profile.stamina || 0) !== 30 || last !== now)) {
-			result.profile.stamina = 30;
+		} else if (currentStamina >= 30 && last !== now) {
+			result.profile.stamina = currentStamina;
 			result.profile.last_stamina_update = now;
 			profileChanged = true;
         } else if (!hasLastStaminaUpdate) {
@@ -451,6 +451,10 @@ const loadPlayerProfile: nkruntime.RpcFunction = (
         }
     }
 
+    if (result.profile && typeof writePlayerLeaderboardRecords === "function") {
+        try { writePlayerLeaderboardRecords(nk,ctx.userId,result.profile,result.profile.display_name); }
+        catch (e) { logger.warn("Weekly/profile leaderboard sync deferred: " + String(e)); }
+    }
     const vip = result.monetization.vip;
     if (vip && vip.configured) {
         result.profile.vip = vip.level;

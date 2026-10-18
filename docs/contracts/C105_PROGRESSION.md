@@ -1,8 +1,10 @@
 # C105 User, Hero & Run Experience Progression
 
-Version: 1.2.0 | Status: ACTIVE | Updated: 2026-10-17
+Version: 1.2.1 | Status: ACTIVE | Updated: 2026-10-18
 
 ## Schema and behavior
+
+Diễn Võ Trường (`stage_0_1`, or stages in `arc_0`) is a skill-testing arena. Its authoritative settlement always returns zero `exp_awarded` and `first_clear_bonus_exp` for both User and Hero on victory, defeat and repeat clears, regardless of positive stage/difficulty multipliers or client base EXP. Temporary in-run EXP remains available for skill testing. RPC schemas, settlement validation and replay protection are unchanged.
 
 User thresholds equal five times Hero thresholds. Existing levels and banked EXP remain intact; thresholds are recalculated by existing progression settlement. Breakthrough gates remain in force.
 
@@ -18,4 +20,5 @@ Completion, EXP, inventory and active run settlement use one version-checked sto
 
 | Version | Date | Change |
 |---|---|---|
+| 1.2.1 | 2026-10-18 | Diễn Võ Trường grants no permanent User/Hero EXP; temporary in-run skill progression is unchanged. |
 | 1.2.0 | 2026-10-17 | User ratio x5; first winning stage/difficulty clear grants x2 EXP and UI bonus breakdown. |

@@ -1,5 +1,7 @@
 # Seed and publish
 
+For rewarded-ad amounts and limits, see [System Settings](SYSTEM_SETTINGS.md). C134 reads published `system.rewarded_ads`; updating the legacy content row alone does not change rewarded settings.
+
 Build and restart the server before using the new seed payloads. Startup adds
 nullable columns without removing existing data. Seed fills them from data/.
 

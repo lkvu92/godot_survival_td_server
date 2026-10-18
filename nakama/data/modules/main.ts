@@ -104,6 +104,12 @@ function linkedRpc_tribulation_action(ctx: nkruntime.Context, logger: nkruntime.
 function linkedRpc_get_monetization_status(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
     return accountGuardedRpc("get_monetization_status", gatedGetMonetizationStatus)(ctx, logger, nk, payload);
 }
+function linkedRpc_get_daily_pack_status(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("get_daily_pack_status", gatedGetDailyPackStatus)(ctx, logger, nk, payload);
+}
+function linkedRpc_claim_daily_pack(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("claim_daily_pack", gatedClaimDailyPack)(ctx, logger, nk, payload);
+}
 function linkedRpc_create_purchase_order(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
     return accountGuardedRpc("create_purchase_order", gatedCreatePurchaseOrder)(ctx, logger, nk, payload);
 }
@@ -127,6 +133,15 @@ function linkedRpc_admob_ssv_confirm(ctx: nkruntime.Context, logger: nkruntime.L
 }
 function linkedRpc_google_play_rtdn_confirm(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
     return accountGuardedRpc("google_play_rtdn_confirm", googlePlayRtdnConfirm)(ctx, logger, nk, payload);
+}
+function linkedRpc_weekly_leaderboard_tick(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return weeklyLeaderboardTickRpc(ctx,logger,nk,payload);
+}
+function linkedRpc_get_weekly_leaderboard_rewards(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("get_weekly_leaderboard_rewards", (c,l,n,p) => invokeWithVersionGate(c,l,n,p,getWeeklyLeaderboardRewards))(ctx,logger,nk,payload);
+}
+function linkedRpc_claim_weekly_leaderboard_reward(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("claim_weekly_leaderboard_reward", (c,l,n,p) => invokeWithVersionGate(c,l,n,p,claimWeeklyLeaderboardReward))(ctx,logger,nk,payload);
 }
 function linkedRpc_sync_player_leaderboards(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
     return accountGuardedRpc("sync_player_leaderboards", gatedSyncPlayerLeaderboards)(ctx, logger, nk, payload);
@@ -204,6 +219,8 @@ function InitModule(
     initializer.registerRpc("award_stage_progression", linkedRpc_award_stage_progression);
     initializer.registerRpc("tribulation_action", linkedRpc_tribulation_action);
     initializer.registerRpc("get_monetization_status", linkedRpc_get_monetization_status);
+    initializer.registerRpc("get_daily_pack_status", linkedRpc_get_daily_pack_status);
+    initializer.registerRpc("claim_daily_pack", linkedRpc_claim_daily_pack);
     initializer.registerRpc("create_purchase_order", linkedRpc_create_purchase_order);
     initializer.registerRpc("sync_play_purchase", linkedRpc_sync_play_purchase);
     initializer.registerRpc("iap_google_claim", linkedRpc_iap_google_claim);
@@ -215,7 +232,12 @@ function InitModule(
     initializer.registerRpc("google_play_rtdn_confirm", linkedRpc_google_play_rtdn_confirm);
 
     // Phase 5: Leaderboards
+    createWeeklyLeaderboardTables(nk);
+    tickWeeklyLeaderboards(nk);
     createLeaderboards(nk, logger);
+    initializer.registerRpc("get_weekly_leaderboard_rewards", linkedRpc_get_weekly_leaderboard_rewards);
+    initializer.registerRpc("claim_weekly_leaderboard_reward", linkedRpc_claim_weekly_leaderboard_reward);
+    initializer.registerRpc("weekly_leaderboard_tick", linkedRpc_weekly_leaderboard_tick);
     initializer.registerRpc("sync_player_leaderboards", linkedRpc_sync_player_leaderboards);
     initializer.registerRpc("get_leaderboard_records", linkedRpc_get_leaderboard_records);
     initializer.registerRpc("sync_all_leaderboards", linkedRpc_sync_all_leaderboards);

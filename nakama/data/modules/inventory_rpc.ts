@@ -255,6 +255,25 @@ function talismanConfig(nk: nkruntime.Nakama): any {
     return talismanJsonObject(talismanJsonObject(rows[0].value).talisman_system);
 }
 
+/** Mirrors combat_power.ts so every talisman-action response can expose the
+ * server-authoritative durability projection for UI previews. */
+function talismanDurabilityFactor(config: any, durability: number): number {
+    const tiers: any[] = Array.isArray(config.durability_tiers) ? config.durability_tiers : [];
+    const value = Math.max(0, Math.min(100, Number(durability || 0)));
+    for (const tier of tiers) if (tier && value <= Number(tier.max)) return Number(tier.factor || 0);
+    return 1;
+}
+
+function talismanEffectiveStats(stats: any, factor: number): any {
+    const result: any = {};
+    const source = talismanJsonObject(stats);
+    for (const key of Object.keys(source)) {
+        const value = Number(source[key]);
+        if (Number.isFinite(value)) result[key] = value * factor;
+    }
+    return result;
+}
+
 function talismanUpgradeSuccessRate(upgrade: any, currentLevel: number): number {
     const configured = Array.isArray(upgrade.success_rates_by_current_level)
         ? upgrade.success_rates_by_current_level : [];
@@ -668,6 +687,8 @@ const talismanAction: nkruntime.RpcFunction = (ctx, _logger, nk, payload): strin
 		eventRecord(nk, ctx.userId, "talisman_enhance", 1, { talisman_id: talismanId },
 			requestId || `${talismanId}:${Number(target ? target.level : 0)}`);
 	}
+	const durabilityFactor = target ? talismanDurabilityFactor(talismanConfig(nk), Number(target.durability || 0)) : 0;
+	const effectiveStats = target ? talismanEffectiveStats(target.current_stats, durabilityFactor) : {};
 	return JSON.stringify({ success: action === "upgrade" ? upgradeSucceeded : true,
 		attempted: upgradeAttempted, consumed: upgradeAttempted, charm_consumed: charmConsumed, success_rate: upgradeSuccessRate,
 		message: action === "upgrade" && !upgradeSucceeded ? "Talisman enhancement failed" : "",
@@ -676,5 +697,6 @@ const talismanAction: nkruntime.RpcFunction = (ctx, _logger, nk, payload): strin
         exp: target ? Number(target.exp || 0) : 0,
         max_exp: target ? Number(target.max_exp || 20) : 0,
 		durability: target ? Number(target.durability || 0) : 0,
+		durability_factor: durabilityFactor, effective_stats: effectiveStats,
 		quote: target ? talismanUpgradeQuote(nk, Number(target.level || 1), items, resources, talismanId) : {} });
 };
