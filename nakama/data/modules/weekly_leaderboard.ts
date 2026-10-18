@@ -142,7 +142,7 @@ function tickWeeklyLeaderboards(nk: nkruntime.Nakama): any {
 
 function weeklyClaimKey(period: any, board: string): string { return String(period) + "_" + board; }
 
-const getWeeklyLeaderboardRewards: nkruntime.RpcFunction = (ctx, _logger, nk, payload) => {
+const readWeeklyLeaderboardRewards: nkruntime.RpcFunction = (ctx, _logger, nk, payload) => {
     if (!ctx.userId) return JSON.stringify({success:false,code:401,message:"Authentication required"});
     let req: any;
     try { req = JSON.parse(payload || "{}"); } catch (_) { return JSON.stringify({success:false,code:400,message:"Invalid JSON"}); }
@@ -154,9 +154,9 @@ const getWeeklyLeaderboardRewards: nkruntime.RpcFunction = (ctx, _logger, nk, pa
     if (period) period.config = parseJsonb(period.config);
     const boardConfig = period && period.config.boards[board];
     const ranks = period ? nk.sqlQuery(`SELECT * FROM (
-        SELECT user_id::TEXT,display_name,score,ROW_NUMBER() OVER(ORDER BY score DESC,achieved_at,s.user_id) AS rank
+        SELECT s.user_id::TEXT,s.display_name,s.score,ROW_NUMBER() OVER(ORDER BY s.score DESC,s.achieved_at,s.user_id) AS rank
         FROM weekly_leaderboard_scores s JOIN users u ON u.id=s.user_id
-        WHERE period_id=$1 AND board_id=$2 AND COALESCE(u.disable_time,to_timestamp(0))<=to_timestamp(0)
+        WHERE s.period_id=$1 AND s.board_id=$2 AND COALESCE(u.disable_time,to_timestamp(0))<=to_timestamp(0)
             AND NOT EXISTS(SELECT 1 FROM account_link_state a WHERE a.user_id=s.user_id AND a.status='archived')
         ) ranked WHERE rank<=50 OR user_id=$3 ORDER BY rank`, [period.period_id,board,ctx.userId]) : [];
     const awards = nk.sqlQuery(`SELECT period_id,board_id,rank,score,rewards,EXTRACT(EPOCH FROM expires_at)*1000 AS expires_at_ms,
@@ -171,7 +171,15 @@ const getWeeklyLeaderboardRewards: nkruntime.RpcFunction = (ctx, _logger, nk, pa
         claim_days:period ? period.config.claim_days : null,tiers:boardConfig ? boardConfig.tiers : [],records:ranks.filter((r:any)=>Number(r.rank)<=50),my_record:ranks.find((r:any)=>r.user_id===ctx.userId)||null,awards});
 };
 
-const claimWeeklyLeaderboardReward: nkruntime.RpcFunction = (ctx, _logger, nk, payload) => {
+const getWeeklyLeaderboardRewards: nkruntime.RpcFunction = (ctx, logger, nk, payload) => {
+    try { return readWeeklyLeaderboardRewards(ctx,logger,nk,payload); }
+    catch (error) {
+        if (logger && logger.error) logger.error("Weekly standings unavailable: " + String(error));
+        return JSON.stringify({success:false,code:503,message:"Chưa tải được thưởng tuần. Vui lòng thử lại."});
+    }
+};
+
+const claimWeeklyLeaderboardRewardInternal: nkruntime.RpcFunction = (ctx, _logger, nk, payload) => {
     const fail = (code:number,message:string)=>JSON.stringify({success:false,code,message});
     if (!ctx.userId) return fail(401,"Authentication required");
     let req:any;
@@ -209,6 +217,14 @@ const claimWeeklyLeaderboardReward: nkruntime.RpcFunction = (ctx, _logger, nk, p
         ]);
     } catch (_) {return fail(409,"Dữ liệu vừa thay đổi. Vui lòng tải lại và thử nhận thưởng.");}
     return JSON.stringify({success:true,already_claimed:false,rewards:awards[0].rewards,profile,inventory:inventory.items});
+};
+
+const claimWeeklyLeaderboardReward: nkruntime.RpcFunction = (ctx, logger, nk, payload) => {
+    try { return claimWeeklyLeaderboardRewardInternal(ctx,logger,nk,payload); }
+    catch (error) {
+        if (logger && logger.error) logger.error("Weekly reward claim unavailable: " + String(error));
+        return JSON.stringify({success:false,code:503,message:"Chưa thể nhận thưởng tuần. Vui lòng tải lại và thử lại."});
+    }
 };
 
 const weeklyLeaderboardTickRpc: nkruntime.RpcFunction = (ctx, _logger, nk, _payload) => {

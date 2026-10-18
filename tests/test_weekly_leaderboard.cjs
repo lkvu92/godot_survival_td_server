@@ -23,7 +23,7 @@ const call=(name,n,body)=>JSON.parse(fn(name)(ctx(n),logger,nk,JSON.stringify(bo
 function seedStorage(n){for(const [collection,key,value] of [['player_profiles','main',{resources:{gems:0,gold:0}}],['player_inventory','items',{items:[]}]])store.set(storageKey({userId:user(n),collection,key}),{userId:user(n),collection,key,value,version:'1'});}
 async function concurrent(queries){return await Promise.all(queries.map(query=>new Promise((resolve,reject)=>{const child=spawn(pg,['-X','-q','-h','127.0.0.1','-p',port,'-U','postgres','-d','postgres','-v','ON_ERROR_STOP=1','-f','-'],{env:{...process.env,PGOPTIONS:'-c search_path='+schema+',public'}});let err='';child.stderr.on('data',d=>err+=d);child.on('error',reject);child.on('close',code=>code?reject(Error(err)):resolve());child.stdin.end(query);})));}
 (async()=>{try{
- sql(`CREATE SCHEMA ${schema};CREATE TABLE users(id UUID PRIMARY KEY,disable_time TIMESTAMPTZ);CREATE TABLE account_link_state(user_id UUID,status TEXT);CREATE TABLE game_items(id TEXT PRIMARY KEY,stackable BOOL,max_stack INT);`);
+ sql(`CREATE SCHEMA ${schema};CREATE TABLE users(id UUID PRIMARY KEY,disable_time TIMESTAMPTZ,display_name TEXT NOT NULL DEFAULT 'Account name');CREATE TABLE account_link_state(user_id UUID,status TEXT);CREATE TABLE game_items(id TEXT PRIMARY KEY,stackable BOOL,max_stack INT);`);
  const items=JSON.parse(fs.readFileSync(path.join(root,'data/items.json'),'utf8'));
  sql('INSERT INTO game_items VALUES '+items.map(i=>`(${literal(i.id)},TRUE,999)`).join(','));
  fn('createWeeklyLeaderboardTables')(nk);fn('createWeeklyLeaderboardTables')(nk);
@@ -32,7 +32,7 @@ async function concurrent(queries){return await Promise.all(queries.map(query=>n
  assert(fn('weeklyConfigItemsExist')(nk,cfg));const badItem=clone(cfg);badItem.boards.combat_power.tiers[0].rewards[2].id='missing_item';assert(!fn('weeklyConfigItemsExist')(nk,badItem));
  const tick=fn('tickWeeklyLeaderboards')(nk),current=Number(tick.period_id),old=current-604800;
  assert.equal(new Date(current*1000).getUTCDay(),1);assert.equal(new Date(current*1000).getUTCHours(),0);
- sql(`INSERT INTO users SELECT ('10000000-0000-0000-0000-'||lpad(n::TEXT,12,'0'))::UUID,NULL FROM generate_series(1,504)n;`);
+ sql(`INSERT INTO users(id,disable_time) SELECT ('10000000-0000-0000-0000-'||lpad(n::TEXT,12,'0'))::UUID,NULL FROM generate_series(1,504)n;`);
  // Record only authenticated active users; freeze period config and preserve tie timestamp.
  fn('recordWeeklyLeaderboardScores')(nk,user(1),'one',{cultivation_realm:10,campaign_stage:20,combat_power:100});
  const achieved=sql(`SELECT achieved_at FROM weekly_leaderboard_scores WHERE user_id=${literal(user(1))} AND board_id='combat_power'`);
@@ -41,6 +41,10 @@ async function concurrent(queries){return await Promise.all(queries.map(query=>n
  assert.equal(sql(`SELECT achieved_at FROM weekly_leaderboard_scores WHERE user_id=${literal(user(1))} AND board_id='combat_power'`),achieved);
  assert.equal(JSON.parse(sql(`SELECT config FROM weekly_leaderboard_periods WHERE period_id=${current}`)).boards.combat_power.tiers[0].rewards[0].amount,300);
  const status=call('getWeeklyLeaderboardRewards',1,{board_id:'combat_power'});assert.equal(status.my_record.rank,1);assert.equal(status.tiers[0].rewards[0].amount,300);assert.equal(call('getWeeklyLeaderboardRewards',2,{board_id:'combat_power'}).my_record,null);
+ assert.equal(status.my_record.display_name,'renamed','Use weekly snapshot name despite users.display_name column');
+ const failingNk={...nk,sqlQuery(){throw Error('simulated database outage');}};
+ assert.equal(JSON.parse(fn('getWeeklyLeaderboardRewards')(ctx(1),logger,failingNk,JSON.stringify({board_id:'combat_power'}))).code,503,'Return application error without throwing HTTP 500');
+ assert.equal(JSON.parse(fn('claimWeeklyLeaderboardReward')(ctx(1),logger,failingNk,JSON.stringify({board_id:'combat_power',period_id:old}))).code,503);
  assert.equal(call('getWeeklyLeaderboardRewards',1,{board_id:'invalid'}).success,false);
  // Seed previous-period source scores, then finalize using the actual DB functions.
  sql(`INSERT INTO weekly_leaderboard_periods VALUES(${old},to_timestamp(${old}),to_timestamp(${current}),1,${literal(JSON.stringify(cfg))}::JSONB,'open',NULL);

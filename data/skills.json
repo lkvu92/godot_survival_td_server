@@ -40,6 +40,12 @@
           "Sát thương 75% ATK"
         ]
       }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "hero-basic-attack",
+        "timing": "cast"
+      }
     ]
   },
   {
@@ -1587,6 +1593,12 @@
           }
         ]
       }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "hero3-skill1",
+        "timing": "cast"
+      }
     ]
   },
   {
@@ -1792,6 +1804,16 @@
           }
         ]
       }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "hero3-skill2-a",
+        "timing": "cast"
+      },
+      {
+        "sfx_id": "hero3-skill2-b",
+        "timing": "impact"
+      }
     ]
   },
   {
@@ -1992,6 +2014,16 @@
           }
         ]
       }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "hero3-skill3-cast",
+        "timing": "cast"
+      },
+      {
+        "sfx_id": "hero3-skill3-b",
+        "timing": "finisher"
+      }
     ]
   },
   {
@@ -2142,6 +2174,12 @@
           }
         ]
       }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "hero3-skill4-cast",
+        "timing": "cast"
+      }
     ]
   },
   {
@@ -2266,6 +2304,12 @@
           "Sát thương 180% ATK/tiễn",
           "CD 1.8s"
         ]
+      }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "hero2-skill1-cast",
+        "timing": "cast"
       }
     ]
   },
@@ -2402,6 +2446,12 @@
           "CD 5.5s"
         ]
       }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "hero2-skill2-cast",
+        "timing": "cast"
+      }
     ]
   },
   {
@@ -2508,6 +2558,12 @@
           "Thiêu đốt tổng 25% ATK/3s",
           "Tách 3 tiễn nhỏ, mỗi tiễn gây 35% sát thương"
         ]
+      }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "hero2-skill3-cast",
+        "timing": "cast"
       }
     ]
   },
@@ -2658,6 +2714,16 @@
           "Đủ 3 hit: +5% HP tối đa",
           "CD 13s"
         ]
+      }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "hero2-skill4-cast",
+        "timing": "cast"
+      },
+      {
+        "sfx_id": "hero2-skill4-impact",
+        "timing": "impact"
       }
     ]
   },
@@ -2828,6 +2894,12 @@
             "dps_pct": 124
           }
         ]
+      }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "hero4-skill1-cast",
+        "timing": "cast"
       }
     ]
   },
@@ -3008,6 +3080,12 @@
             "slow_percent": 0.3
           }
         ]
+      }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "hero4-skill2-cast",
+        "timing": "cast"
       }
     ]
   },
@@ -3228,6 +3306,16 @@
             "slow_percent": 0.5
           }
         ]
+      }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "hero4-skill3-cast",
+        "timing": "cast"
+      },
+      {
+        "sfx_id": "hero4-skill3-impact",
+        "timing": "impact"
       }
     ]
   },
@@ -3470,6 +3558,16 @@
             "slow_percent": 0.3
           }
         ]
+      }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "hero4-skill4-cast",
+        "timing": "cast"
+      },
+      {
+        "sfx_id": "hero4-skill4-impact",
+        "timing": "impact"
       }
     ]
   },
@@ -3733,6 +3831,12 @@
           }
         ]
       }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "hero1-skill1-cast",
+        "timing": "cast"
+      }
     ]
   },
   {
@@ -3899,6 +4003,16 @@
           "CD 4.2s"
         ]
       }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "hero1-skill2-cast",
+        "timing": "cast"
+      },
+      {
+        "sfx_id": "hero1-skill2-impact",
+        "timing": "impact"
+      }
     ]
   },
   {
@@ -4026,6 +4140,12 @@
           "Đóng băng quái 0.3s khi trúng"
         ]
       }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "hero1-skill3-cast",
+        "timing": "cast"
+      }
     ]
   },
   {
@@ -4140,6 +4260,12 @@
           "Giảm 30% tốc độ đánh của quái",
           "Giảm 20% giáp của quái"
         ]
+      }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "hero1-skill4-cast",
+        "timing": "cast"
       }
     ]
   },
@@ -4330,6 +4456,12 @@
             "duration": 0.15
           }
         ]
+      }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "hero5-skill1-cast",
+        "timing": "cast"
       }
     ]
   },
@@ -4525,6 +4657,12 @@
             "hp_percent": 0.01
           }
         ]
+      }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "hero5-skill2-cast",
+        "timing": "cast"
       }
     ]
   },
@@ -4756,6 +4894,16 @@
             "duration": 0.5
           }
         ]
+      }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "hero5-skill3-cast",
+        "timing": "cast"
+      },
+      {
+        "sfx_id": "hero5-skill3-impact",
+        "timing": "impact"
       }
     ]
   },
@@ -5011,6 +5159,12 @@
           }
         ]
       }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "hero5-skill4-cast",
+        "timing": "cast"
+      }
     ]
   },
   {
@@ -5139,6 +5293,12 @@
           "Thời gian hồi chiêu: 24.0s"
         ],
         "effects": []
+      }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "talisman-skill-1",
+        "timing": "cast"
       }
     ]
   },
@@ -5275,6 +5435,12 @@
           "Thời gian hồi chiêu: 22.0s"
         ],
         "effects": []
+      }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "talisman-skill-2",
+        "timing": "cast"
       }
     ]
   },
@@ -5431,6 +5597,12 @@
           }
         ]
       }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "talisman-skill-3",
+        "timing": "cast"
+      }
     ]
   },
   {
@@ -5458,8 +5630,13 @@
       "vfx_offset_y": 28,
       "vfx_layer": 3,
       "effects": [
-        {"id": "defense_up", "defense_percent": 0.2},
-        {"id": "critical_immunity"}
+        {
+          "id": "defense_up",
+          "defense_percent": 0.2
+        },
+        {
+          "id": "critical_immunity"
+        }
       ]
     },
     "description_rows": [
@@ -5494,8 +5671,15 @@
           "Thời gian hồi chiêu: 30.0s"
         ],
         "effects": [
-          {"id": "defense_up", "duration": 5, "defense_percent": 0.2},
-          {"id": "critical_immunity", "duration": 5}
+          {
+            "id": "defense_up",
+            "duration": 5,
+            "defense_percent": 0.2
+          },
+          {
+            "id": "critical_immunity",
+            "duration": 5
+          }
         ]
       },
       {
@@ -5514,8 +5698,15 @@
           "Thời gian hồi chiêu: 28.5s"
         ],
         "effects": [
-          {"id": "defense_up", "duration": 5, "defense_percent": 0.2},
-          {"id": "critical_immunity", "duration": 5}
+          {
+            "id": "defense_up",
+            "duration": 5,
+            "defense_percent": 0.2
+          },
+          {
+            "id": "critical_immunity",
+            "duration": 5
+          }
         ]
       },
       {
@@ -5534,8 +5725,15 @@
           "Thời gian hồi chiêu: 27.0s"
         ],
         "effects": [
-          {"id": "defense_up", "duration": 5, "defense_percent": 0.2},
-          {"id": "critical_immunity", "duration": 5}
+          {
+            "id": "defense_up",
+            "duration": 5,
+            "defense_percent": 0.2
+          },
+          {
+            "id": "critical_immunity",
+            "duration": 5
+          }
         ]
       },
       {
@@ -5554,8 +5752,15 @@
           "Thời gian hồi chiêu: 25.5s"
         ],
         "effects": [
-          {"id": "defense_up", "duration": 5, "defense_percent": 0.2},
-          {"id": "critical_immunity", "duration": 5}
+          {
+            "id": "defense_up",
+            "duration": 5,
+            "defense_percent": 0.2
+          },
+          {
+            "id": "critical_immunity",
+            "duration": 5
+          }
         ]
       },
       {
@@ -5574,9 +5779,22 @@
           "Thời gian hồi chiêu: 24.0s"
         ],
         "effects": [
-          {"id": "defense_up", "duration": 5, "defense_percent": 0.2},
-          {"id": "critical_immunity", "duration": 5}
+          {
+            "id": "defense_up",
+            "duration": 5,
+            "defense_percent": 0.2
+          },
+          {
+            "id": "critical_immunity",
+            "duration": 5
+          }
         ]
+      }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "talisman-skill-4",
+        "timing": "cast"
       }
     ]
   },
@@ -5606,7 +5824,11 @@
       "vfx_offset_y": 28,
       "vfx_layer": 3,
       "effects": [
-        {"id": "purify", "tick_interval": 1, "hp_percent_per_sec": 0.1}
+        {
+          "id": "purify",
+          "tick_interval": 1,
+          "hp_percent_per_sec": 0.1
+        }
       ]
     },
     "description_rows": [
@@ -5641,7 +5863,12 @@
           "Thời gian hồi chiêu: 28.0s"
         ],
         "effects": [
-          {"id": "purify", "duration": 3, "tick_interval": 1, "hp_percent_per_sec": 0.1}
+          {
+            "id": "purify",
+            "duration": 3,
+            "tick_interval": 1,
+            "hp_percent_per_sec": 0.1
+          }
         ]
       },
       {
@@ -5660,7 +5887,12 @@
           "Thời gian hồi chiêu: 26.5s"
         ],
         "effects": [
-          {"id": "purify", "duration": 3, "tick_interval": 1, "hp_percent_per_sec": 0.1}
+          {
+            "id": "purify",
+            "duration": 3,
+            "tick_interval": 1,
+            "hp_percent_per_sec": 0.1
+          }
         ]
       },
       {
@@ -5679,7 +5911,12 @@
           "Thời gian hồi chiêu: 25.0s"
         ],
         "effects": [
-          {"id": "purify", "duration": 3, "tick_interval": 1, "hp_percent_per_sec": 0.1}
+          {
+            "id": "purify",
+            "duration": 3,
+            "tick_interval": 1,
+            "hp_percent_per_sec": 0.1
+          }
         ]
       },
       {
@@ -5698,7 +5935,12 @@
           "Thời gian hồi chiêu: 23.5s"
         ],
         "effects": [
-          {"id": "purify", "duration": 3, "tick_interval": 1, "hp_percent_per_sec": 0.1}
+          {
+            "id": "purify",
+            "duration": 3,
+            "tick_interval": 1,
+            "hp_percent_per_sec": 0.1
+          }
         ]
       },
       {
@@ -5717,8 +5959,19 @@
           "Thời gian hồi chiêu: 22.0s"
         ],
         "effects": [
-          {"id": "purify", "duration": 3, "tick_interval": 1, "hp_percent_per_sec": 0.1}
+          {
+            "id": "purify",
+            "duration": 3,
+            "tick_interval": 1,
+            "hp_percent_per_sec": 0.1
+          }
         ]
+      }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "talisman-skill-5",
+        "timing": "cast"
       }
     ]
   },
@@ -5891,6 +6144,12 @@
           }
         ]
       }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "talisman-skill-6",
+        "timing": "cast"
+      }
     ]
   },
   {
@@ -6044,6 +6303,12 @@
             "duration": 0.2
           }
         ]
+      }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "talisman-skill-7",
+        "timing": "cast"
       }
     ]
   },
@@ -6202,6 +6467,12 @@
             "slow_percent": 0.2
           }
         ]
+      }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "talisman-skill-8",
+        "timing": "cast"
       }
     ]
   },
@@ -6367,6 +6638,12 @@
             "dps_percent_atk": 0.35
           }
         ]
+      }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "talisman-skill-9",
+        "timing": "cast"
       }
     ]
   },
@@ -6546,6 +6823,12 @@
           }
         ]
       }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "talisman-skill-10",
+        "timing": "cast"
+      }
     ]
   },
   {
@@ -6569,9 +6852,21 @@
     "description": "Tật Phong Tiễn: Bắn liên tiếp 3 mũi tên, mũi sau lớn và mạnh hơn mũi trước đồng thời đẩy lùi mục tiêu xa hơn.",
     "cast_config": {
       "viewport_height_ratio": 0.9,
-      "damage_pct_by_shot": [50, 100, 200],
-      "scale_by_shot": [1.0, 1.3, 1.69],
-      "knockback_by_shot": [40, 80, 120],
+      "damage_pct_by_shot": [
+        50,
+        100,
+        200
+      ],
+      "scale_by_shot": [
+        1.0,
+        1.3,
+        1.69
+      ],
+      "knockback_by_shot": [
+        40,
+        80,
+        120
+      ],
       "shot_interval": 0.12,
       "knockback_duration": 0.18,
       "speed": 680,
@@ -6681,6 +6976,12 @@
         ],
         "effects": []
       }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "talisman-skill-11",
+        "timing": "cast"
+      }
     ]
   },
   {
@@ -6708,7 +7009,11 @@
       "vfx_offset_y": 28,
       "vfx_layer": 3,
       "effects": [
-        {"id": "defense_up", "defense_percent": 0.4, "defense_flat": 200}
+        {
+          "id": "defense_up",
+          "defense_percent": 0.4,
+          "defense_flat": 200
+        }
       ]
     },
     "description_rows": [
@@ -6743,7 +7048,12 @@
           "Thời gian hồi chiêu: 30.0s"
         ],
         "effects": [
-          {"id": "defense_up", "duration": 5, "defense_percent": 0.4, "defense_flat": 200}
+          {
+            "id": "defense_up",
+            "duration": 5,
+            "defense_percent": 0.4,
+            "defense_flat": 200
+          }
         ]
       },
       {
@@ -6762,7 +7072,12 @@
           "Thời gian hồi chiêu: 28.5s"
         ],
         "effects": [
-          {"id": "defense_up", "duration": 5, "defense_percent": 0.4, "defense_flat": 200}
+          {
+            "id": "defense_up",
+            "duration": 5,
+            "defense_percent": 0.4,
+            "defense_flat": 200
+          }
         ]
       },
       {
@@ -6781,7 +7096,12 @@
           "Thời gian hồi chiêu: 27.0s"
         ],
         "effects": [
-          {"id": "defense_up", "duration": 5, "defense_percent": 0.4, "defense_flat": 200}
+          {
+            "id": "defense_up",
+            "duration": 5,
+            "defense_percent": 0.4,
+            "defense_flat": 200
+          }
         ]
       },
       {
@@ -6800,7 +7120,12 @@
           "Thời gian hồi chiêu: 25.5s"
         ],
         "effects": [
-          {"id": "defense_up", "duration": 5, "defense_percent": 0.4, "defense_flat": 200}
+          {
+            "id": "defense_up",
+            "duration": 5,
+            "defense_percent": 0.4,
+            "defense_flat": 200
+          }
         ]
       },
       {
@@ -6819,8 +7144,19 @@
           "Thời gian hồi chiêu: 24.0s"
         ],
         "effects": [
-          {"id": "defense_up", "duration": 5, "defense_percent": 0.4, "defense_flat": 200}
+          {
+            "id": "defense_up",
+            "duration": 5,
+            "defense_percent": 0.4,
+            "defense_flat": 200
+          }
         ]
+      }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "talisman-skill-12",
+        "timing": "cast"
       }
     ]
   },
@@ -6949,6 +7285,12 @@
           "Thời gian hồi chiêu: 20.0s"
         ],
         "effects": []
+      }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "talisman-skill-13",
+        "timing": "cast"
       }
     ]
   },
@@ -7101,6 +7443,12 @@
           }
         ]
       }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "talisman-skill-14",
+        "timing": "cast"
+      }
     ]
   },
   {
@@ -7235,6 +7583,12 @@
         ],
         "effects": []
       }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "talisman-skill-15",
+        "timing": "cast"
+      }
     ]
   },
   {
@@ -7352,6 +7706,12 @@
           "Số lượng mục tiêu: 3"
         ],
         "effects": []
+      }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "talisman-skill-16",
+        "timing": "cast"
       }
     ]
   },
@@ -7471,6 +7831,12 @@
         ],
         "effects": []
       }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "talisman-skill-17",
+        "timing": "cast"
+      }
     ]
   },
   {
@@ -7586,6 +7952,12 @@
         ],
         "effects": []
       }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "talisman-skill-18",
+        "timing": "cast"
+      }
     ]
   },
   {
@@ -7700,6 +8072,12 @@
           "Số lượng mục tiêu: 3"
         ],
         "effects": []
+      }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "talisman-skill-19",
+        "timing": "cast"
       }
     ]
   },
@@ -7849,6 +8227,12 @@
           }
         ]
       }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "talisman-skill-20",
+        "timing": "cast"
+      }
     ]
   },
   {
@@ -7964,6 +8348,12 @@
         ],
         "effects": []
       }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "talisman-skill-21",
+        "timing": "cast"
+      }
     ]
   },
   {
@@ -8078,6 +8468,12 @@
           "Số lượng mục tiêu: 3"
         ],
         "effects": []
+      }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "talisman-skill-22",
+        "timing": "cast"
       }
     ]
   },
@@ -8197,6 +8593,12 @@
         ],
         "effects": []
       }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "talisman-skill-23",
+        "timing": "cast"
+      }
     ]
   },
   {
@@ -8311,6 +8713,12 @@
           "Số lượng mục tiêu: 3"
         ],
         "effects": []
+      }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "talisman-skill-24",
+        "timing": "cast"
       }
     ]
   },
@@ -8460,6 +8868,12 @@
           }
         ]
       }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "talisman-skill-25",
+        "timing": "cast"
+      }
     ]
   },
   {
@@ -8577,6 +8991,12 @@
           "Số lượng mục tiêu: 3"
         ],
         "effects": []
+      }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "talisman-skill-26",
+        "timing": "cast"
       }
     ]
   },
@@ -8726,6 +9146,12 @@
           }
         ]
       }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "talisman-skill-27",
+        "timing": "cast"
+      }
     ]
   },
   {
@@ -8841,6 +9267,12 @@
         ],
         "effects": []
       }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "talisman-skill-28",
+        "timing": "cast"
+      }
     ]
   },
   {
@@ -8955,6 +9387,12 @@
           "Số lượng mục tiêu: 3"
         ],
         "effects": []
+      }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "talisman-skill-29",
+        "timing": "cast"
       }
     ]
   },
@@ -9073,6 +9511,12 @@
           "Số lượng mục tiêu: 3"
         ],
         "effects": []
+      }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "talisman-skill-30",
+        "timing": "cast"
       }
     ]
   }

@@ -1,6 +1,6 @@
 # C135 Weekly leaderboard rewards
 
-Version: 1.0.0 | Status: IN_PROGRESS | Updated: 2026-10-18
+Version: 1.0.1 | Status: IN_PROGRESS | Updated: 2026-10-18
 
 ## Authority and period
 
@@ -26,6 +26,7 @@ Test all 13 tier boundaries, triple-board totals, equal scores, Monday boundary,
 
 | Version | Date | Change |
 |---|---|---|
+| 1.0.1 | 2026-10-18 | Qualify weekly score columns against production users schema; return retryable RPC errors within the dialog instead of transport failure. |
 | 1.0.0 | 2026-10-18 | Approved weekly rewards, atomic finalization/claims, configuration and UI. |
 
 ## Local validation (2026-10-18)

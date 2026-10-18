@@ -7326,7 +7326,7 @@ function tickWeeklyLeaderboards(nk) {
 function weeklyClaimKey(period, board) {
   return String(period) + "_" + board;
 }
-const getWeeklyLeaderboardRewards = (ctx, _logger, nk, payload) => {
+const readWeeklyLeaderboardRewards = (ctx, _logger, nk, payload) => {
   if (!ctx.userId) return JSON.stringify({ success: false, code: 401, message: "Authentication required" });
   let req;
   try {
@@ -7342,9 +7342,9 @@ const getWeeklyLeaderboardRewards = (ctx, _logger, nk, payload) => {
   if (period) period.config = parseJsonb(period.config);
   const boardConfig = period && period.config.boards[board];
   const ranks = period ? nk.sqlQuery(`SELECT * FROM (
-        SELECT user_id::TEXT,display_name,score,ROW_NUMBER() OVER(ORDER BY score DESC,achieved_at,s.user_id) AS rank
+        SELECT s.user_id::TEXT,s.display_name,s.score,ROW_NUMBER() OVER(ORDER BY s.score DESC,s.achieved_at,s.user_id) AS rank
         FROM weekly_leaderboard_scores s JOIN users u ON u.id=s.user_id
-        WHERE period_id=$1 AND board_id=$2 AND COALESCE(u.disable_time,to_timestamp(0))<=to_timestamp(0)
+        WHERE s.period_id=$1 AND s.board_id=$2 AND COALESCE(u.disable_time,to_timestamp(0))<=to_timestamp(0)
             AND NOT EXISTS(SELECT 1 FROM account_link_state a WHERE a.user_id=s.user_id AND a.status='archived')
         ) ranked WHERE rank<=50 OR user_id=$3 ORDER BY rank`, [period.period_id, board, ctx.userId]) : [];
   const awards = nk.sqlQuery(`SELECT period_id,board_id,rank,score,rewards,EXTRACT(EPOCH FROM expires_at)*1000 AS expires_at_ms,
@@ -7366,7 +7366,15 @@ const getWeeklyLeaderboardRewards = (ctx, _logger, nk, payload) => {
     awards
   });
 };
-const claimWeeklyLeaderboardReward = (ctx, _logger, nk, payload) => {
+const getWeeklyLeaderboardRewards = (ctx, logger, nk, payload) => {
+  try {
+    return readWeeklyLeaderboardRewards(ctx, logger, nk, payload);
+  } catch (error) {
+    if (logger && logger.error) logger.error("Weekly standings unavailable: " + String(error));
+    return JSON.stringify({ success: false, code: 503, message: "Ch\u01B0a t\u1EA3i \u0111\u01B0\u1EE3c th\u01B0\u1EDFng tu\u1EA7n. Vui l\xF2ng th\u1EED l\u1EA1i." });
+  }
+};
+const claimWeeklyLeaderboardRewardInternal = (ctx, _logger, nk, payload) => {
   const fail = (code, message) => JSON.stringify({ success: false, code, message });
   if (!ctx.userId) return fail(401, "Authentication required");
   let req;
@@ -7413,6 +7421,14 @@ const claimWeeklyLeaderboardReward = (ctx, _logger, nk, payload) => {
     return fail(409, "D\u1EEF li\u1EC7u v\u1EEBa thay \u0111\u1ED5i. Vui l\xF2ng t\u1EA3i l\u1EA1i v\xE0 th\u1EED nh\u1EADn th\u01B0\u1EDFng.");
   }
   return JSON.stringify({ success: true, already_claimed: false, rewards: awards[0].rewards, profile, inventory: inventory.items });
+};
+const claimWeeklyLeaderboardReward = (ctx, logger, nk, payload) => {
+  try {
+    return claimWeeklyLeaderboardRewardInternal(ctx, logger, nk, payload);
+  } catch (error) {
+    if (logger && logger.error) logger.error("Weekly reward claim unavailable: " + String(error));
+    return JSON.stringify({ success: false, code: 503, message: "Ch\u01B0a th\u1EC3 nh\u1EADn th\u01B0\u1EDFng tu\u1EA7n. Vui l\xF2ng t\u1EA3i l\u1EA1i v\xE0 th\u1EED l\u1EA1i." });
+  }
 };
 const weeklyLeaderboardTickRpc = (ctx, _logger, nk, _payload) => {
   if (ctx.userId && ctx.userId !== String(ctx.env.CONFIG_ADMIN_USER_ID || "")) return JSON.stringify({ success: false, code: 403, message: "Forbidden" });

@@ -40,3 +40,5 @@
 - [C135 Weekly leaderboard rewards](contracts/C135_WEEKLY_LEADERBOARD_REWARDS.md): weekly snapshots, 3 categories, top500 rewards and System configuration.
 
 - [Weekly rewards operations and Settings](WEEKLY_LEADERBOARD_REWARDS.md): approved reward table, configuration, publication and scheduler installation.
+
+- C135 v1.0.1: production users.display_name ambiguity regression and retryable weekly dialog errors.
