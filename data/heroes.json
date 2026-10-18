@@ -3,7 +3,6 @@
     "id": "hero_1",
     "auto_basic_attack": true,
     "basic_attack_range": 350,
-    "visual_scale": 0.42,
     "price": {
       "gold": 0,
       "gems": 0
@@ -52,7 +51,6 @@
     "id": "hero_2",
     "auto_basic_attack": true,
     "basic_attack_range": 450,
-    "visual_scale": 0.42,
     "price": {
       "gold": 50000,
       "gems": 0
