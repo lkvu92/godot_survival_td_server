@@ -24,7 +24,7 @@ const keepAlive=setInterval(()=>{},1000);
   docker(['run','--rm','--network',network,'--entrypoint','/nakama/nakama','heroiclabs/nakama:3.24.2','migrate','up','--database.address','postgres@'+pg+':5432/nakama']);
   docker(['run','-d','--name',app,'--network',network,'-p','127.0.0.1::7350','--mount','type=bind,src='+path.join(root,'nakama/data')+',dst=/nakama/data,readonly',
     '--entrypoint','/nakama/nakama','heroiclabs/nakama:3.24.2','--name','c143test','--database.address','postgres@'+pg+':5432/nakama',
-    '--runtime.path','/nakama/data','--runtime.js_entrypoint','build/index.js','--runtime.env','MULTI_SERVER_ENABLED=true',
+    '--socket.max_request_size_bytes','8388608','--runtime.path','/nakama/data','--runtime.js_entrypoint','build/index.js','--runtime.env','MULTI_SERVER_ENABLED=true',
     '--runtime.env','CONFIG_ADMIN_USER_ID=00000000-0000-0000-0000-000000000143','--runtime.env','MONETIZATION_MODE=mock',
     '--runtime.http_key','c143-test-key','--runtime.env','MONETIZATION_VERIFIER_SECRET=c143-test-secret',
     '--runtime.env','ADMOB_REWARDED_UNIT_ID_DEVELOP=c143-test-unit','--logger.level','WARN']);created.app=true;
@@ -50,12 +50,24 @@ const keepAlive=setInterval(()=>{},1000);
   const verified=JSON.parse(sql(migrationSql('verify')));assert.equal(verified.missing_or_changed,0);
   assert.equal(sql("SELECT status FROM game_servers WHERE server_id='s001'"),'disabled');
   assert.equal(sql("SELECT COUNT(*) FROM storage WHERE key IN ('main','s001:g1:main')"),'2');
-  // Remove only this test fixture before continuing; raw legacy sentinel is recreated below.
-  sql(`DELETE FROM player_server_preferences WHERE account_id='${uid}';DELETE FROM player_characters WHERE account_id='${uid}';
-    DELETE FROM storage WHERE user_id='${uid}';DELETE FROM server_migration_checkpoints WHERE id='legacy_to_s001_g1';DELETE FROM game_servers WHERE server_id='s001';`);
   docker(['start',app]);
   base='http://127.0.0.1:'+docker(['inspect','-f','{{(index (index .NetworkSettings.Ports "7350/tcp") 0).HostPort}}',app]);
   for(let i=0;i<40;i++){try{await http('/healthcheck');break;}catch(_e){await sleep(250);}}
+  const runSeed=()=>execFileSync('python',['-B',path.join(root,'nakama/seed_all.py')],{encoding:'utf8',timeout:120000,
+    env:{...process.env,NAKAMA_URL:base,NAKAMA_SEED_URL:'',NAKAMA_HTTP_KEY:'c143-test-key',NAKAMA_SEED_TIMEOUT:'90'}});
+  const migratedFingerprint=()=>sql(`SELECT md5(jsonb_build_array(
+    (SELECT jsonb_agg(to_jsonb(x) ORDER BY key,user_id,collection) FROM storage x),
+    (SELECT jsonb_agg(to_jsonb(x) ORDER BY account_id) FROM player_characters x),
+    (SELECT jsonb_agg(to_jsonb(x) ORDER BY account_id) FROM player_server_preferences x),
+    (SELECT jsonb_agg(to_jsonb(x) ORDER BY server_id) FROM game_servers x),
+    (SELECT jsonb_agg(to_jsonb(x) ORDER BY id) FROM server_migration_checkpoints x))::TEXT)`);
+  const migratedBeforeSeed=migratedFingerprint();
+  assert(runSeed().includes('committed atomically'));assert.equal(migratedFingerprint(),migratedBeforeSeed);
+  assert(runSeed().includes('committed atomically'));assert.equal(migratedFingerprint(),migratedBeforeSeed);
+  console.log('PASS full CLI seed twice on migrated S1: legacy/scoped Storage, character, preference, registry and migration checkpoint unchanged');
+  // Remove only this test fixture before continuing; raw legacy sentinel is recreated below.
+  sql(`DELETE FROM player_server_preferences WHERE account_id='${uid}';DELETE FROM player_characters WHERE account_id='${uid}';
+    DELETE FROM storage WHERE user_id='${uid}';DELETE FROM server_migration_checkpoints WHERE id='legacy_to_s001_g1';DELETE FROM game_servers WHERE server_id='s001';`);
   sql(`INSERT INTO remote_config_releases(config_version,snapshot,min_app_version,latest_app_version,store_url)
     VALUES(1,'{"system":{"payment_enabled":true,"rewarded_ads":{"schema_version":2,"placements":{"stamina_dialog_ad":{"type":"stamina","amount":5,"daily_limit":2}}}},"game_play":{}}','0.0.0','0.0.0','') ON CONFLICT(config_version) DO UPDATE SET snapshot=EXCLUDED.snapshot,min_app_version=EXCLUDED.min_app_version,latest_app_version=EXCLUDED.latest_app_version;
     INSERT INTO game_servers(server_id,display_name,status,allow_new_characters,config_version) VALUES('s001','S1','open',TRUE,1),('s002','S2','open',TRUE,1),('s003','S3','open',TRUE,1);
@@ -166,6 +178,28 @@ const keepAlive=setInterval(()=>{},1000);
   const cleaned=await lifecycle('job_step',{job_id:cleanup.job.id});assert.equal(cleaned.job.status,'succeeded',JSON.stringify(cleaned));
   assert.equal(sql("SELECT COUNT(*) FROM storage WHERE key LIKE 's002:g1:%'"),'0');
   assert.equal(sql("SELECT COUNT(*) FROM monetization_purchases WHERE target_server_id='s002' AND target_generation=1"),'1','cleanup retains financial dedupe');
+  // Full seed CLI runs against ONLY this ephemeral runtime, never the local game DB.
+  const protectedTables=['users','storage','game_servers','player_characters','player_server_preferences','monetization_purchases',
+    'monetization_purchase_orders','monetization_ad_rewards','monetization_daily_reward_claims','monetization_daily_fragment_rewards',
+    'player_vip_credits','player_monetization_entitlements','store_receipt_reservations','store_purchase_voids',
+    'server_operation_audit','server_lifecycle_jobs','server_operation_plans','server_generation_snapshots','remote_config_releases'];
+  const fingerprint=tables=>sql('SELECT md5(jsonb_build_array('+tables.map(t=>`(SELECT COALESCE(jsonb_agg(to_jsonb(x) ORDER BY to_jsonb(x)::TEXT),'[]'::JSONB) FROM ${t} x)`).join(',')+')::TEXT)');
+  const beforeReseed=fingerprint(protectedTables);
+  let firstSeed;try{firstSeed=runSeed();}catch(error){throw Error(String(error)+'\n'+docker(['logs','--tail','12',app]));}
+  assert(firstSeed.includes('committed atomically'));assert.equal(fingerprint(protectedTables),beforeReseed,'first full seed preserves all account/server/financial data');
+  assert(runSeed().includes('committed atomically'));assert.equal(fingerprint(protectedTables),beforeReseed,'repeat full seed preserves all account/server/financial data');
+  const catalogTables=['game_heroes','game_items','game_stages','game_stage_waves','game_store_products','game_store_product_rewards','game_content_configs','game_config'];
+  const beforeFailure=fingerprint(catalogTables);
+  sql(`CREATE FUNCTION c143_reject_late_seed() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.id='vip' THEN RAISE EXCEPTION 'late seed failure'; END IF;RETURN NEW;END $$;
+    CREATE TRIGGER c143_reject_late_seed BEFORE INSERT OR UPDATE ON game_content_configs FOR EACH ROW EXECUTE FUNCTION c143_reject_late_seed();`);
+  assert.throws(runSeed,'late failure must fail the CLI');
+  assert.equal(fingerprint(catalogTables),beforeFailure,'late seed failure rolls back all prior catalog writes');
+  assert.equal(fingerprint(protectedTables),beforeReseed,'failed seed preserves characters and ledger');
+  sql('DROP TRIGGER c143_reject_late_seed ON game_content_configs; DROP FUNCTION c143_reject_late_seed()');
+  const pruned=await call('seed_game_data',{table:'heroes',rows:[JSON.parse(fs.readFileSync(path.join(root,'data/heroes.json'),'utf8'))[0]],replace_all:true});
+  assert.notEqual(pruned.success,true,'prune blocked when player-owned profiles/heroes exist');
+  assert.equal(fingerprint(protectedTables),beforeReseed);
+  console.log('PASS atomic full reseed twice after multi-server data: account/Storage/registry/ledger preservation, late SQL failure rollback, unsafe hero prune rejected');
   console.log('PASS native Nakama 3.24.2: isolated migration/replay/verify, Google merge/archive/replay, scoped IAP/VIP and ads, late callback inbox, reset/recreate/delete/retained cleanup, S1/shared/legacy isolation');
 }finally{
   clearInterval(keepAlive);

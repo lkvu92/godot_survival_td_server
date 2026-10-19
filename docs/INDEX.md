@@ -1,6 +1,6 @@
 # Server documentation
 
-- [C143 Multi-server](contracts/C143_MULTI_SERVER.md): v1.4.0 IN_PROGRESS — newest-first server cards with scoped character summary; production release gated. [Migration runbook](S1_MIGRATION_RUNBOOK.md).
+- [C143 Multi-server](contracts/C143_MULTI_SERVER.md): v1.5.0 IN_PROGRESS — atomic reseed preserving S1/player/ledger data, reference-safe pruning; production release gated. [Migration runbook](S1_MIGRATION_RUNBOOK.md).
 
 - [Kế hoạch triển khai nhiều server logic](MULTI_SERVER_IMPLEMENTATION_PLAN.md): DRAFT — định danh account/server, tích hợp backend/client, migration S1; mục 15 đặc tả API create/disable/reset/delete/cleanup, generation, dry-run và integration test.
 

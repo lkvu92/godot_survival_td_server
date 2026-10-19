@@ -62,6 +62,18 @@ Linux dùng absolute path như `/secure-backups/before-s1.dump`. Có thể chỉ
 
 Giữ ingress đóng đến khi verify và kiểm tra thủ công profile/VIP/BXH/claim đạt. Bật feature và enable S1 là bước vận hành riêng, không nằm trong script. Không bật lại legacy sau khi S1 đã có giao dịch/tiến trình mới. Nếu cần rollback sau cutover: dừng writer, backup hiện trạng, đối soát thay đổi và thực hiện quy trình restore đã diễn tập; không tự xóa namespace để quay lại.
 
+## Seed sau migration (C143 v1.5)
+
+Giữ workflow `bash deploy.sh deploy/start` và `bash deploy.sh seed`; không cần Node trên host (build runtime đã dùng Docker). CLI `seed_all.py` mới nạp toàn bộ file trước, gửi một RPC `table: bundle`, backend kiểm tra/compile rồi ghi toàn bộ catalog trong một transaction với advisory lock. File lỗi, reference lỗi, lỗi SQL hoặc readback đều không commit một phần catalog. Không fallback về seed từng request nếu runtime cũ chưa hỗ trợ bundle.
+
+Deploy cả runtime mới, `seed_all.py` mới và `nakama/data/local.yml` mới cùng nhau: full seed encoded khoảng 1.7 MB hiện tại, nên cấu hình Nakama `socket.max_request_size_bytes: 8388608`. Reverse proxy có giới hạn riêng thì cũng cần cho phép request tương ứng, hoặc seed qua localhost như deploy hiện tại. Runtime/config cũ hoặc proxy chặn sẽ làm lệnh seed fail; không tự chia nhỏ rồi ghi dở dang.
+
+Seed không tạo/mở/reset S1 hay thay generation; không ghi user/character/Storage, preference, ledger, receipt reservation, migration checkpoint hoặc published config release. Catalog/config dùng chung vẫn được cập nhật theo file seed: đây là thay đổi balance chủ động, không phải đảm bảo gameplay balance không đổi. Vì gameplay có đọc catalog trực tiếp, hãy đóng gameplay/writer hoặc thực hiện trong maintenance khi cập nhật balance; transaction nguyên tử không thay thế quy trình maintenance. Publish config vẫn là bước riêng khi yêu cầu `--publish`; publication lỗi không rollback catalog đã seed thành công.
+
+Mặc định upsert, không prune hero. `--replace-all` không được xóa hero vắng catalog nếu đã có profile/hero Storage hoặc lịch sử giao dịch; trả lỗi và rollback lượt seed. Item legacy trước đây bị xóa bằng danh sách cứng nay được giữ để không gãy inventory/receipt cũ. Product vắng catalog chỉ bị deactivate nếu chủ động dùng replace-all; order reward/platform/target snapshot cũ không bị viết lại.
+
+Đã test trên runtime Docker cô lập: full CLI seed hai lần sau migration, fingerprint dữ liệu S1/checkpoint không đổi; seed lặp với ledger/order/ad/VIP có sẵn không đổi; chèn lỗi SQL ở content config cuối lượt seed khiến toàn bộ catalog rollback; prune hero không an toàn bị từ chối. Chưa chạy seed này trên DB local đang chơi hoặc production.
+
 ## Kiểm thử
 
-`node tests/test_s1_migration_cli.cjs` kiểm tra guard CLI. `node tests/test_multiserver_runtime.cjs` dựng PostgreSQL/Nakama cô lập, diễn tập offline migration/apply replay/verify cùng các test đa server. Chưa thay thế rehearsal trên bản sao dữ liệu production hoặc kiểm thử tải.
+`node tests/test_s1_migration_cli.cjs` kiểm tra guard CLI. `node tests/test_multiserver_runtime.cjs` dựng PostgreSQL/Nakama cô lập, diễn tập offline migration/apply replay/verify cùng các test đa server và seed atomic. Chưa thay thế rehearsal trên bản sao dữ liệu production hoặc kiểm thử tải.

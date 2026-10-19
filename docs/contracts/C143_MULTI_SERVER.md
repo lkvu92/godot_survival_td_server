@@ -1,6 +1,6 @@
 # C143 — Multi-server progression and lifecycle
 
-Version: 1.4.0  
+Version: 1.5.0
 Status: IN_PROGRESS  
 Updated: 2026-10-19
 
@@ -50,12 +50,15 @@ The reusable migration CLI defaults to plan. Explicit environment, database iden
 
 ## Acceptance
 
+Seed supports `{table:"bundle",requests:[existing seed payloads...]}`: all requests validate/compile before one transaction executes under a shared advisory lock. A failed request or readback rolls back the complete bundle. Seed remains shared catalog/config only, never creates/resets registry, characters, storage, ledger or migration checkpoints. CLI loads every input before submitting a single bundle; no fallback to partial legacy seeding on unsupported runtime. Published releases/order snapshots remain unchanged unless explicitly published separately. Existing player data blocks destructive hero pruning; obsolete items remain for historical references. Deploy retains its explicit existing seed workflow. Tests must reseed twice after S1 migration and compare player/financial/registry/checkpoint data, plus inject a final-request error to prove no partial catalog writes.
+
 Build runtime, Godot parse, repository static suites, cross-server isolation, callback routing, lifecycle concurrency/retry, migration reconciliation, UI selection/error recovery and load evidence must pass before ACTIVE. Incomplete capabilities remain documented and cannot be reported as completed.
 
 ## Changelog
 
 | Version | Date | Change |
 |---|---|---|
+| 1.5.0 | 2026-10-19 | Atomic full-run seed bundle, input preflight, reference-preserving prune guard and post-S1 reseed isolation tests. |
 | 1.4.0 | 2026-10-19 | Two-column server cards, scoped character summary and newest-first server ordering. |
 | 1.3.1 | 2026-10-19 | Dockerized migration operator with Bash entrypoint; VPS requires Docker/Bash only, Node and PostgreSQL clients remain inside tooling image. |
 | 1.3.0 | 2026-10-19 | Reusable environment-gated S1 operator CLI, mandatory backup/target acknowledgement and reconciliation exit status; no production execution. |

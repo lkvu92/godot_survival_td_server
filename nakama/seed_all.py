@@ -1,4 +1,4 @@
-"""Seed CLI: each RPC is atomic; a full run commits requests independently."""
+"""Seed CLI: preflight all inputs, then commit one atomic shared-catalog bundle."""
 import argparse
 import json
 import os
@@ -9,6 +9,7 @@ import urllib.request
 from pathlib import Path
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+_pending_requests = None
 
 
 class SeedError(Exception):
@@ -34,11 +35,16 @@ def invoke_rpc(name, payload, bearer=None):
         parsed = urllib.parse.urlsplit(url)
         url = urllib.parse.urlunsplit(parsed._replace(query=""))
         headers["Authorization"] = "Bearer " + bearer
-    request = urllib.request.Request(url, data=json.dumps(json.dumps(payload)).encode("utf-8"), headers=headers)
+    encoded = json.dumps(json.dumps(payload)).encode("utf-8")
+    if len(encoded) > 8 * 1024 * 1024:
+        raise SeedError("Seed bundle exceeds configured 8 MiB request limit; no request sent")
+    request = urllib.request.Request(url, data=encoded, headers=headers)
     try:
         with urllib.request.urlopen(request, timeout=float(os.environ.get("NAKAMA_SEED_TIMEOUT", "60"))) as response:
             wire = json.loads(response.read().decode("utf-8"))
         result = json.loads(wire["payload"])
+    except urllib.error.HTTPError as error:
+        raise SeedError(f"{name}: HTTP {error.code}; no partial-seed fallback") from error
     except (urllib.error.URLError, ValueError, KeyError, TypeError, OSError) as error:
         # URLs and exception text may expose credentials.
         raise SeedError(f"{name}: transport/response failure ({type(error).__name__})") from error
@@ -48,6 +54,9 @@ def invoke_rpc(name, payload, bearer=None):
 
 
 def invoke_seed(table, payload):
+    if _pending_requests is not None:
+        _pending_requests.append({"table": table, **payload})
+        return
     result = invoke_rpc("seed_game_data", {"table": table, **payload})
     expected = len(payload["rows"]) if "rows" in payload else 1
     if result.get("success") is not True or result.get("table") != table or result.get("inserted") != expected:
@@ -94,6 +103,7 @@ def seed_content_configs():
 
 
 def main(argv=None):
+    global _pending_requests
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--replace-all", action="store_true", help="Prune absent heroes and deactivate absent products; full catalogs only")
     parser.add_argument("--settings", type=Path, help="Remote settings JSON array; updates draft only")
@@ -116,6 +126,8 @@ def main(argv=None):
             settings = json.loads(args.settings.read_text(encoding="utf-8-sig"))
             if not isinstance(settings, list) or not settings:
                 raise SeedError("Settings must be a nonempty JSON array")
+        # No RPC is sent until every requested source file has loaded successfully.
+        _pending_requests = []
         if args.content_only:
             seed_content_configs()
         if not args.settings_only and not args.content_only:
@@ -127,16 +139,32 @@ def main(argv=None):
             seed_commerce(args.replace_all)
         if settings is not None:
             invoke_seed("remote_settings", {"rows": settings})
+        requests = _pending_requests
+        _pending_requests = None
+        if requests:
+            result = invoke_rpc("seed_game_data", {"table": "bundle", "requests": requests})
+            if result.get("success") is not True or result.get("atomic") is not True or result.get("table") != "bundle":
+                raise SeedError("Runtime does not confirm atomic seed bundle; no legacy partial-seed fallback")
+            results = result.get("results", [])
+            if len(results) != len(requests):
+                raise SeedError("Bundle readback result count mismatch")
+            for request, readback in zip(requests, results):
+                expected = len(request["rows"]) if "rows" in request else 1
+                if readback.get("success") is not True or readback.get("table") != request["table"] or readback.get("inserted") != expected:
+                    raise SeedError("Bundle readback mismatch: " + request["table"])
+                print(f"[OK] {request['table']}: {expected} rows verified atomically")
         if args.publish:
             result = invoke_rpc("publish_config_release", {"app_version": args.app_version, "store_url": args.store_url}, admin)
             if result.get("status") != "ok" or not isinstance(result.get("config_version"), int):
                 raise SeedError("Publication failed")
             print(f"[OK] Published config version {result['config_version']}")
-        print("Synchronization complete. Separate requests commit independently.")
+        print("Synchronization complete. Catalog bundle committed atomically; player/server/financial data untouched. Publication is separate.")
         return 0
     except (SeedError, OSError, ValueError, KeyError, TypeError) as error:
         print(f"[ERR] {error}", file=sys.stderr)
         return 1
+    finally:
+        _pending_requests = None
 
 
 if __name__ == "__main__":

@@ -79,6 +79,7 @@ const seedGameData: nkruntime.RpcFunction = (
     let data: any;
     try { data = JSON.parse(payload); } catch (_e) { return JSON.stringify({error: "Invalid JSON"}); }
     if (!data || typeof data !== "object" || Array.isArray(data)) return JSON.stringify({error: "Expected object"});
+    if(data.table==='bundle')return seedGameDataBundle(ctx,logger,nk,data);
     const statements: string[] = [];
     const checks: string[] = [];
     const write = (sql: string, params: any[]) => {
@@ -115,6 +116,18 @@ const seedGameData: nkruntime.RpcFunction = (
     switch (table) {
         case "heroes":
             if (data.replace_all === true) {
+                statements.push(`DO $prune$ BEGIN
+                  IF to_regclass('storage') IS NOT NULL THEN
+                    IF EXISTS(SELECT 1 FROM storage WHERE collection IN ('player_profiles','player_heroes'))
+                      AND EXISTS(SELECT 1 FROM game_heroes WHERE NOT(id=ANY(${seedSqlLiteral(seedPgArray(rows.map((r:any)=>r.id)))}::TEXT[])))
+                      THEN RAISE EXCEPTION 'SEED_PRUNE_BLOCKED_PLAYER_REFERENCES'; END IF;
+                  END IF;
+                  IF to_regclass('monetization_purchases') IS NOT NULL THEN
+                    IF EXISTS(SELECT 1 FROM monetization_purchases)
+                      AND EXISTS(SELECT 1 FROM game_heroes WHERE NOT(id=ANY(${seedSqlLiteral(seedPgArray(rows.map((r:any)=>r.id)))}::TEXT[])))
+                      THEN RAISE EXCEPTION 'SEED_PRUNE_BLOCKED_FINANCIAL_HISTORY'; END IF;
+                  END IF;
+                END $prune$`);
                 write("DELETE FROM game_heroes WHERE NOT (id = ANY($1::text[]))", [seedPgArray(rows.map((r: any) => r.id))]);
             }
             for (const row of rows) {
@@ -179,7 +192,8 @@ const seedGameData: nkruntime.RpcFunction = (
         case "items":
 			// Remove superseded mock/rune-backed talisman materials. Upgrade
 			// requirements now use the dedicated Thiên Tinh catalog item.
-			write("DELETE FROM game_items WHERE id IN ('mat_wood','mat_water','mat_metal','mat_earth','stone_metal_high','talisman_meteorite_low','talisman_meteorite_medium','talisman_meteorite_high','talisman_heavenly_crystal_low')", []);
+			// Retired catalog IDs may still be referenced by legacy/S1 inventories or orders.
+			// Seeding never deletes historical item definitions.
             for (const row of rows) {
                 write(`
                     INSERT INTO game_items (id, display_name, description, category, rarity,
@@ -428,6 +442,10 @@ const seedGameData: nkruntime.RpcFunction = (
                     if (reward.reward_type === "hero" && nk.sqlQuery("SELECT id FROM game_heroes WHERE id = $1", [reward.reward_id]).length === 0) {
                         return JSON.stringify({ error: `Unknown hero ${reward.reward_id} in product ${row.product_id}` });
                     }
+                    if(reward.reward_type==='item'||reward.reward_type==='hero') {
+                        const refTable=reward.reward_type==='item'?'game_items':'game_heroes';
+                        checks.push(`IF NOT EXISTS(SELECT 1 FROM ${refTable} WHERE id=${seedSqlLiteral(reward.reward_id)}) THEN RAISE EXCEPTION 'Store reward reference missing at commit'; END IF`);
+                    }
                 }
                 write(`
                     INSERT INTO game_store_products
@@ -528,7 +546,7 @@ const seedGameData: nkruntime.RpcFunction = (
         checks.push(`IF NOT EXISTS (SELECT 1 FROM game_${table} WHERE id=${seedSqlLiteral(row.id)} AND ${predicates.join(" AND ")}) THEN RAISE EXCEPTION 'Seed extension readback mismatch'; END IF`);
     }
     // One PostgreSQL statement runs every mutation atomically, even with pooled connections.
-    const body = "BEGIN\n" + statements.concat(checks).join(";\n") + ";\nEND";
+    const body = "BEGIN\nPERFORM pg_advisory_xact_lock(143,2);\n" + statements.concat(checks).join(";\n") + ";\nEND";
     nk.sqlExec("DO " + seedSqlLiteral(body), []);
     logger.info(`Seeded ${inserted} rows into ${table}`);
     return JSON.stringify({ success: true, table, inserted });
@@ -537,3 +555,33 @@ const seedGameData: nkruntime.RpcFunction = (
         return JSON.stringify({error: "Seed failed; no changes committed", code: 422});
     }
 };
+
+function seedGameDataBundle(ctx:nkruntime.Context,logger:nkruntime.Logger,nk:nkruntime.Nakama,data:any):string {
+    if(!Array.isArray(data.requests)||data.requests.length<1||data.requests.length>100)
+        return JSON.stringify({error:'Invalid seed bundle',code:400});
+    const compiled:string[]=[];
+    const results:any[]=[];
+    const staged:{[table:string]:string[]}={};
+    const planner:any=Object.create(nk);
+    planner.sqlExec=(sql:string,params:any[])=>{compiled.push(params.length?seedBindSql(sql,params):sql);};
+    planner.sqlQuery=(sql:string,params:any[])=>{
+        for(const table of ['items','heroes']) {
+            if(sql==='SELECT id FROM game_'+table+' WHERE id = $1' && staged[table] && staged[table].indexOf(String(params[0]))>=0)
+                return [{id:params[0]}];
+        }
+        return nk.sqlQuery(sql,params);
+    };
+    for(let i=0;i<data.requests.length;i++) {
+        const request=data.requests[i];
+        if(!request||request.table==='bundle')return JSON.stringify({error:'Nested or invalid seed bundle',request_index:i});
+        const result=JSON.parse(seedGameData(ctx,logger,planner,JSON.stringify(request)));
+        if(result.success!==true)return JSON.stringify({error:result.error||'Seed validation failed',request_index:i,table:request.table});
+        results.push(result);
+        if(request.table==='items'||request.table==='heroes')staged[request.table]=(staged[request.table]||[]).concat(request.rows.map((r:any)=>String(r.id)));
+    }
+    try {
+        // One SQL statement/transaction: no pooled connection BEGIN/COMMIT assumptions.
+        nk.sqlExec('DO '+seedSqlLiteral('BEGIN\nPERFORM pg_advisory_xact_lock(143,2);\n'+compiled.map(sql=>'EXECUTE '+seedSqlLiteral(sql)+';').join('\n')+'\nEND'),[]);
+        return JSON.stringify({success:true,table:'bundle',atomic:true,results});
+    }catch(error){logger.error('Atomic seed bundle rolled back: %s',String(error));return JSON.stringify({error:'Atomic seed bundle rolled back',code:409});}
+}

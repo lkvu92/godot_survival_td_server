@@ -22,6 +22,32 @@ class SeedCliTests(unittest.TestCase):
             self.assertEqual(self.run_main([]), 1)
             self.assertEqual(call.call_count, 1)
 
+    def test_late_bad_file_sends_no_rpc(self):
+        original = cli.read_json
+        def read(filename):
+            if filename == "vip_config.json":
+                raise cli.SeedError("invalid late source")
+            return original(filename)
+        with patch.object(cli, "read_json", side_effect=read), patch.object(cli, "invoke_rpc") as rpc:
+            self.assertEqual(self.run_main([]), 1)
+            rpc.assert_not_called()
+
+    def test_full_run_uses_one_atomic_bundle(self):
+        def respond(name, body):
+            self.assertEqual(name, "seed_game_data")
+            self.assertEqual(body["table"], "bundle")
+            return {"success": True, "atomic": True, "table": "bundle", "results": [
+                {"success": True, "table": r["table"], "inserted": len(r["rows"]) if "rows" in r else 1}
+                for r in body["requests"]]}
+        with patch.object(cli, "invoke_rpc", side_effect=respond) as rpc:
+            self.assertEqual(self.run_main([]), 0)
+            self.assertEqual(rpc.call_count, 1)
+
+    def test_old_runtime_is_not_retried_as_partial_seed(self):
+        with patch.object(cli, "invoke_rpc", return_value={"error": "Unknown table"}) as rpc:
+            self.assertEqual(self.run_main([]), 1)
+            self.assertEqual(rpc.call_count, 1)
+
     def test_response_counts_required(self):
         for response in ({}, {"success": True, "table": "heroes", "inserted": 0}):
             with patch.object(cli, "invoke_rpc", return_value=response):
