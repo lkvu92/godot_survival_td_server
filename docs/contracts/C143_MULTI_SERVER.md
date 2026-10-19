@@ -1,6 +1,6 @@
 # C143 — Multi-server progression and lifecycle
 
-Version: 1.5.1
+Version: 1.5.2
 Status: IN_PROGRESS  
 Updated: 2026-10-19
 
@@ -58,6 +58,7 @@ Build runtime, Godot parse, repository static suites, cross-server isolation, ca
 
 | Version | Date | Change |
 |---|---|---|
+| 1.5.2 | 2026-10-19 | Include player_item_requests character-scoped idempotency records in repository, S1 migration and Google transfer; preserve original markers. |
 | 1.5.1 | 2026-10-19 | Server list has_character is non-null boolean; client accepts only literal true and safely handles legacy null flags. |
 | 1.5.0 | 2026-10-19 | Atomic full-run seed bundle, input preflight, reference-preserving prune guard and post-S1 reseed isolation tests. |
 | 1.4.0 | 2026-10-19 | Two-column server cards, scoped character summary and newest-first server ordering. |

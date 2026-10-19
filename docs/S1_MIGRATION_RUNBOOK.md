@@ -1,5 +1,13 @@
 # Migration toàn bộ tài khoản legacy sang S1
 
+## Nhật ký cutover VPS — 2026-10-19
+
+Theo xác nhận trực tiếp của người dùng: migrate và enable S1, không tạo thêm backup. Backup cũ `before-s1-ready.dump` vẫn được giữ; trước xử lý blocker, fingerprint nguồn khớp manifest backup cũ. Migration ban đầu bị chặn và rollback do collection `player_item_requests` chưa khai báo; đã sửa ownership repository/migration/Google transfer và test Docker cô lập trước khi triển khai bản vá tối thiểu vào runtime VPS.
+
+Đã đóng 11 order chưa xác minh, không receipt/hash/reservation/ledger liên kết và 1 ad prepared chưa xác minh, đều quá TTL từ 17–18/10, thành expired; giữ bản gốc và ghi audit. Không bỏ qua delivery đã verified. Sau đó tạo plan/hash mới và chạy transaction SQL từ migration generator có guard (operator không tạo backup mới theo yêu cầu), thay vì giả mạo manifest backup cũ cho nguồn mới.
+
+Kết quả lúc 15:27 UTC: 194 scoped Storage object, 7 ready character S1, 151 marker vật phẩm chống xử lý trùng; legacy nguyên trạng. Verify độc lập: source_unchanged=true, missing_characters=0, missing_or_changed=0. S1 được enable generation 1/revision 2, runtime flag multi-server đã bật; Nakama healthy và verifier chạy. Không chạy seed; không tạo s_test. Verify nguồn/đích chỉ phản ánh thời điểm cutover trước gameplay mới, không dùng để phủ nhận các thay đổi hợp lệ sau cutover.
+
 Script: `node tools/migrate_s1.cjs`. Mặc định là **plan**, không tự bật multi-server, không chạy khi startup. Script dùng được với local/staging/production; việc cung cấp script không đồng nghĩa đã chạy migration production.
 
 ## Điều kiện
