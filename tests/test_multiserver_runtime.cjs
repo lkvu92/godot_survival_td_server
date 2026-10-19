@@ -105,6 +105,7 @@ const keepAlive=setInterval(()=>{},1000);
   assert.equal(sql("SELECT active_requests FROM game_servers WHERE server_id='s001'"),'0');
   const serverCards=await call('list_servers',{});
   const s1Card=serverCards.servers.find(s=>s.server_id==='s001');
+  assert.strictEqual(serverCards.servers.find(s=>s.server_id==='s003').has_character,false,'missing character returns false, never SQL null');
   assert.equal(s1Card.character_name,'Native Player');assert.equal(s1Card.character_level,1);
   assert(serverCards.servers.every((s,i,list)=>i===0||Number(list[i-1].created_at_ms)>=Number(s.created_at_ms)),'newest-first API order');
   sql(`INSERT INTO game_store_products(product_id,pack_id,display_name,active) VALUES('c143pack','c143pack','Test pack',TRUE);

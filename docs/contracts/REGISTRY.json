@@ -2,7 +2,7 @@
   "contracts": [
     {
       "id": "C143_MULTI_SERVER",
-      "version": "1.5.0",
+      "version": "1.5.1",
       "status": "IN_PROGRESS",
       "updated_at": "2026-10-19",
       "contract_file": "docs/contracts/C143_MULTI_SERVER.md"

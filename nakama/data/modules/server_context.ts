@@ -69,7 +69,7 @@ const listGameServers: nkruntime.RpcFunction=(ctx,_logger,nk)=>{
     const servers=nk.sqlQuery(`SELECT s.server_id,s.display_name,s.status,s.generation,s.revision,
       EXTRACT(EPOCH FROM s.opens_at)*1000 AS opens_at_ms,EXTRACT(EPOCH FROM s.created_at)*1000 AS created_at_ms,s.allow_new_characters,
       (s.status='open' AND s.opens_at<=NOW()) AS available,
-      (c.status='ready' AND c.generation=s.generation) AS has_character,
+      COALESCE(c.status='ready' AND c.generation=s.generation,FALSE) AS has_character,
       CASE WHEN c.status='ready' AND c.generation=s.generation THEN p.value->>'display_name' END AS character_name,
       CASE WHEN c.status='ready' AND c.generation=s.generation THEN COALESCE((p.value->>'level')::INT,1) END AS character_level
       FROM game_servers s LEFT JOIN player_characters c ON c.server_id=s.server_id AND c.account_id=$1::UUID
