@@ -2057,6 +2057,14 @@ const publishConfigRelease = (ctx, _logger, nk, payload) => {
 };
 
 const HERO_ID_MIGRATIONS = { ice_demoness: "hero_1", flame_archer: "hero_2" };
+const adminTestAccess = (ctx, _logger, nk) => {
+  if (!ctx.userId) return JSON.stringify({ success: true, allowed: false });
+  const rows = nk.sqlQuery(
+    "SELECT 1 FROM users WHERE id=$1::UUID AND LOWER(email)=LOWER($2) AND COALESCE(EXTRACT(EPOCH FROM disable_time),0)=0 LIMIT 1",
+    [ctx.userId, "lkvu92@gmail.com"]
+  );
+  return JSON.stringify({ success: true, allowed: rows.length > 0 });
+};
 function ensurePlayerName(nk, userId, profile) {
   if (!Number.isSafeInteger(Number(profile.name_changes_used || 0)) || Number(profile.name_changes_used || 0) < 0) throw new Error("Invalid rename counter");
   const identities = nk.storageRead([{ collection: "player_identity", key: "name", userId }]);
@@ -2237,10 +2245,10 @@ function defaultPlayerProfile(displayName) {
     last_stamina_update: 0,
     resources: { gold: 1e3, gems: 100 },
     elements: { metal: 0, wood: 0, water: 0, fire: 0, earth: 0 },
-    unlocked_arcs: ["arc_0", "arc_frozen_realm"],
+    unlocked_arcs: ["arc_0", "arc_2"],
     unlocked_stages: [
       { stage_id: "stage_0_1", unlocked_levels: ["normal", "epic", "legend"] },
-      { stage_id: "stage_frozen_frontier", unlocked_levels: ["normal"] }
+      { stage_id: "stage_flame_frontier", unlocked_levels: ["normal"] }
     ],
     completed_stage_levels: []
   };
@@ -4207,6 +4215,7 @@ const startStage = (ctx, _logger, nk, payload) => {
   const stageId = String(req.stage_id || "");
   const levelId = String(req.level_id || "");
   if (!stageId || !levelId) return JSON.stringify({ success: false, message: "Invalid stage" });
+  if (stageId === "stage_0_admin_test") return JSON.stringify({ success: false, message: "Admin test is not a reward-bearing stage" });
   const stored = nk.storageRead([{ collection: "player_profiles", key: "main", userId: ctx.userId }]);
   if (stored.length === 0) return JSON.stringify({ success: false, message: "Player profile is incomplete" });
   const profile = parseJsonObject(stored[0].value);
@@ -7439,6 +7448,9 @@ const weeklyLeaderboardTickRpc = (ctx, _logger, nk, _payload) => {
 function linkedRpc_rename_player(ctx, logger, nk, payload) {
   return accountGuardedRpc("rename_player", renamePlayer)(ctx, logger, nk, payload);
 }
+function linkedRpc_admin_test_access(ctx, logger, nk, payload) {
+  return accountGuardedRpc("admin_test_access", adminTestAccess)(ctx, logger, nk, payload);
+}
 function linkedRpc_account_password_status(ctx, logger, nk, payload) {
   return accountGuardedRpc("account_password_status", accountPasswordStatus)(ctx, logger, nk, payload);
 }
@@ -7603,6 +7615,7 @@ function InitModule(ctx, logger, nk, initializer) {
   initializer.registerBeforeAuthenticateCustom(beforeSingleLogin);
   initializer.registerAfterAuthenticateCustom(afterSingleLogin);
   initializer.registerRpc("session_status", linkedRpc_session_status);
+  initializer.registerRpc("admin_test_access", linkedRpc_admin_test_access);
   initializer.registerRpc("rename_player", linkedRpc_rename_player);
   initializer.registerRpc("account_password_status", linkedRpc_account_password_status);
   initializer.registerRpc("setup_account_password", linkedRpc_setup_account_password);

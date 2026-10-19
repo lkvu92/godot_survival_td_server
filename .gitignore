@@ -38,3 +38,10 @@ nakama/.env
 nakama/google-play-service-account.json
 nakama/google-play-service-account.json
 nakama/runtime.secret.yml
+nakama/.env.local
+nakama/.env.local.*
+!nakama/.env.local.example
+nakama/runtime.local.secret.yml
+nakama/runtime.local.secret.yml.*
+nakama/iap.local.secret.yml
+nakama/iap.local.secret.yml.*

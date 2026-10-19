@@ -1,10 +1,68 @@
 {
   "contracts": [
-    {"id":"C137_LAYERED_TALISMAN_SKILLS","version":"1.0.0","status":"ACTIVE","updated_at":"2026-10-18","contract_file":"docs/contracts/C137_LAYERED_TALISMAN_SKILLS.md"},
-    {"id":"C135_WEEKLY_LEADERBOARD_REWARDS","version":"1.0.1","status":"IN_PROGRESS","updated_at":"2026-10-18","contract_file":"docs/contracts/C135_WEEKLY_LEADERBOARD_REWARDS.md"},
-    {"id":"C134_RESULT_AD_SYSTEM_CONFIG","version":"1.0.0","status":"IN_PROGRESS","updated_at":"2026-10-18","contract_file":"docs/contracts/C134_RESULT_AD_SYSTEM_CONFIG.md"},
-    {"id":"C109_STORE_CATALOG_PURCHASE_ORDER","version":"1.1.1","status":"ACTIVE","updated_at":"2026-10-18","contract_file":"docs/contracts/C109_STORE_CATALOG_PURCHASE_ORDER.md"},
-    {"id":"C133_RUN_LIFECYCLE","version":"1.0.0","status":"ACTIVE","updated_at":"2026-10-17","contract_file":"docs/contracts/C133_RUN_LIFECYCLE.md"},
+    {
+      "id": "C142_ADMIN_SKILL_TEST",
+      "version": "1.0.1",
+      "status": "IN_PROGRESS",
+      "updated_at": "2026-10-19",
+      "contract_file": "docs/contracts/C142_ADMIN_SKILL_TEST.md"
+    },
+    {
+      "id": "C141_HERO_SKILL1_RANGE",
+      "version": "1.0.0",
+      "status": "IN_PROGRESS",
+      "updated_at": "2026-10-19",
+      "contract_file": "docs/contracts/C141_HERO_SKILL1_RANGE.md"
+    },
+    {
+      "id": "C139_SWAP_ARC1_ARC2_ELEMENTAL_ONBOARDING",
+      "version": "1.0.1",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-19",
+      "contract_file": "docs/contracts/C139_SWAP_ARC1_ARC2_ELEMENTAL_ONBOARDING.md"
+    },
+    {
+      "id": "C138_LOCAL_DEPLOYMENT",
+      "version": "1.0.0",
+      "status": "IN_PROGRESS",
+      "contract_file": "docs/contracts/C138_LOCAL_DEPLOYMENT.md",
+      "updated_at": "2026-10-19"
+    },
+    {
+      "id": "C137_LAYERED_TALISMAN_SKILLS",
+      "version": "1.1.4",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-19",
+      "contract_file": "docs/contracts/C137_LAYERED_TALISMAN_SKILLS.md"
+    },
+    {
+      "id": "C135_WEEKLY_LEADERBOARD_REWARDS",
+      "version": "1.0.1",
+      "status": "IN_PROGRESS",
+      "updated_at": "2026-10-18",
+      "contract_file": "docs/contracts/C135_WEEKLY_LEADERBOARD_REWARDS.md"
+    },
+    {
+      "id": "C134_RESULT_AD_SYSTEM_CONFIG",
+      "version": "1.0.0",
+      "status": "IN_PROGRESS",
+      "updated_at": "2026-10-18",
+      "contract_file": "docs/contracts/C134_RESULT_AD_SYSTEM_CONFIG.md"
+    },
+    {
+      "id": "C109_STORE_CATALOG_PURCHASE_ORDER",
+      "version": "1.1.1",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-18",
+      "contract_file": "docs/contracts/C109_STORE_CATALOG_PURCHASE_ORDER.md"
+    },
+    {
+      "id": "C133_RUN_LIFECYCLE",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-17",
+      "contract_file": "docs/contracts/C133_RUN_LIFECYCLE.md"
+    },
     {
       "id": "C105_PROGRESSION",
       "version": "1.2.1",
@@ -70,10 +128,10 @@
     },
     {
       "id": "C121_ONLINE_ONLY_CONFIG",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "status": "ACTIVE",
       "contract_file": "docs/contracts/C121_ONLINE_ONLY_CONFIG.md",
-      "updated_at": "2026-10-16"
+      "updated_at": "2026-10-19"
     },
     {
       "id": "C119_CONFIG_SEED_INTEGRITY",

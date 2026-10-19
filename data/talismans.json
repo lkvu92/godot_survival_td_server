@@ -4,9 +4,9 @@
     "name": "Thanh Phong Kiếm",
     "tier": "Hạ phẩm",
     "type": "attack",
-    "level": 12,
+    "level": 1,
     "max_level": 30,
-    "is_equipped": true,
+    "is_equipped": false,
     "description": "Thanh kiếm rèn từ thép gió thông thường, nhẹ bén và dễ ngự khí.",
     "skill": "Phong Nhận: Phóng nhiều kiếm khí, mỗi tia chọn mục tiêu ngẫu nhiên trong 90% chiều cao chiến trường; VFX +30% và tốc độ -30%.",
     "stats": {
@@ -14,7 +14,7 @@
       "speed_pct": 8,
       "skill_range_bonus_pct": 5
     },
-    "upgrade_exp": 12,
+    "upgrade_exp": 0,
     "upgrade_max_exp": 20,
     "materials": [
       {
@@ -46,7 +46,7 @@
     "name": "Xích Đồng Đao",
     "tier": "Hạ phẩm",
     "type": "attack",
-    "level": 8,
+    "level": 1,
     "max_level": 30,
     "is_equipped": false,
     "description": "Đao rèn bằng đồng đỏ vùng núi lửa, thân đao luôn ấm nóng tích tụ hỏa kình.",
@@ -56,7 +56,7 @@
       "hp": 180,
       "spirit": 20
     },
-    "upgrade_exp": 9,
+    "upgrade_exp": 0,
     "upgrade_max_exp": 26,
     "materials": [
       {
@@ -98,7 +98,7 @@
       "def": 5,
       "skill_range_bonus_pct": 6
     },
-    "upgrade_exp": 3,
+    "upgrade_exp": 0,
     "upgrade_max_exp": 12,
     "materials": [
       {
@@ -130,7 +130,7 @@
     "name": "Ô Thiết Thuẫn",
     "tier": "Hạ phẩm",
     "type": "defense",
-    "level": 15,
+    "level": 1,
     "max_level": 30,
     "is_equipped": false,
     "description": "Khiên rèn từ sắt đen nguyên khối ngàn năm, kiên cố bất khả xâm phạm.",
@@ -172,7 +172,7 @@
     "name": "Lưu Thủy Hoàn",
     "tier": "Hạ phẩm",
     "type": "speed",
-    "level": 10,
+    "level": 1,
     "max_level": 30,
     "is_equipped": false,
     "description": "Vòng ngọc ngưng tụ chân thủy uốn lượn, xua tan uế khí và gột rửa thân thể.",
@@ -214,7 +214,7 @@
     "name": "Huyền Mộc Trượng",
     "tier": "Hạ phẩm",
     "type": "magic",
-    "level": 6,
+    "level": 1,
     "max_level": 30,
     "is_equipped": false,
     "description": "Trượng khắc từ linh mộc nghìn năm hút sinh cơ đất trời, hồi sinh dưỡng mệnh.",
@@ -224,7 +224,7 @@
       "hp": 300,
       "def": 6
     },
-    "upgrade_exp": 3,
+    "upgrade_exp": 0,
     "upgrade_max_exp": 22,
     "materials": [
       {
@@ -238,7 +238,7 @@
     "skill_id": "skill_talisman_6",
     "category": "talisman",
     "stat_growth": {
-      "spirit": 2.0,
+      "spirit": 2,
       "hp": 18,
       "def": 0.35
     },
@@ -256,7 +256,7 @@
     "name": "Phá Nham Chùy",
     "tier": "Hạ phẩm",
     "type": "attack",
-    "level": 9,
+    "level": 1,
     "max_level": 30,
     "is_equipped": false,
     "description": "Chùy nặng nghìn cân phá đá khai sơn, nện đất chấn động uy lực kinh người.",
@@ -266,7 +266,7 @@
       "hp": 260,
       "def": 6
     },
-    "upgrade_exp": 12,
+    "upgrade_exp": 0,
     "upgrade_max_exp": 28,
     "materials": [
       {
@@ -308,7 +308,7 @@
       "speed_pct": 8,
       "skill_range_bonus_pct": 6
     },
-    "upgrade_exp": 3,
+    "upgrade_exp": 0,
     "upgrade_max_exp": 12,
     "materials": [
       {
@@ -340,7 +340,7 @@
     "name": "Hỏa Vân Phiến",
     "tier": "Hạ phẩm",
     "type": "magic",
-    "level": 8,
+    "level": 1,
     "max_level": 30,
     "is_equipped": false,
     "description": "Quạt lông dệt bằng tơ mây hỏa diệm, phẩy nhẹ sinh bão lửa thiêu rụi bầy yêu.",
@@ -350,7 +350,7 @@
       "spirit": 30,
       "skill_range_bonus_pct": 5
     },
-    "upgrade_exp": 9,
+    "upgrade_exp": 0,
     "upgrade_max_exp": 26,
     "materials": [
       {
@@ -382,7 +382,7 @@
     "name": "Tỏa Hồn Linh",
     "tier": "Hạ phẩm",
     "type": "spirit",
-    "level": 5,
+    "level": 1,
     "max_level": 30,
     "is_equipped": false,
     "description": "Chuông đồng trầm tích từ địa mạch hoàng tuyền, tiếng chuông tịnh hóa tâm thần trừ tà niệm.",
@@ -424,7 +424,7 @@
     "name": "Tật Phong Tiễn",
     "tier": "Hạ phẩm",
     "type": "speed",
-    "level": 11,
+    "level": 1,
     "max_level": 30,
     "is_equipped": false,
     "description": "Ống tên gió thần tốc, xuất tiễn tựa sao băng xé toạc tầng không săn đuổi đầu lĩnh quái.",
@@ -434,7 +434,7 @@
       "speed_pct": 9,
       "cooldown_reduction_pct": 3
     },
-    "upgrade_exp": 3,
+    "upgrade_exp": 0,
     "upgrade_max_exp": 32,
     "materials": [
       {
@@ -476,7 +476,7 @@
       "hp": 350,
       "atk": 10
     },
-    "upgrade_exp": 3,
+    "upgrade_exp": 0,
     "upgrade_max_exp": 12,
     "materials": [
       {
@@ -508,7 +508,7 @@
     "name": "Lôi Lôi Châm",
     "tier": "Hạ phẩm",
     "type": "magic",
-    "level": 7,
+    "level": 1,
     "max_level": 30,
     "is_equipped": false,
     "description": "Lôi châm dẫn lôi hỏa cửu thiên, kích phát điện quang bộc liệt truyền sát bầy yêu.",
@@ -518,7 +518,7 @@
       "spirit": 28,
       "cooldown_reduction_pct": 4
     },
-    "upgrade_exp": 6,
+    "upgrade_exp": 0,
     "upgrade_max_exp": 24,
     "materials": [
       {
@@ -550,7 +550,7 @@
     "name": "Hấp Huyết Thứ",
     "tier": "Hạ phẩm",
     "type": "spirit",
-    "level": 3,
+    "level": 1,
     "max_level": 30,
     "is_equipped": false,
     "description": "Cành gai đằng mộc quỷ dị hút máu sinh linh bồi dưỡng chủ nhân khi gặp hiểm cảnh.",
@@ -560,7 +560,7 @@
       "hp": 250,
       "spirit": 26
     },
-    "upgrade_exp": 9,
+    "upgrade_exp": 0,
     "upgrade_max_exp": 16,
     "materials": [
       {
@@ -602,7 +602,7 @@
       "spirit": 32,
       "speed_pct": 7
     },
-    "upgrade_exp": 3,
+    "upgrade_exp": 0,
     "upgrade_max_exp": 12,
     "materials": [
       {
@@ -617,7 +617,7 @@
     "category": "talisman",
     "stat_growth": {
       "dodge_rate": 0.001,
-      "spirit": 2.0,
+      "spirit": 2,
       "speed_pct": 0.35
     },
     "max_battle_uses": 3,
@@ -634,7 +634,7 @@
     "name": "Hàn Băng Phách Kiếm",
     "tier": "Trung phẩm",
     "type": "attack",
-    "level": 9,
+    "level": 1,
     "max_level": 30,
     "is_equipped": false,
     "description": "Thần kiếm đúc từ hàn ngọc ngàn năm nơi vực sâu Bắc Cực cực kỳ buốt giá.",
@@ -645,7 +645,7 @@
       "skill_range_bonus_pct": 8,
       "cooldown_reduction_pct": 5
     },
-    "upgrade_exp": 12,
+    "upgrade_exp": 0,
     "upgrade_max_exp": 28,
     "materials": [
       {
@@ -678,7 +678,7 @@
     "name": "Cửu U Ma Đao",
     "tier": "Trung phẩm",
     "type": "attack",
-    "level": 5,
+    "level": 1,
     "max_level": 30,
     "is_equipped": false,
     "description": "Đao chứa oán niệm và ma khí u ám thu thập từ chiến trường cổ xưa.",
@@ -706,7 +706,7 @@
       "atk": 2.4,
       "hp": 22,
       "def": 0.5,
-      "spirit": 2.0
+      "spirit": 2
     },
     "max_battle_uses": 3,
     "durability_cost_per_cast": 1,
@@ -722,7 +722,7 @@
     "name": "Tử Tiêu Lôi Kính",
     "tier": "Trung phẩm",
     "type": "magic",
-    "level": 4,
+    "level": 1,
     "max_level": 30,
     "is_equipped": false,
     "description": "Gương bát quái bằng đồng tím hấp thụ linh lôi tầng trời thứ chín.",
@@ -733,7 +733,7 @@
       "skill_range_bonus_pct": 10,
       "cooldown_reduction_pct": 6
     },
-    "upgrade_exp": 12,
+    "upgrade_exp": 0,
     "upgrade_max_exp": 18,
     "materials": [
       {
@@ -748,7 +748,7 @@
     "category": "talisman",
     "stat_growth": {
       "atk": 2.2,
-      "spirit": 3.0,
+      "spirit": 3,
       "skill_range_bonus_pct": 0.45,
       "cooldown_reduction_pct": 0.22
     },
@@ -766,7 +766,7 @@
     "name": "Liệt Hỏa Phần Thiên Lô",
     "tier": "Trung phẩm",
     "type": "magic",
-    "level": 7,
+    "level": 1,
     "max_level": 30,
     "is_equipped": false,
     "description": "Lò luyện thu nhỏ chứa địa hỏa hung hãn thiêu đốt vạn vật.",
@@ -777,7 +777,7 @@
       "skill_range_bonus_pct": 9,
       "hp": 350
     },
-    "upgrade_exp": 6,
+    "upgrade_exp": 0,
     "upgrade_max_exp": 24,
     "materials": [
       {
@@ -810,7 +810,7 @@
     "name": "Kim Cương Hộ Tâm Kính",
     "tier": "Trung phẩm",
     "type": "defense",
-    "level": 2,
+    "level": 1,
     "max_level": 30,
     "is_equipped": false,
     "description": "Kính hộ tâm đúc từ hợp kim bất hoại dát vàng ròng phù chú.",
@@ -821,7 +821,7 @@
       "element_resist_pct": 6,
       "spirit": 35
     },
-    "upgrade_exp": 6,
+    "upgrade_exp": 0,
     "upgrade_max_exp": 14,
     "materials": [
       {
@@ -838,7 +838,7 @@
       "hp": 32,
       "def": 0.8,
       "element_resist_pct": 0.2,
-      "spirit": 2.0
+      "spirit": 2
     },
     "max_battle_uses": 3,
     "durability_cost_per_cast": 1,
@@ -854,7 +854,7 @@
     "name": "Thực Cốt Phệ Hồn Phiên",
     "tier": "Trung phẩm",
     "type": "spirit",
-    "level": 8,
+    "level": 1,
     "max_level": 30,
     "is_equipped": false,
     "description": "Cờ hiệu quấn vải liệm tà phái vương vấn nghìn vạn oan hồn gào thét.",
@@ -865,7 +865,7 @@
       "speed_pct": 8,
       "hp": 360
     },
-    "upgrade_exp": 9,
+    "upgrade_exp": 0,
     "upgrade_max_exp": 26,
     "materials": [
       {
@@ -879,7 +879,7 @@
     "skill_id": "skill_talisman_21",
     "category": "talisman",
     "stat_growth": {
-      "spirit": 3.0,
+      "spirit": 3,
       "atk": 1.8,
       "speed_pct": 0.4,
       "hp": 22
@@ -898,7 +898,7 @@
     "name": "Thanh Mộc Thần Long Trượng",
     "tier": "Trung phẩm",
     "type": "magic",
-    "level": 6,
+    "level": 1,
     "max_level": 30,
     "is_equipped": false,
     "description": "Gậy pháp làm từ rễ thần mộc thụ long khí biến dị ngàn năm.",
@@ -909,7 +909,7 @@
       "def": 10,
       "skill_range_bonus_pct": 8
     },
-    "upgrade_exp": 3,
+    "upgrade_exp": 0,
     "upgrade_max_exp": 22,
     "materials": [
       {
@@ -942,7 +942,7 @@
     "name": "Thất Tinh Đoạt Mệnh Kiếm",
     "tier": "Trung phẩm",
     "type": "attack",
-    "level": 10,
+    "level": 1,
     "max_level": 30,
     "is_equipped": false,
     "description": "Thanh kiếm mang hình tượng chòm sao Bắc Đẩu định đoạt sinh tử kiếp số.",
@@ -986,7 +986,7 @@
     "name": "Càn Khôn Khốn Yêu Thừng",
     "tier": "Trung phẩm",
     "type": "spirit",
-    "level": 3,
+    "level": 1,
     "max_level": 30,
     "is_equipped": false,
     "description": "Sợi dây thừng dệt bằng gân yêu vương và tơ thiên tằm chắc chắn.",
@@ -997,7 +997,7 @@
       "cooldown_reduction_pct": 5,
       "def": 9
     },
-    "upgrade_exp": 9,
+    "upgrade_exp": 0,
     "upgrade_max_exp": 16,
     "materials": [
       {
@@ -1030,7 +1030,7 @@
     "name": "Trấn Nhạc Phiên Thiên Ấn",
     "tier": "Trung phẩm",
     "type": "defense",
-    "level": 5,
+    "level": 1,
     "max_level": 30,
     "is_equipped": false,
     "description": "Đại ấn ngưng tụ trọng lượng của cả một ngọn núi linh thiêng hùng vĩ.",
@@ -1074,7 +1074,7 @@
     "name": "Hiên Viên Tru Tiên Kiếm",
     "tier": "Thượng phẩm",
     "type": "attack",
-    "level": 15,
+    "level": 1,
     "max_level": 30,
     "is_equipped": false,
     "description": "Thần kiếm thượng cổ do thánh nhân lưu lại, hàm chứa thiên uy sát phạt vô song.",
@@ -1120,7 +1120,7 @@
     "name": "Đông Hoàng Hỗn Độn Chung",
     "tier": "Thượng phẩm",
     "type": "defense",
-    "level": 12,
+    "level": 1,
     "max_level": 30,
     "is_equipped": false,
     "description": "Cổ chung nguyên thủy từ thời khai thiên lập địa, trấn giữ cõi tam giới lục đạo.",
@@ -1132,7 +1132,7 @@
       "spirit": 65,
       "cooldown_reduction_pct": 7
     },
-    "upgrade_exp": 6,
+    "upgrade_exp": 0,
     "upgrade_max_exp": 34,
     "materials": [
       {
@@ -1149,7 +1149,7 @@
       "hp": 48,
       "def": 1.15,
       "element_resist_pct": 0.28,
-      "spirit": 4.0,
+      "spirit": 4,
       "cooldown_reduction_pct": 0.3
     },
     "max_battle_uses": 3,
@@ -1166,7 +1166,7 @@
     "name": "Thái Cực Bát Quái Đồ",
     "tier": "Thượng phẩm",
     "type": "spirit",
-    "level": 14,
+    "level": 1,
     "max_level": 30,
     "is_equipped": false,
     "description": "Đạo đồ bao hàm quy luật âm dương luân chuyển, đảo ngược càn khôn biến hóa.",
@@ -1178,7 +1178,7 @@
       "element_resist_pct": 8,
       "def": 14
     },
-    "upgrade_exp": 12,
+    "upgrade_exp": 0,
     "upgrade_max_exp": 38,
     "materials": [
       {
@@ -1212,7 +1212,7 @@
     "name": "Sơn Hà Xã Tắc Đồ",
     "tier": "Thượng phẩm",
     "type": "magic",
-    "level": 11,
+    "level": 1,
     "max_level": 30,
     "is_equipped": false,
     "description": "Bức họa tiên giới vô tận chứa đựng non sông cẩm tú tự thành một tiểu thế giới.",
@@ -1224,7 +1224,7 @@
       "cooldown_reduction_pct": 7,
       "hp": 580
     },
-    "upgrade_exp": 3,
+    "upgrade_exp": 0,
     "upgrade_max_exp": 32,
     "materials": [
       {
@@ -1258,7 +1258,7 @@
     "name": "Bàn Cổ Khai Thiên Phủ",
     "tier": "Thượng phẩm",
     "type": "attack",
-    "level": 16,
+    "level": 1,
     "max_level": 30,
     "is_equipped": false,
     "description": "Cây rìu khai thiên lập địa khai mở hồng hoang, sở hữu sức mạnh phá vỡ mọi quy tắc giới hạn.",
@@ -1270,7 +1270,7 @@
       "skill_range_bonus_pct": 12,
       "speed_pct": 10
     },
-    "upgrade_exp": 3,
+    "upgrade_exp": 0,
     "upgrade_max_exp": 42,
     "materials": [
       {

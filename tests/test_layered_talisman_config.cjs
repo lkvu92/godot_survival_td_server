@@ -33,13 +33,36 @@ for (const [id,[element,behavior]] of Object.entries(specs)) {
       assert.equal(config.radius,90+level.level*10);
       assert.ok(config.sword_at<config.spikes_at && config.spikes_at<config.freeze_at);
     }
+    if(behavior==='slash') {
+      assert.equal(config.slash_count,4);
+      assert.equal(config.slash_interval,.2);
+      assert.equal(config.final_slash_scale,1.5);
+    }
     if(behavior==='axe') {
       assert.equal(config.axe_ratio+config.pillar_ratio,1);
-      assert.equal(config.pillar_positions.length,4);
-      assert.ok(config.pillar_positions.every(x=>x>0 && x<1));
+      assert.equal(config.pillar_positions.length,3);
+      assert.deepEqual(config.pillar_positions,[[72,72],[0,0],[-72,-72]]);
+      assert.equal(config.pillar_interval,.25);
+      assert.equal(config.axe_foot_offset,26);
+      assert.equal(config.impact_shake_intensity,7);
+      assert.deepEqual([config.pillar_1_scale,config.pillar_2_scale,config.pillar_3_scale],[1,1.5,3]);
+      assert.equal(config.pillar_push_distance,110);
     }
-    if(behavior==='stasis') {assert.equal(config.ring_count,3); assert.equal(config.stasis_duration,2.5);}
-    if(behavior==='reversal') {assert.equal(config.absorb_ratio,.7); assert.equal(config.reflect_ratio,.3); assert.equal(config.counter_directions,8);}
+    if(behavior==='stasis') {
+      assert.equal(config.ring_count,3);
+      assert.equal(config.stasis_duration,2.5);
+      assert.equal(config.bell_ratio + config.ring_count * config.ring_ratio,1);
+      assert.equal(config.ring_interval,.35);
+      assert.deepEqual(config.layers.bell.scale,[1.155,1.155]);
+    }
+    if(behavior==='reversal') {assert.equal(config.absorb_ratio,.7); assert.equal(config.reflect_ratio,.3); assert.equal(config.counter_directions,8); assert.equal(config.aura_height,0); assert.deepEqual(config.layers.aura.scale,[1.2,1.2]); assert.deepEqual(config.layers.counter.scale,[2.4,2.4]);}
+    if(behavior==='painting') {
+      assert.equal(config.vortex_tick_count,3);
+      assert.equal(config.vortex_tick_interval,.5);
+      assert.equal(config.mountain_ratio + config.vortex_tick_count * config.vortex_ratio,1);
+      assert.equal(config.layers.vortex.loop,true);
+      assert.ok(config.layers.vines.duration < 1);
+    }
   }
 }
 console.log('PASS C137 six layered seed skills, five levels, elements, layer references and damage budgets');

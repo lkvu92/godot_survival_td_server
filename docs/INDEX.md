@@ -1,5 +1,13 @@
 # Server documentation
 
+- [C142 Admin skill test](contracts/C142_ADMIN_SKILL_TEST.md): read-only admin access RPC and no-reward Arc 0 test stage.
+
+- [C121 Online-only configuration](contracts/C121_ONLINE_ONLY_CONFIG.md) v1.0.2: profile loading never grants Thanh Phong Kiếm to new or empty inventories.
+
+- [C141 Hero skill 1 range](contracts/C141_HERO_SKILL1_RANGE.md) v1.0.0: +15% range at every level for heroes 1, 3, 4 and 5.
+
+- [C138 Local deployment](contracts/C138_LOCAL_DEPLOYMENT.md) v1.0.0: isolated local Compose stack and `deploylocal.ps1`.
+
 - [System Settings — quảng cáo nhận thưởng](SYSTEM_SETTINGS.md): trường cấu hình, mặc định, quota, ví dụ chỉnh và publish.
 
 - [C134 Result ads and System config](contracts/C134_RESULT_AD_SYSTEM_CONFIG.md): victory x2 rewards (five/day) and centralized ad amounts/limits.

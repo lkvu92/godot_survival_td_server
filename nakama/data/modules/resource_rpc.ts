@@ -325,6 +325,7 @@ const startStage: nkruntime.RpcFunction = (ctx, _logger, nk, payload): string =>
     const stageId = String(req.stage_id || "");
     const levelId = String(req.level_id || "");
     if (!stageId || !levelId) return JSON.stringify({ success: false, message: "Invalid stage" });
+    if (stageId === "stage_0_admin_test") return JSON.stringify({success: false, message: "Admin test is not a reward-bearing stage"});
     const stored = nk.storageRead([{ collection: "player_profiles", key: "main", userId: ctx.userId }]);
     if (stored.length === 0) return JSON.stringify({ success: false, message: "Player profile is incomplete" });
     const profile = parseJsonObject(stored[0].value);

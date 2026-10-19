@@ -5,6 +5,9 @@
 function linkedRpc_rename_player(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
     return accountGuardedRpc("rename_player", renamePlayer)(ctx, logger, nk, payload);
 }
+function linkedRpc_admin_test_access(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("admin_test_access", adminTestAccess)(ctx, logger, nk, payload);
+}
 function linkedRpc_account_password_status(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
     return accountGuardedRpc("account_password_status", accountPasswordStatus)(ctx, logger, nk, payload);
 }
@@ -177,6 +180,7 @@ function InitModule(
     initializer.registerBeforeAuthenticateCustom(beforeSingleLogin);
     initializer.registerAfterAuthenticateCustom(afterSingleLogin);
     initializer.registerRpc("session_status", linkedRpc_session_status);
+    initializer.registerRpc("admin_test_access", linkedRpc_admin_test_access);
     initializer.registerRpc("rename_player", linkedRpc_rename_player);
     initializer.registerRpc("account_password_status", linkedRpc_account_password_status);
     initializer.registerRpc("setup_account_password", linkedRpc_setup_account_password);

@@ -1,0 +1,81 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-nakama}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Required in .env.local}
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-15432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER:-postgres}", "-d", "${POSTGRES_DB:-nakama}"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+
+  nakama:
+    image: heroiclabs/nakama:3.24.2
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-nakama}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Required in .env.local}
+      NAKAMA_SERVER_KEY: ${NAKAMA_SERVER_KEY:?Required in .env.local}
+      NAKAMA_CONSOLE_USERNAME: ${NAKAMA_CONSOLE_USERNAME:?Required in .env.local}
+      NAKAMA_CONSOLE_PASSWORD: ${NAKAMA_CONSOLE_PASSWORD:?Required in .env.local}
+      NAKAMA_CONSOLE_SIGNING_KEY: ${NAKAMA_CONSOLE_SIGNING_KEY:?Required in .env.local}
+      NAKAMA_CONSOLE_MFA_KEY: ${NAKAMA_CONSOLE_MFA_KEY:?Required in .env.local}
+      NAKAMA_SESSION_ENCRYPTION_KEY: ${NAKAMA_SESSION_ENCRYPTION_KEY:?Required in .env.local}
+      NAKAMA_SESSION_REFRESH_ENCRYPTION_KEY: ${NAKAMA_SESSION_REFRESH_ENCRYPTION_KEY:?Required in .env.local}
+      NAKAMA_HTTP_KEY: ${NAKAMA_HTTP_KEY:?Required in .env.local}
+      MONETIZATION_VERIFIER_SECRET: ${MONETIZATION_VERIFIER_SECRET:?Required in .env.local}
+      APP_ENVIRONMENT: develop
+      ANDROID_PACKAGE_NAME: ${ANDROID_PACKAGE_NAME:-vn.lkvu92.survivaltd}
+      CONFIG_ADMIN_USER_ID: ${CONFIG_ADMIN_USER_ID:?Required in .env.local}
+      GOOGLE_PLAY_TESTER_EMAILS: ${GOOGLE_PLAY_TESTER_EMAILS:-}
+      ADMOB_REWARDED_UNIT_ID_DEVELOP: ${ADMOB_REWARDED_UNIT_ID_DEVELOP:-ca-app-pub-3940256099942544/5224354917}
+      ADMOB_REWARDED_UNIT_ID_PRODUCTION: ${ADMOB_REWARDED_UNIT_ID_PRODUCTION:-ca-app-pub-2623237649967496/5496497462}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    entrypoint:
+      - /bin/sh
+      - -ec
+      - |
+        /nakama/nakama migrate up --config /run/secrets/nakama-runtime.yml &&
+        exec /nakama/nakama --config /nakama/data/local.yml --config /run/secrets/nakama-iap.yml --config /run/secrets/nakama-runtime.yml
+    ports:
+      - "127.0.0.1:${NAKAMA_GRPC_PORT:-17349}:7349"
+      - "127.0.0.1:${NAKAMA_HTTP_PORT:-7350}:7350"
+      - "127.0.0.1:${CONSOLE_PORT:-17351}:7351"
+    volumes:
+      - ./data:/nakama/data
+      - ./iap.local.secret.yml:/run/secrets/nakama-iap.yml:ro
+      - ./runtime.local.secret.yml:/run/secrets/nakama-runtime.yml:ro
+    healthcheck:
+      test: ["CMD", "/nakama/nakama", "healthcheck"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  monetization-verifier:
+    build:
+      context: ../services/monetization-verifier
+    depends_on:
+      nakama:
+        condition: service_healthy
+    environment:
+      PORT: "8080"
+      APP_ENVIRONMENT: develop
+      MONETIZATION_VERIFIER_SECRET: ${MONETIZATION_VERIFIER_SECRET:?Required in .env.local}
+      ADMOB_REWARDED_UNIT_ID_DEVELOP: ${ADMOB_REWARDED_UNIT_ID_DEVELOP:-ca-app-pub-3940256099942544/5224354917}
+      ADMOB_REWARDED_UNIT_ID_PRODUCTION: ${ADMOB_REWARDED_UNIT_ID_PRODUCTION:-ca-app-pub-2623237649967496/5496497462}
+      NAKAMA_DEVELOP_URL: http://nakama:7350
+      NAKAMA_HTTP_KEY: ${NAKAMA_HTTP_KEY:?Required in .env.local}
+      GOOGLE_PUBSUB_AUDIENCE: http://localhost:18082/google-play/rtdn
+    ports:
+      - "127.0.0.1:${MONETIZATION_PORT:-18082}:8080"
+
+volumes:
+  pgdata:

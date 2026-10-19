@@ -1,8 +1,8 @@
 # C121 Online-only gameplay configuration
 
-Version: 1.0.1
+Version: 1.0.2
 Status: ACTIVE
-Updated: 2026-10-16
+Updated: 2026-10-19
 
 ## Authority and storage
 
@@ -56,6 +56,7 @@ and Godot headless runtime tests. No new assets or visual styles.
 |---|---|---|
 | 1.0.0 | 2026-10-16 | DB-only gameplay catalogs, complete RPC, memory-only client snapshots and fail-closed connectivity. |
 | 1.0.1 | 2026-10-16 | Stop granting Thanh Phong Kiem automatically during profile load. |
+| 1.0.2 | 2026-10-19 | Remove reintroduced server-side Thanh Phong Kiem auto-grant from load_player_profile. A new inventory remains empty; an existing empty inventory stays empty; owned items are preserved. No client-minted item, offline fallback, or production data migration. |
 
 Local acceptance: GATE 1 contract/index/registry complete; GATE 2 Nakama build
 and Godot 4.6.3 scene compilation PASS; GATE 3 existing assets/skin preserved,

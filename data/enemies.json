@@ -1219,7 +1219,7 @@
     "exp": 440,
     "is_boss": true,
     "boss_scale": 2.05,
-    "boss_visual_scale": 0.44,
+    "boss_visual_scale": 0.42,
     "attributes": {
       "hp": 27000,
       "atk": 200,

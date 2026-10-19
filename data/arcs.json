@@ -6,47 +6,25 @@
     "element": "water",
     "description": "Đấu trường thử nghiệm với Dummy Boss 1.000.000 HP, ATK = 1, DEF bình thường, range 1/3 màn hình.",
     "stage_ids": [
-      "stage_0_1"
-    ]
-  },
-  {
-    "id": "arc_frozen_realm",
-    "display_name": "Băng Giới",
-    "description": "Băng Nguyên Hoang Dã - Thử thách khởi đầu, làm quen nhịp độ và đạt cấp 20 tự nhiên.",
-    "level_min": 1,
-    "level_max": 10,
-    "enabled_if": {
-      "type": "always"
-    },
-    "element": "water",
-    "order": 1,
-    "boss_skill_ids": ["control_resistance_growth"],
-    "stage_ids": [
-      "stage_frozen_frontier",
-      "stage_1_02",
-      "stage_1_03",
-      "stage_1_04",
-      "stage_1_05",
-      "stage_1_06",
-      "stage_1_07",
-      "stage_1_08",
-      "stage_1_09",
-      "stage_1_10"
+      "stage_0_1",
+      "stage_0_admin_test"
     ]
   },
   {
     "id": "arc_2",
     "display_name": "Hỏa Giới",
-    "description": "Hỏa Sơn Quỷ Vực - Nhiệt độ thiêu đốt, quái di chuyển thần tốc yêu cầu khả năng thả diều và khắc hệ.",
-    "level_min": 11,
-    "level_max": 20,
+    "description": "Hỏa Sơn Quỷ Vực - Thử thách khởi đầu rực lửa, người chơi tận dụng chân khí Thủy khắc Hỏa để phá tan quỷ vực.",
+    "level_min": 1,
+    "level_max": 10,
     "enabled_if": {
       "type": "always"
     },
     "element": "fire",
-    "order": 2,
-    "enemy_visual_scale_multiplier": 2.0,
-    "boss_skill_ids": ["control_resistance_growth"],
+    "order": 1,
+    "enemy_visual_scale_multiplier": 1.6,
+    "boss_skill_ids": [
+      "control_resistance_growth"
+    ],
     "stage_ids": [
       "stage_flame_frontier",
       "stage_2_02",
@@ -61,6 +39,33 @@
     ]
   },
   {
+    "id": "arc_frozen_realm",
+    "display_name": "Băng Giới",
+    "description": "Băng Nguyên Hoang Dã - Thử thách băng tuyết cực hàn, quái vật đông đảo và dai sức thử thách trình độ người chơi.",
+    "level_min": 11,
+    "level_max": 20,
+    "enabled_if": {
+      "type": "always"
+    },
+    "element": "water",
+    "order": 2,
+    "boss_skill_ids": [
+      "control_resistance_growth"
+    ],
+    "stage_ids": [
+      "stage_frozen_frontier",
+      "stage_1_02",
+      "stage_1_03",
+      "stage_1_04",
+      "stage_1_05",
+      "stage_1_06",
+      "stage_1_07",
+      "stage_1_08",
+      "stage_1_09",
+      "stage_1_10"
+    ]
+  },
+  {
     "id": "arc_verdant_realm",
     "display_name": "Mộc Giới",
     "description": "U Tối Rừng Thiêng - Đầm lầy độc mộc và quái hồi phục mạnh mẽ, thử thách khống chế và dồn sát thương AoE.",
@@ -71,8 +76,10 @@
     },
     "element": "wood",
     "order": 3,
-    "enemy_visual_scale_multiplier": 2.0,
-    "boss_skill_ids": ["control_resistance_growth"],
+    "enemy_visual_scale_multiplier": 1.6,
+    "boss_skill_ids": [
+      "control_resistance_growth"
+    ],
     "stage_ids": [
       "stage_3_01",
       "stage_3_02",
@@ -97,8 +104,10 @@
     },
     "element": "metal",
     "order": 4,
-    "enemy_visual_scale_multiplier": 2.0,
-    "boss_skill_ids": ["control_resistance_growth"],
+    "enemy_visual_scale_multiplier": 1.6,
+    "boss_skill_ids": [
+      "control_resistance_growth"
+    ],
     "stage_ids": [
       "stage_4_01",
       "stage_4_02",
@@ -123,8 +132,10 @@
     },
     "element": "earth",
     "order": 5,
-    "enemy_visual_scale_multiplier": 2.0,
-    "boss_skill_ids": ["control_resistance_growth"],
+    "enemy_visual_scale_multiplier": 1.6,
+    "boss_skill_ids": [
+      "control_resistance_growth"
+    ],
     "stage_ids": [
       "stage_5_01",
       "stage_5_02",

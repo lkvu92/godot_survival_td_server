@@ -82,3 +82,17 @@ class RuntimeSecretsTests(unittest.TestCase):
         self.assertEqual(seed.kwargs["env"]["NAKAMA_HTTP_KEY"], env["NAKAMA_HTTP_KEY"])
         self.assertEqual(seed.kwargs["env"]["NAKAMA_URL"], "http://127.0.0.1:17350")
         self.assertNotIn(env["NAKAMA_HTTP_KEY"], " ".join(seed.args[0]))
+
+    def test_local_seed_ignores_host_endpoint_overrides(self):
+        env = self.env()
+        verifier = {name: env[name] for name in ["NAKAMA_HTTP_KEY", "MONETIZATION_VERIFIER_SECRET"]}
+        doc = {"services": {"nakama": {"environment": env, "ports": [{"target": 7350, "published": "17350"}]},
+                            "monetization-verifier": {"environment": verifier}}}
+        result = mock.Mock(returncode=0, stdout=json.dumps(doc))
+        host = {"NAKAMA_URL": "https://remote.example", "NAKAMA_SEED_URL": "https://remote.example/v2/rpc/seed"}
+        with mock.patch.object(runtime.subprocess, "run", side_effect=[result, mock.Mock(returncode=0)]) as calls, mock.patch.object(runtime, "write_private"), mock.patch.dict(os.environ, host, clear=True):
+            self.assertEqual(runtime.main(seed=True, compose_file="docker-compose.local.yml",
+                                          env_file=".env.local", output="runtime.local.secret.yml"), 0)
+        seed_env = calls.call_args_list[1].kwargs["env"]
+        self.assertEqual(seed_env["NAKAMA_URL"], "http://127.0.0.1:17350")
+        self.assertNotIn("NAKAMA_SEED_URL", seed_env)

@@ -1,5 +1,13 @@
 const HERO_ID_MIGRATIONS: any = { ice_demoness: "hero_1", flame_archer: "hero_2" };
 
+// C142: read-only identity gate for the disposable admin combat sandbox.
+const adminTestAccess: nkruntime.RpcFunction = (ctx, _logger, nk) => {
+    if (!ctx.userId) return JSON.stringify({success: true, allowed: false});
+    const rows = nk.sqlQuery("SELECT 1 FROM users WHERE id=$1::UUID AND LOWER(email)=LOWER($2) AND COALESCE(EXTRACT(EPOCH FROM disable_time),0)=0 LIMIT 1",
+        [ctx.userId, "lkvu92@gmail.com"]);
+    return JSON.stringify({success: true, allowed: rows.length > 0});
+};
+
 function ensurePlayerName(nk: nkruntime.Nakama, userId: string, profile: any): boolean {
     if (!Number.isSafeInteger(Number(profile.name_changes_used||0)) || Number(profile.name_changes_used||0)<0) throw new Error("Invalid rename counter");
     const identities=nk.storageRead([{collection:"player_identity",key:"name",userId}]);
@@ -117,10 +125,10 @@ function defaultPlayerProfile(displayName: string): any {
         stamina: 30, last_stamina_update: 0,
         resources: { gold: 1000, gems: 100 },
         elements: { metal: 0, wood: 0, water: 0, fire: 0, earth: 0 },
-        unlocked_arcs: ["arc_0", "arc_frozen_realm"],
+        unlocked_arcs: ["arc_0", "arc_2"],
         unlocked_stages: [
             { stage_id: "stage_0_1", unlocked_levels: ["normal", "epic", "legend"] },
-            { stage_id: "stage_frozen_frontier", unlocked_levels: ["normal"] }
+            { stage_id: "stage_flame_frontier", unlocked_levels: ["normal"] }
         ],
         completed_stage_levels: []
     };

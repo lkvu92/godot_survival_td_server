@@ -1,5 +1,6 @@
 """Render private Nakama configuration from Compose-resolved .env values."""
 import json
+import argparse
 import os
 from pathlib import Path
 import subprocess
@@ -54,9 +55,13 @@ def write_private(config, target):
             os.unlink(temporary)
 
 
-def main(seed=False):
+def main(seed=False, compose_file="docker-compose.yml", env_file=None, output="runtime.secret.yml"):
     try:
-        result = subprocess.run(["docker", "compose", "config", "--format", "json"],
+        command = ["docker", "compose", "-f", compose_file]
+        if env_file:
+            command.extend(["--env-file", env_file])
+        command.extend(["config", "--format", "json"])
+        result = subprocess.run(command,
                                 cwd=ROOT, capture_output=True, text=True, encoding="utf-8", check=False)
         if result.returncode:
             raise ConfigError("Cannot resolve Compose configuration; verify required .env variable names.")
@@ -66,14 +71,20 @@ def main(seed=False):
         for name in ["NAKAMA_HTTP_KEY", "MONETIZATION_VERIFIER_SECRET"]:
             if env.get(name) != verifier.get(name):
                 raise ConfigError("Service configuration mismatch: " + name)
-        write_private(make_config(env), ROOT / "runtime.secret.yml")
+        write_private(make_config(env), ROOT / output)
         if seed:
             process_env = os.environ.copy()
             process_env["NAKAMA_HTTP_KEY"] = env["NAKAMA_HTTP_KEY"]
+            if env_file:
+                process_env.pop("NAKAMA_SEED_URL", None)
             ports = services["nakama"].get("ports", [])
             for port in ports:
                 if int(port.get("target", 0)) == 7350:
-                    process_env.setdefault("NAKAMA_URL", "http://127.0.0.1:" + str(port["published"]))
+                    local_url = "http://127.0.0.1:" + str(port["published"])
+                    if env_file:
+                        process_env["NAKAMA_URL"] = local_url
+                    else:
+                        process_env.setdefault("NAKAMA_URL", local_url)
             return subprocess.run([sys.executable, str(ROOT / "seed_all.py")],
                                   cwd=ROOT, env=process_env, check=False).returncode
     except ConfigError as error:
@@ -87,7 +98,11 @@ def main(seed=False):
 
 
 if __name__ == "__main__":
-    if sys.argv[1:] not in [[], ["--seed"]]:
-        print("Usage: configure_runtime.py [--seed]", file=sys.stderr)
-        sys.exit(1)
-    sys.exit(main(seed=sys.argv[1:] == ["--seed"]))
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--seed", action="store_true")
+    parser.add_argument("--compose-file", default="docker-compose.yml")
+    parser.add_argument("--env-file")
+    parser.add_argument("--output", default="runtime.secret.yml")
+    args = parser.parse_args()
+    sys.exit(main(seed=args.seed, compose_file=args.compose_file,
+                  env_file=args.env_file, output=args.output))

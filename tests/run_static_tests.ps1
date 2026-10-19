@@ -15,12 +15,16 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Weekly leaderboard config regression failed' }
     & node tests/test_stage_reward_ads.cjs
     if ($LASTEXITCODE -ne 0) { throw 'Stage reward/System ad config regression failed' }
+    & node tests/test_arc_visual_scale.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Arc visual scale regression failed' }
     & node tests/test_daily_pack_entitlements.cjs
     if ($LASTEXITCODE -ne 0) { throw 'Daily pack entitlement regression failed' }
     & node tests/test_daily_pack_rewards.cjs
     if ($LASTEXITCODE -ne 0) { throw 'Legacy pack reward regression failed' }
     & node tests/test_new_profile_inventory.cjs
     if ($LASTEXITCODE -ne 0) { throw 'New profile inventory regression failed' }
+    & node tests/test_admin_skill_test.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Admin skill test regression failed' }
     & node tests/test_account_password.cjs
     if ($LASTEXITCODE -ne 0) { throw 'Account password regression failed' }
     & node tests/test_single_login.cjs

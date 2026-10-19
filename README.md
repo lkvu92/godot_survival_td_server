@@ -1,5 +1,23 @@
 # Survival TD — Production Backend Deployment (VPS)
 
+## Chạy server local trên Windows
+
+Yêu cầu Docker Desktop (Linux containers) và Python 3. Tại thư mục `server/`, chạy:
+
+```powershell
+.\deploylocal.ps1 deploy
+```
+
+Lệnh tạo `nakama/.env.local` từ template nếu chưa có, build runtime, chạy PostgreSQL,
+Nakama và verifier, chờ healthcheck rồi seed game config. Có thể sửa port và
+credential trong `nakama/.env.local` trước khi chạy lại. Các lệnh khác:
+`.\deploylocal.ps1 start` (khởi động không seed), `stop`, `restart`, `seed`,
+`logs`, `status`. Local HTTP ở `http://127.0.0.1:17350`, console ở
+`http://127.0.0.1:17351` (user `admin`, mật khẩu trong `nakama/.env.local`).
+Docker project và database volume local tách khỏi VPS; `stop` giữ lại dữ liệu.
+Không dùng credential mẫu này trên server public.
+
+
 Seed/schema updates and explicit ads/payment publication: [Seeding guide](docs/SEEDING.md).
 
 > **Repository:** `https://github.com/lkvu92/godot_survival_td_server.git` — branch `main`

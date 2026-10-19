@@ -1,56 +1,39 @@
 # C137 - Layered talisman skills 16, 26-30
 
-Version: 1.0.0 | Status: ACTIVE | Updated: 2026-10-18
+Version: 1.1.4 | Status: ACTIVE | Updated: 2026-10-19
 
-## Authority and schema
-Six supplied four-layer asset sets replace placeholder projectile/area effects. Balance lives in server/data/skills.json and the authenticated database config. AtlasRegistry registers 24 component sheets/images; per-layer frames, pivots, scale, opacity and lifetime are referenced by server cast_config. No local gameplay fallback.
+## Authority
+`server/data/skills.json` owns all balance and cast timelines. `client/data/atlas_registry.json` registers the exact files declared by each `client/assets/skill_vfx/skill_phap_bao/skill_talisman_*/skill_components.json`; runtime accesses them only through `AtlasRegistry`. `LayeredTalismanCast` validates every required field before casting, and `levels[].cast_config` may override presentation or balance.
 
-skill_type=layered_talisman; element=water/metal/earth/wood/fire; cast_config={behavior,layers:{component:{frames,duration,pivot,scale,layer,opacity,cycle,loop,hold}},...}; levels[].cast_config overrides level-specific damage_pct,range,radius and optional layer presentation. Existing ATK coefficients and cooldowns are preserved, except skill28 uses incoming-hit conversion instead of an attack coefficient. One field/lane per cast replaces the placeholder projectile_count progression.
+Each real impact owns one damage phase and per-target ledger. Effects that are expressly visual-only (formations, rifts, dust, vines, ash, scroll and aura) never damage. The sum of normal phase ratios remains the configured `damage_pct` for the cast; 28 remains an incoming-damage conversion skill.
 
-## Phase behavior
-| ID / element | Gameplay | Independent presentation |
+## Current assembly and damage
+
+| Skill | Asset assembly and timing | Damage budget |
 |---|---|---|
-| 16 / water | Sword at .18s:30% of configured damage in central radius28. Spikes at .32s:70% in radius100/110/120/130/140. Freeze .43s:3s, subject to resistance. | Descending sword, ground ellipse, upright spikes, one foot overlay per frozen target. |
-| 26 / metal | Forward swept lane; one hit/enemy, 100% defense ignore, execute at <=15% remaining HP after slash, honoring invulnerability/shields. | Aerial sword, traveling crescent, ground rift, traveling flanking rays. |
-| 27 / earth | Bell at viewport center; impact .28s, whole-map enemy damage and stasis .34s for2.5s subject to resistance. Hero/UI/projectiles keep running. | Translucent descending bell, formation, three staggered expanding rings, frozen dust. Enemies turn gray. |
-| 28 / water | Following8s field; convert70% post-mitigation incoming damage to healing, remaining30% damages HP. Coalesce30% incoming damage into counter waves at most every.2s, eight radial lanes traveling200 units in.25s, once/enemy/wave. True counters never recursively reflect. | Following ground formation/fish aura loop; heal particles and outward counter blades only after actual absorption. |
-| 29 / wood | Fixed target-centered vortex pulls1.2s with collision and control resistance. Mountain damage .35s. Bind .45s: permanent20% ATK and20% movement reduction, strongest wins without stacking. | Floating scroll, ground ellipse vortex, upright mountain, per-target vines until death/despawn. |
-| 30 / fire | Axe .20s:30% true lane damage. Four pillars at15/38/62/85% lane length, .28/.36/.44/.52s:70% true damage once/enemy across the pillar group. | Diagonal axe/rift, upright pillars, ash with masked screen-space heat refraction. |
+| 26 Tru Tien | Uses `main_xuanyuan_sword.png`, `main_effect.png`, `ground_rift_effect.png`, and `sword_intent_particles_effect.png`. Four swept slashes at -15, 0, +15, then 0 degrees, 0.20s apart; the final straight slash is 1.5x scale and each sweep travels the full viewport diagonal. | Each slash crosses its own lane once per target for 1/4; total 120%. Existing execute and defense-ignore rules remain. |
+| 27 Hon Don | `stasis_formation_effect.png` appears beneath the selected target first. `main_effect.png` descends once and damages at its final impact frame; its phantom scale is 1.155 (30% smaller). `frozen_time_dust_effect.png` is visual-only. Three `time_ripple_ring_effect.png` instances expand from the impact, 0.35s apart, to 2x formation size. | Bell 40%; each ripple 20%. Each ripple damages and applies stasis only when it crosses the target; total 90%. |
+| 28 Am Duong | `taiji_ground_formation_effect.png` stays centered beneath Hero. `yin_yang_fish_aura_effect.png` is centered on the Hero foot anchor and uses 1.2 scale (1.5x its prior scale). Each absorbed hit creates `healing_reversal_effect.png`; `counterattack_spikes_effect.png` originates at Hero and is 2.4 scale. | No free damage. Absorption heals 70% and schedules 30% true counter damage, guarded against recursion. |
+| 29 Hoa Trung | `main_effect.png` is the scroll; `creation_vortex_effect.png` loops throughout pull. `mountain_mirage_effect.png` rises once. `life_drain_vines_effect.png` is a short per-enemy bind visual only. | Vortex ticks three times every 0.50s for 20% each; mountain 40%; total 140%. The permanent 20% ATK/speed reduction does not recreate a stale vine VFX. |
+| 30 Khai Thien | `main_effect.png` descends to the selected target foot anchor, hits at contact and triggers an accessibility-aware screen shake. `primordial_void_rift_effect.png` begins then remains through the final pillar. Three `fire_pillar_effect.png` eruptions occur 0.25s apart at rift bottom-right (1x), center (1.5x), top-left (3x); the first two push targets into the next pillar. `heat_ash_effect.png` is visual-only. | Axe 60% true damage. Each pillar 13.333?% true damage plus burn status; total direct damage 120%. Shields and invulnerability still apply. |
 
-True damage bypasses DEF/element modifiers/crit but honors shields and invulnerability. Rifts, arrays, rings, dust, vines and ash never create unintended damage ticks. Damage ledgers include pool spawn_generation. Freeze target snapshots reject recycled identities. Permanent debuffs persist in Enemy.build_run_state/restore_run_state; pooling clears them and overlays.
+SkillManager also requires a target for 26, 27, 29 and 30; only the self-field 28 can cast without one. The talisman manifest presentation now shows the equipped talisman icon and display name together.
 
-## Interfaces and RPC
-SkillManager._cast_layered_talisman merges root/level config, validates required fields before RPC/use consumption, snapshots target position/direction, and creates LayeredTalismanCast.setup(caster,skill,settings,target,direction). LayeredTalismanCast.valid_config blocks missing required balance/layers. The cast owns elapsed-time events, swept lane queries, damage ledgers and scoped reversal handling. Player.talisman_reversal converts incoming damage after mitigation. Enemy supplies permanent weakening, collision-safe pull, outgoing damage multiplier and explicit incoming attack-element override.
+## Lifecycle and verification
+`TalismanLayer` advances every 3x3 frame for both one-shot and looping sheets. Attached freeze overlays follow freeze status; transient vine overlays expire with their own layer duration; pooled enemies cannot inherit an old visual because generation is checked. Long physics steps still resolve every crossed phase once.
 
-Existing validate_talisman_cast(run_id,cast_seq,skill_id) RPC and response remain unchanged. No new RPC or database migration. Existing server-authenticated use/durability/cooldown accounting remains in SkillManager.
-
-## Rendering and lifecycle
-TalismanLayer uses only AtlasRegistry frame access. Three-by-three sheets expose index0..8; static layers expose index0. Optional atlas inset3 removes baked grid borders from dust/ash. Ground components stay below bodies; sword/bell/spikes/pillars use contact pivots. Lane transforms undo the authored diagonal before stretching along the attack direction; upright pillars never rotate with the lane. Formation rotation is baked into its animation to preserve ground perspective. Heat shader phase follows the paused cast clock.
-
-Paused tree freezes the cast; a long step resolves all crossed phase events once. Caster death/removal cancels pending attacks. Attached freeze overlays follow actual freeze_timer; vines survive the cast and restore with permanent reductions. Self-field cleanup never clears a newer replacement field.
-
-## Validation (2026-10-18)
-- PASS native TestLayeredTalismans: six casts, required-config guard, phase damage, low-FPS swept lanes, execution, freeze duration/cleanup, pool generations, full-map stasis/resistance, incoming conversion, traveling true counters, recursion guard, permanent ATK/speed effects and snapshots, true-damage shields, four pillar events, caster death and pause.
-- PASS client run_static_tests.ps1 and test_talisman_cast_families_static.ps1.
-- PASS existing elemental combat runtime with authoritative progression fixture injected by the test harness.
-- PASS server test_layered_talisman_config.cjs: six skill records, all five levels, element consistency and layer/damage budgets.
-- PASS npm run build and verify_runtime packaging.
-- PASS PostgreSQL seed integrity: complete catalog seed/readback, config roundtrips, rollback and publication checks on disposable localhost database; database stopped afterward.
-- PASS Godot OpenGL assembled preview, including heat shader; output client/temp/c137-layered-preview.png. Preview scene uses shorter lanes only to fit six review cells; live gameplay uses server range.
-- Full server static runner is blocked by pre-existing missing tests/test_new_profile_inventory.cjs. Scoped C137 tests pass; this unrelated fixture remains outside this change.
-- Gate score: 8.5/10. Remaining manual acceptance: full battle on target mobile devices (visibility/performance).
-
-## Run tests
-From client: Godot --headless --path . --log-file temp/c137-runtime.log --scene res://tests/TestLayeredTalismans.tscn -- <absolute-server-data-directory>
-From client: powershell -ExecutionPolicy Bypass -File tests/run_static_tests.ps1
-From server: node tests/test_layered_talisman_config.cjs
-From server/nakama: npm run build
-Preview: Godot --path client --rendering-method gl_compatibility --scene res://tests/PreviewLayeredTalismans.tscn -- <absolute-server-data-directory>
-
-## Rollout
-Build/export the changed Godot client. Upsert skills/items/talismans using the existing full seed command (server/nakama: python3 seed_all.py), then reconnect the client to reload authenticated config. Do not use --content-only for these catalog tables. Server runtime/RPC code is unchanged; restarting alone cannot apply JSON seed edits. No push/deploy was performed.
+Run from `client` when a Godot executable is available:
+```
+Godot --headless --path . --scene res://tests/TestLayeredTalismans.tscn -- <absolute-server-data-directory>
+```
+Also run `powershell -ExecutionPolicy Bypass -File tests/run_static_tests.ps1` and from `server`, `node tests/test_layered_talisman_config.cjs`.
 
 ## Changelog
 | Version | Date | Change |
 |---|---|---|
-| 1.0.0 | 2026-10-18 | Six layered talisman behaviors, independent phase damage, authoritative seed config, previews and runtime verification. |
+| 1.1.4 | 2026-10-19 | Reduced bell phantom by 30%; skill 30 now strikes target feet with screen shake and chains scaled fire pillars through directed knockback. |
+| 1.1.3 | 2026-10-19 | Skill 26 now uses four 0.20s sweeps, with a 1.5x final straight slash that reaches the whole viewport. |
+| 1.1.2 | 2026-10-19 | Centered skill 28 aura exactly on the Hero foot anchor and increased its scale by 1.5x. |
+| 1.1.1 | 2026-10-19 | Recalibrated skill 28 aura to the Hero anchor and made counter VFX follow the Hero during its burst. |
+| 1.1.0 | 2026-10-19 | Corrected component-to-runtime assembly, target-centric stasis, phase hitboxes and fixed damage budgets for skills 26-30; added talisman cast name. |
+| 1.0.0 | 2026-10-18 | Initial layered talisman implementation. |
