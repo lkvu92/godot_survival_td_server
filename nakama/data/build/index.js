@@ -1,3 +1,838 @@
+function createServerWeeklyTables(nk) {
+  nk.sqlExec(`CREATE TABLE IF NOT EXISTS server_weekly_periods (
+      server_id TEXT NOT NULL REFERENCES game_servers(server_id),generation INT NOT NULL,period_id BIGINT NOT NULL,
+      starts_at TIMESTAMPTZ NOT NULL,closes_at TIMESTAMPTZ NOT NULL,config_version BIGINT NOT NULL,config JSONB NOT NULL,
+      status TEXT NOT NULL DEFAULT 'open',finalized_at TIMESTAMPTZ,PRIMARY KEY(server_id,generation,period_id));
+    CREATE TABLE IF NOT EXISTS server_weekly_scores (
+      server_id TEXT NOT NULL,generation INT NOT NULL,period_id BIGINT NOT NULL,board_id TEXT NOT NULL,user_id UUID NOT NULL,
+      score BIGINT NOT NULL CHECK(score>=0),achieved_at TIMESTAMPTZ NOT NULL,display_name TEXT NOT NULL,
+      PRIMARY KEY(server_id,generation,period_id,board_id,user_id),
+      FOREIGN KEY(server_id,generation,period_id) REFERENCES server_weekly_periods(server_id,generation,period_id));
+    CREATE INDEX IF NOT EXISTS server_weekly_rank_idx ON server_weekly_scores(server_id,generation,period_id,board_id,score DESC,achieved_at,user_id);
+    CREATE TABLE IF NOT EXISTS server_weekly_awards (
+      server_id TEXT NOT NULL,generation INT NOT NULL,period_id BIGINT NOT NULL,board_id TEXT NOT NULL,user_id UUID NOT NULL,
+      rank INT NOT NULL,score BIGINT NOT NULL,rewards JSONB NOT NULL,expires_at TIMESTAMPTZ NOT NULL,
+      PRIMARY KEY(server_id,generation,period_id,board_id,user_id),
+      FOREIGN KEY(server_id,generation,period_id) REFERENCES server_weekly_periods(server_id,generation,period_id));
+    CREATE INDEX IF NOT EXISTS server_weekly_awards_user_idx ON server_weekly_awards(server_id,generation,user_id,board_id,period_id DESC);
+    CREATE OR REPLACE FUNCTION server_weekly_tick(sid TEXT,gen INT,cfg JSONB,release_version BIGINT) RETURNS BIGINT LANGUAGE plpgsql AS $sw$
+    DECLARE p RECORD;ts TIMESTAMPTZ;start_at TIMESTAMPTZ;active_id BIGINT;
+    BEGIN
+      PERFORM pg_advisory_xact_lock(hashtext('server_weekly/'||sid),gen);
+      IF NOT EXISTS(SELECT 1 FROM game_servers WHERE server_id=sid AND generation=gen AND status='open') THEN RETURN NULL; END IF;
+      ts:=clock_timestamp();
+      FOR p IN SELECT * FROM server_weekly_periods WHERE server_id=sid AND generation=gen AND status='open' AND closes_at<=ts ORDER BY period_id LOOP
+        INSERT INTO server_weekly_awards(server_id,generation,period_id,board_id,user_id,rank,score,rewards,expires_at)
+        SELECT sid,gen,p.period_id,ranked.board_id,ranked.user_id,ranked.position,ranked.score,
+          (SELECT jsonb_agg(CASE WHEN reward->>'type'='random_item' THEN
+            jsonb_build_object('type','item','id',(reward->'pool')->>(get_byte(decode(md5(sid||gen::TEXT||p.period_id::TEXT||ranked.board_id||ranked.user_id::TEXT||ordinality::TEXT),'hex'),0)%jsonb_array_length(reward->'pool')),'amount',reward->'amount')
+            ELSE reward END ORDER BY ordinality) FROM jsonb_array_elements(tier->'rewards') WITH ORDINALITY r(reward,ordinality)),
+          p.closes_at+make_interval(days=>(p.config->>'claim_days')::INT)
+        FROM (SELECT s.*,ROW_NUMBER() OVER(PARTITION BY board_id ORDER BY score DESC,achieved_at,user_id) AS position
+          FROM server_weekly_scores s JOIN users u ON u.id=s.user_id
+          WHERE s.server_id=sid AND s.generation=gen AND s.period_id=p.period_id
+            AND COALESCE(u.disable_time,to_timestamp(0))<=to_timestamp(0)
+            AND NOT EXISTS(SELECT 1 FROM account_link_state a WHERE a.user_id=s.user_id AND a.status='archived')) ranked
+        CROSS JOIN LATERAL jsonb_array_elements(p.config->'boards'->ranked.board_id->'tiers') tier
+        WHERE ranked.position BETWEEN (tier->>'from')::INT AND (tier->>'to')::INT AND (p.config->'boards'->ranked.board_id->>'enabled')::BOOL
+        ON CONFLICT DO NOTHING;
+        UPDATE server_weekly_periods SET status='finalized',finalized_at=ts WHERE server_id=sid AND generation=gen AND period_id=p.period_id;
+      END LOOP;
+      start_at:=date_trunc('week',ts AT TIME ZONE 'UTC') AT TIME ZONE 'UTC';active_id:=EXTRACT(EPOCH FROM start_at)::BIGINT;
+      IF EXISTS(SELECT 1 FROM server_weekly_periods WHERE server_id=sid AND generation=gen AND period_id=active_id AND status='open') THEN RETURN active_id; END IF;
+      IF cfg IS NULL OR NOT COALESCE((cfg->>'enabled')::BOOL,FALSE) THEN RETURN NULL; END IF;
+      INSERT INTO server_weekly_periods(server_id,generation,period_id,starts_at,closes_at,config_version,config)
+        VALUES(sid,gen,active_id,start_at,start_at+INTERVAL '7 days',release_version,cfg) ON CONFLICT DO NOTHING;
+      RETURN active_id;
+    END $sw$;
+    CREATE OR REPLACE FUNCTION server_weekly_record(sid TEXT,gen INT,uid UUID,points JSONB,player_name TEXT,cfg JSONB,release_version BIGINT) RETURNS BIGINT LANGUAGE plpgsql AS $sw$
+    DECLARE active_id BIGINT;entry RECORD;frozen JSONB;ts TIMESTAMPTZ;
+    BEGIN
+      active_id:=server_weekly_tick(sid,gen,cfg,release_version);IF active_id IS NULL THEN RETURN NULL; END IF;
+      SELECT config INTO frozen FROM server_weekly_periods WHERE server_id=sid AND generation=gen AND period_id=active_id AND status='open';
+      IF frozen IS NULL THEN RETURN NULL; END IF;ts:=clock_timestamp();
+      FOR entry IN SELECT key,value FROM jsonb_each_text(points) LOOP
+        IF COALESCE((frozen->'boards'->entry.key->>'enabled')::BOOL,FALSE) AND entry.value::BIGINT>=0 THEN
+          INSERT INTO server_weekly_scores(server_id,generation,period_id,board_id,user_id,score,achieved_at,display_name)
+            VALUES(sid,gen,active_id,entry.key,uid,entry.value::BIGINT,ts,player_name)
+          ON CONFLICT(server_id,generation,period_id,board_id,user_id) DO UPDATE SET score=EXCLUDED.score,
+            achieved_at=CASE WHEN server_weekly_scores.score=EXCLUDED.score THEN server_weekly_scores.achieved_at ELSE EXCLUDED.achieved_at END,display_name=EXCLUDED.display_name;
+        END IF;
+      END LOOP;RETURN active_id;
+    END $sw$;`, []);
+}
+function tickServerWeekly(nk, scope) {
+  const settings = weeklyPublishedConfig(nk);
+  return nk.sqlQuery(
+    "SELECT server_weekly_tick($1,$2,$3::JSONB,$4::BIGINT) AS period_id,EXTRACT(EPOCH FROM clock_timestamp())*1000 AS server_time_ms",
+    [scope.serverId, scope.generation, settings.config ? JSON.stringify(settings.config) : null, settings.version]
+  )[0];
+}
+function recordServerWeekly(nk, scope, userId, name, scores) {
+  const settings = weeklyPublishedConfig(nk);
+  nk.sqlQuery(
+    "SELECT server_weekly_record($1,$2,$3::UUID,$4::JSONB,$5,$6::JSONB,$7::BIGINT)",
+    [scope.serverId, scope.generation, userId, JSON.stringify(scores), name, settings.config ? JSON.stringify(settings.config) : null, settings.version]
+  );
+}
+const readServerWeekly = (ctx, _logger, nk, payload) => {
+  const scope = characterContext(nk);
+  if (!scope) throw new Error("Missing weekly scope");
+  const req = serverRequest(payload), board = String(req.board_id || "");
+  if (WEEKLY_BOARDS.indexOf(board) < 0) return serverFailure("INVALID_BOARD", 400, "Unknown category");
+  const tick = tickServerWeekly(nk, scope), args = [scope.serverId, scope.generation];
+  const periods = tick.period_id ? nk.sqlQuery(`SELECT period_id,EXTRACT(EPOCH FROM starts_at)*1000 AS starts_at_ms,
+      EXTRACT(EPOCH FROM closes_at)*1000 AS closes_at_ms,config_version,config FROM server_weekly_periods
+      WHERE server_id=$1 AND generation=$2 AND period_id=$3`, args.concat([tick.period_id])) : [];
+  const period = periods[0];
+  if (period) period.config = parseJsonb(period.config);
+  const config = period && period.config.boards[board];
+  const ranks = period ? nk.sqlQuery(`SELECT * FROM (SELECT s.user_id::TEXT,s.display_name,s.score,
+      ROW_NUMBER() OVER(ORDER BY s.score DESC,s.achieved_at,s.user_id) AS rank FROM server_weekly_scores s JOIN users u ON u.id=s.user_id
+      WHERE s.server_id=$1 AND s.generation=$2 AND s.period_id=$3 AND s.board_id=$4 AND COALESCE(u.disable_time,to_timestamp(0))<=to_timestamp(0)
+      AND NOT EXISTS(SELECT 1 FROM account_link_state a WHERE a.user_id=s.user_id AND a.status='archived')) ranked
+      WHERE rank<=50 OR user_id=$5 ORDER BY rank`, [scope.serverId, scope.generation, period.period_id, board, ctx.userId]) : [];
+  const awards = nk.sqlQuery(`SELECT period_id,board_id,rank,score,rewards,EXTRACT(EPOCH FROM expires_at)*1000 AS expires_at_ms,
+      expires_at<=clock_timestamp() AS expired FROM server_weekly_awards WHERE server_id=$1 AND generation=$2 AND user_id=$3::UUID AND board_id=$4 ORDER BY period_id DESC LIMIT 14`, [scope.serverId, scope.generation, ctx.userId, board]);
+  const markers = awards.length ? nk.storageRead(awards.map((a) => ({ collection: "weekly_leaderboard_claims", key: weeklyClaimKey(a.period_id, board), userId: ctx.userId }))) : [];
+  for (const award of awards) {
+    award.rewards = parseJsonb(award.rewards);
+    award.claimed = markers.some((o) => o.key === weeklyClaimKey(award.period_id, board));
+  }
+  return JSON.stringify({
+    success: true,
+    server_id: scope.serverId,
+    generation: scope.generation,
+    server_time_ms: Number(tick.server_time_ms),
+    enabled: !!(config && config.enabled),
+    period: period ? { period_id: period.period_id, starts_at_ms: Number(period.starts_at_ms), closes_at_ms: Number(period.closes_at_ms), config_version: period.config_version } : null,
+    claim_days: period ? period.config.claim_days : null,
+    tiers: config ? config.tiers : [],
+    records: ranks.filter((r) => Number(r.rank) <= 50),
+    my_record: ranks.find((r) => r.user_id === ctx.userId) || null,
+    awards
+  });
+};
+const claimServerWeekly = (ctx, _logger, nk, payload) => {
+  const scope = characterContext(nk);
+  if (!scope) throw new Error("Missing weekly scope");
+  const req = serverRequest(payload), board = String(req.board_id || ""), period = String(req.period_id || "");
+  if (WEEKLY_BOARDS.indexOf(board) < 0 || !/^\d{1,12}$/.test(period)) return serverFailure("INVALID_REWARD", 400, "Invalid reward");
+  const awards = nk.sqlQuery(`SELECT rewards,expires_at>clock_timestamp() AS available FROM server_weekly_awards
+      WHERE server_id=$1 AND generation=$2 AND period_id=$3::BIGINT AND board_id=$4 AND user_id=$5::UUID`, [scope.serverId, scope.generation, period, board, ctx.userId]);
+  if (!awards.length) return serverFailure("REWARD_NOT_FOUND", 404, "Kh\xF4ng c\xF3 ph\u1EA7n th\u01B0\u1EDFng tu\u1EA7n n\xE0y.");
+  const rewards = parseJsonb(awards[0].rewards), key = weeklyClaimKey(period, board);
+  const reads = nk.storageRead([{ collection: "weekly_leaderboard_claims", key, userId: ctx.userId }, { collection: "player_profiles", key: "main", userId: ctx.userId }, { collection: "player_inventory", key: "items", userId: ctx.userId }]);
+  const p = reads.find((o) => o.collection === "player_profiles"), i = reads.find((o) => o.collection === "player_inventory");
+  if (!p || !i || !Array.isArray(i.value.items)) return serverFailure("CHARACTER_INCOMPLETE", 409, "Player data is incomplete");
+  if (reads.some((o) => o.collection === "weekly_leaderboard_claims")) return JSON.stringify({ success: true, already_claimed: true, rewards, profile: p.value, inventory: i.value.items });
+  if (!awards[0].available) return serverFailure("REWARD_EXPIRED", 410, "Ph\u1EA7n th\u01B0\u1EDFng \u0111\xE3 h\u1EBFt h\u1EA1n nh\u1EADn.");
+  p.value.resources = p.value.resources || {};
+  for (const reward of rewards) {
+    if (reward.type === "resource" && ["gold", "gems"].indexOf(reward.id) >= 0) {
+      const total = Number(p.value.resources[reward.id] || 0) + Number(reward.amount);
+      if (!Number.isSafeInteger(total)) throw new Error("Resource limit");
+      p.value.resources[reward.id] = total;
+    } else if (reward.type === "item") addStoreInventoryItem(nk, i.value.items, reward.id, reward.amount);
+    else throw new Error("Invalid stored reward");
+  }
+  try {
+    nk.storageWrite([
+      { collection: "player_profiles", key: "main", userId: ctx.userId, value: p.value, version: p.version },
+      { collection: "player_inventory", key: "items", userId: ctx.userId, value: i.value, version: i.version },
+      { collection: "weekly_leaderboard_claims", key, userId: ctx.userId, value: { period_id: period, board_id: board, rewards }, version: "*" }
+    ]);
+  } catch (_e) {
+    return serverFailure("DATA_CHANGED", 409, "D\u1EEF li\u1EC7u v\u1EEBa thay \u0111\u1ED5i. Vui l\xF2ng th\u1EED l\u1EA1i.");
+  }
+  return JSON.stringify({ success: true, already_claimed: false, rewards, profile: p.value, inventory: i.value.items });
+};
+
+function requireServerAdmin(ctx) {
+  const configured = String(ctx.env && ctx.env.CONFIG_ADMIN_USER_ID || "");
+  return ctx.userId && configured && ctx.userId === configured ? null : serverFailure("FORBIDDEN", 403, "Forbidden");
+}
+function serverAdminHandler(action) {
+  return (ctx, _logger, nk, payload) => {
+    const denied = requireServerAdmin(ctx);
+    if (denied) return denied;
+    let req;
+    try {
+      req = serverRequest(payload);
+    } catch (_e) {
+      return serverFailure("INVALID_REQUEST", 400, "Invalid JSON");
+    }
+    if (action === "list") {
+      const limit = Number.isSafeInteger(req.limit) ? Math.min(100, Math.max(1, req.limit)) : 50;
+      const after = typeof req.after === "string" ? req.after : "";
+      const rows = nk.sqlQuery(`SELECT server_id,display_name,status,generation,revision,opens_at,
+                allow_new_characters,placement_id,config_version FROM game_servers
+                WHERE server_id>$1 ORDER BY server_id LIMIT $2`, [after, limit + 1]);
+      const more = rows.length > limit;
+      if (more) rows.pop();
+      return JSON.stringify({ success: true, servers: rows, next_cursor: more ? rows[rows.length - 1].server_id : "" });
+    }
+    if (typeof req.server_id !== "string" || !/^[a-z][a-z0-9_]{0,31}$/.test(req.server_id)) return serverFailure("INVALID_SERVER_ID", 400, "Invalid server ID");
+    if (action === "inspect") {
+      const rows = nk.sqlQuery(`SELECT s.server_id,s.display_name,s.status,s.generation,s.revision,s.opens_at,
+                s.allow_new_characters,s.placement_id,s.config_version,
+                (SELECT COUNT(*)::INT FROM player_characters c WHERE c.server_id=s.server_id) AS character_count,
+                EXTRACT(EPOCH FROM NOW())*1000 AS snapshot_at_ms FROM game_servers s WHERE s.server_id=$1`, [req.server_id]);
+      return rows.length ? JSON.stringify({ success: true, server: rows[0] }) : serverFailure("SERVER_NOT_FOUND", 404, "Server not found");
+    }
+    if (typeof req.reason !== "string" || !req.reason.trim() || req.reason.length > 500) return serverFailure("REASON_REQUIRED", 400, "A reason is required");
+    if (action === "create") {
+      if (typeof req.request_id !== "string" || !/^[a-zA-Z0-9_-]{8,100}$/.test(req.request_id)) return serverFailure("REQUEST_ID_REQUIRED", 400, "Invalid request ID");
+      if (typeof req.display_name !== "string" || !req.display_name.trim() || req.display_name.length > 100) return serverFailure("INVALID_NAME", 400, "Invalid display name");
+      if (!Number.isSafeInteger(req.config_version) || req.config_version < 1) return serverFailure("CONFIG_REQUIRED", 400, "Published config version required");
+      if (typeof req.opens_at !== "string" || !Number.isFinite(Date.parse(req.opens_at))) return serverFailure("INVALID_OPEN_TIME", 400, "ISO opening time required");
+      const canonical = JSON.stringify({
+        server_id: req.server_id,
+        display_name: req.display_name.trim(),
+        config_version: req.config_version,
+        opens_at: new Date(req.opens_at).toISOString(),
+        allow_new_characters: req.allow_new_characters === true,
+        reason: req.reason.trim()
+      });
+      const previous = nk.sqlQuery("SELECT server_id,create_payload=$2::JSONB AS same FROM game_servers WHERE create_request_id=$1", [req.request_id, canonical]);
+      if (previous.length) return previous[0].same ? JSON.stringify({ success: true, server_id: previous[0].server_id, replayed: true }) : serverFailure("REQUEST_ID_CONFLICT", 409, "Request ID already used with another payload");
+      const release = nk.sqlQuery("SELECT 1 FROM remote_config_releases WHERE config_version=$1", [req.config_version]);
+      if (!release.length) return serverFailure("CONFIG_NOT_FOUND", 409, "Published config release not found");
+      const rows = nk.sqlQuery(`WITH created AS (
+                INSERT INTO game_servers(server_id,display_name,status,opens_at,allow_new_characters,config_version,create_request_id,create_payload)
+                VALUES($1,$2,'disabled',$3::TIMESTAMPTZ,$4,$5,$6,$7::JSONB) ON CONFLICT DO NOTHING RETURNING *
+            ), audited AS (
+                INSERT INTO server_operation_audit(server_id,actor_id,action,reason,after_revision)
+                SELECT server_id,$8::UUID,'create',$9,revision FROM created RETURNING id
+            ) SELECT server_id,generation,revision,status FROM created`, [
+        req.server_id,
+        req.display_name.trim(),
+        req.opens_at,
+        req.allow_new_characters === true,
+        req.config_version,
+        req.request_id,
+        canonical,
+        ctx.userId,
+        req.reason.trim()
+      ]);
+      if (!rows.length) {
+        const raced = nk.sqlQuery("SELECT server_id,create_payload=$2::JSONB AS same FROM game_servers WHERE create_request_id=$1", [req.request_id, canonical]);
+        if (raced.length && raced[0].same) return JSON.stringify({ success: true, server_id: raced[0].server_id, replayed: true });
+        return serverFailure("SERVER_EXISTS", 409, "Server ID or request ID already exists");
+      }
+      return JSON.stringify({ success: true, server: rows[0], replayed: false });
+    }
+    if (!Number.isSafeInteger(req.expected_revision) || req.expected_revision < 1) return serverFailure("REVISION_REQUIRED", 400, "Expected revision required");
+    if (action === "expire_pending") {
+      const rows = nk.sqlQuery(`WITH fenced AS (
+              UPDATE game_servers SET revision=revision+1,updated_at=NOW() WHERE server_id=$1 AND revision=$2 AND status='disabled' AND active_requests=0
+              RETURNING server_id,generation,revision
+            ), orders AS (
+              UPDATE monetization_purchase_orders o SET status='expired',updated_at=NOW() FROM fenced f
+              WHERE o.target_server_id=f.server_id AND o.target_generation=f.generation AND o.status='pending' AND o.expires_at<=NOW()
+                AND o.validated_at IS NULL AND NOT EXISTS(SELECT 1 FROM store_receipt_reservations r WHERE r.order_id=o.id) RETURNING o.id
+            ), ads AS (
+              UPDATE monetization_ad_rewards a SET status='expired' FROM fenced f WHERE a.target_server_id=f.server_id AND a.target_generation=f.generation
+                AND a.status='prepared' AND a.expires_at<=NOW() RETURNING a.ad_session_id
+            ), audit AS (
+              INSERT INTO server_operation_audit(server_id,actor_id,action,reason,before_revision,after_revision)
+              SELECT server_id,$3::UUID,'expire_pending',$4,$2,revision FROM fenced
+            ) SELECT f.*,(SELECT COUNT(*) FROM orders) AS expired_orders,(SELECT COUNT(*) FROM ads) AS expired_ads FROM fenced f`, [req.server_id, req.expected_revision, ctx.userId, req.reason.trim()]);
+      return rows.length ? JSON.stringify({ success: true, server: rows[0] }) : serverFailure("SERVER_NOT_DRAINED", 409, "Disable/drain and refresh revision first");
+    }
+    if (action === "disable") {
+      const rows = nk.sqlQuery(`WITH changed AS (
+                UPDATE game_servers SET status='disabled',revision=revision+1,updated_at=NOW()
+                WHERE server_id=$1 AND revision=$2 AND status IN ('open','scheduled','maintenance','disabled')
+                RETURNING server_id,generation,revision,status,active_requests
+            ), audited AS (
+                INSERT INTO server_operation_audit(server_id,actor_id,action,reason,before_revision,after_revision)
+                SELECT server_id,$3::UUID,'disable',$4,$2,revision FROM changed RETURNING id
+            ) SELECT * FROM changed`, [req.server_id, req.expected_revision, ctx.userId, req.reason.trim()]);
+      return rows.length ? JSON.stringify({ success: true, server: rows[0], drained: Number(rows[0].active_requests) === 0 }) : serverFailure("REVISION_OR_STATE_CONFLICT", 409, "Server revision or state changed");
+    }
+    if (action === "enable") {
+      if (!ctx.env || ctx.env.MULTI_SERVER_ENABLED !== "true") return serverFailure("FEATURE_DISABLED", 409, "Enable multi-server only after migration and acceptance");
+      const rows = nk.sqlQuery(`WITH changed AS (
+              UPDATE game_servers s SET status='open',revision=revision+1,updated_at=NOW()
+              WHERE s.server_id=$1 AND s.revision=$2 AND s.status IN ('disabled','maintenance','scheduled') AND s.active_requests=0
+                AND NOT EXISTS(SELECT 1 FROM server_lifecycle_jobs j WHERE j.server_id=s.server_id AND j.status<>'succeeded')
+                AND EXISTS(SELECT 1 FROM remote_config_releases r WHERE r.config_version=s.config_version)
+              RETURNING server_id,generation,revision,status
+            ), audited AS (
+              INSERT INTO server_operation_audit(server_id,actor_id,action,reason,before_revision,after_revision)
+              SELECT server_id,$3::UUID,'enable',$4,$2,revision FROM changed RETURNING id
+            ) SELECT * FROM changed`, [req.server_id, req.expected_revision, ctx.userId, req.reason.trim()]);
+      return rows.length ? JSON.stringify({ success: true, server: rows[0] }) : serverFailure("REVISION_OR_STATE_CONFLICT", 409, "Server state, config or drain check failed");
+    }
+    if (action === "update") {
+      if (typeof req.display_name !== "string" || !req.display_name.trim() || req.display_name.length > 100 || typeof req.allow_new_characters !== "boolean" || typeof req.opens_at !== "string" || !Number.isFinite(Date.parse(req.opens_at))) return serverFailure("INVALID_UPDATE", 400, "Name, opening time and admission flag required");
+      const rows = nk.sqlQuery(`WITH changed AS (
+              UPDATE game_servers SET display_name=$3,opens_at=$4::TIMESTAMPTZ,allow_new_characters=$5,
+                revision=revision+1,updated_at=NOW() WHERE server_id=$1 AND revision=$2 AND status IN ('disabled','maintenance','scheduled','open')
+              RETURNING server_id,generation,revision,status
+            ), audited AS (
+              INSERT INTO server_operation_audit(server_id,actor_id,action,reason,before_revision,after_revision)
+              SELECT server_id,$6::UUID,'update',$7,$2,revision FROM changed RETURNING id
+            ) SELECT * FROM changed`, [req.server_id, req.expected_revision, req.display_name.trim(), req.opens_at, req.allow_new_characters, ctx.userId, req.reason.trim()]);
+      return rows.length ? JSON.stringify({ success: true, server: rows[0] }) : serverFailure("REVISION_OR_STATE_CONFLICT", 409, "Server revision or state changed");
+    }
+    return serverFailure("UNSUPPORTED_ACTION", 400, "Unsupported action");
+  };
+}
+function rpcAdminServerList(c, l, n, p) {
+  return accountGuardedRpc("admin_server_list", serverAdminHandler("list"))(c, l, n, p);
+}
+function rpcAdminServerInspect(c, l, n, p) {
+  return accountGuardedRpc("admin_server_inspect", serverAdminHandler("inspect"))(c, l, n, p);
+}
+function rpcAdminServerCreate(c, l, n, p) {
+  return accountGuardedRpc("admin_server_create", serverAdminHandler("create"))(c, l, n, p);
+}
+function rpcAdminServerDisable(c, l, n, p) {
+  return accountGuardedRpc("admin_server_disable", serverAdminHandler("disable"))(c, l, n, p);
+}
+function rpcAdminServerEnable(c, l, n, p) {
+  return accountGuardedRpc("admin_server_enable", serverAdminHandler("enable"))(c, l, n, p);
+}
+function rpcAdminServerUpdate(c, l, n, p) {
+  return accountGuardedRpc("admin_server_update", serverAdminHandler("update"))(c, l, n, p);
+}
+function rpcAdminServerExpirePending(c, l, n, p) {
+  return accountGuardedRpc("admin_server_expire_pending", serverAdminHandler("expire_pending"))(c, l, n, p);
+}
+function createServerLifecycleTables(nk) {
+  nk.sqlExec(`CREATE TABLE IF NOT EXISTS server_operation_plans (
+      id UUID PRIMARY KEY,server_id TEXT NOT NULL REFERENCES game_servers(server_id),action TEXT NOT NULL,
+      generation INT NOT NULL,revision BIGINT NOT NULL,actor_id UUID NOT NULL,reason TEXT NOT NULL,
+      manifest JSONB NOT NULL,manifest_hash TEXT NOT NULL,created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      expires_at TIMESTAMPTZ NOT NULL DEFAULT NOW()+INTERVAL '15 minutes');
+    CREATE TABLE IF NOT EXISTS server_lifecycle_jobs (
+      id UUID PRIMARY KEY,plan_id UUID NOT NULL UNIQUE REFERENCES server_operation_plans(id),
+      server_id TEXT NOT NULL REFERENCES game_servers(server_id),request_id TEXT NOT NULL UNIQUE,
+      request_payload JSONB NOT NULL,status TEXT NOT NULL DEFAULT 'queued',phase TEXT NOT NULL DEFAULT 'storage',
+      cursor INT NOT NULL DEFAULT 0,lease_token UUID,lease_until TIMESTAMPTZ,heartbeat TIMESTAMPTZ,
+      error TEXT NOT NULL DEFAULT '',created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),finished_at TIMESTAMPTZ);
+    CREATE UNIQUE INDEX IF NOT EXISTS server_lifecycle_active_uq ON server_lifecycle_jobs(server_id) WHERE status<>'succeeded';
+    CREATE TABLE IF NOT EXISTS server_generation_snapshots (
+      server_id TEXT NOT NULL REFERENCES game_servers(server_id),generation INT NOT NULL,
+      plan_id UUID NOT NULL REFERENCES server_operation_plans(id),retired_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      retain_until TIMESTAMPTZ NOT NULL DEFAULT NOW()+INTERVAL '7 days',PRIMARY KEY(server_id,generation));
+    CREATE OR REPLACE FUNCTION server_lifecycle_begin(pid UUID,jid UUID,rid TEXT,body JSONB,actor UUID)
+    RETURNS JSONB LANGUAGE plpgsql AS $life$
+    DECLARE p server_operation_plans%ROWTYPE;s game_servers%ROWTYPE;j server_lifecycle_jobs%ROWTYPE; current_manifest JSONB;
+    BEGIN
+      SELECT * INTO p FROM server_operation_plans WHERE id=pid FOR UPDATE;
+      IF NOT FOUND OR p.actor_id<>actor THEN RAISE EXCEPTION 'PLAN_NOT_FOUND'; END IF;
+      SELECT * INTO j FROM server_lifecycle_jobs WHERE request_id=rid;
+      IF FOUND THEN
+        IF j.request_payload<>body THEN RAISE EXCEPTION 'REQUEST_ID_CONFLICT'; END IF;
+        RETURN to_jsonb(j);
+      END IF;
+      IF p.expires_at<=NOW() THEN RAISE EXCEPTION 'PLAN_EXPIRED'; END IF;
+      SELECT * INTO s FROM game_servers WHERE server_id=p.server_id FOR UPDATE;
+      IF s.status NOT IN ('disabled','deleted') OR s.active_requests<>0 THEN RAISE EXCEPTION 'SERVER_NOT_DRAINED'; END IF;
+      IF s.revision<>p.revision OR (p.action<>'cleanup' AND s.generation<>p.generation)
+        OR p.manifest_hash<>body->>'manifest_hash' OR p.server_id<>body->>'server_id'
+        OR p.action<>body->>'action' OR p.generation<>(body->>'expected_generation')::INT
+        OR p.revision<>(body->>'expected_revision')::BIGINT THEN RAISE EXCEPTION 'PLAN_STALE'; END IF;
+      IF p.action='cleanup' AND NOT EXISTS(SELECT 1 FROM server_generation_snapshots
+        WHERE server_id=p.server_id AND generation=p.generation AND retain_until<=NOW()) THEN RAISE EXCEPTION 'RETENTION_BLOCKED'; END IF;
+      current_manifest:=server_lifecycle_manifest(p.server_id,p.generation);
+      IF current_manifest<>p.manifest THEN RAISE EXCEPTION 'PLAN_STALE'; END IF;
+      IF jsonb_array_length(current_manifest->'unknown')>0 THEN RAISE EXCEPTION 'UNKNOWN_OWNERSHIP'; END IF;
+      IF (current_manifest->>'pending_financial')::INT>0 THEN RAISE EXCEPTION 'PENDING_FINANCIAL_DELIVERY'; END IF;
+      IF p.action='reset' AND (current_manifest->>'real_purchases')::INT>0 THEN RAISE EXCEPTION 'PAID_RESET_POLICY_REQUIRED'; END IF;
+      INSERT INTO server_lifecycle_jobs(id,plan_id,server_id,request_id,request_payload) VALUES(jid,pid,p.server_id,rid,body);
+      INSERT INTO server_generation_snapshots(server_id,generation,plan_id) VALUES(p.server_id,p.generation,pid) ON CONFLICT DO NOTHING;
+      IF p.action='reset' THEN
+        UPDATE player_characters SET status='retired' WHERE server_id=p.server_id AND generation=p.generation;
+        UPDATE game_servers SET generation=generation+1,revision=revision+1,updated_at=NOW() WHERE server_id=p.server_id;
+        UPDATE server_lifecycle_jobs SET status='succeeded',phase='complete',finished_at=NOW() WHERE id=jid;
+      ELSE
+        IF p.action='delete' THEN UPDATE game_servers SET status='deleting',revision=revision+1,updated_at=NOW() WHERE server_id=p.server_id; END IF;
+      END IF;
+      INSERT INTO server_operation_audit(server_id,actor_id,action,reason,before_revision,after_revision)
+        SELECT p.server_id,actor,p.action,p.reason,p.revision,revision FROM game_servers WHERE server_id=p.server_id;
+      RETURN (SELECT to_jsonb(x) FROM server_lifecycle_jobs x WHERE x.id=jid);
+    END $life$;`, []);
+  nk.sqlExec(`CREATE OR REPLACE FUNCTION server_lifecycle_manifest(sid TEXT,gen INT) RETURNS JSONB LANGUAGE plpgsql AS $manifest$
+      BEGIN RETURN (SELECT jsonb_build_object(
+        'storage',COALESCE((SELECT jsonb_agg(to_jsonb(o) ORDER BY collection,key,user_id) FROM
+          (SELECT collection,key,user_id::TEXT,version,value,read,write FROM storage
+           WHERE left(key,length(sid||':g'||gen||':'))=sid||':g'||gen||':'
+           AND collection=ANY($1$COLLECTIONS$1$::TEXT[])) o),'[]'::JSONB),
+        'unknown',COALESCE((SELECT jsonb_agg(jsonb_build_object('collection',collection,'key',key)) FROM storage
+          WHERE left(key,length(sid||':g'||gen||':'))=sid||':g'||gen||':'
+          AND NOT(collection=ANY($1$COLLECTIONS$1$::TEXT[]))),'[]'::JSONB),
+        'characters',COALESCE((SELECT jsonb_agg(to_jsonb(c) ORDER BY account_id) FROM player_characters c WHERE server_id=sid AND generation=gen),'[]'::JSONB),
+        'pending_financial',(SELECT COUNT(*) FROM monetization_purchase_orders WHERE target_server_id=sid AND target_generation=gen AND status='pending')+
+          (SELECT COUNT(*) FROM monetization_ad_rewards WHERE target_server_id=sid AND target_generation=gen AND status IN ('prepared','verified')),
+        'real_purchases',(SELECT COUNT(*) FROM monetization_purchases WHERE target_server_id=sid AND target_generation=gen AND purchase_token_hash NOT LIKE 'mock:%'),
+        'weekly_periods',COALESCE((SELECT jsonb_agg(to_jsonb(p) ORDER BY period_id) FROM server_weekly_periods p WHERE server_id=sid AND generation=gen),'[]'::JSONB),
+        'weekly_scores',COALESCE((SELECT jsonb_agg(to_jsonb(p) ORDER BY period_id,board_id,user_id) FROM server_weekly_scores p WHERE server_id=sid AND generation=gen),'[]'::JSONB),
+        'weekly_awards',COALESCE((SELECT jsonb_agg(to_jsonb(p) ORDER BY period_id,board_id,user_id) FROM server_weekly_awards p WHERE server_id=sid AND generation=gen),'[]'::JSONB))); END;
+    $manifest$;`.replace(/\$1\$COLLECTIONS\$1\$/g, "'{" + CHARACTER_COLLECTIONS.join(",") + "}'"), []);
+}
+function serverLifecycleHandler(action) {
+  return (ctx, _logger, nk, payload) => {
+    const denied = requireServerAdmin(ctx);
+    if (denied) return denied;
+    let req;
+    try {
+      req = serverRequest(payload);
+    } catch (_e) {
+      return serverFailure("INVALID_REQUEST", 400, "Invalid JSON");
+    }
+    try {
+      if (action === "job" || action === "step") {
+        const jobs = nk.sqlQuery(`SELECT j.*,p.action,p.generation,p.manifest FROM server_lifecycle_jobs j
+                  JOIN server_operation_plans p ON p.id=j.plan_id WHERE j.id=$1::UUID`, [String(req.job_id || "")]);
+        if (!jobs.length) return serverFailure("JOB_NOT_FOUND", 404, "Job not found");
+        let job = jobs[0];
+        if (action === "step" && job.status !== "succeeded") {
+          const token = nk.uuidv4();
+          const locked = nk.sqlQuery(`UPDATE server_lifecycle_jobs SET lease_token=$2::UUID,lease_until=NOW()+INTERVAL '5 minutes',
+                      status='running',heartbeat=NOW(),error='' WHERE id=$1::UUID AND lease_token IS NULL RETURNING id`, [job.id, token]);
+          if (!locked.length) return serverFailure("OPERATION_IN_PROGRESS", 409, "Another step holds the lease");
+          try {
+            const manifest = parseJsonb(job.manifest);
+            const end = Math.min(Number(job.cursor) + 100, manifest.storage.length);
+            for (let i = Number(job.cursor); i < end; i++) {
+              const row = manifest.storage[i];
+              const existing = nk.storageRead([{ collection: row.collection, key: row.key, userId: row.user_id }]);
+              if (existing.length) {
+                if (existing[0].version !== row.version) throw new Error("INTEGRITY_CHECK_FAILED");
+                nk.storageDelete([{ collection: row.collection, key: row.key, userId: row.user_id, version: row.version }]);
+              }
+            }
+            nk.sqlExec(`UPDATE server_lifecycle_jobs SET cursor=$3,heartbeat=NOW() WHERE id=$1::UUID AND lease_token=$2::UUID`, [job.id, token, end]);
+            if (end === manifest.storage.length) {
+              for (const board of ["cultivation_realm", "campaign_stage", "combat_power", "combat_power_v2", "best_wave", "most_kills", "total_wins"]) {
+                nk.leaderboardDelete(job.server_id + ":g" + job.generation + ":" + board);
+              }
+              nk.sqlQuery(`WITH locked AS (
+                              SELECT j.* FROM server_lifecycle_jobs j JOIN game_servers s ON s.server_id=j.server_id
+                              WHERE j.id=$1::UUID AND j.lease_token=$2::UUID AND s.active_requests=0
+                                AND s.status IN ('disabled','deleting','deleted') FOR UPDATE OF j,s
+                            ), awards AS (DELETE FROM server_weekly_awards WHERE server_id=$3 AND generation=$4 AND EXISTS(SELECT 1 FROM locked)),
+                            scores AS (DELETE FROM server_weekly_scores WHERE server_id=$3 AND generation=$4 AND EXISTS(SELECT 1 FROM locked)),
+                            periods AS (DELETE FROM server_weekly_periods WHERE server_id=$3 AND generation=$4 AND EXISTS(SELECT 1 FROM locked)),
+                            characters AS (DELETE FROM player_characters WHERE server_id=$3 AND generation=$4 AND EXISTS(SELECT 1 FROM locked)),
+                            prefs AS (UPDATE player_server_preferences SET last_server_id=NULL WHERE last_server_id=$3 AND $5='delete' AND EXISTS(SELECT 1 FROM locked)),
+                            registry AS (UPDATE game_servers SET status='deleted',revision=revision+1,updated_at=NOW() WHERE server_id=$3 AND $5='delete' AND EXISTS(SELECT 1 FROM locked))
+                            UPDATE server_lifecycle_jobs SET status='succeeded',phase='complete',finished_at=NOW(),lease_until=NULL
+                              WHERE id IN(SELECT id FROM locked) RETURNING id`, [job.id, token, job.server_id, job.generation, job.action]);
+            } else nk.sqlExec("UPDATE server_lifecycle_jobs SET lease_until=NULL,lease_token=NULL WHERE id=$1::UUID AND lease_token=$2::UUID", [job.id, token]);
+          } catch (error) {
+            nk.sqlExec(`UPDATE server_lifecycle_jobs SET status='blocked',error=$3,lease_until=NULL,lease_token=NULL WHERE id=$1::UUID AND lease_token=$2::UUID`, [job.id, token, String(error)]);
+            throw error;
+          }
+        }
+        const report = nk.sqlQuery("SELECT id,server_id,status,phase,cursor,error,created_at,finished_at FROM server_lifecycle_jobs WHERE id=$1::UUID", [job.id]);
+        return JSON.stringify({ success: true, job: report[0] });
+      }
+      if (typeof req.server_id !== "string" || !/^[a-z][a-z0-9_]{0,31}$/.test(req.server_id) || !Number.isSafeInteger(req.expected_generation) || !Number.isSafeInteger(req.expected_revision) || ["reset", "delete", "cleanup"].indexOf(req.action) < 0) return serverFailure("INVALID_SCOPE", 400, "Explicit action, server, generation and revision required");
+      if (action === "execute") {
+        if (typeof req.request_id !== "string" || !/^[a-zA-Z0-9_-]{8,100}$/.test(req.request_id)) return serverFailure("REQUEST_ID_REQUIRED", 400, "Invalid request ID");
+        const body = JSON.stringify({
+          server_id: req.server_id,
+          action: req.action,
+          expected_generation: req.expected_generation,
+          expected_revision: req.expected_revision,
+          plan_id: req.plan_id,
+          manifest_hash: req.manifest_hash
+        });
+        const rows2 = nk.sqlQuery("SELECT server_lifecycle_begin($1::UUID,$2::UUID,$3,$4::JSONB,$5::UUID) AS job", [req.plan_id, nk.uuidv4(), req.request_id, body, ctx.userId]);
+        return JSON.stringify({ success: true, job: parseJsonb(rows2[0].job) });
+      }
+      if (typeof req.reason !== "string" || !req.reason.trim() || req.reason.length > 500) return serverFailure("REASON_REQUIRED", 400, "Reason required");
+      const servers = nk.sqlQuery("SELECT * FROM game_servers WHERE server_id=$1", [req.server_id]);
+      if (!servers.length) return serverFailure("SERVER_NOT_FOUND", 404, "Server not found");
+      const server = servers[0];
+      if (["disabled", "deleted"].indexOf(server.status) < 0 || Number(server.active_requests) !== 0) return serverFailure("SERVER_NOT_DRAINED", 409, "Disable and drain first");
+      if (Number(server.revision) !== req.expected_revision || req.action !== "cleanup" && Number(server.generation) !== req.expected_generation || req.action === "cleanup" && req.expected_generation >= Number(server.generation) && server.status !== "deleted") return serverFailure("PLAN_STALE", 409, "Scope changed");
+      if (server.status === "deleted" && req.action !== "cleanup") return serverFailure("SERVER_DELETED", 409, "Tombstone cannot be reused");
+      const id = nk.uuidv4();
+      const rows = nk.sqlQuery(`WITH m AS (SELECT server_lifecycle_manifest($2,$4) AS manifest)
+              INSERT INTO server_operation_plans(id,server_id,action,generation,revision,actor_id,reason,manifest,manifest_hash)
+              SELECT $1::UUID,$2,$3,$4,$5,$6::UUID,$7,manifest,encode(sha256(convert_to(manifest::TEXT,'UTF8')),'hex') FROM m
+              RETURNING id AS plan_id,manifest_hash,expires_at,manifest`, [id, req.server_id, req.action, req.expected_generation, req.expected_revision, ctx.userId, req.reason.trim()]);
+      const m = parseJsonb(rows[0].manifest);
+      return JSON.stringify({
+        success: true,
+        plan_id: id,
+        manifest_hash: rows[0].manifest_hash,
+        expires_at: rows[0].expires_at,
+        counts: { storage: m.storage.length, unknown: m.unknown.length, characters: m.characters.length, pending_financial: m.pending_financial, real_purchases: m.real_purchases },
+        retained: ["account", "entitlement", "financial_ledger", "receipt_dedupe", "config_release", "generation_snapshot"]
+      });
+    } catch (error) {
+      const message = String(error);
+      const known = [
+        "PLAN_EXPIRED",
+        "PLAN_STALE",
+        "OPERATION_IN_PROGRESS",
+        "SERVER_NOT_DRAINED",
+        "PENDING_FINANCIAL_DELIVERY",
+        "GENERATION_MISMATCH",
+        "INTEGRITY_CHECK_FAILED",
+        "RETENTION_BLOCKED",
+        "UNKNOWN_OWNERSHIP",
+        "PAID_RESET_POLICY_REQUIRED",
+        "REQUEST_ID_CONFLICT"
+      ];
+      return serverFailure(known.find((code) => message.indexOf(code) >= 0) || "LIFECYCLE_CONFLICT", 409, message);
+    }
+  };
+}
+function rpcAdminServerPlan(c, l, n, p) {
+  return accountGuardedRpc("admin_server_plan", serverLifecycleHandler("plan"))(c, l, n, p);
+}
+function rpcAdminServerExecute(c, l, n, p) {
+  return accountGuardedRpc("admin_server_execute", serverLifecycleHandler("execute"))(c, l, n, p);
+}
+function rpcAdminServerJob(c, l, n, p) {
+  return accountGuardedRpc("admin_server_job", serverLifecycleHandler("job"))(c, l, n, p);
+}
+function rpcAdminServerJobStep(c, l, n, p) {
+  return accountGuardedRpc("admin_server_job_step", serverLifecycleHandler("step"))(c, l, n, p);
+}
+function serverFinancialHandler(retry) {
+  return (ctx, logger, nk, payload) => {
+    const denied = requireServerAdmin(ctx);
+    if (denied) return denied;
+    let req;
+    try {
+      req = serverRequest(payload);
+    } catch (_e) {
+      return serverFailure("INVALID_REQUEST", 400, "Invalid JSON");
+    }
+    if (!retry) return JSON.stringify({ success: true, events: nk.sqlQuery(`SELECT event_id,event_type,user_id,target_server_id,target_generation,status,reason,created_at
+          FROM server_financial_inbox WHERE status='pending' AND event_id>$1 ORDER BY event_id LIMIT 100`, [String(req.after || "")]) });
+    const rows = nk.sqlQuery("SELECT * FROM server_financial_inbox WHERE event_id=$1 AND status='pending'", [String(req.event_id || "")]);
+    if (!rows.length) return serverFailure("EVENT_NOT_PENDING", 404, "Pending event not found");
+    const event = rows[0], body = parseJsonb(event.payload);
+    if (event.event_type !== "admob_ssv") return serverFailure("RECONCILIATION_POLICY_REQUIRED", 409, "This financial event requires reviewed compensation/revocation, not reward replay");
+    body.verifier_secret = String(ctx.env.MONETIZATION_VERIFIER_SECRET || "");
+    const result = JSON.parse(withActiveAccount(nk, String(event.user_id), () => admobSsvConfirm(ctx, logger, nk, JSON.stringify(body))));
+    if (result.status === "success" && result.data && result.data.granted === true) nk.sqlExec("UPDATE server_financial_inbox SET status='resolved' WHERE event_id=$1", [event.event_id]);
+    return JSON.stringify({ success: result.status === "success", result });
+  };
+}
+function rpcAdminServerFinancialList(c, l, n, p) {
+  return accountGuardedRpc("admin_server_financial_list", serverFinancialHandler(false))(c, l, n, p);
+}
+function rpcAdminServerFinancialRetry(c, l, n, p) {
+  return accountGuardedRpc("admin_server_financial_retry", serverFinancialHandler(true))(c, l, n, p);
+}
+
+const CHARACTER_COLLECTIONS = [
+  "player_profiles",
+  "player_inventory",
+  "player_heroes",
+  "player_stage_runs",
+  "player_identity",
+  "player_event_progress",
+  "player_daily_checkin",
+  "weekly_leaderboard_claims",
+  "player_purchase_grants"
+];
+function characterContext(nk) {
+  return nk.__characterContext || null;
+}
+function characterRuntime(base, context) {
+  const runtime = Object.create(base);
+  runtime.__characterContext = Object.freeze(Object.assign({}, context));
+  const shared = ["player_settings", "player_compliance_profiles", "player_entitlements"];
+  const scoped = (collection) => CHARACTER_COLLECTIONS.indexOf(collection) >= 0;
+  const allowed = (collection) => scoped(collection) || shared.indexOf(collection) >= 0;
+  const observed = {};
+  const identity = (ref) => (ref.userId || context.accountId) + "/" + ref.collection + "/" + ref.key;
+  const encode = (ref, write) => {
+    if (!allowed(ref.collection)) throw new Error("Unregistered Storage collection: " + ref.collection);
+    const userId = ref.userId || context.accountId;
+    if (write && userId !== context.accountId) throw new Error("Cross-account character write");
+    return Object.assign(
+      {},
+      ref,
+      { userId, key: scoped(ref.collection) ? characterStorageKey(context, ref.key) : ref.key },
+      write && scoped(ref.collection) ? { permissionRead: 0, permissionWrite: 0 } : {}
+    );
+  };
+  const decode = (row) => {
+    if (!scoped(row.collection)) return row;
+    const prefix = characterStorageKey(context, "_").slice(0, -1);
+    if (row.key.indexOf(prefix) !== 0) throw new Error("Unexpected Storage scope");
+    return Object.assign({}, row, { key: row.key.slice(prefix.length) });
+  };
+  runtime.storageRead = (refs) => {
+    const rows = base.storageRead(refs.map((ref) => encode(ref, false))).map(decode);
+    for (const ref of refs) observed[identity(ref)] = "*";
+    for (const row of rows) observed[identity(row)] = row.version;
+    return rows;
+  };
+  runtime.storageWrite = (writes) => base.storageWrite(writes.map((write) => {
+    if (scoped(write.collection) && !write.version) {
+      const version = observed[identity(write)];
+      if (!version) throw new Error("Character write requires prior read or explicit version");
+      write = Object.assign({}, write, { version });
+    }
+    return encode(write, true);
+  })).map(decode).map((ack) => {
+    observed[identity(ack)] = ack.version;
+    return ack;
+  });
+  runtime.storageDelete = (refs) => base.storageDelete(refs.map((ref) => encode(ref, true)));
+  const boards = ["best_wave", "most_kills", "total_wins", "cultivation_realm", "campaign_stage", "combat_power_v2"];
+  const boardId = (id) => {
+    if (boards.indexOf(id) < 0) throw new Error("Unknown character leaderboard");
+    return context.serverId + ":g" + context.generation + ":" + id;
+  };
+  runtime.leaderboardRecordWrite = (id, ...args) => {
+    const scopedId = boardId(id);
+    base.leaderboardCreate(
+      scopedId,
+      true,
+      "desc",
+      id === "total_wins" ? "incr" : id === "combat_power_v2" ? "set" : "best",
+      id === "combat_power_v2" ? "0 0 * * 1" : "",
+      {}
+    );
+    return base.leaderboardRecordWrite.apply(base, [scopedId].concat(args));
+  };
+  for (const method of ["leaderboardRecordsList", "leaderboardRecordsHaystack", "leaderboardRecordDelete"]) {
+    if (typeof base[method] === "function") runtime[method] = (id, ...args) => base[method].apply(base, [boardId(id)].concat(args));
+  }
+  return runtime;
+}
+function characterStorageKey(context, key) {
+  if (!context.accountId || !/^[a-z][a-z0-9_]{0,31}$/.test(context.serverId) || !Number.isSafeInteger(context.generation) || context.generation < 1 || !key || key.length > 80)
+    throw new Error("Invalid character Storage identity");
+  return context.serverId + ":g" + context.generation + ":" + key;
+}
+function characterRead(nk, context, refs) {
+  for (const ref of refs) if (CHARACTER_COLLECTIONS.indexOf(ref.collection) < 0) throw new Error("Collection is not character-owned");
+  const prefix = characterStorageKey(context, "_").slice(0, -1);
+  return nk.storageRead(refs.map((ref) => ({ collection: ref.collection, key: characterStorageKey(context, ref.key), userId: context.accountId }))).map((row) => Object.assign({}, row, { key: row.key.slice(prefix.length) }));
+}
+function characterWrite(nk, context, changes) {
+  for (const change of changes) {
+    if (CHARACTER_COLLECTIONS.indexOf(change.collection) < 0 || change.userId && change.userId !== context.accountId)
+      throw new Error("Invalid character write scope");
+    if (!change.version) throw new Error("Character writes require a version precondition");
+  }
+  const prefix = characterStorageKey(context, "_").slice(0, -1);
+  const writes = changes.map((change) => Object.assign({}, change, {
+    userId: context.accountId,
+    key: characterStorageKey(context, change.key),
+    permissionRead: 0,
+    permissionWrite: 0
+  }));
+  return nk.storageWrite(writes).map((ack) => Object.assign({}, ack, { key: ack.key.slice(prefix.length) }));
+}
+const createServerCharacter = (ctx, _logger, nk, payload) => {
+  if (!ctx.userId) return serverFailure("AUTH_REQUIRED", 401, "Authentication required");
+  if (!ctx.env || ctx.env.MULTI_SERVER_ENABLED !== "true") return serverFailure("FEATURE_DISABLED", 409, "Multi-server is disabled");
+  let req;
+  try {
+    req = serverRequest(payload);
+  } catch (_e) {
+    return serverFailure("INVALID_REQUEST", 400, "Invalid JSON");
+  }
+  const server = validatedServer(nk, req);
+  if (server.error) return server.error;
+  if (!server.allow_new_characters) return serverFailure("CHARACTER_CREATION_CLOSED", 409, "M\xE1y ch\u1EE7 t\u1EA1m ng\u1EEBng t\u1EA1o nh\xE2n v\u1EADt m\u1EDBi.");
+  const reserved = nk.sqlQuery(`INSERT INTO player_characters(account_id,server_id,generation,status)
+      SELECT $1::UUID,s.server_id,s.generation,'initializing' FROM game_servers s
+      WHERE s.server_id=$2 AND s.generation=$3 AND s.status='open' AND s.opens_at<=NOW() AND s.allow_new_characters
+      ON CONFLICT(account_id,server_id) DO UPDATE SET generation=EXCLUDED.generation,status='initializing',created_at=NOW(),last_entered_at=NULL
+        WHERE player_characters.status='retired' AND player_characters.generation<EXCLUDED.generation
+      RETURNING generation`, [ctx.userId, req.server_id, req.generation]);
+  const existing = nk.sqlQuery("SELECT status,generation FROM player_characters WHERE account_id=$1::UUID AND server_id=$2", [ctx.userId, req.server_id]);
+  if (!existing.length || Number(existing[0].generation) !== req.generation) return serverFailure("CHARACTER_NOT_READY", 409, "Vui l\xF2ng l\xE0m m\u1EDBi danh s\xE1ch m\xE1y ch\u1EE7.");
+  if (existing[0].status === "ready") return JSON.stringify({ success: true, server_id: req.server_id, generation: req.generation, created: false });
+  const context = { accountId: ctx.userId, serverId: req.server_id, generation: req.generation };
+  const refs = [
+    { collection: "player_profiles", key: "main" },
+    { collection: "player_inventory", key: "items" },
+    { collection: "player_heroes", key: "states" },
+    { collection: "player_identity", key: "name" }
+  ];
+  const stored = characterRead(nk, context, refs);
+  const name = "Tu Gi\u1EA3 " + nk.uuidv4().replace(/-/g, "").slice(0, 6).toUpperCase();
+  const profile = defaultPlayerProfile(name);
+  profile.server_id = context.serverId;
+  profile.generation = context.generation;
+  const values = {
+    player_profiles: profile,
+    player_inventory: { items: [], _iap_reward_ids: [] },
+    player_heroes: { heroes: canonicalHeroStates(nk, {}) },
+    player_identity: { display_name: name, name_changes_used: 0 }
+  };
+  const writes = refs.filter((ref) => !stored.some((row) => row.collection === ref.collection && row.key === ref.key)).map((ref) => ({ collection: ref.collection, key: ref.key, userId: ctx.userId, value: values[ref.collection], version: "*", permissionRead: 0, permissionWrite: 0 }));
+  if (writes.length) characterWrite(nk, context, writes);
+  nk.sqlExec(`UPDATE player_characters c SET status='ready' FROM game_servers s
+      WHERE c.account_id=$1::UUID AND c.server_id=$2 AND c.generation=$3 AND c.status='initializing'
+        AND s.server_id=c.server_id AND s.generation=c.generation AND s.status='open'`, [ctx.userId, req.server_id, req.generation]);
+  return JSON.stringify({ success: true, server_id: req.server_id, generation: req.generation, created: reserved.length > 0 });
+};
+
+function createServerRegistryTables(nk) {
+  nk.sqlExec(`CREATE TABLE IF NOT EXISTS game_servers (
+        server_id TEXT PRIMARY KEY CHECK(server_id ~ '^[a-z][a-z0-9_]{0,31}$'),
+        display_name TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'disabled'
+          CHECK(status IN ('provisioning','scheduled','open','maintenance','disabled','resetting','deleting','deleted','failed')),
+        generation INT NOT NULL DEFAULT 1 CHECK(generation>0), revision BIGINT NOT NULL DEFAULT 1,
+        opens_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), allow_new_characters BOOL NOT NULL DEFAULT FALSE,
+        placement_id TEXT NOT NULL DEFAULT 'primary', created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE TABLE IF NOT EXISTS player_characters (
+        account_id UUID NOT NULL REFERENCES users(id), server_id TEXT NOT NULL REFERENCES game_servers(server_id),
+        generation INT NOT NULL, status TEXT NOT NULL CHECK(status IN ('initializing','ready','retired')),
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), last_entered_at TIMESTAMPTZ,
+        PRIMARY KEY(account_id,server_id)
+    );
+    CREATE TABLE IF NOT EXISTS player_server_preferences (
+        account_id UUID PRIMARY KEY REFERENCES users(id), last_server_id TEXT REFERENCES game_servers(server_id)
+    );
+    ALTER TABLE game_servers ADD COLUMN IF NOT EXISTS config_version BIGINT;
+    ALTER TABLE game_servers ADD COLUMN IF NOT EXISTS create_request_id TEXT UNIQUE;
+    ALTER TABLE game_servers ADD COLUMN IF NOT EXISTS create_payload JSONB;
+    CREATE TABLE IF NOT EXISTS server_operation_audit (
+        id BIGSERIAL PRIMARY KEY, server_id TEXT NOT NULL REFERENCES game_servers(server_id),
+        actor_id UUID NOT NULL, action TEXT NOT NULL, reason TEXT NOT NULL,
+        before_revision BIGINT, after_revision BIGINT NOT NULL, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    ALTER TABLE game_servers ADD COLUMN IF NOT EXISTS active_requests INT NOT NULL DEFAULT 0 CHECK(active_requests>=0);`, []);
+  createServerLifecycleTables(nk);
+}
+function withServerRequest(nk, context, action) {
+  const lease = nk.sqlQuery(`UPDATE game_servers SET active_requests=active_requests+1
+        WHERE server_id=$1 AND generation=$2 AND status='open' AND opens_at<=NOW() RETURNING server_id`, [context.serverId, context.generation]);
+  if (!lease.length) throw new Error("SERVER_REQUEST_FENCED");
+  try {
+    return action();
+  } finally {
+    nk.sqlExec("UPDATE game_servers SET active_requests=active_requests-1 WHERE server_id=$1 AND active_requests>0", [context.serverId]);
+  }
+}
+function serverFailure(reason, code, message) {
+  return JSON.stringify({ success: false, status: "error", code, reason, message });
+}
+function serverRequest(payload) {
+  const req = JSON.parse(payload || "{}");
+  if (!req || typeof req !== "object" || Array.isArray(req)) throw new Error("Invalid request");
+  return req;
+}
+function validatedServer(nk, req) {
+  if (typeof req.server_id !== "string" || !/^[a-z][a-z0-9_]{0,31}$/.test(req.server_id))
+    return { error: serverFailure("SERVER_REQUIRED", 400, "Vui l\xF2ng ch\u1ECDn m\xE1y ch\u1EE7.") };
+  if (!Number.isSafeInteger(req.generation) || req.generation < 1)
+    return { error: serverFailure("GENERATION_MISMATCH", 409, "Vui l\xF2ng ch\u1ECDn l\u1EA1i m\xE1y ch\u1EE7.") };
+  const rows = nk.sqlQuery(`SELECT *, opens_at<=NOW() AS has_opened FROM game_servers WHERE server_id=$1`, [req.server_id]);
+  if (!rows.length || rows[0].status === "deleted") return { error: serverFailure("SERVER_NOT_FOUND", 404, "M\xE1y ch\u1EE7 kh\xF4ng t\u1ED3n t\u1EA1i.") };
+  const server = rows[0];
+  if (Number(server.generation) !== req.generation) return { error: serverFailure("GENERATION_MISMATCH", 409, "M\xE1y ch\u1EE7 \u0111\xE3 thay \u0111\u1ED5i. Vui l\xF2ng ch\u1ECDn l\u1EA1i.") };
+  if (server.status !== "open" || !server.has_opened) return { error: serverFailure("SERVER_UNAVAILABLE", 409, "M\xE1y ch\u1EE7 ch\u01B0a m\u1EDF ho\u1EB7c \u0111ang b\u1EA3o tr\xEC.") };
+  return server;
+}
+const listGameServers = (ctx, _logger, nk) => {
+  if (!ctx.userId) return serverFailure("AUTH_REQUIRED", 401, "Authentication required");
+  if (!ctx.env || ctx.env.MULTI_SERVER_ENABLED !== "true") return JSON.stringify({ success: true, server_mode: "legacy", servers: [], last_server_id: "" });
+  const servers = nk.sqlQuery(`SELECT s.server_id,s.display_name,s.status,s.generation,s.revision,
+      EXTRACT(EPOCH FROM s.opens_at)*1000 AS opens_at_ms,EXTRACT(EPOCH FROM s.created_at)*1000 AS created_at_ms,s.allow_new_characters,
+      (s.status='open' AND s.opens_at<=NOW()) AS available,
+      (c.status='ready' AND c.generation=s.generation) AS has_character,
+      CASE WHEN c.status='ready' AND c.generation=s.generation THEN p.value->>'display_name' END AS character_name,
+      CASE WHEN c.status='ready' AND c.generation=s.generation THEN COALESCE((p.value->>'level')::INT,1) END AS character_level
+      FROM game_servers s LEFT JOIN player_characters c ON c.server_id=s.server_id AND c.account_id=$1::UUID
+      LEFT JOIN storage p ON p.user_id=c.account_id AND p.collection='player_profiles'
+        AND p.key=s.server_id||':g'||s.generation||':main'
+      WHERE s.status NOT IN ('deleted','provisioning','failed') ORDER BY s.created_at DESC,s.server_id DESC`, [ctx.userId]);
+  const prefs = nk.sqlQuery("SELECT last_server_id FROM player_server_preferences WHERE account_id=$1::UUID", [ctx.userId]);
+  return JSON.stringify({ success: true, server_mode: "multi", servers, last_server_id: prefs.length ? prefs[0].last_server_id : "" });
+};
+const listMyCharacters = (ctx, _logger, nk) => {
+  if (!ctx.userId) return serverFailure("AUTH_REQUIRED", 401, "Authentication required");
+  return JSON.stringify({ success: true, characters: nk.sqlQuery(`SELECT c.server_id,c.generation,c.status,c.created_at,c.last_entered_at,s.display_name
+      FROM player_characters c JOIN game_servers s ON s.server_id=c.server_id WHERE c.account_id=$1::UUID AND s.status<>'deleted' ORDER BY c.created_at`, [ctx.userId]) });
+};
+const enterGameServer = (ctx, _logger, nk, payload) => {
+  if (!ctx.userId) return serverFailure("AUTH_REQUIRED", 401, "Authentication required");
+  let req;
+  try {
+    req = serverRequest(payload);
+  } catch (_e) {
+    return serverFailure("INVALID_REQUEST", 400, "Invalid JSON");
+  }
+  const server = validatedServer(nk, req);
+  if (server.error) return server.error;
+  const chars = nk.sqlQuery(`SELECT status,generation FROM player_characters WHERE account_id=$1::UUID AND server_id=$2`, [ctx.userId, req.server_id]);
+  if (!chars.length) return serverFailure("CHARACTER_NOT_FOUND", 404, "Ch\u01B0a c\xF3 nh\xE2n v\u1EADt tr\xEAn m\xE1y ch\u1EE7 n\xE0y.");
+  if (chars[0].status !== "ready" || Number(chars[0].generation) !== req.generation)
+    return serverFailure("CHARACTER_NOT_READY", 409, "Nh\xE2n v\u1EADt ch\u01B0a s\u1EB5n s\xE0ng.");
+  if (ctx.env && ctx.env.MULTI_SERVER_ENABLED === "true") repairMultiLinkBoards(nk, ctx.userId, req.server_id, req.generation);
+  nk.sqlExec(`UPDATE player_characters SET last_entered_at=NOW() WHERE account_id=$1::UUID AND server_id=$2 AND generation=$3`, [ctx.userId, req.server_id, req.generation]);
+  nk.sqlExec(`INSERT INTO player_server_preferences(account_id,last_server_id) VALUES($1::UUID,$2)
+      ON CONFLICT(account_id) DO UPDATE SET last_server_id=EXCLUDED.last_server_id`, [ctx.userId, req.server_id]);
+  return JSON.stringify({ success: true, server_id: server.server_id, generation: Number(server.generation), display_name: server.display_name, revision: Number(server.revision) });
+};
+function serverAdmissionRpc(id, handler) {
+  const accountOnly = [
+    "session_status",
+    "admin_test_access",
+    "account_password_status",
+    "setup_account_password",
+    "google_link_status",
+    "prepare_google_link",
+    "confirm_google_link",
+    "save_compliance_profile",
+    "get_compliance_profile",
+    "seed_game_data",
+    "publish_config_release",
+    "resolve_purchase_order"
+  ];
+  if (accountOnly.indexOf(id) >= 0 || id.indexOf("admin_server_") === 0 || id === "list_servers" || id === "list_my_characters" || id === "enter_server") return handler;
+  return (ctx, logger, nk, payload) => {
+    if (id === "admob_ssv_confirm" || id === "google_play_rtdn_confirm") return handler(ctx, logger, nk, payload);
+    if (!ctx.userId) return handler(ctx, logger, nk, payload);
+    if (!ctx.env || ctx.env.MULTI_SERVER_ENABLED !== "true") return handler(ctx, logger, nk, payload);
+    let req;
+    try {
+      req = serverRequest(payload);
+    } catch (_e) {
+      return serverFailure("INVALID_REQUEST", 400, "Invalid JSON");
+    }
+    const server = validatedServer(nk, req);
+    if (server.error) return server.error;
+    const context = { accountId: ctx.userId, serverId: req.server_id, generation: req.generation };
+    if (id === "create_character") {
+      try {
+        return withServerRequest(nk, context, () => handler(ctx, logger, nk, payload));
+      } catch (error) {
+        if (String(error).indexOf("SERVER_REQUEST_FENCED") >= 0) return serverFailure("SERVER_UNAVAILABLE", 409, "M\xE1y ch\u1EE7 \u0111\xE3 ng\u1EEBng nh\u1EADn thao t\xE1c.");
+        throw error;
+      }
+    }
+    const chars = nk.sqlQuery("SELECT 1 FROM player_characters WHERE account_id=$1::UUID AND server_id=$2 AND generation=$3 AND status='ready'", [ctx.userId, req.server_id, req.generation]);
+    if (!chars.length) return serverFailure("CHARACTER_NOT_READY", 409, "Nh\xE2n v\u1EADt ch\u01B0a s\u1EB5n s\xE0ng.");
+    if (id === "confirm_rewarded_ad" || id === "consume_ad_gameplay_reward") {
+      const sessions = nk.sqlQuery("SELECT target_server_id,target_generation FROM monetization_ad_rewards WHERE ad_session_id=$1 AND user_id=$2", [String(req.ad_session_id || ""), ctx.userId]);
+      if (!sessions.length || sessions[0].target_server_id !== context.serverId || Number(sessions[0].target_generation) !== context.generation)
+        return serverFailure("AD_TARGET_MISMATCH", 409, "Ad session belongs to another character");
+    }
+    const runtime = characterRuntime(nk, context);
+    try {
+      return withServerRequest(nk, context, () => handler(ctx, logger, runtime, payload));
+    } catch (error) {
+      if (String(error).indexOf("SERVER_REQUEST_FENCED") >= 0) return serverFailure("SERVER_UNAVAILABLE", 409, "M\xE1y ch\u1EE7 \u0111\xE3 ng\u1EEBng nh\u1EADn thao t\xE1c.");
+      throw error;
+    }
+  };
+}
+
 function seedExtensionColumns() {
   return {
     "heroes": {
@@ -413,6 +1248,17 @@ function createMonetizationTables(nk, logger) {
             updated_at              TIMESTAMPTZ NOT NULL DEFAULT NOW()
         )
     `, []);
+  nk.sqlExec(`ALTER TABLE monetization_purchase_orders ADD COLUMN IF NOT EXISTS platform TEXT NOT NULL DEFAULT 'android';
+        ALTER TABLE monetization_purchase_orders ADD COLUMN IF NOT EXISTS store_product_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE monetization_purchase_orders ADD COLUMN IF NOT EXISTS target_server_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE monetization_purchase_orders ADD COLUMN IF NOT EXISTS target_generation INT NOT NULL DEFAULT 0;
+        CREATE TABLE IF NOT EXISTS game_store_platform_products (
+            platform TEXT NOT NULL CHECK(platform IN ('android','ios')),
+            product_id TEXT NOT NULL REFERENCES game_store_products(product_id),
+            store_product_id TEXT NOT NULL,
+            active BOOL NOT NULL DEFAULT FALSE,
+            PRIMARY KEY(platform,product_id), UNIQUE(platform,store_product_id)
+        )`, []);
   nk.sqlExec("CREATE INDEX IF NOT EXISTS purchase_orders_user_status_idx ON monetization_purchase_orders(user_id, status, created_at DESC)", []);
   nk.sqlExec("CREATE UNIQUE INDEX IF NOT EXISTS purchase_orders_one_pending_uq ON monetization_purchase_orders(user_id, product_id) WHERE status = 'pending'", []);
   nk.sqlExec("CREATE UNIQUE INDEX IF NOT EXISTS purchase_orders_token_uq ON monetization_purchase_orders(purchase_token_hash) WHERE purchase_token_hash <> ''", []);
@@ -519,6 +1365,47 @@ function createMonetizationTables(nk, logger) {
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )`, []);
   nk.sqlExec("CREATE INDEX IF NOT EXISTS player_vip_credits_user_idx ON player_vip_credits(user_id, environment)", []);
+  for (const table of ["monetization_purchases", "monetization_ad_rewards", "monetization_daily_reward_claims", "monetization_daily_fragment_rewards"]) {
+    nk.sqlExec("ALTER TABLE " + table + " ADD COLUMN IF NOT EXISTS target_server_id TEXT NOT NULL DEFAULT ''; ALTER TABLE " + table + " ADD COLUMN IF NOT EXISTS target_generation INT NOT NULL DEFAULT 0", []);
+  }
+  nk.sqlExec(`DROP INDEX IF EXISTS purchase_orders_one_pending_uq;
+      CREATE UNIQUE INDEX IF NOT EXISTS purchase_orders_one_pending_scope_uq ON monetization_purchase_orders(user_id,product_id,target_server_id,target_generation) WHERE status='pending';
+      CREATE TABLE IF NOT EXISTS store_receipt_reservations (
+        token_hash TEXT PRIMARY KEY,order_id TEXT NOT NULL UNIQUE REFERENCES monetization_purchase_orders(id),
+        user_id TEXT NOT NULL,target_server_id TEXT NOT NULL,target_generation INT NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());`, []);
+  nk.sqlExec(`DROP INDEX IF EXISTS monetization_ad_request_uq;
+      CREATE UNIQUE INDEX IF NOT EXISTS monetization_ad_request_scope_uq ON monetization_ad_rewards(user_id,target_server_id,target_generation,client_request_id) WHERE client_request_id<>'';
+      DO $scope$ BEGIN
+        IF EXISTS(SELECT 1 FROM pg_constraint WHERE conrelid='monetization_daily_reward_claims'::regclass AND contype='p' AND pg_get_constraintdef(oid) NOT LIKE '%target_server_id%') THEN
+          ALTER TABLE monetization_daily_reward_claims DROP CONSTRAINT monetization_daily_reward_claims_pkey;
+          ALTER TABLE monetization_daily_reward_claims ADD PRIMARY KEY(user_id,target_server_id,target_generation,placement_id,reward_date,claim_slot);
+        END IF;
+        IF EXISTS(SELECT 1 FROM pg_constraint WHERE conrelid='monetization_daily_fragment_rewards'::regclass AND contype='p' AND pg_get_constraintdef(oid) NOT LIKE '%target_server_id%') THEN
+          ALTER TABLE monetization_daily_fragment_rewards DROP CONSTRAINT monetization_daily_fragment_rewards_pkey;
+          ALTER TABLE monetization_daily_fragment_rewards ADD PRIMARY KEY(user_id,target_server_id,target_generation,reward_date);
+        END IF;
+      END $scope$;
+      CREATE TABLE IF NOT EXISTS server_financial_inbox(
+        event_id TEXT PRIMARY KEY,event_type TEXT NOT NULL,user_id TEXT NOT NULL,target_server_id TEXT NOT NULL,target_generation INT NOT NULL,
+        payload JSONB NOT NULL,status TEXT NOT NULL DEFAULT 'pending',reason TEXT NOT NULL,created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());`, []);
+  nk.sqlExec(`CREATE TABLE IF NOT EXISTS store_purchase_voids(token_hash TEXT PRIMARY KEY,received_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
+      CREATE OR REPLACE FUNCTION void_store_purchase(token TEXT) RETURNS JSONB LANGUAGE plpgsql AS $void$
+      DECLARE changed JSONB;
+      BEGIN
+        INSERT INTO store_purchase_voids(token_hash) VALUES(token) ON CONFLICT DO NOTHING;
+        WITH revoked AS (
+          UPDATE monetization_purchases SET status='voided',updated_at=NOW() WHERE purchase_token_hash=token AND status<>'voided' RETURNING *
+        ), entitlements AS (
+          UPDATE player_monetization_entitlements e SET no_ads_expires_at=GREATEST(NOW(),e.no_ads_expires_at-(r.granted_seconds*INTERVAL '1 second')),
+            source='google_play_voided',updated_at=NOW() FROM revoked r WHERE e.user_id=r.user_id
+        ), queued AS (
+          INSERT INTO server_financial_inbox(event_id,event_type,user_id,target_server_id,target_generation,payload,reason)
+          SELECT 'void:'||token,'store_void',user_id,target_server_id,target_generation,jsonb_build_object('purchase_id',id),'REVIEW_CONSUMABLE_REVOCATION'
+            FROM revoked WHERE target_server_id<>'' ON CONFLICT DO NOTHING
+        ) SELECT to_jsonb(r) INTO changed FROM revoked r LIMIT 1;
+        RETURN changed;
+      END $void$;`, []);
   logger.info("Monetization tables created/verified.");
 }
 
@@ -1768,6 +2655,7 @@ function processStageLevel(row) {
 }
 function buildStoreConfigs(nk) {
   const products = nk.sqlQuery("SELECT * FROM game_store_products ORDER BY tab_id, product_id", []);
+  const platformProducts = nk.sqlQuery("SELECT platform,product_id,store_product_id,active FROM game_store_platform_products ORDER BY platform,product_id", []);
   const packsByTab = {};
   let firstTopup = {};
   products.forEach((row) => {
@@ -1782,6 +2670,11 @@ function buildStoreConfigs(nk) {
       metadata: parseJsonb(reward.metadata) || {}
     }));
     ui.product_id = String(row.product_id);
+    ui.store_product_ids = { android: String(row.product_id) };
+    for (const mapping of platformProducts) if (String(mapping.product_id) === String(row.product_id)) {
+      if (mapping.active === true) ui.store_product_ids[String(mapping.platform)] = String(mapping.store_product_id);
+      else delete ui.store_product_ids[String(mapping.platform)];
+    }
     ui.id = String(row.pack_id);
     ui.active = row.active === true;
     ui.fulfillment_type = String(row.fulfillment_type);
@@ -1890,7 +2783,8 @@ const getConfigBootstrap = (ctx, _logger, nk, payload) => {
   } catch (_e) {
     return JSON.stringify({ status: "error", code: 400, message: "Invalid JSON" });
   }
-  if (String(request.platform || "").toLowerCase() !== "android") {
+  const platform = String(request.platform || "").toLowerCase();
+  if (platform !== "android" && platform !== "ios") {
     return JSON.stringify({ status: "error", code: 400, message: "Unsupported platform" });
   }
   const release = nk.sqlQuery(`SELECT config_version, snapshot, min_app_version, latest_app_version, store_url,
@@ -1898,6 +2792,9 @@ const getConfigBootstrap = (ctx, _logger, nk, payload) => {
         FROM remote_config_releases ORDER BY config_version DESC LIMIT 1`, []);
   if (release.length === 0) return JSON.stringify({ status: "error", code: 503, message: "No config release" });
   const row = release[0];
+  const snapshot = parseJsonb(row.snapshot) || {};
+  const urls = snapshot.system && snapshot.system.store_urls;
+  row.store_url = urls && typeof urls[platform] === "string" ? urls[platform] : platform === "android" ? row.store_url : "";
   const appVersion = String(request.app_version || "0.0.0");
   if (compareVersions(appVersion, String(row.min_app_version)) < 0) {
     return JSON.stringify({
@@ -2903,6 +3800,7 @@ function withActiveAccount(nk, userId, action) {
   }
 }
 function accountGuardedRpc(id, handler) {
+  handler = serverAdmissionRpc(id, handler);
   return (ctx, logger, nk, payload) => {
     const rejected = requireCurrentLogin(ctx, nk);
     if (rejected) return rejected;
@@ -2927,7 +3825,14 @@ function accountGuardedRpc(id, handler) {
     try {
       return withActiveAccount(nk, owner, () => handler(ctx, logger, nk, payload));
     } catch (error) {
-      if (String(error).indexOf("Account archived") >= 0) return JSON.stringify({ success: false, status: "error", code: 401, message: "Account archived after linking; sign in again" });
+      if (String(error).indexOf("Account archived") >= 0) {
+        if (id === "admob_ssv_confirm") {
+          const req = serverRequest(payload);
+          const rows = nk.sqlQuery("SELECT 1 FROM monetization_ad_rewards WHERE ad_session_id=$1 AND user_id=$2 AND status='granted'", [String(req.ad_session_id || ""), owner]);
+          if (rows.length) return JSON.stringify({ status: "success", data: { granted: true, idempotent: true } });
+        }
+        return JSON.stringify({ success: false, status: "error", code: 401, message: "Account archived after linking; sign in again" });
+      }
       throw error;
     }
   };
@@ -3034,6 +3939,163 @@ function accountLinkSummary(nk, userId) {
     server_time: Number(entitlement.server_time || 0)
   };
 }
+function multiAccountLinkSummary(nk, userId) {
+  const characters = nk.sqlQuery(`SELECT c.server_id,c.generation,c.status,s.display_name,
+      COALESCE(p.value->>'display_name','') AS name,COALESCE((p.value->>'level')::INT,1) AS level
+      FROM player_characters c JOIN game_servers s ON s.server_id=c.server_id
+      LEFT JOIN storage p ON p.user_id=c.account_id AND p.collection='player_profiles' AND p.key=c.server_id||':g'||c.generation||':main'
+      WHERE c.account_id=$1::UUID ORDER BY c.server_id`, [userId]);
+  const entitlement = readEntitlementRow(nk, userId);
+  return {
+    user_id: userId,
+    name: nk.accountGetId(userId).user.username,
+    level: 1,
+    heroes: [],
+    resources: {},
+    characters,
+    no_ads_expires_at: Number(entitlement.no_ads_expires_at || 0),
+    server_time: Number(entitlement.server_time || 0)
+  };
+}
+function multiLinkSnapshot(nk, a, b) {
+  return parseJsonb(nk.sqlQuery("SELECT multi_account_link_snapshot($1::UUID,$2::UUID) AS value", [a, b])[0].value);
+}
+function createMultiAccountLinkFunctions(nk) {
+  nk.sqlExec(`ALTER TABLE account_link_intents ADD COLUMN IF NOT EXISTS multi_snapshot JSONB;
+    CREATE TABLE IF NOT EXISTS account_link_server_tasks(
+      intent_id UUID NOT NULL,server_id TEXT NOT NULL,generation INT NOT NULL,loser_id UUID NOT NULL,winner_id UUID NOT NULL,
+      copy_records BOOL NOT NULL,done BOOL NOT NULL DEFAULT FALSE,PRIMARY KEY(intent_id,server_id,generation));
+    CREATE OR REPLACE FUNCTION multi_account_link_snapshot(a UUID,b UUID) RETURNS JSONB LANGUAGE plpgsql AS $snap$
+    BEGIN RETURN jsonb_build_object(
+      'characters',(SELECT COALESCE(jsonb_agg(to_jsonb(c) ORDER BY server_id,account_id),'[]'::JSONB) FROM player_characters c WHERE account_id IN(a,b)),
+      'servers',(SELECT COALESCE(jsonb_agg(jsonb_build_object('server_id',s.server_id,'generation',s.generation,'revision',s.revision,'status',s.status) ORDER BY s.server_id),'[]'::JSONB)
+        FROM game_servers s WHERE EXISTS(SELECT 1 FROM player_characters c WHERE c.server_id=s.server_id AND c.account_id IN(a,b))),
+      'ads',(SELECT COALESCE(jsonb_agg(to_jsonb(c) ORDER BY ad_session_id),'[]'::JSONB) FROM monetization_ad_rewards c WHERE user_id IN(a::TEXT,b::TEXT)),
+      'quotas',(SELECT COALESCE(jsonb_agg(to_jsonb(c) ORDER BY target_server_id,target_generation,user_id,placement_id,reward_date,claim_slot),'[]'::JSONB)
+        FROM monetization_daily_reward_claims c WHERE user_id IN(a::TEXT,b::TEXT)),
+      'fragments',(SELECT COALESCE(jsonb_agg(to_jsonb(c) ORDER BY target_server_id,target_generation,user_id,reward_date),'[]'::JSONB)
+        FROM monetization_daily_fragment_rewards c WHERE user_id IN(a::TEXT,b::TEXT))); END $snap$;
+    CREATE OR REPLACE FUNCTION commit_multi_google_account_link(ticket UUID,actor UUID,keep UUID) RETURNS JSONB LANGUAGE plpgsql AS $merge$
+    DECLARE t account_link_intents%ROWTYPE;a users%ROWTYPE;b users%ROWTYPE;w users%ROWTYPE;l users%ROWTYPE;
+      uid UUID;sid TEXT;versions_now JSONB;identities_now JSONB;seconds_left DOUBLE PRECISION;
+    BEGIN
+      SELECT * INTO t FROM account_link_intents WHERE id=ticket FOR UPDATE;
+      IF NOT FOUND OR t.initiator<>actor OR t.multi_snapshot IS NULL THEN RAISE EXCEPTION 'INVALID_MULTI_LINK_TICKET'; END IF;
+      IF t.status='completed' THEN
+        IF t.winner_id<>keep THEN RAISE EXCEPTION 'TICKET_CHOICE_CONFLICT'; END IF;
+        RETURN jsonb_build_object('winner_id',keep,'replayed',TRUE);
+      END IF;
+      IF t.expires_at<=NOW() OR keep NOT IN(t.initiator,t.other_id) THEN RAISE EXCEPTION 'LINK_PREVIEW_EXPIRED'; END IF;
+      FOR uid IN SELECT v FROM unnest(ARRAY[t.initiator,t.other_id]) v ORDER BY v LOOP
+        INSERT INTO account_link_state(user_id) VALUES(uid) ON CONFLICT DO NOTHING;
+        PERFORM 1 FROM account_link_state WHERE user_id=uid FOR UPDATE;
+      END LOOP;
+      IF EXISTS(SELECT 1 FROM account_link_state WHERE user_id IN(t.initiator,t.other_id) AND (status<>'active' OR active_requests<>0)) THEN RAISE EXCEPTION 'ACCOUNT_BUSY'; END IF;
+      FOR sid IN SELECT DISTINCT c.server_id FROM player_characters c WHERE account_id IN(t.initiator,t.other_id) ORDER BY c.server_id LOOP
+        PERFORM 1 FROM game_servers WHERE server_id=sid FOR UPDATE;
+        IF EXISTS(SELECT 1 FROM game_servers WHERE server_id=sid AND (active_requests<>0 OR status NOT IN('open','disabled','maintenance','scheduled')))
+          OR EXISTS(SELECT 1 FROM server_lifecycle_jobs WHERE server_id=sid AND status<>'succeeded') THEN RAISE EXCEPTION 'SERVER_BUSY'; END IF;
+      END LOOP;
+      PERFORM 1 FROM users WHERE id IN(t.initiator,t.other_id) ORDER BY id FOR UPDATE;
+      SELECT * INTO a FROM users WHERE id=t.initiator;SELECT * INTO b FROM users WHERE id=t.other_id;
+      SELECT jsonb_object_agg(id::TEXT,jsonb_build_object('email',email,'google',google_id,'password',password,'custom',custom_id,'disabled',disable_time))
+        INTO identities_now FROM users WHERE id IN(t.initiator,t.other_id);
+      IF a.id IS NULL OR b.id IS NULL OR identities_now IS DISTINCT FROM t.identity_snapshot
+        OR b.google_id IS DISTINCT FROM t.google_id OR COALESCE(EXTRACT(EPOCH FROM a.disable_time),0)>0
+        OR COALESCE(EXTRACT(EPOCH FROM b.disable_time),0)>0 THEN RAISE EXCEPTION 'IDENTITY_CHANGED'; END IF;
+      IF keep=a.id THEN w:=a;l:=b;ELSE w:=b;l:=a;END IF;
+      IF COALESCE(a.email,'')<>'' AND COALESCE(b.email,'')<>'' AND LOWER(a.email)<>LOWER(b.email) THEN RAISE EXCEPTION 'EMAIL_CONFLICT'; END IF;
+      IF COALESCE(a.google_id,'')<>'' AND COALESCE(b.google_id,'')<>'' AND a.google_id<>b.google_id THEN RAISE EXCEPTION 'GOOGLE_CONFLICT'; END IF;
+      IF EXISTS(SELECT 1 FROM unnest(ARRAY['custom_id','apple_id','facebook_id','facebook_instant_game_id','gamecenter_id','steam_id']) k
+        WHERE COALESCE(to_jsonb(l)->>k,'')<>'') THEN RAISE EXCEPTION 'OTHER_PROVIDER_REQUIRES_SUPPORT'; END IF;
+      IF EXISTS(SELECT 1 FROM monetization_purchase_orders WHERE user_id IN(a.id::TEXT,b.id::TEXT) AND status='pending')
+        OR EXISTS(SELECT 1 FROM monetization_ad_rewards WHERE user_id IN(a.id::TEXT,b.id::TEXT) AND status IN('prepared','verified'))
+        OR EXISTS(SELECT 1 FROM storage WHERE user_id IN(a.id,b.id) AND collection='player_stage_runs'
+          AND value->>'status'='active' AND COALESCE((value->>'expires_at_ms')::BIGINT,0)>EXTRACT(EPOCH FROM NOW())*1000)
+        THEN RAISE EXCEPTION 'FINISH_ACTIVE_DELIVERIES_OR_RUN'; END IF;
+      PERFORM 1 FROM storage WHERE user_id IN(a.id,b.id) ORDER BY user_id,collection,key FOR UPDATE;
+      SELECT COALESCE(jsonb_object_agg(user_id::TEXT||'/'||collection||'/'||key,version),'{}'::JSONB) INTO versions_now FROM storage WHERE user_id IN(a.id,b.id);
+      IF versions_now IS DISTINCT FROM t.versions OR account_link_finance_snapshot(a.id,b.id) IS DISTINCT FROM t.finance_snapshot
+        OR multi_account_link_snapshot(a.id,b.id) IS DISTINCT FROM t.multi_snapshot THEN RAISE EXCEPTION 'PREVIEW_STALE'; END IF;
+      -- Paid conflicting characters require a reviewed compensation policy, not silent loss or replay.
+      IF EXISTS(SELECT 1 FROM player_characters x JOIN player_characters y ON y.server_id=x.server_id AND y.generation=x.generation
+        JOIN monetization_purchases p ON p.target_server_id=x.server_id AND p.target_generation=x.generation
+        WHERE x.account_id=w.id AND y.account_id=l.id AND p.user_id IN(w.id::TEXT,l.id::TEXT) AND p.status IN('verified','consumed'))
+        THEN RAISE EXCEPTION 'PAID_CHARACTER_CONFLICT_REQUIRES_SUPPORT'; END IF;
+      INSERT INTO account_link_archives(loser_id,winner_id,intent_id,snapshot)
+        SELECT l.id,w.id,t.id,jsonb_build_object('identity',to_jsonb(l),'winner_identity',to_jsonb(w),'finance',t.finance_snapshot,'multi',t.multi_snapshot,
+          'storage',(SELECT COALESCE(jsonb_agg(to_jsonb(s)),'[]'::JSONB) FROM storage s WHERE user_id IN(a.id,b.id)));
+      INSERT INTO account_link_server_tasks(intent_id,server_id,generation,loser_id,winner_id,copy_records)
+        SELECT t.id,c.server_id,c.generation,l.id,w.id,NOT EXISTS(SELECT 1 FROM player_characters x WHERE x.account_id=w.id AND x.server_id=c.server_id)
+        FROM player_characters c WHERE c.account_id=l.id;
+      -- Only non-overlapping characters transfer. Exact keys and versions are preserved.
+      INSERT INTO storage(collection,key,user_id,value,version,read,write,create_time,update_time)
+        SELECT o.collection,o.key,w.id,o.value,o.version,0,0,o.create_time,NOW() FROM storage o JOIN player_characters c
+          ON c.account_id=o.user_id AND left(o.key,length(c.server_id||':g'||c.generation||':'))=c.server_id||':g'||c.generation||':'
+        WHERE o.user_id=l.id AND o.collection=ANY('{player_profiles,player_inventory,player_heroes,player_stage_runs,player_identity,player_event_progress,player_daily_checkin,weekly_leaderboard_claims,player_purchase_grants}'::TEXT[])
+          AND NOT EXISTS(SELECT 1 FROM player_characters other WHERE other.account_id=w.id AND other.server_id=c.server_id);
+      UPDATE server_weekly_scores s SET user_id=w.id WHERE user_id=l.id AND NOT EXISTS(SELECT 1 FROM player_characters c WHERE c.account_id=w.id AND c.server_id=s.server_id);
+      UPDATE server_weekly_awards s SET user_id=w.id WHERE user_id=l.id AND NOT EXISTS(SELECT 1 FROM player_characters c WHERE c.account_id=w.id AND c.server_id=s.server_id);
+      INSERT INTO player_characters(account_id,server_id,generation,status,created_at,last_entered_at)
+        SELECT w.id,c.server_id,c.generation,c.status,c.created_at,c.last_entered_at FROM player_characters c WHERE c.account_id=l.id
+          AND NOT EXISTS(SELECT 1 FROM player_characters other WHERE other.account_id=w.id AND other.server_id=c.server_id);
+      UPDATE player_characters SET status='retired' WHERE account_id=l.id;
+      SELECT GREATEST(0,EXTRACT(EPOCH FROM no_ads_expires_at-NOW())) INTO seconds_left FROM player_monetization_entitlements WHERE user_id=l.id::TEXT FOR UPDATE;
+      IF COALESCE(seconds_left,0)>0 THEN
+        INSERT INTO player_monetization_entitlements(user_id,no_ads_expires_at,source) VALUES(w.id::TEXT,NOW()+make_interval(secs=>seconds_left),'account_link')
+          ON CONFLICT(user_id) DO UPDATE SET no_ads_expires_at=GREATEST(NOW(),COALESCE(player_monetization_entitlements.no_ads_expires_at,NOW()))+make_interval(secs=>seconds_left),source='account_link',updated_at=NOW();
+        UPDATE player_monetization_entitlements SET no_ads_expires_at=NOW(),updated_at=NOW() WHERE user_id=l.id::TEXT;
+      END IF;
+      UPDATE monetization_purchase_orders SET user_id=w.id::TEXT WHERE user_id=l.id::TEXT;
+      UPDATE monetization_purchases SET user_id=w.id::TEXT WHERE user_id=l.id::TEXT;
+      UPDATE player_vip_credits SET user_id=w.id::TEXT WHERE user_id=l.id::TEXT;
+      UPDATE store_receipt_reservations SET user_id=w.id::TEXT WHERE user_id=l.id::TEXT;
+      IF EXISTS(SELECT 1 FROM monetization_daily_reward_claims c WHERE user_id IN(a.id::TEXT,b.id::TEXT)
+        AND reward_date=(NOW() AT TIME ZONE 'UTC')::DATE AND COALESCE((SELECT (snapshot->'system'->'rewarded_ads'->'placements'->c.placement_id->>'daily_limit')::INT
+          FROM remote_config_releases ORDER BY config_version DESC LIMIT 1),0)<=0) THEN RAISE EXCEPTION 'REWARD_QUOTA_CONFIG_UNAVAILABLE'; END IF;
+      INSERT INTO monetization_daily_reward_claims(user_id,target_server_id,target_generation,placement_id,reward_date,claim_slot,ad_session_id)
+        SELECT w.id::TEXT,q.target_server_id,q.target_generation,q.placement_id,(NOW() AT TIME ZONE 'UTC')::DATE,slot,
+          'merge:'||t.id||':'||md5(q.target_server_id||':'||q.target_generation||':'||q.placement_id)||':'||slot
+        FROM (SELECT DISTINCT target_server_id,target_generation,placement_id FROM monetization_daily_reward_claims
+          WHERE user_id IN(a.id::TEXT,b.id::TEXT) AND reward_date=(NOW() AT TIME ZONE 'UTC')::DATE) q
+        CROSS JOIN LATERAL generate_series(1,(SELECT (snapshot->'system'->'rewarded_ads'->'placements'->q.placement_id->>'daily_limit')::INT
+          FROM remote_config_releases ORDER BY config_version DESC LIMIT 1)) slot ON CONFLICT DO NOTHING;
+      INSERT INTO monetization_daily_fragment_rewards(user_id,target_server_id,target_generation,reward_date,item_id,granted_at)
+        SELECT w.id::TEXT,target_server_id,target_generation,reward_date,item_id,granted_at FROM monetization_daily_fragment_rewards WHERE user_id=l.id::TEXT
+        ON CONFLICT DO NOTHING;
+      UPDATE users SET email=NULL,password=NULL,google_id=NULL,custom_id=NULL,disable_time=NOW(),update_time=NOW() WHERE id=l.id;
+      UPDATE users SET email=COALESCE(NULLIF(w.email,''),l.email),password=COALESCE(w.password,l.password),google_id=t.google_id,update_time=NOW() WHERE id=w.id;
+      UPDATE user_device SET user_id=w.id WHERE user_id=l.id;
+      UPDATE account_link_archives SET winner_id=w.id WHERE winner_id=l.id;
+      UPDATE account_link_state SET merged_into=w.id WHERE merged_into=l.id;
+      UPDATE account_link_state SET status='archived',merged_into=w.id WHERE user_id=l.id;
+      UPDATE account_link_intents SET status='completed',winner_id=w.id WHERE id=t.id;
+      RETURN jsonb_build_object('winner_id',w.id,'loser_id',l.id,'replayed',FALSE);
+    END $merge$;`, []);
+}
+function repairMultiLinkBoards(nk, winner, server, generation) {
+  const tasks = nk.sqlQuery("SELECT * FROM account_link_server_tasks WHERE winner_id=$1::UUID AND server_id=$2 AND generation=$3 AND done=FALSE ORDER BY intent_id", [winner, server, generation]);
+  if (!tasks.length) return;
+  withServerRequest(nk, { accountId: winner, serverId: server, generation }, () => {
+    for (const task of tasks) {
+      for (const board of ["best_wave", "most_kills", "total_wins", "cultivation_realm", "campaign_stage", "combat_power_v2"]) {
+        const id = server + ":g" + generation + ":" + board;
+        let records;
+        try {
+          records = nk.leaderboardRecordsList(id, [String(task.loser_id)], 1, "", 0);
+        } catch (error) {
+          if (/not found|not exist/i.test(String(error))) continue;
+          throw error;
+        }
+        const record = (records.ownerRecords || []).find((r) => r.ownerId === String(task.loser_id));
+        if (!record) continue;
+        if (task.copy_records) nk.leaderboardRecordWrite(id, winner, record.username, record.score, record.subscore, record.metadata, "best");
+        nk.leaderboardRecordDelete(id, String(task.loser_id));
+      }
+      nk.sqlExec("UPDATE account_link_server_tasks SET done=TRUE WHERE intent_id=$1::UUID AND server_id=$2 AND generation=$3", [task.intent_id, server, generation]);
+    }
+  });
+}
 function readAccountLinkSnapshot(nk, a, b) {
   const rows = nk.sqlQuery(`SELECT
         (SELECT jsonb_object_agg(id::TEXT,jsonb_build_object('email',email,'google',google_id,'password',password,'custom',custom_id,'disabled',disable_time)) FROM users WHERE id IN($1::UUID,$2::UUID)) AS identities,
@@ -3076,18 +4138,22 @@ const prepareGoogleLink = (ctx, _logger, nk, payload) => {
   }
   if (google.userId === ctx.userId) return JSON.stringify({ success: true, linked: true, already_linked: true });
   try {
+    const multi = !!(ctx.env && ctx.env.MULTI_SERVER_ENABLED === "true");
     const a = nk.accountGetId(ctx.userId), b = nk.accountGetId(google.userId);
     if (a.disableTime || b.disableTime) throw new Error("Account is disabled");
     if (a.email && b.email && a.email.toLowerCase() !== b.email.toLowerCase()) throw new Error("Different email credentials require support");
     if (a.user.googleId && a.user.googleId !== b.user.googleId) throw new Error("Different Google identities require support");
-    readVipProgress(nk, ctx.userId, vipRuntimeMode);
-    readVipProgress(nk, google.userId, vipRuntimeMode);
+    if (!multi) {
+      readVipProgress(nk, ctx.userId, vipRuntimeMode);
+      readVipProgress(nk, google.userId, vipRuntimeMode);
+    }
     const snapshot = readAccountLinkSnapshot(nk, ctx.userId, google.userId);
-    const accounts = [accountLinkSummary(nk, ctx.userId), accountLinkSummary(nk, google.userId)];
+    const accounts = multi ? [multiAccountLinkSummary(nk, ctx.userId), multiAccountLinkSummary(nk, google.userId)] : [accountLinkSummary(nk, ctx.userId), accountLinkSummary(nk, google.userId)];
+    const multiSnapshot = multi ? multiLinkSnapshot(nk, ctx.userId, google.userId) : null;
     if (canonicalLinkSnapshot(snapshot) !== canonicalLinkSnapshot(readAccountLinkSnapshot(nk, ctx.userId, google.userId))) throw new Error("Progress changed; refresh preview");
     const ticket = nk.uuidv4();
-    const rows = nk.sqlQuery(`INSERT INTO account_link_intents(id,initiator,other_id,google_id,identity_snapshot,versions,finance_snapshot)
-            VALUES($1::UUID,$2::UUID,$3::UUID,$4,$5::JSONB,$6::JSONB,$7::JSONB)
+    const rows = nk.sqlQuery(`INSERT INTO account_link_intents(id,initiator,other_id,google_id,identity_snapshot,versions,finance_snapshot,multi_snapshot)
+            VALUES($1::UUID,$2::UUID,$3::UUID,$4,$5::JSONB,$6::JSONB,$7::JSONB,$8::JSONB)
             RETURNING EXTRACT(EPOCH FROM expires_at)::BIGINT AS expires_at`, [
       ticket,
       ctx.userId,
@@ -3095,9 +4161,10 @@ const prepareGoogleLink = (ctx, _logger, nk, payload) => {
       b.user.googleId,
       JSON.stringify(snapshot.identities),
       JSON.stringify(snapshot.versions),
-      JSON.stringify(snapshot.finance)
+      JSON.stringify(snapshot.finance),
+      multiSnapshot ? JSON.stringify(multiSnapshot) : null
     ]);
-    return JSON.stringify({ success: true, conflict: true, ticket, accounts, expires_at: Number(rows[0].expires_at) });
+    return JSON.stringify({ success: true, conflict: true, ticket, accounts, server_mode: multi ? "multi" : "legacy", expires_at: Number(rows[0].expires_at) });
   } catch (error) {
     return JSON.stringify({ success: false, code: 409, message: String(error) });
   }
@@ -3112,7 +4179,8 @@ const confirmGoogleLink = (ctx, logger, nk, payload) => {
   }
   if (!req || req.confirmed !== true || !req.ticket || !req.keep_user_id) return JSON.stringify({ success: false, code: 400, message: "Explicit confirmation required" });
   try {
-    const rows = nk.sqlQuery("SELECT commit_google_account_link($1::UUID,$2::UUID,$3::UUID) AS result", [String(req.ticket), ctx.userId, String(req.keep_user_id)]);
+    const multi = !!(ctx.env && ctx.env.MULTI_SERVER_ENABLED === "true");
+    const rows = nk.sqlQuery("SELECT " + (multi ? "commit_multi_google_account_link" : "commit_google_account_link") + "($1::UUID,$2::UUID,$3::UUID) AS result", [String(req.ticket), ctx.userId, String(req.keep_user_id)]);
     const result = parseJsonb(rows[0].result);
     const archives = nk.sqlQuery("SELECT loser_id::TEXT FROM account_link_archives WHERE intent_id=$1::UUID", [String(req.ticket)]);
     for (const archive of archives) {
@@ -3123,6 +4191,16 @@ const confirmGoogleLink = (ctx, logger, nk, payload) => {
         try {
           nk.leaderboardRecordDelete(board, loser);
         } catch (_e) {
+        }
+      }
+    }
+    if (multi) {
+      const tasks = nk.sqlQuery("SELECT DISTINCT server_id,generation FROM account_link_server_tasks WHERE winner_id=$1::UUID AND done=FALSE ORDER BY server_id", [String(result.winner_id)]);
+      for (const task of tasks) {
+        try {
+          withActiveAccount(nk, String(result.winner_id), () => repairMultiLinkBoards(nk, String(result.winner_id), String(task.server_id), Number(task.generation)));
+        } catch (error) {
+          logger.warn("Link board repair remains queued: %s", String(error));
         }
       }
     }
@@ -5287,6 +6365,20 @@ function readActiveRun(nk, userId, runId) {
 }
 function reserveDailyRewardClaim(nk, userId, placementId, adSessionId, limit) {
   placementId = canonicalRewardPlacement(placementId);
+  const scope = nk.__characterContext;
+  if (scope) {
+    for (let attempt = 0; attempt < limit; attempt++) {
+      const existing2 = nk.sqlQuery("SELECT claim_slot,reward_date::TEXT AS reward_date FROM monetization_daily_reward_claims WHERE ad_session_id=$1 AND user_id=$2 AND target_server_id=$3 AND target_generation=$4", [adSessionId, userId, scope.serverId, scope.generation]);
+      if (existing2.length) return existing2[0];
+      const rows = nk.sqlQuery(`INSERT INTO monetization_daily_reward_claims(user_id,placement_id,ad_session_id,reward_date,claim_slot,target_server_id,target_generation)
+              SELECT $1,$2,$3,(NOW() AT TIME ZONE 'UTC')::DATE,slot,$5,$6 FROM generate_series(1,$4::INT) slot
+              WHERE NOT EXISTS(SELECT 1 FROM monetization_daily_reward_claims c WHERE c.user_id=$1 AND c.placement_id=$2
+                AND c.target_server_id=$5 AND c.target_generation=$6 AND c.reward_date=(NOW() AT TIME ZONE 'UTC')::DATE AND c.claim_slot=slot)
+              ORDER BY slot LIMIT 1 ON CONFLICT DO NOTHING RETURNING claim_slot,reward_date::TEXT AS reward_date`, [userId, placementId, adSessionId, limit, scope.serverId, scope.generation]);
+      if (rows.length) return rows[0];
+    }
+    return null;
+  }
   const existing = nk.sqlQuery("SELECT claim_slot, reward_date::TEXT AS reward_date FROM monetization_daily_reward_claims WHERE ad_session_id=$1 AND user_id=$2", [adSessionId, userId]);
   if (existing.length) return existing[0];
   for (let attempt = 0; attempt < limit; attempt++) {
@@ -5350,6 +6442,32 @@ function readEntitlementRow(nk, userId) {
   };
 }
 function buildDailyRewardStatus(nk, userId) {
+  const scope = nk.__characterContext;
+  if (scope) {
+    const interrupted2 = nk.sqlQuery(`SELECT ad_session_id FROM monetization_ad_rewards WHERE user_id=$1 AND target_server_id=$2
+          AND target_generation=$3 AND status='verified' ORDER BY created_at LIMIT 32`, [userId, scope.serverId, scope.generation]);
+    for (const session of interrupted2) {
+      try {
+        grantPreparedReward(nk, userId, String(session.ad_session_id), "");
+      } catch (_e) {
+      }
+    }
+    const claims2 = nk.sqlQuery(`SELECT placement_id FROM monetization_daily_reward_claims
+          WHERE user_id=$1 AND target_server_id=$2 AND target_generation=$3 AND reward_date=(NOW() AT TIME ZONE 'UTC')::DATE`, [userId, scope.serverId, scope.generation]);
+    const daily = {};
+    const definitions2 = objectValue(rewardedAdsConfig(nk).placements);
+    for (const id in definitions2) {
+      const limit = Math.max(0, Number(definitions2[id].daily_limit || 0));
+      if (limit > 0) {
+        const used = claims2.filter((row) => canonicalRewardPlacement(String(row.placement_id)) === id).length;
+        daily[id] = { limit, claimed: Math.min(limit, used), remaining: Math.max(0, limit - used) };
+      }
+    }
+    const mission2 = nk.sqlQuery(`SELECT item_id,granted_at IS NOT NULL AS completed FROM monetization_daily_fragment_rewards
+          WHERE user_id=$1 AND target_server_id=$2 AND target_generation=$3 AND reward_date=(NOW() AT TIME ZONE 'UTC')::DATE`, [userId, scope.serverId, scope.generation]);
+    if (daily.daily_mission_talisman_fragment_ad) Object.assign(daily.daily_mission_talisman_fragment_ad, { completed: mission2.length > 0 && mission2[0].completed === true, item_id: mission2.length ? String(mission2[0].item_id) : "" });
+    return daily;
+  }
   const interrupted = nk.sqlQuery(`SELECT ad_session_id FROM monetization_ad_rewards
         WHERE user_id=$1 AND status='verified' AND reward_type IN ('stamina','item','daily_fragment','stage_reward_x2')
         ORDER BY created_at LIMIT 32`, [userId]);
@@ -5433,6 +6551,20 @@ function vipProgress(exp, config, environment) {
 function readVipProgress(nk, userId, mode) {
   const config = vipConfig(nk);
   if (!config) return vipProgress(0, null, mode);
+  const scope = nk.__characterContext;
+  if (scope) {
+    nk.sqlExec(`INSERT INTO player_vip_credits(purchase_id,user_id,environment,exp)
+          SELECT p.id,p.user_id,o.vip_environment,COALESCE(o.vip_exp,0) FROM monetization_purchases p
+          JOIN monetization_purchase_orders o ON o.id=COALESCE(NULLIF(p.purchase_order_id,''),p.request_id)
+          WHERE p.user_id=$1 AND p.target_server_id=$2 AND p.target_generation=$3
+            AND p.status IN ('verified','consumed') AND o.status='fulfilled' AND o.vip_environment<>''
+          ON CONFLICT(purchase_id) DO NOTHING`, [userId, scope.serverId, scope.generation]);
+    const rows2 = nk.sqlQuery(`SELECT COALESCE(SUM(CASE WHEN p.status IN ('verified','consumed') THEN c.exp ELSE 0 END),0)::BIGINT AS exp,
+          (COUNT(*)*2+COUNT(*) FILTER(WHERE p.status='voided'))::BIGINT AS revision
+          FROM player_vip_credits c JOIN monetization_purchases p ON p.id=c.purchase_id
+          WHERE c.user_id=$1 AND c.environment=$2 AND p.target_server_id=$3 AND p.target_generation=$4`, [userId, mode, scope.serverId, scope.generation]);
+    return Object.assign(vipProgress(Number(rows2.length ? rows2[0].exp : 0), config, mode), { user_id: userId, revision: Number(rows2.length ? rows2[0].revision : 0) });
+  }
   nk.sqlExec(`INSERT INTO player_vip_credits (purchase_id, user_id, environment, exp)
         SELECT p.id, p.user_id,
             CASE WHEN COALESCE(o.vip_environment,'') <> '' THEN o.vip_environment
@@ -5665,6 +6797,21 @@ const claimDailyPack = (ctx, _logger, nk, payload) => {
   }
 };
 function applyPurchaseStorageRewards(nk, userId, grantId, productId, fulfillmentType, rewards) {
+  if (nk.__characterContext && !nk.__purchaseBatch) {
+    const marker = { collection: "player_purchase_grants", key: grantId, userId };
+    if (nk.storageRead([marker]).length) return { idempotent: true };
+    const writes = [];
+    const batch = Object.create(nk);
+    batch.__purchaseBatch = true;
+    batch.storageWrite = (changes) => {
+      for (const change of changes) writes.push(change);
+      return [];
+    };
+    const result = applyPurchaseStorageRewards(batch, userId, grantId, productId, fulfillmentType, rewards);
+    writes.push(Object.assign({}, marker, { value: { product_id: productId, granted_at_ms: Date.now() }, version: "*", permissionRead: 0, permissionWrite: 0 }));
+    nk.storageWrite(writes);
+    return result;
+  }
   const profileObjects = nk.storageRead([{ collection: "player_profiles", key: "main", userId }]);
   if (profileObjects.length === 0) throw new Error("Player profile does not exist");
   const profile = profileObjects[0].value || {};
@@ -5787,17 +6934,24 @@ const createPurchaseOrder = (ctx, _logger, nk, payload) => {
   } catch (_e) {
     return monetizationError(400, "Invalid JSON");
   }
+  const orderPlatform = String(req.platform || "android");
+  const target = nk.__characterContext;
+  if (["android", "ios"].indexOf(orderPlatform) < 0) return monetizationError(400, "Unsupported purchase platform");
+  if (orderPlatform === "ios") return monetizationError(501, "App Store payment provider is not configured");
   const productId = String(req.product_id || "");
   const products = nk.sqlQuery("SELECT * FROM game_store_products WHERE product_id = $1 AND active = TRUE", [productId]);
   if (products.length === 0) return monetizationError(404, "Product is unavailable");
   const product = products[0];
+  const platformProducts = nk.sqlQuery("SELECT store_product_id,active FROM game_store_platform_products WHERE platform=$1 AND product_id=$2", [orderPlatform, productId]);
+  if (platformProducts.length && platformProducts[0].active !== true) return monetizationError(404, "Product is unavailable on this platform");
+  const storeProductId = platformProducts.length ? String(platformProducts[0].store_product_id) : productId;
   if (DAILY_PACK_IDS.indexOf(productId) >= 0) {
     const profiles = nk.storageRead([{ collection: "player_profiles", key: "main", userId: ctx.userId }]);
     if (profiles.length && dailyPackState(profiles[0].value, Date.now())[productId].active) return monetizationError(409, "Daily pack already active; claim its daily reward instead");
   }
   const previous = nk.sqlQuery(
-    "SELECT id, status, fulfillment_type, reward_snapshot FROM monetization_purchase_orders WHERE user_id = $1 AND product_id = $2 AND status IN ('pending','fulfilled') ORDER BY created_at DESC",
-    [ctx.userId, productId]
+    "SELECT id, status, fulfillment_type, reward_snapshot, platform, store_product_id FROM monetization_purchase_orders WHERE user_id = $1 AND product_id = $2 AND target_server_id=$3 AND target_generation=$4 AND status IN ('pending','fulfilled') ORDER BY created_at DESC",
+    [ctx.userId, productId, target ? target.serverId : "", target ? target.generation : 0]
   );
   const fulfilled = previous.filter((row) => String(row.status) === "fulfilled");
   if (product.unique_purchase === true && fulfilled.length > 0) {
@@ -5810,8 +6964,8 @@ const createPurchaseOrder = (ctx, _logger, nk, payload) => {
   }
   if (product.unique_purchase === true) {
     const legacy = nk.sqlQuery(
-      "SELECT id FROM monetization_purchases WHERE user_id = $1 AND product_id = $2 AND status <> 'voided' LIMIT 1",
-      [ctx.userId, productId]
+      "SELECT id FROM monetization_purchases WHERE user_id = $1 AND product_id = $2 AND target_server_id=$3 AND target_generation=$4 AND status <> 'voided' LIMIT 1",
+      [ctx.userId, productId, target ? target.serverId : "", target ? target.generation : 0]
     );
     if (legacy.length > 0) return JSON.stringify({ status: "success", data: {
       purchase_order_id: "",
@@ -5826,13 +6980,16 @@ const createPurchaseOrder = (ctx, _logger, nk, payload) => {
     return JSON.stringify({ status: "success", data: {
       purchase_order_id: String(pending.id),
       product_id: productId,
+      platform: String(pending.platform || "android"),
+      store_product_id: String(pending.store_product_id || productId),
       fulfillment_type: String(product.fulfillment_type)
     }, idempotent: true });
   }
   if (Number(product.purchase_limit || 0) > 0 && String(product.purchase_limit_period) === "day") {
     const today = nk.sqlQuery(`SELECT COUNT(*)::INT AS count FROM monetization_purchase_orders
             WHERE user_id = $1 AND product_id = $2 AND status = 'fulfilled'
-              AND fulfilled_at >= DATE_TRUNC('day', NOW())`, [ctx.userId, productId]);
+              AND target_server_id=$3 AND target_generation=$4
+              AND fulfilled_at >= DATE_TRUNC('day', NOW())`, [ctx.userId, productId, target ? target.serverId : "", target ? target.generation : 0]);
     if (Number(today[0].count || 0) >= Number(product.purchase_limit)) return monetizationError(409, "Daily purchase limit reached");
   }
   const rewardRows = nk.sqlQuery(
@@ -5852,13 +7009,28 @@ const createPurchaseOrder = (ctx, _logger, nk, payload) => {
   const orderId = nk.uuidv4();
   nk.sqlExec(
     `INSERT INTO monetization_purchase_orders
-        (id, user_id, product_id, status, reward_snapshot, fulfillment_type, vip_exp, vip_environment)
-        VALUES ($1,$2,$3,'pending',$4::jsonb,$5,$6,$7)`,
-    [orderId, ctx.userId, productId, JSON.stringify(rewards), String(product.fulfillment_type), vipExp, monetizationMode(ctx)]
+        (id, user_id, product_id, status, reward_snapshot, fulfillment_type, vip_exp, vip_environment,
+         platform,store_product_id,target_server_id,target_generation)
+        VALUES ($1,$2,$3,'pending',$4::jsonb,$5,$6,$7,$8,$9,$10,$11)`,
+    [
+      orderId,
+      ctx.userId,
+      productId,
+      JSON.stringify(rewards),
+      String(product.fulfillment_type),
+      vipExp,
+      monetizationMode(ctx),
+      orderPlatform,
+      storeProductId,
+      target ? target.serverId : "",
+      target ? target.generation : 0
+    ]
   );
   return JSON.stringify({ status: "success", data: {
     purchase_order_id: orderId,
     product_id: productId,
+    platform: orderPlatform,
+    store_product_id: storeProductId,
     fulfillment_type: String(product.fulfillment_type),
     rewards
   } });
@@ -5878,10 +7050,15 @@ const iapGoogleClaim = (ctx, logger, nk, payload) => {
   const orders = nk.sqlQuery("SELECT * FROM monetization_purchase_orders WHERE id = $1 AND user_id = $2", [purchaseOrderId, ctx.userId]);
   if (orders.length === 0) return monetizationError(404, "Purchase order not found");
   const order = orders[0];
+  const target = nk.__characterContext;
+  if (target && (String(order.target_server_id) !== target.serverId || Number(order.target_generation) !== target.generation))
+    return serverFailure("ORDER_TARGET_MISMATCH", 409, "Select the original order server and generation; rewards were not redirected");
+  if (String(order.platform || "android") !== "android") return monetizationError(409, "Purchase order belongs to another store platform");
   const productId = String(order.product_id);
   const fulfillmentType = String(order.fulfillment_type);
   const rewardSnapshot = parseJsonb(order.reward_snapshot) || [];
   if (String(order.status) === "fulfilled") {
+    if (target && nk.sqlQuery("SELECT 1 FROM monetization_purchases WHERE purchase_order_id=$1 AND status='voided'", [purchaseOrderId]).length) return monetizationError(409, "Purchase was voided");
     try {
       auditLegacyVipOrder(ctx, nk, order, receipt);
     } catch (e) {
@@ -5916,8 +7093,8 @@ const iapGoogleClaim = (ctx, logger, nk, payload) => {
       return monetizationError(409, "Purchase is not valid");
     }
     const purchases = validation.validatedPurchases || [];
-    const purchase = purchases.find((value) => value && value.productId === productId && isLinkedReceiptOwner(nk, value.userId, ctx.userId));
-    if (!purchase || !purchase.transactionId) return monetizationError(409, "Validated product does not match claim");
+    const purchase = purchases.find((value) => value && value.productId === String(order.store_product_id || productId) && isLinkedReceiptOwner(nk, value.userId, ctx.userId));
+    if (!purchase || !purchase.transactionId || Number(purchase.refundTime || 0) > 0) return monetizationError(409, "Validated product does not match claim");
     receiptOwner = String(purchase.userId);
     if (!isProductionTestPurchaseAllowed(ctx, nk, purchase)) return monetizationError(409, "Test purchase is not authorized for this account");
     transactionId = String(purchase.transactionId);
@@ -5936,14 +7113,57 @@ const iapGoogleClaim = (ctx, logger, nk, payload) => {
     );
     purchaseTokenHash = hashRows.length > 0 ? String(hashRows[0].token_hash || "") : "";
     if (!purchaseTokenHash) return monetizationError(500, "Could not fingerprint purchase");
+    if (target) {
+      try {
+        const secret = String(ctx.env.MONETIZATION_VERIFIER_SECRET || "");
+        if (!secret) throw new Error("Verifier is not configured");
+        const result = nk.httpRequest(
+          String(ctx.env.MONETIZATION_VERIFIER_URL || "http://monetization-verifier:8080/google-play/verify"),
+          "post",
+          { "Authorization": "Bearer " + secret, "Content-Type": "application/json" },
+          JSON.stringify({
+            user_id: receiptOwner,
+            product_id: String(order.store_product_id || productId),
+            purchase_token: validatedToken,
+            package_name: String(receiptData.packageName || ""),
+            purchase_order_id: purchaseOrderId,
+            verification_only: true
+          }),
+          1e4
+        );
+        if (result.code !== 200 || JSON.parse(result.body).verified !== true) throw new Error("Order binding rejected");
+      } catch (_e) {
+        return monetizationError(409, "Google receipt does not verify against the original order");
+      }
+    }
   }
+  return fulfillVerifiedStoreOrder(ctx, logger, nk, order, { platform: "android", productId, storeProductId: String(order.store_product_id || productId), transactionId, tokenHash: purchaseTokenHash, seenBefore, receiptOwner, mode });
+};
+function fulfillVerifiedStoreOrder(ctx, logger, nk, order, verified) {
+  const productId = String(order.product_id), purchaseOrderId = String(order.id), fulfillmentType = String(order.fulfillment_type);
+  const rewardSnapshot = parseJsonb(order.reward_snapshot) || [];
+  const { transactionId, seenBefore, receiptOwner, mode } = verified;
+  if (!transactionId || mode !== "mock" && !verified.tokenHash || String(order.platform || "android") !== verified.platform || verified.productId !== productId || verified.storeProductId !== String(order.store_product_id || productId) || order.vip_environment && String(order.vip_environment) !== mode)
+    return monetizationError(409, "Invalid verified purchase envelope");
   try {
-    const grantId = mode === "mock" ? `mock:${transactionId}` : purchaseTokenHash;
+    const grantId = mode === "mock" ? `mock:${transactionId}` : verified.platform === "android" ? verified.tokenHash : "ios:" + verified.tokenHash;
+    const target = nk.__characterContext;
+    if (target) {
+      if (nk.sqlQuery("SELECT 1 FROM store_purchase_voids WHERE token_hash=$1", [grantId]).length) return monetizationError(409, "Purchase was voided; reconciliation required");
+      const reservation = nk.sqlQuery(`INSERT INTO store_receipt_reservations(token_hash,order_id,user_id,target_server_id,target_generation)
+              VALUES($1,$2,$3,$4,$5) ON CONFLICT DO NOTHING RETURNING order_id`, [grantId, purchaseOrderId, ctx.userId, target.serverId, target.generation]);
+      if (!reservation.length) {
+        const owned = nk.sqlQuery("SELECT order_id,user_id,target_server_id,target_generation FROM store_receipt_reservations WHERE token_hash=$1", [grantId]);
+        if (!owned.length || owned[0].order_id !== purchaseOrderId || owned[0].user_id !== ctx.userId || owned[0].target_server_id !== target.serverId || Number(owned[0].target_generation) !== target.generation)
+          return monetizationError(409, "Receipt already reserved for a different original order");
+      }
+    }
     const existing = nk.sqlQuery(
-      "SELECT user_id, product_id, COALESCE(NULLIF(purchase_order_id,''),request_id) AS original_order_id FROM monetization_purchases WHERE purchase_token_hash = $1 OR request_id = $2",
+      "SELECT user_id, product_id, status, COALESCE(NULLIF(purchase_order_id,''),request_id) AS original_order_id FROM monetization_purchases WHERE purchase_token_hash = $1 OR request_id = $2",
       [grantId, purchaseOrderId]
     );
     if (existing.length > 0) {
+      if (existing[0].status === "voided") return monetizationError(409, "Purchase was voided");
       if (String(existing[0].user_id) !== ctx.userId || String(existing[0].product_id) !== productId) {
         return monetizationError(409, "Purchase belongs to another claim");
       }
@@ -5960,6 +7180,8 @@ const iapGoogleClaim = (ctx, logger, nk, payload) => {
                 fulfilled_at=COALESCE(fulfilled_at, NOW()), updated_at=NOW() WHERE id=$1`,
         [purchaseOrderId, transactionId, grantId]
       );
+      if (target) nk.sqlExec(`UPDATE monetization_purchases SET target_server_id=$2,target_generation=$3
+              WHERE request_id=$1 AND purchase_order_id=$1`, [purchaseOrderId, target.serverId, target.generation]);
       const data2 = buildMonetizationResponse(nk, ctx.userId, mode);
       data2.reward = {
         product_id: productId,
@@ -5977,27 +7199,31 @@ const iapGoogleClaim = (ctx, logger, nk, payload) => {
         nk,
         ctx.userId,
         purchaseOrderId,
-        "android",
+        verified.platform,
         productId,
         grantId,
         transactionId,
         noAdsSeconds,
-        mode === "mock" ? "debug" : "google_play",
+        mode === "mock" ? "debug" : verified.platform === "android" ? "google_play" : "app_store",
         purchaseOrderId
       );
     } else {
       nk.sqlExec(
         `INSERT INTO monetization_purchases
                     (request_id, user_id, platform, product_id, purchase_token_hash, order_id,
-                     status, granted_seconds, purchased_at, verified_at, purchase_order_id)
-                 VALUES ($1, $2, 'android', $3, $4, $5, 'verified', 0, NOW(), NOW(), $1)
+                     status, granted_seconds, purchased_at, verified_at, purchase_order_id,target_server_id,target_generation)
+                 VALUES ($1, $2, $6, $3, $4, $5, 'verified', 0, NOW(), NOW(), $1,$7,$8)
                  ON CONFLICT DO NOTHING`,
-        [purchaseOrderId, ctx.userId, productId, grantId, transactionId]
+        [purchaseOrderId, ctx.userId, productId, grantId, transactionId, verified.platform, target ? target.serverId : "", target ? target.generation : 0]
       );
     }
+    if (target && nk.sqlQuery(`SELECT void_store_purchase($1) AS revoked WHERE EXISTS(SELECT 1 FROM store_purchase_voids WHERE token_hash=$1)`, [grantId]).length)
+      return monetizationError(409, "Purchase refund arrived during delivery; reconciliation queued");
     nk.sqlExec(`UPDATE monetization_purchase_orders SET status='fulfilled', transaction_id=$2,
             purchase_token_hash=$3, validated_at=NOW(), fulfilled_at=NOW(), updated_at=NOW()
             WHERE id=$1 AND status='pending'`, [purchaseOrderId, transactionId, grantId]);
+    if (target) nk.sqlExec(`UPDATE monetization_purchases SET target_server_id=$2,target_generation=$3
+          WHERE request_id=$1 AND purchase_order_id=$1`, [purchaseOrderId, target.serverId, target.generation]);
     const data = buildMonetizationResponse(nk, ctx.userId, mode);
     data.reward = {
       product_id: productId,
@@ -6008,11 +7234,90 @@ const iapGoogleClaim = (ctx, logger, nk, payload) => {
     };
     return JSON.stringify({ status: "success", data, idempotent: seenBefore });
   } catch (e) {
-    logger.error("iap_google_claim failed user=%s product=%s: %s", ctx.userId, productId, String(e));
+    logger.error("Store fulfillment failed user=%s product=%s: %s", ctx.userId, productId, String(e));
     return monetizationError(500, "Could not grant purchase");
   }
-};
+}
+;
 const syncPlayPurchase = iapGoogleClaim;
+const resolvePurchaseOrder = (ctx, _logger, nk, payload) => {
+  if (!ctx.userId) return monetizationError(401, "Authentication required");
+  let req;
+  try {
+    req = JSON.parse(payload || "{}");
+  } catch (_e) {
+    return monetizationError(400, "Invalid JSON");
+  }
+  if (!req || req.platform !== "android") return monetizationError(501, "Store restore provider is not configured");
+  if (monetizationMode(ctx) === "mock") return monetizationError(409, "Mock purchases require their original order");
+  const receipt = String(req.receipt || "");
+  if (!receipt || receipt.length > 65536) return monetizationError(400, "Invalid receipt");
+  let validation, token;
+  try {
+    validation = nk.purchaseValidateGoogle(ctx.userId, receipt, true);
+    const wire = JSON.parse(receipt);
+    token = String(wire.purchaseToken || wire.purchase_token || "");
+  } catch (_e) {
+    return monetizationError(409, "Purchase is not valid");
+  }
+  const purchase = (validation.validatedPurchases || []).find((p) => p && isLinkedReceiptOwner(nk, p.userId, ctx.userId) && isProductionTestPurchaseAllowed(ctx, nk, p) && Number(p.refundTime || 0) <= 0);
+  if (!purchase || !token) return monetizationError(409, "Validated purchase does not belong to this account");
+  const hashes = nk.sqlQuery("SELECT encode(sha256(convert_to($1,'UTF8')),'hex') AS token_hash", [token]);
+  if (!hashes.length || !hashes[0].token_hash) return monetizationError(500, "Could not fingerprint purchase");
+  const orders = nk.sqlQuery(`SELECT o.id AS purchase_order_id,o.product_id,o.platform,o.store_product_id,o.fulfillment_type,
+      o.target_server_id,o.target_generation FROM monetization_purchases p JOIN monetization_purchase_orders o
+      ON o.id=COALESCE(NULLIF(p.purchase_order_id,''),p.request_id)
+      WHERE p.purchase_token_hash=$1 AND p.user_id=$2 AND o.user_id=$2 AND o.platform='android'`, [String(hashes[0].token_hash), ctx.userId]);
+  if (!orders.length && ctx.env && ctx.env.MULTI_SERVER_ENABLED === "true") {
+    try {
+      const secret = String(ctx.env.MONETIZATION_VERIFIER_SECRET || "");
+      if (!secret) throw new Error("Verifier unavailable");
+      const wire = JSON.parse(receipt);
+      const response = nk.httpRequest(
+        String(ctx.env.MONETIZATION_VERIFIER_URL || "http://monetization-verifier:8080/google-play/verify"),
+        "post",
+        { "Authorization": "Bearer " + secret, "Content-Type": "application/json" },
+        JSON.stringify({
+          user_id: String(purchase.userId),
+          product_id: String(purchase.productId),
+          purchase_token: token,
+          package_name: String(wire.packageName || ""),
+          verification_only: true
+        }),
+        1e4
+      );
+      const verified = JSON.parse(response.body);
+      if (response.code !== 200 || verified.verified !== true || verified.token_hash !== String(hashes[0].token_hash) || !verified.purchase_order_id) throw new Error("Original order not verified");
+      const pending = nk.sqlQuery(`SELECT id AS purchase_order_id,product_id,platform,store_product_id,fulfillment_type,target_server_id,target_generation
+              FROM monetization_purchase_orders WHERE id=$1 AND user_id=$2 AND platform='android' AND status IN ('pending','fulfilled')`, [String(verified.purchase_order_id), ctx.userId]);
+      if (!pending.length || String(pending[0].store_product_id || pending[0].product_id) !== String(purchase.productId)) throw new Error("Original order not found");
+      return JSON.stringify({ status: "success", data: pending[0] });
+    } catch (_e) {
+      return monetizationError(409, "Original purchase destination requires reconciliation; no new order was created");
+    }
+  }
+  if (!orders.length) return monetizationError(409, "Original purchase destination requires reconciliation; no new order was created");
+  const order = orders[0];
+  if (String(order.store_product_id || order.product_id) !== String(purchase.productId)) return monetizationError(409, "Product does not match original order");
+  return JSON.stringify({ status: "success", data: order });
+};
+const iapClaim = (ctx, logger, nk, payload) => {
+  if (!ctx.userId) return monetizationError(401, "Authentication required");
+  let req;
+  try {
+    req = JSON.parse(payload || "{}");
+  } catch (_e) {
+    return monetizationError(400, "Invalid JSON");
+  }
+  if (!req || typeof req !== "object" || Array.isArray(req)) return monetizationError(400, "Invalid request");
+  const platform = String(req.platform || "");
+  if (platform !== "android" && platform !== "ios") return monetizationError(400, "Unsupported purchase platform");
+  const rows = nk.sqlQuery("SELECT platform FROM monetization_purchase_orders WHERE id=$1 AND user_id=$2", [String(req.purchase_order_id || ""), ctx.userId]);
+  if (!rows.length) return monetizationError(404, "Purchase order not found");
+  if (String(rows[0].platform || "android") !== platform) return monetizationError(409, "Purchase platform does not match order");
+  if (platform === "ios") return monetizationError(501, "App Store payment provider is not configured");
+  return iapGoogleClaim(ctx, logger, nk, payload);
+};
 const prepareRewardedAd = (ctx, _logger, nk, payload) => {
   if (!ctx.userId) return monetizationError(401, "Authentication required");
   let req;
@@ -6027,7 +7332,9 @@ const prepareRewardedAd = (ctx, _logger, nk, payload) => {
   if (reward.enabled === false || reward.daily_limit === 0 || reward.run_limit === 0) return monetizationError(403, "Rewarded placement is disabled");
   const requestId = String(req.request_id || nk.uuidv4());
   if (requestId.length > 128) return monetizationError(400, "Invalid reward request ID");
-  let sessions = nk.sqlQuery("SELECT * FROM monetization_ad_rewards WHERE user_id=$1 AND client_request_id=$2", [ctx.userId, requestId]);
+  const target = nk.__characterContext;
+  const sessionSql = "SELECT * FROM monetization_ad_rewards WHERE user_id=$1 AND client_request_id=$2 AND target_server_id=$3 AND target_generation=$4";
+  let sessions = nk.sqlQuery(sessionSql, [ctx.userId, requestId, target ? target.serverId : "", target ? target.generation : 0]);
   if (sessions.length && canonicalRewardPlacement(String(sessions[0].placement_id)) !== placementId) return monetizationError(409, "Reward request already belongs to another placement");
   const entitlement = readEntitlementRow(nk, ctx.userId);
   const noAds = Number(entitlement.no_ads_expires_at || 0) > Number(entitlement.server_time || 0);
@@ -6085,11 +7392,11 @@ const prepareRewardedAd = (ctx, _logger, nk, payload) => {
   if (!sessions.length) {
     nk.sqlExec(
       `INSERT INTO monetization_ad_rewards
-            (ad_session_id, user_id, placement_id, reward_type, reward_amount, custom_data, context, delivery_source, client_request_id)
-         VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb, $8, $9) ON CONFLICT DO NOTHING`,
-      [adSessionId, ctx.userId, placementId, reward.type, reward.amount, customData, JSON.stringify(rewardContext), noAds ? "no_ads" : "ad", requestId]
+            (ad_session_id, user_id, placement_id, reward_type, reward_amount, custom_data, context, delivery_source, client_request_id,target_server_id,target_generation)
+         VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb, $8, $9,$10,$11) ON CONFLICT DO NOTHING`,
+      [adSessionId, ctx.userId, placementId, reward.type, reward.amount, customData, JSON.stringify(rewardContext), noAds ? "no_ads" : "ad", requestId, target ? target.serverId : "", target ? target.generation : 0]
     );
-    sessions = nk.sqlQuery("SELECT * FROM monetization_ad_rewards WHERE user_id=$1 AND client_request_id=$2", [ctx.userId, requestId]);
+    sessions = nk.sqlQuery(sessionSql, [ctx.userId, requestId, target ? target.serverId : "", target ? target.generation : 0]);
     if (!sessions.length) return monetizationError(409, "Could not reserve reward session");
     adSessionId = String(sessions[0].ad_session_id);
     if (String(sessions[0].placement_id) !== placementId) return monetizationError(409, "Reward request collision");
@@ -6125,6 +7432,8 @@ const prepareRewardedAd = (ctx, _logger, nk, payload) => {
 };
 function grantDailyMissionFragment(nk, userId, adSessionId, claim) {
   var _a;
+  const scope = nk.__characterContext;
+  const sid = scope ? scope.serverId : "", gen = scope ? scope.generation : 0;
   const config = rewardedAdsConfig(nk);
   const mission = objectValue(config.daily_mission);
   const quantity = Number(((_a = objectValue(config.placements).daily_mission_talisman_fragment_ad) == null ? void 0 : _a.amount) || 0);
@@ -6133,11 +7442,11 @@ function grantDailyMissionFragment(nk, userId, adSessionId, claim) {
   let itemId = "";
   let inventory;
   if (Number(claim.claim_slot) >= completionCount) {
-    nk.sqlExec(`INSERT INTO monetization_daily_fragment_rewards (user_id,reward_date,item_id)
-            SELECT $1,$2::DATE,id FROM game_items WHERE category='talisman_fragment'
+    nk.sqlExec(`INSERT INTO monetization_daily_fragment_rewards (user_id,reward_date,item_id,target_server_id,target_generation)
+            SELECT $1,$2::DATE,id,$4,$5 FROM game_items WHERE category='talisman_fragment'
                 AND attributes->>'quality'=$3 ORDER BY RANDOM() LIMIT 1
-            ON CONFLICT (user_id,reward_date) DO NOTHING`, [userId, String(claim.reward_date), String(mission.fragment_quality || "")]);
-    const selected = nk.sqlQuery("SELECT item_id,granted_at FROM monetization_daily_fragment_rewards WHERE user_id=$1 AND reward_date=$2::DATE", [userId, String(claim.reward_date)]);
+            ON CONFLICT (user_id,target_server_id,target_generation,reward_date) DO NOTHING`, [userId, String(claim.reward_date), String(mission.fragment_quality || ""), sid, gen]);
+    const selected = nk.sqlQuery("SELECT item_id,granted_at FROM monetization_daily_fragment_rewards WHERE user_id=$1 AND reward_date=$2::DATE AND target_server_id=$3 AND target_generation=$4", [userId, String(claim.reward_date), sid, gen]);
     if (!selected.length) return { granted: false, message: "Daily fragment catalog is missing" };
     itemId = String(selected[0].item_id);
     if (!selected[0].granted_at) {
@@ -6154,7 +7463,7 @@ function grantDailyMissionFragment(nk, userId, adSessionId, claim) {
         value._monetization_reward_ids = markers.slice(-200);
         nk.storageWrite([{ collection: "player_inventory", key: "items", userId, value, permissionRead: 1, permissionWrite: 0, version: objects[0].version }]);
       }
-      nk.sqlExec("UPDATE monetization_daily_fragment_rewards SET granted_at=COALESCE(granted_at,NOW()) WHERE user_id=$1 AND reward_date=$2::DATE", [userId, String(claim.reward_date)]);
+      nk.sqlExec("UPDATE monetization_daily_fragment_rewards SET granted_at=COALESCE(granted_at,NOW()) WHERE user_id=$1 AND reward_date=$2::DATE AND target_server_id=$3 AND target_generation=$4", [userId, String(claim.reward_date), sid, gen]);
     }
   }
   nk.sqlExec("UPDATE monetization_ad_rewards SET status='granted', granted_at=NOW() WHERE ad_session_id=$1 AND status='verified'", [adSessionId]);
@@ -6169,6 +7478,11 @@ function grantDailyMissionFragment(nk, userId, adSessionId, claim) {
   };
 }
 function grantPreparedReward(nk, userId, adSessionId, transactionId) {
+  const scope = nk.__characterContext;
+  if (scope) {
+    const rows2 = nk.sqlQuery("SELECT target_server_id,target_generation FROM monetization_ad_rewards WHERE ad_session_id=$1 AND user_id=$2", [adSessionId, userId]);
+    if (!rows2.length || rows2[0].target_server_id !== scope.serverId || Number(rows2[0].target_generation) !== scope.generation) return { granted: false, message: "Ad session target does not match character" };
+  }
   const rows = nk.sqlQuery(
     `UPDATE monetization_ad_rewards SET
             status = 'verified', admob_transaction_id = NULLIF($3, ''), verified_at = NOW()
@@ -6431,7 +7745,32 @@ const admobSsvConfirm = (ctx, _logger, nk, payload) => {
   if (!expectedAdUnit || adUnit !== expectedAdUnit && adUnit !== expectedAdUnitNumericId) {
     return monetizationError(403, "Unexpected AdMob ad unit");
   }
-  const reward = grantPreparedReward(nk, userId, adSessionId, transactionId);
+  let reward;
+  if (ctx.env.MULTI_SERVER_ENABLED === "true") {
+    const sessions = nk.sqlQuery("SELECT target_server_id,target_generation,status,expires_at<=NOW() AS expired FROM monetization_ad_rewards WHERE ad_session_id=$1 AND user_id=$2", [adSessionId, userId]);
+    if (!sessions.length) return monetizationError(404, "Ad session not found");
+    if (sessions[0].status === "granted") return JSON.stringify({ status: "success", data: { granted: true, idempotent: true } });
+    if (sessions[0].status === "rejected") return JSON.stringify({ status: "success", data: { granted: false, rejected: true } });
+    const scope = { accountId: userId, serverId: String(sessions[0].target_server_id), generation: Number(sessions[0].target_generation) };
+    const server = validatedServer(nk, { server_id: scope.serverId, generation: scope.generation });
+    if (server.error || sessions[0].status === "expired" || sessions[0].status === "prepared" && sessions[0].expired) {
+      nk.sqlExec(`INSERT INTO server_financial_inbox(event_id,event_type,user_id,target_server_id,target_generation,payload,reason)
+              VALUES($1,'admob_ssv',$2,$3,$4,$5::JSONB,$6) ON CONFLICT DO NOTHING`, [
+        "admob:" + transactionId,
+        userId,
+        scope.serverId,
+        scope.generation,
+        JSON.stringify({ ad_session_id: adSessionId, user_id: userId, transaction_id: transactionId, ad_unit: adUnit }),
+        server.error ? JSON.parse(server.error).reason : "DELIVERY_EXPIRED"
+      ]);
+      return JSON.stringify({ status: "success", data: { queued: true, granted: false, reconciliation_required: true } });
+    }
+    try {
+      reward = withServerRequest(nk, scope, () => grantPreparedReward(characterRuntime(nk, scope), userId, adSessionId, transactionId));
+    } catch (_e) {
+      return monetizationError(503, "Server fenced; retry callback");
+    }
+  } else reward = grantPreparedReward(nk, userId, adSessionId, transactionId);
   return JSON.stringify({ status: reward.granted ? "success" : "error", data: reward });
 };
 const googlePlayRtdnConfirm = (ctx, _logger, nk, payload) => {
@@ -6445,22 +7784,14 @@ const googlePlayRtdnConfirm = (ctx, _logger, nk, payload) => {
   if (!expectedSecret || String(req.verifier_secret || "") !== expectedSecret) return monetizationError(403, "Verifier authorization failed");
   const tokenHash = String(req.purchase_token_hash || "");
   if (!tokenHash) return monetizationError(400, "purchase_token_hash is required");
-  const rows = nk.sqlQuery(
-    `UPDATE monetization_purchases
-         SET status = 'voided', updated_at = NOW()
-         WHERE purchase_token_hash = $1 AND status <> 'voided'
-         RETURNING user_id, granted_seconds`,
-    [tokenHash]
-  );
-  if (rows.length === 0) return JSON.stringify({ status: "success", data: { changed: false } });
-  const row = rows[0];
-  nk.sqlExec(
-    `UPDATE player_monetization_entitlements
-         SET no_ads_expires_at = GREATEST(NOW(), no_ads_expires_at - ($2 * INTERVAL '1 second')),
-             source = 'google_play_voided', updated_at = NOW()
-         WHERE user_id = $1`,
-    [String(row.user_id), Number(row.granted_seconds || 0)]
-  );
+  const revoked = nk.sqlQuery("SELECT void_store_purchase($1) AS purchase", [tokenHash]);
+  const row = revoked.length ? parseJsonb(revoked[0].purchase) : null;
+  if (!row) return JSON.stringify({ status: "success", data: { changed: false, recorded: true } });
+  if (ctx.env.MULTI_SERVER_ENABLED === "true") {
+    const entitlement = readEntitlementRow(nk, String(row.user_id));
+    mirrorEntitlementStorage(nk, String(row.user_id), { no_ads_expires_at: Number(entitlement.no_ads_expires_at || 0), source: entitlement.source, last_product_id: entitlement.last_product_id, updated_at: Number(entitlement.server_time || 0) });
+    return JSON.stringify({ status: "success", data: { changed: true } });
+  }
   const response = buildMonetizationResponse(nk, String(row.user_id), "production");
   mirrorEntitlementStorage(nk, String(row.user_id), {
     no_ads_expires_at: response.no_ads.expires_at,
@@ -6482,6 +7813,11 @@ function checkinDayText(day) {
   return new Date(day * 864e5).toISOString().slice(0, 10);
 }
 function checkinAccountCreatedAtMs(nk, userId, fallback) {
+  const scope = nk.__characterContext;
+  if (scope) {
+    const characters = nk.sqlQuery("SELECT EXTRACT(EPOCH FROM created_at)*1000 AS created_at_ms FROM player_characters WHERE account_id=$1::UUID AND server_id=$2 AND generation=$3", [userId, scope.serverId, scope.generation]);
+    return characters.length ? Math.max(0, Number(characters[0].created_at_ms || fallback)) : fallback;
+  }
   const rows = nk.sqlQuery("SELECT EXTRACT(EPOCH FROM create_time) * 1000 AS created_at_ms FROM users WHERE id = $1::UUID", [userId]);
   return rows.length > 0 ? Math.max(0, Number(rows[0].created_at_ms || fallback)) : fallback;
 }
@@ -6972,6 +8308,7 @@ function combatPowerBoard(id) {
   return id === "combat_power" ? "combat_power_v2" : id;
 }
 function syncAllStoredProfilesToLeaderboards(nk, logger) {
+  if (nk.__characterContext) throw new Error("Use a server-scoped rebuild job instead of scanning every profile");
   try {
     const rows = nk.sqlQuery(
       "SELECT s.user_id, COALESCE(NULLIF(u.display_name, ''), u.username, '\u0110\u1EA1o H\u1EEFu') as username FROM storage s LEFT JOIN users u ON s.user_id = u.id WHERE s.collection = 'player_profiles' AND s.key = 'main' AND NOT EXISTS (SELECT 1 FROM account_link_state als WHERE als.user_id=s.user_id AND als.status='archived')",
@@ -7319,6 +8656,10 @@ function weeklyPublishedConfig(nk) {
 }
 function recordWeeklyLeaderboardScores(nk, userId, name, scores) {
   for (const board of WEEKLY_BOARDS) if (!Number.isSafeInteger(scores[board]) || scores[board] < 0) throw new Error("Invalid weekly score");
+  if (nk.__characterContext) {
+    recordServerWeekly(nk, nk.__characterContext, userId, name, scores);
+    return;
+  }
   const settings = weeklyPublishedConfig(nk);
   nk.sqlQuery(
     "SELECT weekly_leaderboard_record($1::UUID,$2::JSONB,$3,$4::JSONB,$5::BIGINT) AS period_id",
@@ -7377,7 +8718,7 @@ const readWeeklyLeaderboardRewards = (ctx, _logger, nk, payload) => {
 };
 const getWeeklyLeaderboardRewards = (ctx, logger, nk, payload) => {
   try {
-    return readWeeklyLeaderboardRewards(ctx, logger, nk, payload);
+    return nk.__characterContext ? readServerWeekly(ctx, logger, nk, payload) : readWeeklyLeaderboardRewards(ctx, logger, nk, payload);
   } catch (error) {
     if (logger && logger.error) logger.error("Weekly standings unavailable: " + String(error));
     return JSON.stringify({ success: false, code: 503, message: "Ch\u01B0a t\u1EA3i \u0111\u01B0\u1EE3c th\u01B0\u1EDFng tu\u1EA7n. Vui l\xF2ng th\u1EED l\u1EA1i." });
@@ -7433,7 +8774,7 @@ const claimWeeklyLeaderboardRewardInternal = (ctx, _logger, nk, payload) => {
 };
 const claimWeeklyLeaderboardReward = (ctx, logger, nk, payload) => {
   try {
-    return claimWeeklyLeaderboardRewardInternal(ctx, logger, nk, payload);
+    return nk.__characterContext ? claimServerWeekly(ctx, logger, nk, payload) : claimWeeklyLeaderboardRewardInternal(ctx, logger, nk, payload);
   } catch (error) {
     if (logger && logger.error) logger.error("Weekly reward claim unavailable: " + String(error));
     return JSON.stringify({ success: false, code: 503, message: "Ch\u01B0a th\u1EC3 nh\u1EADn th\u01B0\u1EDFng tu\u1EA7n. Vui l\xF2ng t\u1EA3i l\u1EA1i v\xE0 th\u1EED l\u1EA1i." });
@@ -7441,6 +8782,19 @@ const claimWeeklyLeaderboardReward = (ctx, logger, nk, payload) => {
 };
 const weeklyLeaderboardTickRpc = (ctx, _logger, nk, _payload) => {
   if (ctx.userId && ctx.userId !== String(ctx.env.CONFIG_ADMIN_USER_ID || "")) return JSON.stringify({ success: false, code: 403, message: "Forbidden" });
+  if (ctx.env && ctx.env.MULTI_SERVER_ENABLED === "true") {
+    const servers = nk.sqlQuery("SELECT server_id,generation FROM game_servers WHERE status='open' ORDER BY server_id", []);
+    const results = [];
+    for (const server of servers) {
+      const scope = { accountId: ctx.userId || "scheduler", serverId: server.server_id, generation: Number(server.generation) };
+      try {
+        results.push(withServerRequest(nk, scope, () => Object.assign({ server_id: scope.serverId, generation: scope.generation }, tickServerWeekly(nk, scope))));
+      } catch (error) {
+        results.push({ server_id: scope.serverId, error: String(error) });
+      }
+    }
+    return JSON.stringify({ success: !results.some((r) => r.error), servers: results });
+  }
   const result = tickWeeklyLeaderboards(nk);
   return JSON.stringify(__spreadValues({ success: true }, result));
 };
@@ -7601,9 +8955,47 @@ function linkedRpc_sync_all_leaderboards(ctx, logger, nk, payload) {
 function linkedRpc_session_status(ctx, logger, nk, payload) {
   return accountGuardedRpc("session_status", sessionStatus)(ctx, logger, nk, payload);
 }
+function linkedRpc_list_servers(c, l, n, p) {
+  return accountGuardedRpc("list_servers", listGameServers)(c, l, n, p);
+}
+function linkedRpc_list_my_characters(c, l, n, p) {
+  return accountGuardedRpc("list_my_characters", listMyCharacters)(c, l, n, p);
+}
+function linkedRpc_enter_server(c, l, n, p) {
+  return accountGuardedRpc("enter_server", enterGameServer)(c, l, n, p);
+}
+function linkedRpc_create_character(c, l, n, p) {
+  return accountGuardedRpc("create_character", createServerCharacter)(c, l, n, p);
+}
+function linkedRpc_iap_claim(c, l, n, p) {
+  return accountGuardedRpc("iap_claim", (cc, ll, nn, pp) => invokeWithVersionGate(cc, ll, nn, pp, iapClaim))(c, l, n, p);
+}
+function linkedRpc_resolve_purchase_order(c, l, n, p) {
+  return accountGuardedRpc("resolve_purchase_order", (cc, ll, nn, pp) => invokeWithVersionGate(cc, ll, nn, pp, resolvePurchaseOrder))(c, l, n, p);
+}
 function InitModule(ctx, logger, nk, initializer) {
+  createServerRegistryTables(nk);
+  initializer.registerRpc("admin_server_list", rpcAdminServerList);
+  initializer.registerRpc("admin_server_inspect", rpcAdminServerInspect);
+  initializer.registerRpc("admin_server_create", rpcAdminServerCreate);
+  initializer.registerRpc("admin_server_disable", rpcAdminServerDisable);
+  initializer.registerRpc("admin_server_enable", rpcAdminServerEnable);
+  initializer.registerRpc("admin_server_update", rpcAdminServerUpdate);
+  initializer.registerRpc("admin_server_expire_pending", rpcAdminServerExpirePending);
+  initializer.registerRpc("admin_server_plan", rpcAdminServerPlan);
+  initializer.registerRpc("admin_server_execute", rpcAdminServerExecute);
+  initializer.registerRpc("admin_server_job", rpcAdminServerJob);
+  initializer.registerRpc("admin_server_job_step", rpcAdminServerJobStep);
+  initializer.registerRpc("admin_server_financial_list", rpcAdminServerFinancialList);
+  initializer.registerRpc("admin_server_financial_retry", rpcAdminServerFinancialRetry);
+  initializer.registerRpc("list_servers", linkedRpc_list_servers);
+  initializer.registerRpc("list_my_characters", linkedRpc_list_my_characters);
+  initializer.registerRpc("enter_server", linkedRpc_enter_server);
+  initializer.registerRpc("create_character", linkedRpc_create_character);
   createGameConfigTables(nk, logger);
   createMonetizationTables(nk, logger);
+  initializer.registerRpc("iap_claim", linkedRpc_iap_claim);
+  initializer.registerRpc("resolve_purchase_order", linkedRpc_resolve_purchase_order);
   createAccountLinkTables(nk);
   createSingleLoginTable(nk);
   initializer.registerBeforeAuthenticateEmail(beforeSingleLoginEmail);
@@ -7663,8 +9055,12 @@ function InitModule(ctx, logger, nk, initializer) {
   initializer.registerRpc("admob_ssv_confirm", linkedRpc_admob_ssv_confirm);
   initializer.registerRpc("google_play_rtdn_confirm", linkedRpc_google_play_rtdn_confirm);
   createWeeklyLeaderboardTables(nk);
-  tickWeeklyLeaderboards(nk);
-  createLeaderboards(nk, logger);
+  createServerWeeklyTables(nk);
+  createMultiAccountLinkFunctions(nk);
+  if (!ctx.env || ctx.env.MULTI_SERVER_ENABLED !== "true") {
+    tickWeeklyLeaderboards(nk);
+    createLeaderboards(nk, logger);
+  }
   initializer.registerRpc("get_weekly_leaderboard_rewards", linkedRpc_get_weekly_leaderboard_rewards);
   initializer.registerRpc("claim_weekly_leaderboard_reward", linkedRpc_claim_weekly_leaderboard_reward);
   initializer.registerRpc("weekly_leaderboard_tick", linkedRpc_weekly_leaderboard_tick);

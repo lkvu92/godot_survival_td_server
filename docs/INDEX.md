@@ -1,5 +1,9 @@
 # Server documentation
 
+- [C143 Multi-server](contracts/C143_MULTI_SERVER.md): v1.4.0 IN_PROGRESS — newest-first server cards with scoped character summary; production release gated. [Migration runbook](S1_MIGRATION_RUNBOOK.md).
+
+- [Kế hoạch triển khai nhiều server logic](MULTI_SERVER_IMPLEMENTATION_PLAN.md): DRAFT — định danh account/server, tích hợp backend/client, migration S1; mục 15 đặc tả API create/disable/reset/delete/cleanup, generation, dry-run và integration test.
+
 - [C142 Admin skill test](contracts/C142_ADMIN_SKILL_TEST.md): read-only admin access RPC and no-reward Arc 0 test stage.
 
 - [C121 Online-only configuration](contracts/C121_ONLINE_ONLY_CONFIG.md) v1.0.2: profile loading never grants Thanh Phong Kiếm to new or empty inventories.

@@ -15,6 +15,11 @@ function checkinDayText(day: number): string {
 }
 
 function checkinAccountCreatedAtMs(nk: nkruntime.Nakama, userId: string, fallback: number): number {
+    const scope=(nk as any).__characterContext;
+    if(scope) {
+        const characters=nk.sqlQuery('SELECT EXTRACT(EPOCH FROM created_at)*1000 AS created_at_ms FROM player_characters WHERE account_id=$1::UUID AND server_id=$2 AND generation=$3',[userId,scope.serverId,scope.generation]);
+        return characters.length?Math.max(0,Number(characters[0].created_at_ms||fallback)):fallback;
+    }
     const rows = nk.sqlQuery("SELECT EXTRACT(EPOCH FROM create_time) * 1000 AS created_at_ms FROM users WHERE id = $1::UUID", [userId]);
     return rows.length > 0 ? Math.max(0, Number(rows[0].created_at_ms || fallback)) : fallback;
 }

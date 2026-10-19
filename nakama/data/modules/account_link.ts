@@ -204,6 +204,7 @@ function withActiveAccount<T>(nk: nkruntime.Nakama, userId: string, action: () =
 }
 
 function accountGuardedRpc(id: string, handler: nkruntime.RpcFunction): nkruntime.RpcFunction {
+    handler = serverAdmissionRpc(id, handler);
     return (ctx, logger, nk, payload) => {
         const rejected = requireCurrentLogin(ctx, nk);
         if (rejected) return rejected;
@@ -222,7 +223,14 @@ function accountGuardedRpc(id: string, handler: nkruntime.RpcFunction): nkruntim
         if (!owner) return handler(ctx, logger, nk, payload);
         try { return withActiveAccount(nk, owner, () => handler(ctx, logger, nk, payload)); }
         catch (error) {
-            if (String(error).indexOf("Account archived") >= 0) return JSON.stringify({success:false,status:"error",code:401,message:"Account archived after linking; sign in again"});
+            if (String(error).indexOf("Account archived") >= 0) {
+                if(id==='admob_ssv_confirm') {
+                    const req=serverRequest(payload);
+                    const rows=nk.sqlQuery("SELECT 1 FROM monetization_ad_rewards WHERE ad_session_id=$1 AND user_id=$2 AND status='granted'",[String(req.ad_session_id||''),owner]);
+                    if(rows.length)return JSON.stringify({status:'success',data:{granted:true,idempotent:true}});
+                }
+                return JSON.stringify({success:false,status:"error",code:401,message:"Account archived after linking; sign in again"});
+            }
             throw error;
         }
     };
@@ -315,6 +323,155 @@ function accountLinkSummary(nk: nkruntime.Nakama, userId: string): any {
         no_ads_expires_at:Number(entitlement.no_ads_expires_at||0),server_time:Number(entitlement.server_time||0)};
 }
 
+function multiAccountLinkSummary(nk:nkruntime.Nakama,userId:string):any {
+    const characters=nk.sqlQuery(`SELECT c.server_id,c.generation,c.status,s.display_name,
+      COALESCE(p.value->>'display_name','') AS name,COALESCE((p.value->>'level')::INT,1) AS level
+      FROM player_characters c JOIN game_servers s ON s.server_id=c.server_id
+      LEFT JOIN storage p ON p.user_id=c.account_id AND p.collection='player_profiles' AND p.key=c.server_id||':g'||c.generation||':main'
+      WHERE c.account_id=$1::UUID ORDER BY c.server_id`,[userId]);
+    const entitlement=readEntitlementRow(nk,userId);
+    return {user_id:userId,name:nk.accountGetId(userId).user.username,level:1,heroes:[],resources:{},characters,
+      no_ads_expires_at:Number(entitlement.no_ads_expires_at||0),server_time:Number(entitlement.server_time||0)};
+}
+
+function multiLinkSnapshot(nk:nkruntime.Nakama,a:string,b:string):any {
+    return parseJsonb(nk.sqlQuery('SELECT multi_account_link_snapshot($1::UUID,$2::UUID) AS value',[a,b])[0].value);
+}
+
+function createMultiAccountLinkFunctions(nk:nkruntime.Nakama):void {
+    nk.sqlExec(`ALTER TABLE account_link_intents ADD COLUMN IF NOT EXISTS multi_snapshot JSONB;
+    CREATE TABLE IF NOT EXISTS account_link_server_tasks(
+      intent_id UUID NOT NULL,server_id TEXT NOT NULL,generation INT NOT NULL,loser_id UUID NOT NULL,winner_id UUID NOT NULL,
+      copy_records BOOL NOT NULL,done BOOL NOT NULL DEFAULT FALSE,PRIMARY KEY(intent_id,server_id,generation));
+    CREATE OR REPLACE FUNCTION multi_account_link_snapshot(a UUID,b UUID) RETURNS JSONB LANGUAGE plpgsql AS $snap$
+    BEGIN RETURN jsonb_build_object(
+      'characters',(SELECT COALESCE(jsonb_agg(to_jsonb(c) ORDER BY server_id,account_id),'[]'::JSONB) FROM player_characters c WHERE account_id IN(a,b)),
+      'servers',(SELECT COALESCE(jsonb_agg(jsonb_build_object('server_id',s.server_id,'generation',s.generation,'revision',s.revision,'status',s.status) ORDER BY s.server_id),'[]'::JSONB)
+        FROM game_servers s WHERE EXISTS(SELECT 1 FROM player_characters c WHERE c.server_id=s.server_id AND c.account_id IN(a,b))),
+      'ads',(SELECT COALESCE(jsonb_agg(to_jsonb(c) ORDER BY ad_session_id),'[]'::JSONB) FROM monetization_ad_rewards c WHERE user_id IN(a::TEXT,b::TEXT)),
+      'quotas',(SELECT COALESCE(jsonb_agg(to_jsonb(c) ORDER BY target_server_id,target_generation,user_id,placement_id,reward_date,claim_slot),'[]'::JSONB)
+        FROM monetization_daily_reward_claims c WHERE user_id IN(a::TEXT,b::TEXT)),
+      'fragments',(SELECT COALESCE(jsonb_agg(to_jsonb(c) ORDER BY target_server_id,target_generation,user_id,reward_date),'[]'::JSONB)
+        FROM monetization_daily_fragment_rewards c WHERE user_id IN(a::TEXT,b::TEXT))); END $snap$;
+    CREATE OR REPLACE FUNCTION commit_multi_google_account_link(ticket UUID,actor UUID,keep UUID) RETURNS JSONB LANGUAGE plpgsql AS $merge$
+    DECLARE t account_link_intents%ROWTYPE;a users%ROWTYPE;b users%ROWTYPE;w users%ROWTYPE;l users%ROWTYPE;
+      uid UUID;sid TEXT;versions_now JSONB;identities_now JSONB;seconds_left DOUBLE PRECISION;
+    BEGIN
+      SELECT * INTO t FROM account_link_intents WHERE id=ticket FOR UPDATE;
+      IF NOT FOUND OR t.initiator<>actor OR t.multi_snapshot IS NULL THEN RAISE EXCEPTION 'INVALID_MULTI_LINK_TICKET'; END IF;
+      IF t.status='completed' THEN
+        IF t.winner_id<>keep THEN RAISE EXCEPTION 'TICKET_CHOICE_CONFLICT'; END IF;
+        RETURN jsonb_build_object('winner_id',keep,'replayed',TRUE);
+      END IF;
+      IF t.expires_at<=NOW() OR keep NOT IN(t.initiator,t.other_id) THEN RAISE EXCEPTION 'LINK_PREVIEW_EXPIRED'; END IF;
+      FOR uid IN SELECT v FROM unnest(ARRAY[t.initiator,t.other_id]) v ORDER BY v LOOP
+        INSERT INTO account_link_state(user_id) VALUES(uid) ON CONFLICT DO NOTHING;
+        PERFORM 1 FROM account_link_state WHERE user_id=uid FOR UPDATE;
+      END LOOP;
+      IF EXISTS(SELECT 1 FROM account_link_state WHERE user_id IN(t.initiator,t.other_id) AND (status<>'active' OR active_requests<>0)) THEN RAISE EXCEPTION 'ACCOUNT_BUSY'; END IF;
+      FOR sid IN SELECT DISTINCT c.server_id FROM player_characters c WHERE account_id IN(t.initiator,t.other_id) ORDER BY c.server_id LOOP
+        PERFORM 1 FROM game_servers WHERE server_id=sid FOR UPDATE;
+        IF EXISTS(SELECT 1 FROM game_servers WHERE server_id=sid AND (active_requests<>0 OR status NOT IN('open','disabled','maintenance','scheduled')))
+          OR EXISTS(SELECT 1 FROM server_lifecycle_jobs WHERE server_id=sid AND status<>'succeeded') THEN RAISE EXCEPTION 'SERVER_BUSY'; END IF;
+      END LOOP;
+      PERFORM 1 FROM users WHERE id IN(t.initiator,t.other_id) ORDER BY id FOR UPDATE;
+      SELECT * INTO a FROM users WHERE id=t.initiator;SELECT * INTO b FROM users WHERE id=t.other_id;
+      SELECT jsonb_object_agg(id::TEXT,jsonb_build_object('email',email,'google',google_id,'password',password,'custom',custom_id,'disabled',disable_time))
+        INTO identities_now FROM users WHERE id IN(t.initiator,t.other_id);
+      IF a.id IS NULL OR b.id IS NULL OR identities_now IS DISTINCT FROM t.identity_snapshot
+        OR b.google_id IS DISTINCT FROM t.google_id OR COALESCE(EXTRACT(EPOCH FROM a.disable_time),0)>0
+        OR COALESCE(EXTRACT(EPOCH FROM b.disable_time),0)>0 THEN RAISE EXCEPTION 'IDENTITY_CHANGED'; END IF;
+      IF keep=a.id THEN w:=a;l:=b;ELSE w:=b;l:=a;END IF;
+      IF COALESCE(a.email,'')<>'' AND COALESCE(b.email,'')<>'' AND LOWER(a.email)<>LOWER(b.email) THEN RAISE EXCEPTION 'EMAIL_CONFLICT'; END IF;
+      IF COALESCE(a.google_id,'')<>'' AND COALESCE(b.google_id,'')<>'' AND a.google_id<>b.google_id THEN RAISE EXCEPTION 'GOOGLE_CONFLICT'; END IF;
+      IF EXISTS(SELECT 1 FROM unnest(ARRAY['custom_id','apple_id','facebook_id','facebook_instant_game_id','gamecenter_id','steam_id']) k
+        WHERE COALESCE(to_jsonb(l)->>k,'')<>'') THEN RAISE EXCEPTION 'OTHER_PROVIDER_REQUIRES_SUPPORT'; END IF;
+      IF EXISTS(SELECT 1 FROM monetization_purchase_orders WHERE user_id IN(a.id::TEXT,b.id::TEXT) AND status='pending')
+        OR EXISTS(SELECT 1 FROM monetization_ad_rewards WHERE user_id IN(a.id::TEXT,b.id::TEXT) AND status IN('prepared','verified'))
+        OR EXISTS(SELECT 1 FROM storage WHERE user_id IN(a.id,b.id) AND collection='player_stage_runs'
+          AND value->>'status'='active' AND COALESCE((value->>'expires_at_ms')::BIGINT,0)>EXTRACT(EPOCH FROM NOW())*1000)
+        THEN RAISE EXCEPTION 'FINISH_ACTIVE_DELIVERIES_OR_RUN'; END IF;
+      PERFORM 1 FROM storage WHERE user_id IN(a.id,b.id) ORDER BY user_id,collection,key FOR UPDATE;
+      SELECT COALESCE(jsonb_object_agg(user_id::TEXT||'/'||collection||'/'||key,version),'{}'::JSONB) INTO versions_now FROM storage WHERE user_id IN(a.id,b.id);
+      IF versions_now IS DISTINCT FROM t.versions OR account_link_finance_snapshot(a.id,b.id) IS DISTINCT FROM t.finance_snapshot
+        OR multi_account_link_snapshot(a.id,b.id) IS DISTINCT FROM t.multi_snapshot THEN RAISE EXCEPTION 'PREVIEW_STALE'; END IF;
+      -- Paid conflicting characters require a reviewed compensation policy, not silent loss or replay.
+      IF EXISTS(SELECT 1 FROM player_characters x JOIN player_characters y ON y.server_id=x.server_id AND y.generation=x.generation
+        JOIN monetization_purchases p ON p.target_server_id=x.server_id AND p.target_generation=x.generation
+        WHERE x.account_id=w.id AND y.account_id=l.id AND p.user_id IN(w.id::TEXT,l.id::TEXT) AND p.status IN('verified','consumed'))
+        THEN RAISE EXCEPTION 'PAID_CHARACTER_CONFLICT_REQUIRES_SUPPORT'; END IF;
+      INSERT INTO account_link_archives(loser_id,winner_id,intent_id,snapshot)
+        SELECT l.id,w.id,t.id,jsonb_build_object('identity',to_jsonb(l),'winner_identity',to_jsonb(w),'finance',t.finance_snapshot,'multi',t.multi_snapshot,
+          'storage',(SELECT COALESCE(jsonb_agg(to_jsonb(s)),'[]'::JSONB) FROM storage s WHERE user_id IN(a.id,b.id)));
+      INSERT INTO account_link_server_tasks(intent_id,server_id,generation,loser_id,winner_id,copy_records)
+        SELECT t.id,c.server_id,c.generation,l.id,w.id,NOT EXISTS(SELECT 1 FROM player_characters x WHERE x.account_id=w.id AND x.server_id=c.server_id)
+        FROM player_characters c WHERE c.account_id=l.id;
+      -- Only non-overlapping characters transfer. Exact keys and versions are preserved.
+      INSERT INTO storage(collection,key,user_id,value,version,read,write,create_time,update_time)
+        SELECT o.collection,o.key,w.id,o.value,o.version,0,0,o.create_time,NOW() FROM storage o JOIN player_characters c
+          ON c.account_id=o.user_id AND left(o.key,length(c.server_id||':g'||c.generation||':'))=c.server_id||':g'||c.generation||':'
+        WHERE o.user_id=l.id AND o.collection=ANY('{player_profiles,player_inventory,player_heroes,player_stage_runs,player_identity,player_event_progress,player_daily_checkin,weekly_leaderboard_claims,player_purchase_grants}'::TEXT[])
+          AND NOT EXISTS(SELECT 1 FROM player_characters other WHERE other.account_id=w.id AND other.server_id=c.server_id);
+      UPDATE server_weekly_scores s SET user_id=w.id WHERE user_id=l.id AND NOT EXISTS(SELECT 1 FROM player_characters c WHERE c.account_id=w.id AND c.server_id=s.server_id);
+      UPDATE server_weekly_awards s SET user_id=w.id WHERE user_id=l.id AND NOT EXISTS(SELECT 1 FROM player_characters c WHERE c.account_id=w.id AND c.server_id=s.server_id);
+      INSERT INTO player_characters(account_id,server_id,generation,status,created_at,last_entered_at)
+        SELECT w.id,c.server_id,c.generation,c.status,c.created_at,c.last_entered_at FROM player_characters c WHERE c.account_id=l.id
+          AND NOT EXISTS(SELECT 1 FROM player_characters other WHERE other.account_id=w.id AND other.server_id=c.server_id);
+      UPDATE player_characters SET status='retired' WHERE account_id=l.id;
+      SELECT GREATEST(0,EXTRACT(EPOCH FROM no_ads_expires_at-NOW())) INTO seconds_left FROM player_monetization_entitlements WHERE user_id=l.id::TEXT FOR UPDATE;
+      IF COALESCE(seconds_left,0)>0 THEN
+        INSERT INTO player_monetization_entitlements(user_id,no_ads_expires_at,source) VALUES(w.id::TEXT,NOW()+make_interval(secs=>seconds_left),'account_link')
+          ON CONFLICT(user_id) DO UPDATE SET no_ads_expires_at=GREATEST(NOW(),COALESCE(player_monetization_entitlements.no_ads_expires_at,NOW()))+make_interval(secs=>seconds_left),source='account_link',updated_at=NOW();
+        UPDATE player_monetization_entitlements SET no_ads_expires_at=NOW(),updated_at=NOW() WHERE user_id=l.id::TEXT;
+      END IF;
+      UPDATE monetization_purchase_orders SET user_id=w.id::TEXT WHERE user_id=l.id::TEXT;
+      UPDATE monetization_purchases SET user_id=w.id::TEXT WHERE user_id=l.id::TEXT;
+      UPDATE player_vip_credits SET user_id=w.id::TEXT WHERE user_id=l.id::TEXT;
+      UPDATE store_receipt_reservations SET user_id=w.id::TEXT WHERE user_id=l.id::TEXT;
+      IF EXISTS(SELECT 1 FROM monetization_daily_reward_claims c WHERE user_id IN(a.id::TEXT,b.id::TEXT)
+        AND reward_date=(NOW() AT TIME ZONE 'UTC')::DATE AND COALESCE((SELECT (snapshot->'system'->'rewarded_ads'->'placements'->c.placement_id->>'daily_limit')::INT
+          FROM remote_config_releases ORDER BY config_version DESC LIMIT 1),0)<=0) THEN RAISE EXCEPTION 'REWARD_QUOTA_CONFIG_UNAVAILABLE'; END IF;
+      INSERT INTO monetization_daily_reward_claims(user_id,target_server_id,target_generation,placement_id,reward_date,claim_slot,ad_session_id)
+        SELECT w.id::TEXT,q.target_server_id,q.target_generation,q.placement_id,(NOW() AT TIME ZONE 'UTC')::DATE,slot,
+          'merge:'||t.id||':'||md5(q.target_server_id||':'||q.target_generation||':'||q.placement_id)||':'||slot
+        FROM (SELECT DISTINCT target_server_id,target_generation,placement_id FROM monetization_daily_reward_claims
+          WHERE user_id IN(a.id::TEXT,b.id::TEXT) AND reward_date=(NOW() AT TIME ZONE 'UTC')::DATE) q
+        CROSS JOIN LATERAL generate_series(1,(SELECT (snapshot->'system'->'rewarded_ads'->'placements'->q.placement_id->>'daily_limit')::INT
+          FROM remote_config_releases ORDER BY config_version DESC LIMIT 1)) slot ON CONFLICT DO NOTHING;
+      INSERT INTO monetization_daily_fragment_rewards(user_id,target_server_id,target_generation,reward_date,item_id,granted_at)
+        SELECT w.id::TEXT,target_server_id,target_generation,reward_date,item_id,granted_at FROM monetization_daily_fragment_rewards WHERE user_id=l.id::TEXT
+        ON CONFLICT DO NOTHING;
+      UPDATE users SET email=NULL,password=NULL,google_id=NULL,custom_id=NULL,disable_time=NOW(),update_time=NOW() WHERE id=l.id;
+      UPDATE users SET email=COALESCE(NULLIF(w.email,''),l.email),password=COALESCE(w.password,l.password),google_id=t.google_id,update_time=NOW() WHERE id=w.id;
+      UPDATE user_device SET user_id=w.id WHERE user_id=l.id;
+      UPDATE account_link_archives SET winner_id=w.id WHERE winner_id=l.id;
+      UPDATE account_link_state SET merged_into=w.id WHERE merged_into=l.id;
+      UPDATE account_link_state SET status='archived',merged_into=w.id WHERE user_id=l.id;
+      UPDATE account_link_intents SET status='completed',winner_id=w.id WHERE id=t.id;
+      RETURN jsonb_build_object('winner_id',w.id,'loser_id',l.id,'replayed',FALSE);
+    END $merge$;`,[]);
+}
+
+function repairMultiLinkBoards(nk:nkruntime.Nakama,winner:string,server:string,generation:number):void {
+    const tasks=nk.sqlQuery('SELECT * FROM account_link_server_tasks WHERE winner_id=$1::UUID AND server_id=$2 AND generation=$3 AND done=FALSE ORDER BY intent_id',[winner,server,generation]);
+    if(!tasks.length)return;
+    withServerRequest(nk,{accountId:winner,serverId:server,generation},()=>{
+        for(const task of tasks) {
+            for(const board of ['best_wave','most_kills','total_wins','cultivation_realm','campaign_stage','combat_power_v2']) {
+                const id=server+':g'+generation+':'+board;
+                let records:any;
+                try{records=nk.leaderboardRecordsList(id,[String(task.loser_id)],1,'',0);}
+                catch(error){if(/not found|not exist/i.test(String(error)))continue;throw error;}
+                const record=(records.ownerRecords||[]).find((r:any)=>r.ownerId===String(task.loser_id));
+                if(!record)continue;
+                if(task.copy_records)nk.leaderboardRecordWrite(id,winner,record.username,record.score,record.subscore,record.metadata,'best' as any);
+                nk.leaderboardRecordDelete(id,String(task.loser_id));
+            }
+            nk.sqlExec('UPDATE account_link_server_tasks SET done=TRUE WHERE intent_id=$1::UUID AND server_id=$2 AND generation=$3',[task.intent_id,server,generation]);
+        }
+    });
+}
+
 function readAccountLinkSnapshot(nk: nkruntime.Nakama, a: string, b: string): any {
     const rows=nk.sqlQuery(`SELECT
         (SELECT jsonb_object_agg(id::TEXT,jsonb_build_object('email',email,'google',google_id,'password',password,'custom',custom_id,'disabled',disable_time)) FROM users WHERE id IN($1::UUID,$2::UUID)) AS identities,
@@ -347,21 +504,23 @@ const prepareGoogleLink: nkruntime.RpcFunction = (ctx, _logger, nk, payload) => 
     }
     if (google.userId===ctx.userId) return JSON.stringify({success:true,linked:true,already_linked:true});
     try {
+        const multi=!!(ctx.env && ctx.env.MULTI_SERVER_ENABLED==='true');
         const a=nk.accountGetId(ctx.userId),b=nk.accountGetId(google.userId);
         if (a.disableTime||b.disableTime) throw new Error("Account is disabled");
         if (a.email&&b.email&&a.email.toLowerCase()!==b.email.toLowerCase()) throw new Error("Different email credentials require support");
         if (a.user.googleId&&a.user.googleId!==b.user.googleId) throw new Error("Different Google identities require support");
         // Reconcile legacy VIP credits before capturing the review snapshot.
-        readVipProgress(nk,ctx.userId,vipRuntimeMode);readVipProgress(nk,google.userId,vipRuntimeMode);
+        if(!multi){readVipProgress(nk,ctx.userId,vipRuntimeMode);readVipProgress(nk,google.userId,vipRuntimeMode);}
         const snapshot=readAccountLinkSnapshot(nk,ctx.userId,google.userId);
-        const accounts=[accountLinkSummary(nk,ctx.userId),accountLinkSummary(nk,google.userId)];
+        const accounts=multi?[multiAccountLinkSummary(nk,ctx.userId),multiAccountLinkSummary(nk,google.userId)]:[accountLinkSummary(nk,ctx.userId),accountLinkSummary(nk,google.userId)];
+        const multiSnapshot=multi?multiLinkSnapshot(nk,ctx.userId,google.userId):null;
         if(canonicalLinkSnapshot(snapshot)!==canonicalLinkSnapshot(readAccountLinkSnapshot(nk,ctx.userId,google.userId)))throw new Error("Progress changed; refresh preview");
         const ticket=nk.uuidv4();
-        const rows=nk.sqlQuery(`INSERT INTO account_link_intents(id,initiator,other_id,google_id,identity_snapshot,versions,finance_snapshot)
-            VALUES($1::UUID,$2::UUID,$3::UUID,$4,$5::JSONB,$6::JSONB,$7::JSONB)
+        const rows=nk.sqlQuery(`INSERT INTO account_link_intents(id,initiator,other_id,google_id,identity_snapshot,versions,finance_snapshot,multi_snapshot)
+            VALUES($1::UUID,$2::UUID,$3::UUID,$4,$5::JSONB,$6::JSONB,$7::JSONB,$8::JSONB)
             RETURNING EXTRACT(EPOCH FROM expires_at)::BIGINT AS expires_at`,[ticket,ctx.userId,google.userId,b.user.googleId,
-                JSON.stringify(snapshot.identities),JSON.stringify(snapshot.versions),JSON.stringify(snapshot.finance)]);
-        return JSON.stringify({success:true,conflict:true,ticket,accounts,expires_at:Number(rows[0].expires_at)});
+                JSON.stringify(snapshot.identities),JSON.stringify(snapshot.versions),JSON.stringify(snapshot.finance),multiSnapshot?JSON.stringify(multiSnapshot):null]);
+        return JSON.stringify({success:true,conflict:true,ticket,accounts,server_mode:multi?'multi':'legacy',expires_at:Number(rows[0].expires_at)});
     } catch(error){return JSON.stringify({success:false,code:409,message:String(error)});}
 };
 
@@ -370,7 +529,8 @@ const confirmGoogleLink: nkruntime.RpcFunction = (ctx, logger, nk, payload) => {
     let req: any;try{req=JSON.parse(payload||"{}");}catch(_e){return JSON.stringify({success:false,code:400});}
     if (!req||req.confirmed!==true||!req.ticket||!req.keep_user_id) return JSON.stringify({success:false,code:400,message:"Explicit confirmation required"});
     try {
-        const rows=nk.sqlQuery("SELECT commit_google_account_link($1::UUID,$2::UUID,$3::UUID) AS result",[String(req.ticket),ctx.userId,String(req.keep_user_id)]);
+        const multi=!!(ctx.env&&ctx.env.MULTI_SERVER_ENABLED==='true');
+        const rows=nk.sqlQuery('SELECT '+(multi?'commit_multi_google_account_link':'commit_google_account_link')+'($1::UUID,$2::UUID,$3::UUID) AS result',[String(req.ticket),ctx.userId,String(req.keep_user_id)]);
         const result=parseJsonb(rows[0].result);
         // Cleanup is repeatable, including after a network drop following commit.
         const archives=nk.sqlQuery("SELECT loser_id::TEXT FROM account_link_archives WHERE intent_id=$1::UUID",[String(req.ticket)]);
@@ -380,6 +540,10 @@ const confirmGoogleLink: nkruntime.RpcFunction = (ctx, logger, nk, payload) => {
             for(const board of ["cultivation_realm","campaign_stage","combat_power","combat_power_v2","best_wave","most_kills","total_wins"]){
                 try{nk.leaderboardRecordDelete(board,loser);}catch(_e){/* Missing legacy board is harmless. */}
             }
+        }
+        if(multi) {
+            const tasks=nk.sqlQuery('SELECT DISTINCT server_id,generation FROM account_link_server_tasks WHERE winner_id=$1::UUID AND done=FALSE ORDER BY server_id',[String(result.winner_id)]);
+            for(const task of tasks){try{withActiveAccount(nk,String(result.winner_id),()=>repairMultiLinkBoards(nk,String(result.winner_id),String(task.server_id),Number(task.generation)));}catch(error){logger.warn('Link board repair remains queued: %s',String(error));}}
         }
         return JSON.stringify({success:true,winner_id:String(result.winner_id),reauthenticate:true});
     }catch(error){logger.warn("Account link confirmation did not complete: %s",String(error));return JSON.stringify({success:false,code:409,message:String(error)});}

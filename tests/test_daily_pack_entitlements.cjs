@@ -22,6 +22,7 @@ const nk = {
     for (const w of writes) db[w.collection] = {value:clone(w.value),version:String(Number(w.version)+1)};
   },
   sqlQuery(sql, [id]) {
+    if (sql.includes('game_store_platform_products')) return [];
     if (sql.includes('game_store_products')) return [{product_id:id,active:true}];
     const item = items.find(i => i.id === id); assert(item, 'Unknown test reward: '+id); return [item];
   }
@@ -89,6 +90,7 @@ ctx.monetizationMode = () => 'mock';
 let insertedOrder;
 const purchaseNk = {...nk, uuidv4:()=> 'monthly-order',
   sqlQuery(sql) {
+    if (sql.includes('game_store_platform_products')) return [];
     if (sql.includes('game_store_products')) return [{...packs[0], ui:packs[0]}];
     if (sql.includes('FROM monetization_purchase_orders')) return [{id:'old-paid-or-unpaid-order',status:'pending',reward_snapshot:[{reward_type:'currency',reward_id:'gems',quantity:100}]}];
     if (sql.includes('game_store_product_rewards')) return packs[0].rewards;

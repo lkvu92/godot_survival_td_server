@@ -26,6 +26,8 @@ def make_config(env):
                      "ADMOB_REWARDED_UNIT_ID_PRODUCTION"]
     runtime_env = [name + "=" + required(name) for name in runtime_names]
     runtime_env.append("GOOGLE_PLAY_TESTER_EMAILS=" + str(env.get("GOOGLE_PLAY_TESTER_EMAILS") or "").strip())
+    if str(env.get("MULTI_SERVER_ENABLED") or "").lower() == "true":
+        runtime_env.append("MULTI_SERVER_ENABLED=true")
     runtime_env.append("PLAY_PURCHASE_VERIFIER_URL=http://monetization-verifier:8080/google-play/verify")
     return {
         "database": {"address": [required("POSTGRES_USER") + ":" + required("POSTGRES_PASSWORD")

@@ -7,6 +7,12 @@ try {
     }
     & node --check nakama/data/build/index.js
     if ($LASTEXITCODE -ne 0) { throw 'Runtime syntax failed' }
+    & node tests/test_server_admission.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Server admission regression failed' }
+    & node tests/test_character_repository.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Character repository regression failed' }
+    & node tests/test_store_platforms.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Store platform boundary regression failed' }
     & node tests/test_run_lifecycle.cjs
     if ($LASTEXITCODE -ne 0) { throw 'Run lifecycle regression failed' }
     & node tests/test_layered_talisman_config.cjs
@@ -40,11 +46,15 @@ try {
     & python -B -m unittest discover -s tests -p 'test_*.py'
     if ($LASTEXITCODE -ne 0) { throw 'Seed CLI regressions failed' }
     if ($env:SEED_TEST_PSQL -and $env:SEED_TEST_PORT) {
+        & node tests/test_server_registry_sql.cjs
+        if ($LASTEXITCODE -ne 0) { throw 'Server registry PostgreSQL regressions failed' }
         & node tests/test_weekly_leaderboard.cjs
         if ($LASTEXITCODE -ne 0) { throw 'Weekly leaderboard PostgreSQL regressions failed' }
         & node tests/test_seed_integrity.cjs
         if ($LASTEXITCODE -ne 0) { throw 'PostgreSQL regressions failed' }
     }
+    & node tests/test_s1_migration_cli.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'S1 migration CLI safety regressions failed' }
     Write-Output 'PASS server static checks and seed CLI regressions'
     & node tests/test_first_clear_exp.cjs
     if ($LASTEXITCODE -ne 0) { throw 'First-clear EXP regression failed' }

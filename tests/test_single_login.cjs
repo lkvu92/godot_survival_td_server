@@ -1,5 +1,6 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert');
 const context=vm.createContext({});
+vm.runInContext(fs.readFileSync(require('path').join(__dirname,'../nakama/data/modules/build/server_context.js'),'utf8'),context);
 vm.runInContext(fs.readFileSync(require('path').join(__dirname,'../nakama/data/modules/build/account_link.js'),'utf8'),context);
 const fn=name=>vm.runInContext(name,context);
 const owners=new Map();let sequence=0,handled=0,pushes=[];

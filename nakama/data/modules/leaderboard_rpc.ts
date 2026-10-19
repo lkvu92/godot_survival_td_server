@@ -31,6 +31,7 @@ function combatPowerBoard(id: string): string {
 
 // Đồng bộ toàn bộ tài khoản người chơi thực tế trong DB vào Bảng Xếp Hạng
 function syncAllStoredProfilesToLeaderboards(nk: nkruntime.Nakama, logger: nkruntime.Logger): number {
+    if((nk as any).__characterContext)throw new Error('Use a server-scoped rebuild job instead of scanning every profile');
     try {
         const rows = nk.sqlQuery(
             "SELECT s.user_id, COALESCE(NULLIF(u.display_name, ''), u.username, 'Đạo Hữu') as username " +

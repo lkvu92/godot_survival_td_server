@@ -36,6 +36,8 @@ function authorize(request) {
 }
 
 async function verifyPlayPurchase(body) {
+  const expectedPackage = String(process.env.GOOGLE_PLAY_PACKAGE_NAME || "");
+  if ((body.purchase_order_id || body.verification_only === true) && (!expectedPackage || String(body.package_name || "") !== expectedPackage)) return { verified: false };
   const auth = new google.auth.GoogleAuth({ scopes: ["https://www.googleapis.com/auth/androidpublisher"] });
   const publisher = google.androidpublisher({ version: "v3", auth });
   const result = await publisher.purchases.products.get({
@@ -52,8 +54,10 @@ async function verifyPlayPurchase(body) {
   if (!expectedUserId || String(purchase.obfuscatedExternalAccountId || "") !== expectedUserId) {
     return { verified: false };
   }
+  const expectedOrderId = String(body.purchase_order_id || "");
+  if (expectedOrderId && String(purchase.obfuscatedExternalProfileId || "") !== expectedOrderId) return { verified: false };
 
-  if (Number(purchase.consumptionState) !== 1) {
+  if (body.verification_only !== true && Number(purchase.consumptionState) !== 1) {
     await publisher.purchases.products.consume({
       packageName: String(body.package_name || ""),
       productId: String(body.product_id || ""),
@@ -64,6 +68,7 @@ async function verifyPlayPurchase(body) {
     verified: true,
     token_hash: createHash("sha256").update(String(body.purchase_token)).digest("hex"),
     order_id: String(purchase.orderId || ""),
+    purchase_order_id: String(purchase.obfuscatedExternalProfileId || ""),
     purchase_time_millis: String(purchase.purchaseTimeMillis || ""),
   };
 }
@@ -126,7 +131,9 @@ async function confirmWithNakama(verified) {
     },
   );
   if (!response.ok) throw new Error(`Nakama confirmation failed: ${response.status}`);
-  return response.json();
+  const result = await response.json();
+  if (result.success === false || result.status === "error") throw new Error("Nakama callback rejected; retry required");
+  return result;
 }
 
 async function callNakamaVerifierRpc(rpcId, payload) {
@@ -140,7 +147,9 @@ async function callNakamaVerifierRpc(rpcId, payload) {
     },
   );
   if (!response.ok) throw new Error(`Nakama ${rpcId} failed: ${response.status}`);
-  return response.json();
+  const result = await response.json();
+  if (result.success === false || result.status === "error") throw new Error("Nakama callback rejected; retry required");
+  return result;
 }
 
 async function processRtdn(request) {

@@ -179,6 +179,7 @@ function processStageLevel(row: any): any {
 
 function buildStoreConfigs(nk: nkruntime.Nakama): any {
     const products = nk.sqlQuery("SELECT * FROM game_store_products ORDER BY tab_id, product_id", []);
+    const platformProducts=nk.sqlQuery("SELECT platform,product_id,store_product_id,active FROM game_store_platform_products ORDER BY platform,product_id",[]);
     const packsByTab: any = {};
     let firstTopup: any = {};
     products.forEach((row: any) => {
@@ -191,6 +192,11 @@ function buildStoreConfigs(nk: nkruntime.Nakama): any {
             quantity: Number(reward.quantity), metadata: parseJsonb(reward.metadata) || {},
         }));
         ui.product_id = String(row.product_id);
+        ui.store_product_ids={android:String(row.product_id)};
+        for(const mapping of platformProducts) if(String(mapping.product_id)===String(row.product_id)) {
+            if(mapping.active===true)ui.store_product_ids[String(mapping.platform)]=String(mapping.store_product_id);
+            else delete ui.store_product_ids[String(mapping.platform)];
+        }
         ui.id = String(row.pack_id);
         ui.active = row.active === true;
         ui.fulfillment_type = String(row.fulfillment_type);
@@ -310,7 +316,8 @@ const getConfigBootstrap: nkruntime.RpcFunction = (
     if (!ctx.userId) return JSON.stringify({ status: "error", code: 401, message: "Authentication required" });
     let request: any = {};
     try { request = JSON.parse(payload || "{}"); } catch (_e) { return JSON.stringify({ status: "error", code: 400, message: "Invalid JSON" }); }
-    if (String(request.platform || "").toLowerCase() !== "android") {
+    const platform=String(request.platform || "").toLowerCase();
+    if (platform !== "android" && platform !== "ios") {
         return JSON.stringify({ status: "error", code: 400, message: "Unsupported platform" });
     }
     const release = nk.sqlQuery(`SELECT config_version, snapshot, min_app_version, latest_app_version, store_url,
@@ -318,6 +325,9 @@ const getConfigBootstrap: nkruntime.RpcFunction = (
         FROM remote_config_releases ORDER BY config_version DESC LIMIT 1`, []);
     if (release.length === 0) return JSON.stringify({ status: "error", code: 503, message: "No config release" });
     const row = release[0];
+    const snapshot=parseJsonb(row.snapshot)||{};
+    const urls=snapshot.system && snapshot.system.store_urls;
+    row.store_url=urls && typeof urls[platform]==="string" ? urls[platform] : platform==="android" ? row.store_url : "";
     const appVersion = String(request.app_version || "0.0.0");
     if (compareVersions(appVersion, String(row.min_app_version)) < 0) {
         return JSON.stringify({ status: "force_update", config_version: Number(row.config_version),

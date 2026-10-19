@@ -129,6 +129,7 @@ function weeklyPublishedConfig(nk: nkruntime.Nakama): any {
 
 function recordWeeklyLeaderboardScores(nk: nkruntime.Nakama, userId: string, name: string, scores: any): void {
     for (const board of WEEKLY_BOARDS) if (!Number.isSafeInteger(scores[board]) || scores[board] < 0) throw new Error("Invalid weekly score");
+    if((nk as any).__characterContext){recordServerWeekly(nk,(nk as any).__characterContext,userId,name,scores);return;}
     const settings = weeklyPublishedConfig(nk);
     nk.sqlQuery("SELECT weekly_leaderboard_record($1::UUID,$2::JSONB,$3,$4::JSONB,$5::BIGINT) AS period_id",
         [userId, JSON.stringify(scores), name, settings.config ? JSON.stringify(settings.config) : null, settings.version]);
@@ -172,7 +173,7 @@ const readWeeklyLeaderboardRewards: nkruntime.RpcFunction = (ctx, _logger, nk, p
 };
 
 const getWeeklyLeaderboardRewards: nkruntime.RpcFunction = (ctx, logger, nk, payload) => {
-    try { return readWeeklyLeaderboardRewards(ctx,logger,nk,payload); }
+    try { return (nk as any).__characterContext ? readServerWeekly(ctx,logger,nk,payload) : readWeeklyLeaderboardRewards(ctx,logger,nk,payload); }
     catch (error) {
         if (logger && logger.error) logger.error("Weekly standings unavailable: " + String(error));
         return JSON.stringify({success:false,code:503,message:"Chưa tải được thưởng tuần. Vui lòng thử lại."});
@@ -220,7 +221,7 @@ const claimWeeklyLeaderboardRewardInternal: nkruntime.RpcFunction = (ctx, _logge
 };
 
 const claimWeeklyLeaderboardReward: nkruntime.RpcFunction = (ctx, logger, nk, payload) => {
-    try { return claimWeeklyLeaderboardRewardInternal(ctx,logger,nk,payload); }
+    try { return (nk as any).__characterContext ? claimServerWeekly(ctx,logger,nk,payload) : claimWeeklyLeaderboardRewardInternal(ctx,logger,nk,payload); }
     catch (error) {
         if (logger && logger.error) logger.error("Weekly reward claim unavailable: " + String(error));
         return JSON.stringify({success:false,code:503,message:"Chưa thể nhận thưởng tuần. Vui lòng tải lại và thử lại."});
@@ -230,6 +231,16 @@ const claimWeeklyLeaderboardReward: nkruntime.RpcFunction = (ctx, logger, nk, pa
 const weeklyLeaderboardTickRpc: nkruntime.RpcFunction = (ctx, _logger, nk, _payload) => {
     // Userless RPCs require Nakama's existing runtime HTTP key at the gateway.
     if (ctx.userId && ctx.userId!==String(ctx.env.CONFIG_ADMIN_USER_ID||"")) return JSON.stringify({success:false,code:403,message:"Forbidden"});
+    if(ctx.env && ctx.env.MULTI_SERVER_ENABLED==='true') {
+        const servers=nk.sqlQuery("SELECT server_id,generation FROM game_servers WHERE status='open' ORDER BY server_id",[]);
+        const results=[];
+        for(const server of servers) {
+            const scope={accountId:ctx.userId||'scheduler',serverId:server.server_id,generation:Number(server.generation)};
+            try{results.push(withServerRequest(nk,scope,()=>Object.assign({server_id:scope.serverId,generation:scope.generation},tickServerWeekly(nk,scope))));}
+            catch(error){results.push({server_id:scope.serverId,error:String(error)});}
+        }
+        return JSON.stringify({success:!results.some((r:any)=>r.error),servers:results});
+    }
     const result=tickWeeklyLeaderboards(nk);
     return JSON.stringify({success:true,...result});
 };

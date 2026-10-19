@@ -50,6 +50,17 @@ function createMonetizationTables(nk: nkruntime.Nakama, logger: nkruntime.Logger
             updated_at              TIMESTAMPTZ NOT NULL DEFAULT NOW()
         )
     `, []);
+    nk.sqlExec(`ALTER TABLE monetization_purchase_orders ADD COLUMN IF NOT EXISTS platform TEXT NOT NULL DEFAULT 'android';
+        ALTER TABLE monetization_purchase_orders ADD COLUMN IF NOT EXISTS store_product_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE monetization_purchase_orders ADD COLUMN IF NOT EXISTS target_server_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE monetization_purchase_orders ADD COLUMN IF NOT EXISTS target_generation INT NOT NULL DEFAULT 0;
+        CREATE TABLE IF NOT EXISTS game_store_platform_products (
+            platform TEXT NOT NULL CHECK(platform IN ('android','ios')),
+            product_id TEXT NOT NULL REFERENCES game_store_products(product_id),
+            store_product_id TEXT NOT NULL,
+            active BOOL NOT NULL DEFAULT FALSE,
+            PRIMARY KEY(platform,product_id), UNIQUE(platform,store_product_id)
+        )`, []);
     nk.sqlExec("CREATE INDEX IF NOT EXISTS purchase_orders_user_status_idx ON monetization_purchase_orders(user_id, status, created_at DESC)", []);
     nk.sqlExec("CREATE UNIQUE INDEX IF NOT EXISTS purchase_orders_one_pending_uq ON monetization_purchase_orders(user_id, product_id) WHERE status = 'pending'", []);
     nk.sqlExec("CREATE UNIQUE INDEX IF NOT EXISTS purchase_orders_token_uq ON monetization_purchase_orders(purchase_token_hash) WHERE purchase_token_hash <> ''", []);
@@ -165,5 +176,46 @@ function createMonetizationTables(nk: nkruntime.Nakama, logger: nkruntime.Logger
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )`, []);
     nk.sqlExec("CREATE INDEX IF NOT EXISTS player_vip_credits_user_idx ON player_vip_credits(user_id, environment)", []);
+    for(const table of ['monetization_purchases','monetization_ad_rewards','monetization_daily_reward_claims','monetization_daily_fragment_rewards']) {
+        nk.sqlExec('ALTER TABLE '+table+" ADD COLUMN IF NOT EXISTS target_server_id TEXT NOT NULL DEFAULT ''; ALTER TABLE "+table+' ADD COLUMN IF NOT EXISTS target_generation INT NOT NULL DEFAULT 0',[]);
+    }
+    nk.sqlExec(`DROP INDEX IF EXISTS purchase_orders_one_pending_uq;
+      CREATE UNIQUE INDEX IF NOT EXISTS purchase_orders_one_pending_scope_uq ON monetization_purchase_orders(user_id,product_id,target_server_id,target_generation) WHERE status='pending';
+      CREATE TABLE IF NOT EXISTS store_receipt_reservations (
+        token_hash TEXT PRIMARY KEY,order_id TEXT NOT NULL UNIQUE REFERENCES monetization_purchase_orders(id),
+        user_id TEXT NOT NULL,target_server_id TEXT NOT NULL,target_generation INT NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());`,[]);
+    nk.sqlExec(`DROP INDEX IF EXISTS monetization_ad_request_uq;
+      CREATE UNIQUE INDEX IF NOT EXISTS monetization_ad_request_scope_uq ON monetization_ad_rewards(user_id,target_server_id,target_generation,client_request_id) WHERE client_request_id<>'';
+      DO $scope$ BEGIN
+        IF EXISTS(SELECT 1 FROM pg_constraint WHERE conrelid='monetization_daily_reward_claims'::regclass AND contype='p' AND pg_get_constraintdef(oid) NOT LIKE '%target_server_id%') THEN
+          ALTER TABLE monetization_daily_reward_claims DROP CONSTRAINT monetization_daily_reward_claims_pkey;
+          ALTER TABLE monetization_daily_reward_claims ADD PRIMARY KEY(user_id,target_server_id,target_generation,placement_id,reward_date,claim_slot);
+        END IF;
+        IF EXISTS(SELECT 1 FROM pg_constraint WHERE conrelid='monetization_daily_fragment_rewards'::regclass AND contype='p' AND pg_get_constraintdef(oid) NOT LIKE '%target_server_id%') THEN
+          ALTER TABLE monetization_daily_fragment_rewards DROP CONSTRAINT monetization_daily_fragment_rewards_pkey;
+          ALTER TABLE monetization_daily_fragment_rewards ADD PRIMARY KEY(user_id,target_server_id,target_generation,reward_date);
+        END IF;
+      END $scope$;
+      CREATE TABLE IF NOT EXISTS server_financial_inbox(
+        event_id TEXT PRIMARY KEY,event_type TEXT NOT NULL,user_id TEXT NOT NULL,target_server_id TEXT NOT NULL,target_generation INT NOT NULL,
+        payload JSONB NOT NULL,status TEXT NOT NULL DEFAULT 'pending',reason TEXT NOT NULL,created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());`,[]);
+    nk.sqlExec(`CREATE TABLE IF NOT EXISTS store_purchase_voids(token_hash TEXT PRIMARY KEY,received_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
+      CREATE OR REPLACE FUNCTION void_store_purchase(token TEXT) RETURNS JSONB LANGUAGE plpgsql AS $void$
+      DECLARE changed JSONB;
+      BEGIN
+        INSERT INTO store_purchase_voids(token_hash) VALUES(token) ON CONFLICT DO NOTHING;
+        WITH revoked AS (
+          UPDATE monetization_purchases SET status='voided',updated_at=NOW() WHERE purchase_token_hash=token AND status<>'voided' RETURNING *
+        ), entitlements AS (
+          UPDATE player_monetization_entitlements e SET no_ads_expires_at=GREATEST(NOW(),e.no_ads_expires_at-(r.granted_seconds*INTERVAL '1 second')),
+            source='google_play_voided',updated_at=NOW() FROM revoked r WHERE e.user_id=r.user_id
+        ), queued AS (
+          INSERT INTO server_financial_inbox(event_id,event_type,user_id,target_server_id,target_generation,payload,reason)
+          SELECT 'void:'||token,'store_void',user_id,target_server_id,target_generation,jsonb_build_object('purchase_id',id),'REVIEW_CONSUMABLE_REVOCATION'
+            FROM revoked WHERE target_server_id<>'' ON CONFLICT DO NOTHING
+        ) SELECT to_jsonb(r) INTO changed FROM revoked r LIMIT 1;
+        RETURN changed;
+      END $void$;`,[]);
     logger.info("Monetization tables created/verified.");
 }

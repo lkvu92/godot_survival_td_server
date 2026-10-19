@@ -160,6 +160,13 @@ function linkedRpc_session_status(ctx: nkruntime.Context, logger: nkruntime.Logg
     return accountGuardedRpc("session_status", sessionStatus)(ctx, logger, nk, payload);
 }
 
+function linkedRpc_list_servers(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string{return accountGuardedRpc('list_servers',listGameServers)(c,l,n,p);}
+function linkedRpc_list_my_characters(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string{return accountGuardedRpc('list_my_characters',listMyCharacters)(c,l,n,p);}
+function linkedRpc_enter_server(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string{return accountGuardedRpc('enter_server',enterGameServer)(c,l,n,p);}
+function linkedRpc_create_character(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string{return accountGuardedRpc('create_character',createServerCharacter)(c,l,n,p);}
+function linkedRpc_iap_claim(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string{return accountGuardedRpc('iap_claim',(cc,ll,nn,pp)=>invokeWithVersionGate(cc,ll,nn,pp,iapClaim))(c,l,n,p);}
+function linkedRpc_resolve_purchase_order(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string{return accountGuardedRpc('resolve_purchase_order',(cc,ll,nn,pp)=>invokeWithVersionGate(cc,ll,nn,pp,resolvePurchaseOrder))(c,l,n,p);}
+
 function InitModule(
     ctx: nkruntime.Context,
     logger: nkruntime.Logger,
@@ -167,8 +174,28 @@ function InitModule(
     initializer: nkruntime.Initializer
 ): void {
     // Phase 2: Create tables on startup
+    createServerRegistryTables(nk);
+    initializer.registerRpc('admin_server_list',rpcAdminServerList);
+    initializer.registerRpc('admin_server_inspect',rpcAdminServerInspect);
+    initializer.registerRpc('admin_server_create',rpcAdminServerCreate);
+    initializer.registerRpc('admin_server_disable',rpcAdminServerDisable);
+    initializer.registerRpc('admin_server_enable',rpcAdminServerEnable);
+    initializer.registerRpc('admin_server_update',rpcAdminServerUpdate);
+    initializer.registerRpc('admin_server_expire_pending',rpcAdminServerExpirePending);
+    initializer.registerRpc('admin_server_plan',rpcAdminServerPlan);
+    initializer.registerRpc('admin_server_execute',rpcAdminServerExecute);
+    initializer.registerRpc('admin_server_job',rpcAdminServerJob);
+    initializer.registerRpc('admin_server_job_step',rpcAdminServerJobStep);
+    initializer.registerRpc('admin_server_financial_list',rpcAdminServerFinancialList);
+    initializer.registerRpc('admin_server_financial_retry',rpcAdminServerFinancialRetry);
+    initializer.registerRpc("list_servers", linkedRpc_list_servers);
+    initializer.registerRpc("list_my_characters", linkedRpc_list_my_characters);
+    initializer.registerRpc("enter_server", linkedRpc_enter_server);
+    initializer.registerRpc("create_character", linkedRpc_create_character);
     createGameConfigTables(nk, logger);
     createMonetizationTables(nk, logger);
+    initializer.registerRpc("iap_claim", linkedRpc_iap_claim);
+    initializer.registerRpc("resolve_purchase_order", linkedRpc_resolve_purchase_order);
     createAccountLinkTables(nk);
     createSingleLoginTable(nk);
     initializer.registerBeforeAuthenticateEmail(beforeSingleLoginEmail);
@@ -237,8 +264,12 @@ function InitModule(
 
     // Phase 5: Leaderboards
     createWeeklyLeaderboardTables(nk);
-    tickWeeklyLeaderboards(nk);
-    createLeaderboards(nk, logger);
+    createServerWeeklyTables(nk);
+    createMultiAccountLinkFunctions(nk);
+    if(!ctx.env || ctx.env.MULTI_SERVER_ENABLED!=='true') {
+        tickWeeklyLeaderboards(nk);
+        createLeaderboards(nk, logger);
+    }
     initializer.registerRpc("get_weekly_leaderboard_rewards", linkedRpc_get_weekly_leaderboard_rewards);
     initializer.registerRpc("claim_weekly_leaderboard_reward", linkedRpc_claim_weekly_leaderboard_reward);
     initializer.registerRpc("weekly_leaderboard_tick", linkedRpc_weekly_leaderboard_tick);

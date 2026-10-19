@@ -1,6 +1,13 @@
 {
   "contracts": [
     {
+      "id": "C143_MULTI_SERVER",
+      "version": "1.4.0",
+      "status": "IN_PROGRESS",
+      "updated_at": "2026-10-19",
+      "contract_file": "docs/contracts/C143_MULTI_SERVER.md"
+    },
+    {
       "id": "C142_ADMIN_SKILL_TEST",
       "version": "1.0.1",
       "status": "IN_PROGRESS",

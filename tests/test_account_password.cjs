@@ -1,6 +1,7 @@
 const fs = require('fs'), vm = require('vm'), assert = require('assert');
 const path = require('path');
 const context = vm.createContext({});
+vm.runInContext(fs.readFileSync(path.join(__dirname, '../nakama/data/modules/build/server_context.js'), 'utf8'), context);
 vm.runInContext(fs.readFileSync(path.join(__dirname, '../nakama/data/modules/build/account_link.js'), 'utf8'), context);
 const invoke = (name, ctx, nk, body) => JSON.parse(vm.runInContext(name, context)(ctx, {}, nk, body));
 let account, updated, hashed, proofOwner, changed, leases;

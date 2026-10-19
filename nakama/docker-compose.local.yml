@@ -31,6 +31,7 @@ services:
       NAKAMA_HTTP_KEY: ${NAKAMA_HTTP_KEY:?Required in .env.local}
       MONETIZATION_VERIFIER_SECRET: ${MONETIZATION_VERIFIER_SECRET:?Required in .env.local}
       APP_ENVIRONMENT: develop
+      MULTI_SERVER_ENABLED: "true"
       ANDROID_PACKAGE_NAME: ${ANDROID_PACKAGE_NAME:-vn.lkvu92.survivaltd}
       CONFIG_ADMIN_USER_ID: ${CONFIG_ADMIN_USER_ID:?Required in .env.local}
       GOOGLE_PLAY_TESTER_EMAILS: ${GOOGLE_PLAY_TESTER_EMAILS:-}

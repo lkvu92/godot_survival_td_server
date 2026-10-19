@@ -1,0 +1,17 @@
+const assert=require('node:assert');
+const {options,validateVerification}=require('../tools/s1_migration_cli.cjs');
+const {migrationSql}=require('../tools/migrate_s1.cjs');
+assert.throws(()=>options([]),/environment/);
+assert.equal(options(['--environment','production']).mode,'plan');
+assert.throws(()=>options(['--environment','production','--mode','apply']),/Stop ALL/);
+assert.throws(()=>options(['--environment','production','--mode','apply','--runtime-stopped','--confirm-target','cluster/db']),/ack-production/);
+assert.throws(()=>options(['--environment','local','--host','db.example']),/loopback/);
+assert.throws(()=>options(['--environment','production','--host','postgres://secret@db']),/plain host/);
+assert.throws(()=>options(['--environment','local','--unknown']),/Unknown/);
+assert.throws(()=>options(['--environment','local','--environment','production']),/repeated/);
+assert.throws(()=>migrationSql('apply','a'.repeat(64)),/runtime-stopped/);
+assert.throws(()=>migrationSql('apply',"';DROP DATABASE nakama;",true),/plan-hash/);
+validateVerification({missing_or_changed:0,missing_characters:0,source_unchanged:true});
+assert.throws(()=>validateVerification({missing_or_changed:1,missing_characters:0,source_unchanged:true}),/failed/);
+assert.throws(()=>validateVerification({missing_or_changed:0,missing_characters:0,source_unchanged:false}),/failed/);
+console.log('PASS S1 CLI safety: explicit environment/target, production acknowledgement, stopped writers, SQL hash validation and failed reconciliation exit');

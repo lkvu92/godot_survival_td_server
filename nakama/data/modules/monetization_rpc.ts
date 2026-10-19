@@ -70,6 +70,20 @@ function readActiveRun(nk: nkruntime.Nakama, userId: string, runId: string): any
 
 function reserveDailyRewardClaim(nk: nkruntime.Nakama, userId: string, placementId: string, adSessionId: string, limit: number): any {
     placementId = canonicalRewardPlacement(placementId);
+    const scope=(nk as any).__characterContext;
+    if(scope) {
+        for(let attempt=0;attempt<limit;attempt++) {
+            const existing=nk.sqlQuery('SELECT claim_slot,reward_date::TEXT AS reward_date FROM monetization_daily_reward_claims WHERE ad_session_id=$1 AND user_id=$2 AND target_server_id=$3 AND target_generation=$4',[adSessionId,userId,scope.serverId,scope.generation]);
+            if(existing.length)return existing[0];
+            const rows=nk.sqlQuery(`INSERT INTO monetization_daily_reward_claims(user_id,placement_id,ad_session_id,reward_date,claim_slot,target_server_id,target_generation)
+              SELECT $1,$2,$3,(NOW() AT TIME ZONE 'UTC')::DATE,slot,$5,$6 FROM generate_series(1,$4::INT) slot
+              WHERE NOT EXISTS(SELECT 1 FROM monetization_daily_reward_claims c WHERE c.user_id=$1 AND c.placement_id=$2
+                AND c.target_server_id=$5 AND c.target_generation=$6 AND c.reward_date=(NOW() AT TIME ZONE 'UTC')::DATE AND c.claim_slot=slot)
+              ORDER BY slot LIMIT 1 ON CONFLICT DO NOTHING RETURNING claim_slot,reward_date::TEXT AS reward_date`,[userId,placementId,adSessionId,limit,scope.serverId,scope.generation]);
+            if(rows.length)return rows[0];
+        }
+        return null;
+    }
     const existing = nk.sqlQuery("SELECT claim_slot, reward_date::TEXT AS reward_date FROM monetization_daily_reward_claims WHERE ad_session_id=$1 AND user_id=$2", [adSessionId, userId]);
     if (existing.length) return existing[0];
     // Concurrent requests can select the same slot. The primary key wins;
@@ -142,6 +156,23 @@ function readEntitlementRow(nk: nkruntime.Nakama, userId: string): any {
 }
 
 function buildDailyRewardStatus(nk: nkruntime.Nakama, userId: string): any {
+    const scope=(nk as any).__characterContext;
+    if(scope) {
+        const interrupted=nk.sqlQuery(`SELECT ad_session_id FROM monetization_ad_rewards WHERE user_id=$1 AND target_server_id=$2
+          AND target_generation=$3 AND status='verified' ORDER BY created_at LIMIT 32`,[userId,scope.serverId,scope.generation]);
+        for(const session of interrupted){try{grantPreparedReward(nk,userId,String(session.ad_session_id),'');}catch(_e){/* Retry CAS on next sync. */}}
+        const claims=nk.sqlQuery(`SELECT placement_id FROM monetization_daily_reward_claims
+          WHERE user_id=$1 AND target_server_id=$2 AND target_generation=$3 AND reward_date=(NOW() AT TIME ZONE 'UTC')::DATE`,[userId,scope.serverId,scope.generation]);
+        const daily:any={};const definitions=objectValue(rewardedAdsConfig(nk).placements);
+        for(const id in definitions) {
+            const limit=Math.max(0,Number(definitions[id].daily_limit||0));
+            if(limit>0) {const used=claims.filter((row:any)=>canonicalRewardPlacement(String(row.placement_id))===id).length;daily[id]={limit,claimed:Math.min(limit,used),remaining:Math.max(0,limit-used)};}
+        }
+        const mission=nk.sqlQuery(`SELECT item_id,granted_at IS NOT NULL AS completed FROM monetization_daily_fragment_rewards
+          WHERE user_id=$1 AND target_server_id=$2 AND target_generation=$3 AND reward_date=(NOW() AT TIME ZONE 'UTC')::DATE`,[userId,scope.serverId,scope.generation]);
+        if(daily.daily_mission_talisman_fragment_ad)Object.assign(daily.daily_mission_talisman_fragment_ad,{completed:mission.length>0&&mission[0].completed===true,item_id:mission.length?String(mission[0].item_id):''});
+        return daily;
+    }
     const interrupted = nk.sqlQuery(`SELECT ad_session_id FROM monetization_ad_rewards
         WHERE user_id=$1 AND status='verified' AND reward_type IN ('stamina','item','daily_fragment','stage_reward_x2')
         ORDER BY created_at LIMIT 32`, [userId]);
@@ -209,6 +240,20 @@ function vipProgress(exp: number, config: any, environment: string): any {
 function readVipProgress(nk: nkruntime.Nakama, userId: string, mode: string): any {
     const config = vipConfig(nk);
     if (!config) return vipProgress(0, null, mode);
+    const scope=(nk as any).__characterContext;
+    if(scope) {
+        nk.sqlExec(`INSERT INTO player_vip_credits(purchase_id,user_id,environment,exp)
+          SELECT p.id,p.user_id,o.vip_environment,COALESCE(o.vip_exp,0) FROM monetization_purchases p
+          JOIN monetization_purchase_orders o ON o.id=COALESCE(NULLIF(p.purchase_order_id,''),p.request_id)
+          WHERE p.user_id=$1 AND p.target_server_id=$2 AND p.target_generation=$3
+            AND p.status IN ('verified','consumed') AND o.status='fulfilled' AND o.vip_environment<>''
+          ON CONFLICT(purchase_id) DO NOTHING`,[userId,scope.serverId,scope.generation]);
+        const rows=nk.sqlQuery(`SELECT COALESCE(SUM(CASE WHEN p.status IN ('verified','consumed') THEN c.exp ELSE 0 END),0)::BIGINT AS exp,
+          (COUNT(*)*2+COUNT(*) FILTER(WHERE p.status='voided'))::BIGINT AS revision
+          FROM player_vip_credits c JOIN monetization_purchases p ON p.id=c.purchase_id
+          WHERE c.user_id=$1 AND c.environment=$2 AND p.target_server_id=$3 AND p.target_generation=$4`,[userId,mode,scope.serverId,scope.generation]);
+        return Object.assign(vipProgress(Number(rows.length?rows[0].exp:0),config,mode),{user_id:userId,revision:Number(rows.length?rows[0].revision:0)});
+    }
     // Durable reconciliation recovers a crash after fulfillment, and safely
     // backfills classified history. Unknown legacy environments are quarantined.
     nk.sqlExec(`INSERT INTO player_vip_credits (purchase_id, user_id, environment, exp)
@@ -459,6 +504,19 @@ function applyPurchaseStorageRewards(
     nk: nkruntime.Nakama, userId: string, grantId: string, productId: string,
     fulfillmentType: string, rewards: StoreRewardLine[]
 ): any {
+    if((nk as any).__characterContext && !(nk as any).__purchaseBatch) {
+        const marker={collection:'player_purchase_grants',key:grantId,userId};
+        if(nk.storageRead([marker]).length)return {idempotent:true};
+        // All character reward lines and the durable grant marker commit together.
+        // The account entitlement/ledger transaction may then retry independently.
+        const writes:nkruntime.StorageWriteRequest[]=[];
+        const batch:any=Object.create(nk);batch.__purchaseBatch=true;
+        batch.storageWrite=(changes:nkruntime.StorageWriteRequest[])=>{for(const change of changes)writes.push(change);return [];};
+        const result=applyPurchaseStorageRewards(batch,userId,grantId,productId,fulfillmentType,rewards);
+        writes.push(Object.assign({},marker,{value:{product_id:productId,granted_at_ms:Date.now()},version:'*',permissionRead:0,permissionWrite:0}));
+        nk.storageWrite(writes);
+        return result;
+    }
     const profileObjects = nk.storageRead([{ collection: "player_profiles", key: "main", userId }]);
     if (profileObjects.length === 0) throw new Error("Player profile does not exist");
     const profile = profileObjects[0].value || {};
@@ -555,18 +613,27 @@ const createPurchaseOrder: nkruntime.RpcFunction = (ctx, _logger, nk, payload) =
     if (!isRemoteFlagEnabled(nk, "payment_enabled")) return monetizationError(403, "Payments are disabled");
     let req: any;
     try { req = JSON.parse(payload || "{}"); } catch (_e) { return monetizationError(400, "Invalid JSON"); }
+    const orderPlatform = String(req.platform || "android");
+    const target = (nk as any).__characterContext as GameServerContext | undefined;
+    if (["android","ios"].indexOf(orderPlatform)<0) return monetizationError(400,"Unsupported purchase platform");
+    // StoreKit verification is deliberately unavailable until a real provider is configured.
+    // An iOS request must never enter the Android mock/Google validation path.
+    if (orderPlatform === "ios") return monetizationError(501,"App Store payment provider is not configured");
     const productId = String(req.product_id || "");
     const products = nk.sqlQuery("SELECT * FROM game_store_products WHERE product_id = $1 AND active = TRUE", [productId]);
     if (products.length === 0) return monetizationError(404, "Product is unavailable");
     const product = products[0];
+    const platformProducts=nk.sqlQuery("SELECT store_product_id,active FROM game_store_platform_products WHERE platform=$1 AND product_id=$2",[orderPlatform,productId]);
+    if(platformProducts.length && platformProducts[0].active!==true)return monetizationError(404,"Product is unavailable on this platform");
+    const storeProductId=platformProducts.length?String(platformProducts[0].store_product_id):productId;
 
     if (DAILY_PACK_IDS.indexOf(productId) >= 0) {
         const profiles = nk.storageRead([{ collection: "player_profiles", key: "main", userId: ctx.userId }]);
         if (profiles.length && dailyPackState(profiles[0].value, Date.now())[productId].active) return monetizationError(409, "Daily pack already active; claim its daily reward instead");
     }
     const previous = nk.sqlQuery(
-        "SELECT id, status, fulfillment_type, reward_snapshot FROM monetization_purchase_orders WHERE user_id = $1 AND product_id = $2 AND status IN ('pending','fulfilled') ORDER BY created_at DESC",
-        [ctx.userId, productId]
+        "SELECT id, status, fulfillment_type, reward_snapshot, platform, store_product_id FROM monetization_purchase_orders WHERE user_id = $1 AND product_id = $2 AND target_server_id=$3 AND target_generation=$4 AND status IN ('pending','fulfilled') ORDER BY created_at DESC",
+        [ctx.userId, productId,target?target.serverId:'',target?target.generation:0]
     );
     const fulfilled = previous.filter((row: any) => String(row.status) === "fulfilled");
     if (product.unique_purchase === true && fulfilled.length > 0) {
@@ -575,8 +642,8 @@ const createPurchaseOrder: nkruntime.RpcFunction = (ctx, _logger, nk, payload) =
     }
     if (product.unique_purchase === true) {
         const legacy = nk.sqlQuery(
-            "SELECT id FROM monetization_purchases WHERE user_id = $1 AND product_id = $2 AND status <> 'voided' LIMIT 1",
-            [ctx.userId, productId]
+            "SELECT id FROM monetization_purchases WHERE user_id = $1 AND product_id = $2 AND target_server_id=$3 AND target_generation=$4 AND status <> 'voided' LIMIT 1",
+            [ctx.userId, productId,target?target.serverId:'',target?target.generation:0]
         );
         if (legacy.length > 0) return JSON.stringify({ status: "success", data: {
             purchase_order_id: "", product_id: productId, fulfillment_type: String(product.fulfillment_type),
@@ -590,12 +657,13 @@ const createPurchaseOrder: nkruntime.RpcFunction = (ctx, _logger, nk, payload) =
         && parseJsonb(row.reward_snapshot).every((line: any) => Number((line.metadata || {}).daily_pack_days) === 30))));
     if (pending) {
         return JSON.stringify({ status: "success", data: { purchase_order_id: String(pending.id),
-            product_id: productId, fulfillment_type: String(product.fulfillment_type) }, idempotent: true });
+            product_id: productId, platform:String(pending.platform||'android'), store_product_id:String(pending.store_product_id||productId), fulfillment_type: String(product.fulfillment_type) }, idempotent: true });
     }
     if (Number(product.purchase_limit || 0) > 0 && String(product.purchase_limit_period) === "day") {
         const today = nk.sqlQuery(`SELECT COUNT(*)::INT AS count FROM monetization_purchase_orders
             WHERE user_id = $1 AND product_id = $2 AND status = 'fulfilled'
-              AND fulfilled_at >= DATE_TRUNC('day', NOW())`, [ctx.userId, productId]);
+              AND target_server_id=$3 AND target_generation=$4
+              AND fulfilled_at >= DATE_TRUNC('day', NOW())`, [ctx.userId, productId,target?target.serverId:'',target?target.generation:0]);
         if (Number(today[0].count || 0) >= Number(product.purchase_limit)) return monetizationError(409, "Daily purchase limit reached");
     }
 
@@ -612,10 +680,13 @@ const createPurchaseOrder: nkruntime.RpcFunction = (ctx, _logger, nk, payload) =
     if (!Number.isSafeInteger(vipExp) || vipExp <= 0) return monetizationError(409, "VIP product config is missing; seed vip config before selling this pack");
     const orderId = nk.uuidv4();
     nk.sqlExec(`INSERT INTO monetization_purchase_orders
-        (id, user_id, product_id, status, reward_snapshot, fulfillment_type, vip_exp, vip_environment)
-        VALUES ($1,$2,$3,'pending',$4::jsonb,$5,$6,$7)`,
-        [orderId, ctx.userId, productId, JSON.stringify(rewards), String(product.fulfillment_type), vipExp, monetizationMode(ctx)]);
+        (id, user_id, product_id, status, reward_snapshot, fulfillment_type, vip_exp, vip_environment,
+         platform,store_product_id,target_server_id,target_generation)
+        VALUES ($1,$2,$3,'pending',$4::jsonb,$5,$6,$7,$8,$9,$10,$11)`,
+        [orderId, ctx.userId, productId, JSON.stringify(rewards), String(product.fulfillment_type), vipExp, monetizationMode(ctx),
+            orderPlatform,storeProductId,target?target.serverId:"",target?target.generation:0]);
     return JSON.stringify({ status: "success", data: { purchase_order_id: orderId, product_id: productId,
+        platform:orderPlatform,store_product_id:storeProductId,
         fulfillment_type: String(product.fulfillment_type), rewards } });
 };
 
@@ -630,10 +701,15 @@ const iapGoogleClaim: nkruntime.RpcFunction = (ctx, logger, nk, payload) => {
     const orders = nk.sqlQuery("SELECT * FROM monetization_purchase_orders WHERE id = $1 AND user_id = $2", [purchaseOrderId, ctx.userId]);
     if (orders.length === 0) return monetizationError(404, "Purchase order not found");
     const order = orders[0];
+    const target=(nk as any).__characterContext;
+    if(target&&(String(order.target_server_id)!==target.serverId||Number(order.target_generation)!==target.generation))
+        return serverFailure('ORDER_TARGET_MISMATCH',409,'Select the original order server and generation; rewards were not redirected');
+    if(String(order.platform||"android")!=="android")return monetizationError(409,"Purchase order belongs to another store platform");
     const productId = String(order.product_id);
     const fulfillmentType = String(order.fulfillment_type);
     const rewardSnapshot: StoreRewardLine[] = parseJsonb(order.reward_snapshot) || [];
     if (String(order.status) === "fulfilled") {
+        if(target&&nk.sqlQuery("SELECT 1 FROM monetization_purchases WHERE purchase_order_id=$1 AND status='voided'",[purchaseOrderId]).length)return monetizationError(409,'Purchase was voided');
         try { auditLegacyVipOrder(ctx, nk, order, receipt); }
         catch (e) { return monetizationError(409, "Legacy VIP receipt audit failed: " + String(e)); }
         const data = buildMonetizationResponse(nk, ctx.userId, monetizationMode(ctx));
@@ -669,8 +745,8 @@ const iapGoogleClaim: nkruntime.RpcFunction = (ctx, logger, nk, payload) => {
         }
         const purchases = validation.validatedPurchases || [];
         const purchase = purchases.find((value: nkruntime.ValidatedPurchase) =>
-            value && value.productId === productId && isLinkedReceiptOwner(nk,value.userId,ctx.userId));
-        if (!purchase || !purchase.transactionId) return monetizationError(409, "Validated product does not match claim");
+            value && value.productId === String(order.store_product_id || productId) && isLinkedReceiptOwner(nk,value.userId,ctx.userId));
+        if (!purchase || !purchase.transactionId || Number(purchase.refundTime||0)>0) return monetizationError(409, "Validated product does not match claim");
         receiptOwner = String(purchase.userId);
         if (!isProductionTestPurchaseAllowed(ctx, nk, purchase)) return monetizationError(409, "Test purchase is not authorized for this account");
         transactionId = String(purchase.transactionId);
@@ -685,15 +761,58 @@ const iapGoogleClaim: nkruntime.RpcFunction = (ctx, logger, nk, payload) => {
         );
         purchaseTokenHash = hashRows.length > 0 ? String(hashRows[0].token_hash || "") : "";
         if (!purchaseTokenHash) return monetizationError(500, "Could not fingerprint purchase");
+        if(target) {
+            // Server-to-server Google API verification binds the token to the order.
+            // Never trust obfuscated account/profile fields embedded in client JSON.
+            try {
+                const secret=String(ctx.env.MONETIZATION_VERIFIER_SECRET||'');
+                if(!secret)throw new Error('Verifier is not configured');
+                const result=nk.httpRequest(String(ctx.env.MONETIZATION_VERIFIER_URL||'http://monetization-verifier:8080/google-play/verify'),
+                  'post',{'Authorization':'Bearer '+secret,'Content-Type':'application/json'},JSON.stringify({
+                    user_id:receiptOwner,product_id:String(order.store_product_id||productId),purchase_token:validatedToken,
+                    package_name:String(receiptData.packageName||''),purchase_order_id:purchaseOrderId,verification_only:true}),10000);
+                if(result.code!==200||JSON.parse(result.body).verified!==true)throw new Error('Order binding rejected');
+            } catch(_e){return monetizationError(409,'Google receipt does not verify against the original order');}
+        }
     }
 
+    return fulfillVerifiedStoreOrder(ctx,logger,nk,order,{platform:'android',productId,storeProductId:String(order.store_product_id||productId),transactionId,tokenHash:purchaseTokenHash,seenBefore,receiptOwner,mode});
+};
+
+interface VerifiedStorePurchase {
+    platform:'android'|'ios'; productId:string;storeProductId:string;transactionId:string;tokenHash:string;
+    seenBefore:boolean; receiptOwner:string; mode:string;
+}
+
+// Called only with a server-verified envelope. A future Apple verifier shares this
+// fulfillment path; no client RPC accepts a VerifiedStorePurchase object.
+function fulfillVerifiedStoreOrder(ctx:nkruntime.Context,logger:nkruntime.Logger,nk:nkruntime.Nakama,order:any,verified:VerifiedStorePurchase):string {
+    const productId=String(order.product_id),purchaseOrderId=String(order.id),fulfillmentType=String(order.fulfillment_type);
+    const rewardSnapshot:StoreRewardLine[]=parseJsonb(order.reward_snapshot)||[];
+    const {transactionId,seenBefore,receiptOwner,mode}=verified;
+    if(!transactionId || (mode!=='mock'&&!verified.tokenHash) || String(order.platform||'android')!==verified.platform
+        || verified.productId!==productId || verified.storeProductId!==String(order.store_product_id||productId)
+        || (order.vip_environment&&String(order.vip_environment)!==mode))
+        return monetizationError(409,'Invalid verified purchase envelope');
     try {
-        const grantId = mode === "mock" ? `mock:${transactionId}` : purchaseTokenHash;
+        const grantId = mode === "mock" ? `mock:${transactionId}` : verified.platform==='android'?verified.tokenHash:'ios:'+verified.tokenHash;
+        const target=(nk as any).__characterContext;
+        if(target) {
+            if(nk.sqlQuery('SELECT 1 FROM store_purchase_voids WHERE token_hash=$1',[grantId]).length)return monetizationError(409,'Purchase was voided; reconciliation required');
+            const reservation=nk.sqlQuery(`INSERT INTO store_receipt_reservations(token_hash,order_id,user_id,target_server_id,target_generation)
+              VALUES($1,$2,$3,$4,$5) ON CONFLICT DO NOTHING RETURNING order_id`,[grantId,purchaseOrderId,ctx.userId,target.serverId,target.generation]);
+            if(!reservation.length) {
+                const owned=nk.sqlQuery('SELECT order_id,user_id,target_server_id,target_generation FROM store_receipt_reservations WHERE token_hash=$1',[grantId]);
+                if(!owned.length||owned[0].order_id!==purchaseOrderId||owned[0].user_id!==ctx.userId||owned[0].target_server_id!==target.serverId||Number(owned[0].target_generation)!==target.generation)
+                    return monetizationError(409,'Receipt already reserved for a different original order');
+            }
+        }
         const existing = nk.sqlQuery(
-            "SELECT user_id, product_id, COALESCE(NULLIF(purchase_order_id,''),request_id) AS original_order_id FROM monetization_purchases WHERE purchase_token_hash = $1 OR request_id = $2",
+            "SELECT user_id, product_id, status, COALESCE(NULLIF(purchase_order_id,''),request_id) AS original_order_id FROM monetization_purchases WHERE purchase_token_hash = $1 OR request_id = $2",
             [grantId, purchaseOrderId]
         );
         if (existing.length > 0) {
+            if(existing[0].status==='voided')return monetizationError(409,'Purchase was voided');
             if (String(existing[0].user_id) !== ctx.userId || String(existing[0].product_id) !== productId) {
                 return monetizationError(409, "Purchase belongs to another claim");
             }
@@ -710,6 +829,8 @@ const iapGoogleClaim: nkruntime.RpcFunction = (ctx, logger, nk, payload) => {
                 purchase_token_hash=$3, validated_at=COALESCE(validated_at, NOW()),
                 fulfilled_at=COALESCE(fulfilled_at, NOW()), updated_at=NOW() WHERE id=$1`,
                 [purchaseOrderId, transactionId, grantId]);
+            if(target)nk.sqlExec(`UPDATE monetization_purchases SET target_server_id=$2,target_generation=$3
+              WHERE request_id=$1 AND purchase_order_id=$1`,[purchaseOrderId,target.serverId,target.generation]);
             const data = buildMonetizationResponse(nk, ctx.userId, mode);
             data.reward = { product_id: productId, purchase_order_id: purchaseOrderId,
                 fulfillment_type: fulfillmentType, lines: rewardSnapshot };
@@ -720,33 +841,94 @@ const iapGoogleClaim: nkruntime.RpcFunction = (ctx, logger, nk, payload) => {
         const noAdsSeconds = rewardSnapshot.filter(line => line.reward_type === "entitlement" && line.reward_id === "no_ads_seconds")
             .reduce((total, line) => total + Number(line.quantity), 0);
         if (noAdsSeconds > 0) {
-            applyNoAdsGrant(nk, ctx.userId, purchaseOrderId, "android", productId, grantId, transactionId,
-                noAdsSeconds, mode === "mock" ? "debug" : "google_play", purchaseOrderId);
+            applyNoAdsGrant(nk, ctx.userId, purchaseOrderId, verified.platform, productId, grantId, transactionId,
+                noAdsSeconds, mode === "mock" ? "debug" : verified.platform==='android'?"google_play":"app_store", purchaseOrderId);
         } else {
             nk.sqlExec(
                 `INSERT INTO monetization_purchases
                     (request_id, user_id, platform, product_id, purchase_token_hash, order_id,
-                     status, granted_seconds, purchased_at, verified_at, purchase_order_id)
-                 VALUES ($1, $2, 'android', $3, $4, $5, 'verified', 0, NOW(), NOW(), $1)
+                     status, granted_seconds, purchased_at, verified_at, purchase_order_id,target_server_id,target_generation)
+                 VALUES ($1, $2, $6, $3, $4, $5, 'verified', 0, NOW(), NOW(), $1,$7,$8)
                  ON CONFLICT DO NOTHING`,
-                [purchaseOrderId, ctx.userId, productId, grantId, transactionId]
+                [purchaseOrderId, ctx.userId, productId, grantId, transactionId,verified.platform,target?target.serverId:'',target?target.generation:0]
             );
         }
+        if(target&&nk.sqlQuery(`SELECT void_store_purchase($1) AS revoked WHERE EXISTS(SELECT 1 FROM store_purchase_voids WHERE token_hash=$1)`,[grantId]).length)
+            return monetizationError(409,'Purchase refund arrived during delivery; reconciliation queued');
         nk.sqlExec(`UPDATE monetization_purchase_orders SET status='fulfilled', transaction_id=$2,
             purchase_token_hash=$3, validated_at=NOW(), fulfilled_at=NOW(), updated_at=NOW()
             WHERE id=$1 AND status='pending'`, [purchaseOrderId, transactionId, grantId]);
+        if(target)nk.sqlExec(`UPDATE monetization_purchases SET target_server_id=$2,target_generation=$3
+          WHERE request_id=$1 AND purchase_order_id=$1`,[purchaseOrderId,target.serverId,target.generation]);
         const data = buildMonetizationResponse(nk, ctx.userId, mode);
         data.reward = { product_id: productId, purchase_order_id: purchaseOrderId,
             fulfillment_type: fulfillmentType, profile: granted, lines: rewardSnapshot };
         return JSON.stringify({ status: "success", data, idempotent: seenBefore });
     } catch (e) {
-        logger.error("iap_google_claim failed user=%s product=%s: %s", ctx.userId, productId, String(e));
+        logger.error("Store fulfillment failed user=%s product=%s: %s", ctx.userId, productId, String(e));
         return monetizationError(500, "Could not grant purchase");
     }
 };
 
 // Keep the previous RPC available during rolling client deployments.
 const syncPlayPurchase: nkruntime.RpcFunction = iapGoogleClaim;
+
+const resolvePurchaseOrder:nkruntime.RpcFunction=(ctx,_logger,nk,payload)=>{
+    if(!ctx.userId)return monetizationError(401,'Authentication required');
+    let req:any;try{req=JSON.parse(payload||'{}');}catch(_e){return monetizationError(400,'Invalid JSON');}
+    if(!req||req.platform!=='android')return monetizationError(501,'Store restore provider is not configured');
+    if(monetizationMode(ctx)==='mock')return monetizationError(409,'Mock purchases require their original order');
+    const receipt=String(req.receipt||'');if(!receipt||receipt.length>65536)return monetizationError(400,'Invalid receipt');
+    let validation:any,token:string;
+    try{validation=nk.purchaseValidateGoogle(ctx.userId,receipt,true);const wire=JSON.parse(receipt);token=String(wire.purchaseToken||wire.purchase_token||'');}
+    catch(_e){return monetizationError(409,'Purchase is not valid');}
+    const purchase=(validation.validatedPurchases||[]).find((p:any)=>p&&isLinkedReceiptOwner(nk,p.userId,ctx.userId)&&isProductionTestPurchaseAllowed(ctx,nk,p)&&Number(p.refundTime||0)<=0);
+    if(!purchase||!token)return monetizationError(409,'Validated purchase does not belong to this account');
+    const hashes=nk.sqlQuery("SELECT encode(sha256(convert_to($1,'UTF8')),'hex') AS token_hash",[token]);
+    if(!hashes.length||!hashes[0].token_hash)return monetizationError(500,'Could not fingerprint purchase');
+    const orders=nk.sqlQuery(`SELECT o.id AS purchase_order_id,o.product_id,o.platform,o.store_product_id,o.fulfillment_type,
+      o.target_server_id,o.target_generation FROM monetization_purchases p JOIN monetization_purchase_orders o
+      ON o.id=COALESCE(NULLIF(p.purchase_order_id,''),p.request_id)
+      WHERE p.purchase_token_hash=$1 AND p.user_id=$2 AND o.user_id=$2 AND o.platform='android'`,[String(hashes[0].token_hash),ctx.userId]);
+    if(!orders.length && ctx.env && ctx.env.MULTI_SERVER_ENABLED==='true') {
+        // A crash after store charge but before fulfillment has no purchase ledger yet.
+        // Recover the original order from Google's trusted profile binding, not client JSON.
+        try {
+            const secret=String(ctx.env.MONETIZATION_VERIFIER_SECRET||'');
+            if(!secret)throw new Error('Verifier unavailable');
+            const wire=JSON.parse(receipt);
+            const response=nk.httpRequest(String(ctx.env.MONETIZATION_VERIFIER_URL||'http://monetization-verifier:8080/google-play/verify'),
+              'post',{'Authorization':'Bearer '+secret,'Content-Type':'application/json'},JSON.stringify({user_id:String(purchase.userId),
+                product_id:String(purchase.productId),purchase_token:token,package_name:String(wire.packageName||''),verification_only:true}),10000);
+            const verified=JSON.parse(response.body);
+            if(response.code!==200||verified.verified!==true||verified.token_hash!==String(hashes[0].token_hash)||!verified.purchase_order_id)throw new Error('Original order not verified');
+            const pending=nk.sqlQuery(`SELECT id AS purchase_order_id,product_id,platform,store_product_id,fulfillment_type,target_server_id,target_generation
+              FROM monetization_purchase_orders WHERE id=$1 AND user_id=$2 AND platform='android' AND status IN ('pending','fulfilled')`,[String(verified.purchase_order_id),ctx.userId]);
+            if(!pending.length||String(pending[0].store_product_id||pending[0].product_id)!==String(purchase.productId))throw new Error('Original order not found');
+            return JSON.stringify({status:'success',data:pending[0]});
+        } catch(_e){return monetizationError(409,'Original purchase destination requires reconciliation; no new order was created');}
+    }
+    if(!orders.length)return monetizationError(409,'Original purchase destination requires reconciliation; no new order was created');
+    const order=orders[0];
+    if(String(order.store_product_id||order.product_id)!==String(purchase.productId))return monetizationError(409,'Product does not match original order');
+    return JSON.stringify({status:'success',data:order});
+};
+
+// Platform-neutral boundary. Verifier selection is separate from gameplay fulfillment.
+// Adding StoreKit requires a real verifier and canonical transaction envelope here;
+// platform-specific code must never accept a client assertion that a purchase is valid.
+const iapClaim: nkruntime.RpcFunction = (ctx,logger,nk,payload)=>{
+    if(!ctx.userId)return monetizationError(401,"Authentication required");
+    let req:any;try{req=JSON.parse(payload||"{}");}catch(_e){return monetizationError(400,"Invalid JSON");}
+    if(!req || typeof req!=="object" || Array.isArray(req))return monetizationError(400,"Invalid request");
+    const platform=String(req.platform||"");
+    if(platform!=="android"&&platform!=="ios")return monetizationError(400,"Unsupported purchase platform");
+    const rows=nk.sqlQuery("SELECT platform FROM monetization_purchase_orders WHERE id=$1 AND user_id=$2",[String(req.purchase_order_id||""),ctx.userId]);
+    if(!rows.length)return monetizationError(404,"Purchase order not found");
+    if(String(rows[0].platform||"android")!==platform)return monetizationError(409,"Purchase platform does not match order");
+    if(platform==="ios")return monetizationError(501,"App Store payment provider is not configured");
+    return iapGoogleClaim(ctx,logger,nk,payload);
+};
 
 const prepareRewardedAd: nkruntime.RpcFunction = (ctx, _logger, nk, payload) => {
     if (!ctx.userId) return monetizationError(401, "Authentication required");
@@ -758,7 +940,9 @@ const prepareRewardedAd: nkruntime.RpcFunction = (ctx, _logger, nk, payload) => 
     if (reward.enabled === false || reward.daily_limit === 0 || reward.run_limit === 0) return monetizationError(403, "Rewarded placement is disabled");
     const requestId = String(req.request_id || nk.uuidv4());
     if (requestId.length > 128) return monetizationError(400, "Invalid reward request ID");
-    let sessions = nk.sqlQuery("SELECT * FROM monetization_ad_rewards WHERE user_id=$1 AND client_request_id=$2", [ctx.userId, requestId]);
+    const target=(nk as any).__characterContext;
+    const sessionSql="SELECT * FROM monetization_ad_rewards WHERE user_id=$1 AND client_request_id=$2 AND target_server_id=$3 AND target_generation=$4";
+    let sessions = nk.sqlQuery(sessionSql, [ctx.userId, requestId,target?target.serverId:'',target?target.generation:0]);
     if (sessions.length && canonicalRewardPlacement(String(sessions[0].placement_id)) !== placementId) return monetizationError(409, "Reward request already belongs to another placement");
     const entitlement = readEntitlementRow(nk, ctx.userId);
     const noAds = Number(entitlement.no_ads_expires_at || 0) > Number(entitlement.server_time || 0);
@@ -816,10 +1000,10 @@ const prepareRewardedAd: nkruntime.RpcFunction = (ctx, _logger, nk, payload) => 
     if (!sessions.length) {
         nk.sqlExec(
         `INSERT INTO monetization_ad_rewards
-            (ad_session_id, user_id, placement_id, reward_type, reward_amount, custom_data, context, delivery_source, client_request_id)
-         VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb, $8, $9) ON CONFLICT DO NOTHING`,
-        [adSessionId, ctx.userId, placementId, reward.type, reward.amount, customData, JSON.stringify(rewardContext), noAds ? "no_ads" : "ad", requestId]);
-        sessions = nk.sqlQuery("SELECT * FROM monetization_ad_rewards WHERE user_id=$1 AND client_request_id=$2", [ctx.userId, requestId]);
+            (ad_session_id, user_id, placement_id, reward_type, reward_amount, custom_data, context, delivery_source, client_request_id,target_server_id,target_generation)
+         VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb, $8, $9,$10,$11) ON CONFLICT DO NOTHING`,
+        [adSessionId, ctx.userId, placementId, reward.type, reward.amount, customData, JSON.stringify(rewardContext), noAds ? "no_ads" : "ad", requestId,target?target.serverId:'',target?target.generation:0]);
+        sessions = nk.sqlQuery(sessionSql, [ctx.userId, requestId,target?target.serverId:'',target?target.generation:0]);
         if (!sessions.length) return monetizationError(409, "Could not reserve reward session");
         adSessionId = String(sessions[0].ad_session_id);
         if (String(sessions[0].placement_id) !== placementId) return monetizationError(409, "Reward request collision");
@@ -855,6 +1039,8 @@ const prepareRewardedAd: nkruntime.RpcFunction = (ctx, _logger, nk, payload) => 
 };
 
 function grantDailyMissionFragment(nk: nkruntime.Nakama, userId: string, adSessionId: string, claim: any): any {
+    const scope=(nk as any).__characterContext;
+    const sid=scope?scope.serverId:'',gen=scope?scope.generation:0;
     const config = rewardedAdsConfig(nk);
     const mission = objectValue(config.daily_mission);
     const quantity = Number(objectValue(config.placements).daily_mission_talisman_fragment_ad?.amount || 0);
@@ -863,11 +1049,11 @@ function grantDailyMissionFragment(nk: nkruntime.Nakama, userId: string, adSessi
     let itemId = "";
     let inventory: any[] | undefined;
     if (Number(claim.claim_slot) >= completionCount) {
-        nk.sqlExec(`INSERT INTO monetization_daily_fragment_rewards (user_id,reward_date,item_id)
-            SELECT $1,$2::DATE,id FROM game_items WHERE category='talisman_fragment'
+        nk.sqlExec(`INSERT INTO monetization_daily_fragment_rewards (user_id,reward_date,item_id,target_server_id,target_generation)
+            SELECT $1,$2::DATE,id,$4,$5 FROM game_items WHERE category='talisman_fragment'
                 AND attributes->>'quality'=$3 ORDER BY RANDOM() LIMIT 1
-            ON CONFLICT (user_id,reward_date) DO NOTHING`, [userId, String(claim.reward_date), String(mission.fragment_quality || "")]);
-        const selected = nk.sqlQuery("SELECT item_id,granted_at FROM monetization_daily_fragment_rewards WHERE user_id=$1 AND reward_date=$2::DATE", [userId, String(claim.reward_date)]);
+            ON CONFLICT (user_id,target_server_id,target_generation,reward_date) DO NOTHING`, [userId, String(claim.reward_date), String(mission.fragment_quality || ""),sid,gen]);
+        const selected = nk.sqlQuery("SELECT item_id,granted_at FROM monetization_daily_fragment_rewards WHERE user_id=$1 AND reward_date=$2::DATE AND target_server_id=$3 AND target_generation=$4", [userId, String(claim.reward_date),sid,gen]);
         if (!selected.length) return { granted: false, message: "Daily fragment catalog is missing" };
         itemId = String(selected[0].item_id);
         if (!selected[0].granted_at) {
@@ -884,7 +1070,7 @@ function grantDailyMissionFragment(nk: nkruntime.Nakama, userId: string, adSessi
                 value._monetization_reward_ids = markers.slice(-200);
                 nk.storageWrite([{ collection: "player_inventory", key: "items", userId, value, permissionRead: 1, permissionWrite: 0, version: objects[0].version }]);
             }
-            nk.sqlExec("UPDATE monetization_daily_fragment_rewards SET granted_at=COALESCE(granted_at,NOW()) WHERE user_id=$1 AND reward_date=$2::DATE", [userId, String(claim.reward_date)]);
+            nk.sqlExec("UPDATE monetization_daily_fragment_rewards SET granted_at=COALESCE(granted_at,NOW()) WHERE user_id=$1 AND reward_date=$2::DATE AND target_server_id=$3 AND target_generation=$4", [userId, String(claim.reward_date),sid,gen]);
         }
     }
     nk.sqlExec("UPDATE monetization_ad_rewards SET status='granted', granted_at=NOW() WHERE ad_session_id=$1 AND status='verified'", [adSessionId]);
@@ -893,6 +1079,11 @@ function grantDailyMissionFragment(nk: nkruntime.Nakama, userId: string, adSessi
 }
 
 function grantPreparedReward(nk: nkruntime.Nakama, userId: string, adSessionId: string, transactionId: string): any {
+    const scope=(nk as any).__characterContext;
+    if(scope) {
+        const rows=nk.sqlQuery('SELECT target_server_id,target_generation FROM monetization_ad_rewards WHERE ad_session_id=$1 AND user_id=$2',[adSessionId,userId]);
+        if(!rows.length||rows[0].target_server_id!==scope.serverId||Number(rows[0].target_generation)!==scope.generation)return {granted:false,message:'Ad session target does not match character'};
+    }
     const rows = nk.sqlQuery(
         `UPDATE monetization_ad_rewards SET
             status = 'verified', admob_transaction_id = NULLIF($3, ''), verified_at = NOW()
@@ -1128,7 +1319,23 @@ const admobSsvConfirm: nkruntime.RpcFunction = (ctx, _logger, nk, payload) => {
     if (!expectedAdUnit || (adUnit !== expectedAdUnit && adUnit !== expectedAdUnitNumericId)) {
         return monetizationError(403, "Unexpected AdMob ad unit");
     }
-    const reward = grantPreparedReward(nk, userId, adSessionId, transactionId);
+    let reward:any;
+    if(ctx.env.MULTI_SERVER_ENABLED==='true') {
+        const sessions=nk.sqlQuery('SELECT target_server_id,target_generation,status,expires_at<=NOW() AS expired FROM monetization_ad_rewards WHERE ad_session_id=$1 AND user_id=$2',[adSessionId,userId]);
+        if(!sessions.length)return monetizationError(404,'Ad session not found');
+        if(sessions[0].status==='granted')return JSON.stringify({status:'success',data:{granted:true,idempotent:true}});
+        if(sessions[0].status==='rejected')return JSON.stringify({status:'success',data:{granted:false,rejected:true}});
+        const scope:GameServerContext={accountId:userId,serverId:String(sessions[0].target_server_id),generation:Number(sessions[0].target_generation)};
+        const server=validatedServer(nk,{server_id:scope.serverId,generation:scope.generation});
+        if(server.error||sessions[0].status==='expired'||(sessions[0].status==='prepared'&&sessions[0].expired)) {
+            nk.sqlExec(`INSERT INTO server_financial_inbox(event_id,event_type,user_id,target_server_id,target_generation,payload,reason)
+              VALUES($1,'admob_ssv',$2,$3,$4,$5::JSONB,$6) ON CONFLICT DO NOTHING`,['admob:'+transactionId,userId,scope.serverId,scope.generation,
+                JSON.stringify({ad_session_id:adSessionId,user_id:userId,transaction_id:transactionId,ad_unit:adUnit}),server.error?JSON.parse(server.error).reason:'DELIVERY_EXPIRED']);
+            return JSON.stringify({status:'success',data:{queued:true,granted:false,reconciliation_required:true}});
+        }
+        try{reward=withServerRequest(nk,scope,()=>grantPreparedReward(characterRuntime(nk,scope),userId,adSessionId,transactionId));}
+        catch(_e){return monetizationError(503,'Server fenced; retry callback');}
+    } else reward=grantPreparedReward(nk,userId,adSessionId,transactionId);
     return JSON.stringify({ status: reward.granted ? "success" : "error", data: reward });
 };
 
@@ -1139,22 +1346,14 @@ const googlePlayRtdnConfirm: nkruntime.RpcFunction = (ctx, _logger, nk, payload)
     if (!expectedSecret || String(req.verifier_secret || "") !== expectedSecret) return monetizationError(403, "Verifier authorization failed");
     const tokenHash = String(req.purchase_token_hash || "");
     if (!tokenHash) return monetizationError(400, "purchase_token_hash is required");
-    const rows = nk.sqlQuery(
-        `UPDATE monetization_purchases
-         SET status = 'voided', updated_at = NOW()
-         WHERE purchase_token_hash = $1 AND status <> 'voided'
-         RETURNING user_id, granted_seconds`,
-        [tokenHash]
-    );
-    if (rows.length === 0) return JSON.stringify({ status: "success", data: { changed: false } });
-    const row = rows[0];
-    nk.sqlExec(
-        `UPDATE player_monetization_entitlements
-         SET no_ads_expires_at = GREATEST(NOW(), no_ads_expires_at - ($2 * INTERVAL '1 second')),
-             source = 'google_play_voided', updated_at = NOW()
-         WHERE user_id = $1`,
-        [String(row.user_id), Number(row.granted_seconds || 0)]
-    );
+    const revoked=nk.sqlQuery('SELECT void_store_purchase($1) AS purchase',[tokenHash]);
+    const row=revoked.length?parseJsonb(revoked[0].purchase):null;
+    if(!row)return JSON.stringify({status:'success',data:{changed:false,recorded:true}});
+    if(ctx.env.MULTI_SERVER_ENABLED==='true') {
+        const entitlement=readEntitlementRow(nk,String(row.user_id));
+        mirrorEntitlementStorage(nk,String(row.user_id),{no_ads_expires_at:Number(entitlement.no_ads_expires_at||0),source:entitlement.source,last_product_id:entitlement.last_product_id,updated_at:Number(entitlement.server_time||0)});
+        return JSON.stringify({status:'success',data:{changed:true}});
+    }
     const response = buildMonetizationResponse(nk, String(row.user_id), "production");
     mirrorEntitlementStorage(nk, String(row.user_id), {
         no_ads_expires_at: response.no_ads.expires_at,

@@ -3,6 +3,8 @@ const fs = require('fs'), path = require('path'), assert = require('assert');
 const read = relative => fs.readFileSync(path.join(__dirname, relative), 'utf8');
 const canonical = read('data/build/index.js');
 assert.equal(canonical, read('data/modules/build/index.js'), 'Runtime entrypoint copies differ; rebuild before restart');
+assert(canonical.includes('function serverAdmissionRpc('), 'Runtime missing server admission guard');
+assert(canonical.includes('registerRpc("enter_server"'), 'Runtime missing enter_server registration');
 assert(canonical.includes('registerRpc("store_purchase"'), 'Mounted runtime is missing store_purchase registration');
 assert(canonical.includes('registerRpc("abandon_run"'), 'Mounted runtime is missing abandon_run registration');
 assert(canonical.includes('request.fresh_login === true'), 'Mounted runtime is missing fresh-login recovery');
