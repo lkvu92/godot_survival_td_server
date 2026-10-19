@@ -1,6 +1,6 @@
 # Server documentation
 
-- [C143 Multi-server](contracts/C143_MULTI_SERVER.md): v1.5.1 IN_PROGRESS — non-null server character flags, atomic reseed preserving S1/player/ledger data; production release gated. [Migration runbook](S1_MIGRATION_RUNBOOK.md).
+- [C143 Multi-server](contracts/C143_MULTI_SERVER.md): v1.5.2 IN_PROGRESS — scoped item-request dedupe included; operator-authorized VPS S1 cutover recorded in [migration runbook](S1_MIGRATION_RUNBOOK.md).
 
 - [Kế hoạch triển khai nhiều server logic](MULTI_SERVER_IMPLEMENTATION_PLAN.md): DRAFT — định danh account/server, tích hợp backend/client, migration S1; mục 15 đặc tả API create/disable/reset/delete/cleanup, generation, dry-run và integration test.
 

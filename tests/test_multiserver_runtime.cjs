@@ -41,15 +41,17 @@ const keepAlive=setInterval(()=>{},1000);
   // Rehearse the offline migration before the gameplay fixture. Never run it against a live runtime.
   sql(`INSERT INTO remote_config_releases(config_version,snapshot,min_app_version,latest_app_version,store_url) VALUES(1,'{}','0.0.0','0.0.0','') ON CONFLICT DO NOTHING;
     INSERT INTO game_servers(server_id,display_name,status,config_version) VALUES('s001','Migration S1','disabled',1);
-    INSERT INTO storage(collection,key,user_id,value,version,read,write) VALUES('player_profiles','main','${uid}','{"display_name":"migration sentinel"}','migration-v1',0,0);`);
+    INSERT INTO storage(collection,key,user_id,value,version,read,write) VALUES('player_profiles','main','${uid}','{"display_name":"migration sentinel"}','migration-v1',0,0),
+    ('player_item_requests','old_item_request','${uid}','{"fingerprint":"legacy-dedupe"}','request-v1',0,0);`);
   const preview=JSON.parse(sql(migrationSql('plan')));
-  assert.equal(preview.storage_count,1);
+  assert.equal(preview.storage_count,2);
   docker(['stop',app]);
   const migrated=sql(migrationSql('apply',preview.manifest_hash,true));assert(migrated.includes('legacy_preserved'));
   sql(migrationSql('apply',preview.manifest_hash,true));
   const verified=JSON.parse(sql(migrationSql('verify')));assert.equal(verified.missing_or_changed,0);
   assert.equal(sql("SELECT status FROM game_servers WHERE server_id='s001'"),'disabled');
   assert.equal(sql("SELECT COUNT(*) FROM storage WHERE key IN ('main','s001:g1:main')"),'2');
+  assert.equal(sql("SELECT value->>'fingerprint' FROM storage WHERE key='s001:g1:old_item_request'"),'legacy-dedupe');
   docker(['start',app]);
   base='http://127.0.0.1:'+docker(['inspect','-f','{{(index (index .NetworkSettings.Ports "7350/tcp") 0).HostPort}}',app]);
   for(let i=0;i<40;i++){try{await http('/healthcheck');break;}catch(_e){await sleep(250);}}
