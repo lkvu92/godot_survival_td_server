@@ -1,6 +1,6 @@
 // C143: the only key encoder for character-owned Storage objects.
 const CHARACTER_COLLECTIONS = ['player_profiles','player_inventory','player_heroes','player_stage_runs',
-    'player_identity','player_event_progress','player_daily_checkin','weekly_leaderboard_claims','player_purchase_grants'];
+    'player_identity','player_event_progress','player_daily_checkin','weekly_leaderboard_claims','player_purchase_grants','player_item_requests'];
 
 function characterContext(nk: nkruntime.Nakama): GameServerContext|null {
     return (nk as any).__characterContext || null;
