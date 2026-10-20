@@ -20,11 +20,11 @@
     "display_name": "Thường",
     "order": 1,
     "recommended_power": 1,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "gold_reward": 50,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -78,12 +78,12 @@
     "level_id": "epic",
     "display_name": "Sử Thi",
     "order": 2,
-    "recommended_power": 1,
-    "exp_multiplier": 1,
+    "recommended_power": 2,
+    "exp_multiplier": 1.5,
     "gold_reward": 100,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.5,
+      "atk_mul": 1.5,
       "speed_mul": 1
     },
     "loot_table": [
@@ -137,12 +137,12 @@
     "level_id": "legend",
     "display_name": "Huyền Thoại",
     "order": 3,
-    "recommended_power": 1,
-    "exp_multiplier": 1,
+    "recommended_power": 3,
+    "exp_multiplier": 2.25,
     "gold_reward": 200,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1
     },
     "loot_table": [
@@ -198,11 +198,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 770,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -263,8 +263,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 1060,
-    "exp_multiplier": 1.25,
+    "recommended_power": 1155,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -335,12 +335,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 1420,
-    "exp_multiplier": 1.6,
+    "recommended_power": 1732,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -448,11 +448,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 809,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -513,8 +513,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 1113,
-    "exp_multiplier": 1.25,
+    "recommended_power": 1214,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -585,12 +585,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 1491,
-    "exp_multiplier": 1.6,
+    "recommended_power": 1821,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -698,11 +698,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 849,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -763,8 +763,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 1169,
-    "exp_multiplier": 1.25,
+    "recommended_power": 1274,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -835,12 +835,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 1566,
-    "exp_multiplier": 1.6,
+    "recommended_power": 1911,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -948,11 +948,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 891,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -1013,8 +1013,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 1227,
-    "exp_multiplier": 1.25,
+    "recommended_power": 1336,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -1085,12 +1085,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 1644,
-    "exp_multiplier": 1.6,
+    "recommended_power": 2004,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -1198,11 +1198,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 936,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -1316,8 +1316,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 1288,
-    "exp_multiplier": 1.25,
+    "recommended_power": 1404,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -1441,12 +1441,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 1726,
-    "exp_multiplier": 1.6,
+    "recommended_power": 2106,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -1647,11 +1647,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 983,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -1712,8 +1712,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 1353,
-    "exp_multiplier": 1.25,
+    "recommended_power": 1474,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -1784,12 +1784,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 1812,
-    "exp_multiplier": 1.6,
+    "recommended_power": 2211,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -1897,11 +1897,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 1032,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -1962,8 +1962,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 1421,
-    "exp_multiplier": 1.25,
+    "recommended_power": 1548,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -2034,12 +2034,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 1903,
-    "exp_multiplier": 1.6,
+    "recommended_power": 2322,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -2147,11 +2147,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 1083,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -2212,8 +2212,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 1492,
-    "exp_multiplier": 1.25,
+    "recommended_power": 1624,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -2284,12 +2284,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 1998,
-    "exp_multiplier": 1.6,
+    "recommended_power": 2436,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -2397,11 +2397,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 1138,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -2462,8 +2462,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 1566,
-    "exp_multiplier": 1.25,
+    "recommended_power": 1707,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -2534,12 +2534,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 2098,
-    "exp_multiplier": 1.6,
+    "recommended_power": 2560,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -2647,11 +2647,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 1195,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -2765,8 +2765,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 1644,
-    "exp_multiplier": 1.25,
+    "recommended_power": 1792,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -2890,12 +2890,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 2203,
-    "exp_multiplier": 1.6,
+    "recommended_power": 2688,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -3062,11 +3062,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 1254,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -3127,8 +3127,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 1727,
-    "exp_multiplier": 1.25,
+    "recommended_power": 1881,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -3199,12 +3199,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 2313,
-    "exp_multiplier": 1.6,
+    "recommended_power": 2822,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -3312,11 +3312,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 1317,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -3377,8 +3377,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 1813,
-    "exp_multiplier": 1.25,
+    "recommended_power": 1976,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -3449,12 +3449,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 2429,
-    "exp_multiplier": 1.6,
+    "recommended_power": 2964,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -3562,11 +3562,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 1383,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -3627,8 +3627,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 1904,
-    "exp_multiplier": 1.25,
+    "recommended_power": 2074,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -3699,12 +3699,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 2550,
-    "exp_multiplier": 1.6,
+    "recommended_power": 3111,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -3812,11 +3812,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 1452,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -3877,8 +3877,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 1999,
-    "exp_multiplier": 1.25,
+    "recommended_power": 2178,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -3949,12 +3949,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 2678,
-    "exp_multiplier": 1.6,
+    "recommended_power": 3267,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -4062,11 +4062,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 1525,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -4180,8 +4180,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 2099,
-    "exp_multiplier": 1.25,
+    "recommended_power": 2288,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -4305,12 +4305,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 2812,
-    "exp_multiplier": 1.6,
+    "recommended_power": 3432,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -4511,11 +4511,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 1601,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -4576,8 +4576,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 2204,
-    "exp_multiplier": 1.25,
+    "recommended_power": 2402,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -4648,12 +4648,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 2952,
-    "exp_multiplier": 1.6,
+    "recommended_power": 3603,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -4761,11 +4761,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 1681,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -4826,8 +4826,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 2314,
-    "exp_multiplier": 1.25,
+    "recommended_power": 2522,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -4898,12 +4898,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 3100,
-    "exp_multiplier": 1.6,
+    "recommended_power": 3783,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -5011,11 +5011,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 1765,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -5076,8 +5076,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 2430,
-    "exp_multiplier": 1.25,
+    "recommended_power": 2648,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -5148,12 +5148,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 3255,
-    "exp_multiplier": 1.6,
+    "recommended_power": 3972,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -5261,11 +5261,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 1853,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -5326,8 +5326,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 2551,
-    "exp_multiplier": 1.25,
+    "recommended_power": 2780,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -5398,12 +5398,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 3417,
-    "exp_multiplier": 1.6,
+    "recommended_power": 4170,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -5511,11 +5511,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 1946,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -5629,8 +5629,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 2679,
-    "exp_multiplier": 1.25,
+    "recommended_power": 2919,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -5754,12 +5754,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 3588,
-    "exp_multiplier": 1.6,
+    "recommended_power": 4378,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -5926,11 +5926,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 2043,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -5991,8 +5991,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 2812,
-    "exp_multiplier": 1.25,
+    "recommended_power": 3064,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -6063,12 +6063,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 3768,
-    "exp_multiplier": 1.6,
+    "recommended_power": 4596,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -6176,11 +6176,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 2145,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -6241,8 +6241,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 2953,
-    "exp_multiplier": 1.25,
+    "recommended_power": 3218,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -6313,12 +6313,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 3956,
-    "exp_multiplier": 1.6,
+    "recommended_power": 4827,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -6426,11 +6426,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 2252,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -6491,8 +6491,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 3101,
-    "exp_multiplier": 1.25,
+    "recommended_power": 3378,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -6563,12 +6563,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 4154,
-    "exp_multiplier": 1.6,
+    "recommended_power": 5067,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -6676,11 +6676,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 2365,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -6741,8 +6741,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 3256,
-    "exp_multiplier": 1.25,
+    "recommended_power": 3548,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -6813,12 +6813,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 4362,
-    "exp_multiplier": 1.6,
+    "recommended_power": 5322,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -6926,11 +6926,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 2483,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -7044,8 +7044,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 3419,
-    "exp_multiplier": 1.25,
+    "recommended_power": 3724,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -7169,12 +7169,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 4580,
-    "exp_multiplier": 1.6,
+    "recommended_power": 5586,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -7375,11 +7375,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 2607,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -7440,8 +7440,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 3590,
-    "exp_multiplier": 1.25,
+    "recommended_power": 3910,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -7512,12 +7512,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 4809,
-    "exp_multiplier": 1.6,
+    "recommended_power": 5865,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -7625,11 +7625,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 2738,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -7690,8 +7690,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 3769,
-    "exp_multiplier": 1.25,
+    "recommended_power": 4107,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -7762,12 +7762,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 5049,
-    "exp_multiplier": 1.6,
+    "recommended_power": 6160,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -7875,11 +7875,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 2875,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -7940,8 +7940,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 3957,
-    "exp_multiplier": 1.25,
+    "recommended_power": 4312,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -8012,12 +8012,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 5302,
-    "exp_multiplier": 1.6,
+    "recommended_power": 6468,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -8125,11 +8125,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 3018,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -8190,8 +8190,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 4155,
-    "exp_multiplier": 1.25,
+    "recommended_power": 4527,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -8262,12 +8262,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 5567,
-    "exp_multiplier": 1.6,
+    "recommended_power": 6790,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -8375,11 +8375,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 3169,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -8493,8 +8493,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 4363,
-    "exp_multiplier": 1.25,
+    "recommended_power": 4754,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -8618,12 +8618,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 5845,
-    "exp_multiplier": 1.6,
+    "recommended_power": 7131,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -8790,11 +8790,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 3328,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -8855,8 +8855,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 4581,
-    "exp_multiplier": 1.25,
+    "recommended_power": 4992,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -8927,12 +8927,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 6137,
-    "exp_multiplier": 1.6,
+    "recommended_power": 7488,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -9040,11 +9040,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 3494,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -9105,8 +9105,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 4810,
-    "exp_multiplier": 1.25,
+    "recommended_power": 5241,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -9177,12 +9177,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 6444,
-    "exp_multiplier": 1.6,
+    "recommended_power": 7862,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -9290,11 +9290,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 3669,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -9355,8 +9355,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 5051,
-    "exp_multiplier": 1.25,
+    "recommended_power": 5504,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -9427,12 +9427,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 6766,
-    "exp_multiplier": 1.6,
+    "recommended_power": 8256,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -9540,11 +9540,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 3852,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -9605,8 +9605,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 5303,
-    "exp_multiplier": 1.25,
+    "recommended_power": 5778,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -9677,12 +9677,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 7105,
-    "exp_multiplier": 1.6,
+    "recommended_power": 8667,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -9790,11 +9790,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 4045,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -9908,8 +9908,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 5569,
-    "exp_multiplier": 1.25,
+    "recommended_power": 6068,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -10033,12 +10033,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 7460,
-    "exp_multiplier": 1.6,
+    "recommended_power": 9102,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -10239,11 +10239,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 4247,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -10304,8 +10304,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 5847,
-    "exp_multiplier": 1.25,
+    "recommended_power": 6370,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -10376,12 +10376,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 7833,
-    "exp_multiplier": 1.6,
+    "recommended_power": 9555,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -10489,11 +10489,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 4460,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -10554,8 +10554,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 6139,
-    "exp_multiplier": 1.25,
+    "recommended_power": 6690,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -10626,12 +10626,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 8224,
-    "exp_multiplier": 1.6,
+    "recommended_power": 10035,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -10739,11 +10739,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 4683,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -10804,8 +10804,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 6446,
-    "exp_multiplier": 1.25,
+    "recommended_power": 7024,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -10876,12 +10876,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 8636,
-    "exp_multiplier": 1.6,
+    "recommended_power": 10536,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -10989,11 +10989,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 4917,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -11054,8 +11054,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 6769,
-    "exp_multiplier": 1.25,
+    "recommended_power": 7376,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -11126,12 +11126,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 9067,
-    "exp_multiplier": 1.6,
+    "recommended_power": 11064,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -11239,11 +11239,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 5163,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -11357,8 +11357,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 7107,
-    "exp_multiplier": 1.25,
+    "recommended_power": 7744,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -11482,12 +11482,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 9521,
-    "exp_multiplier": 1.6,
+    "recommended_power": 11616,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -11654,11 +11654,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 5421,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -11719,8 +11719,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 7462,
-    "exp_multiplier": 1.25,
+    "recommended_power": 8132,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -11791,12 +11791,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 9997,
-    "exp_multiplier": 1.6,
+    "recommended_power": 12198,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -11904,11 +11904,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 5692,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -11969,8 +11969,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 7836,
-    "exp_multiplier": 1.25,
+    "recommended_power": 8538,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -12041,12 +12041,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 10497,
-    "exp_multiplier": 1.6,
+    "recommended_power": 12807,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -12154,11 +12154,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 5976,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -12219,8 +12219,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 8227,
-    "exp_multiplier": 1.25,
+    "recommended_power": 8964,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -12291,12 +12291,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 11021,
-    "exp_multiplier": 1.6,
+    "recommended_power": 13446,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -12404,11 +12404,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 6275,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -12469,8 +12469,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 8639,
-    "exp_multiplier": 1.25,
+    "recommended_power": 9412,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -12541,12 +12541,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 11573,
-    "exp_multiplier": 1.6,
+    "recommended_power": 14118,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -12654,11 +12654,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 6589,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -12772,8 +12772,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 9071,
-    "exp_multiplier": 1.25,
+    "recommended_power": 9884,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -12897,12 +12897,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 12151,
-    "exp_multiplier": 1.6,
+    "recommended_power": 14826,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -13103,11 +13103,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 6918,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -13168,8 +13168,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 9524,
-    "exp_multiplier": 1.25,
+    "recommended_power": 10377,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -13240,12 +13240,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 12759,
-    "exp_multiplier": 1.6,
+    "recommended_power": 15566,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -13353,11 +13353,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 7264,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -13418,8 +13418,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 10000,
-    "exp_multiplier": 1.25,
+    "recommended_power": 10896,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -13490,12 +13490,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 13397,
-    "exp_multiplier": 1.6,
+    "recommended_power": 16344,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -13603,11 +13603,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 7628,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -13668,8 +13668,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 10500,
-    "exp_multiplier": 1.25,
+    "recommended_power": 11442,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -13740,12 +13740,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 14066,
-    "exp_multiplier": 1.6,
+    "recommended_power": 17163,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -13853,11 +13853,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 8009,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -13918,8 +13918,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 11025,
-    "exp_multiplier": 1.25,
+    "recommended_power": 12014,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -13990,12 +13990,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 14770,
-    "exp_multiplier": 1.6,
+    "recommended_power": 18021,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
@@ -14103,11 +14103,11 @@
     "description": "Clear normal difficulty to unlock Epic and advance campaign.",
     "order": 1,
     "recommended_power": 8409,
-    "exp_multiplier": 1,
+    "exp_multiplier": 1.0,
     "stamina_cost": 1,
     "enemy_modifiers": {
-      "hp_mul": 1,
-      "atk_mul": 1,
+      "hp_mul": 1.0,
+      "atk_mul": 1.0,
       "speed_mul": 1
     },
     "loot_table": [
@@ -14221,8 +14221,8 @@
     "display_name": "Epic",
     "description": "Harder enemies with increased HP and ATK. Yields refined stones.",
     "order": 2,
-    "recommended_power": 11577,
-    "exp_multiplier": 1.25,
+    "recommended_power": 12614,
+    "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
       "hp_mul": 1.5,
@@ -14346,12 +14346,12 @@
     "display_name": "Legend",
     "description": "Maximum challenge with high-tier runes and prestige rewards.",
     "order": 3,
-    "recommended_power": 15508,
-    "exp_multiplier": 1.6,
+    "recommended_power": 18921,
+    "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
-      "hp_mul": 2,
-      "atk_mul": 2,
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
       "speed_mul": 1.4
     },
     "loot_table": [
