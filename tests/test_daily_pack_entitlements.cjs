@@ -63,6 +63,7 @@ for (const pack of packs) {
     assert(!readStatus(pack.id).claimable,'No early claim at next-day boundary');
   }
   assert.equal(db.player_profiles.value.resources.gems, pack.id==='daily_deal'?3000:9000);
+  assert.equal(db.player_inventory.value.items.find(i=>i.item_id==='campaign_sweep_ticket').quantity,pack.id==='daily_deal'?150:450,'Daily tickets grant once per day for 30 days');
   assert.equal(db.player_profiles.value.stamina,30+(pack.id==='daily_deal'?600:1500),'Full stamina reward, no cap loss');
   if (pack.id==='daily_deal') assert.equal(db.player_profiles.value.resources.gold,300000);
   else {

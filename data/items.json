@@ -3330,6 +3330,7 @@
     "expires_after_hours": 0,
     "tags": [
       "sweep",
+      "ticket",
       "consumable"
     ],
     "attributes": {

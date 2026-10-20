@@ -2,7 +2,7 @@
   "contracts": [
     {
       "id": "C144_STAGE_SWEEP",
-      "version": "1.0.1",
+      "version": "1.0.3",
       "status": "ACTIVE",
       "updated_at": "2026-10-20",
       "contract_file": "docs/contracts/C144_STAGE_SWEEP.md"

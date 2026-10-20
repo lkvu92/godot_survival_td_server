@@ -163,13 +163,14 @@
         "rewards": [
           {"reward_type": "currency", "reward_id": "gems", "quantity": 100, "metadata": {"daily_pack_days": 30}},
           {"reward_type": "currency", "reward_id": "gold", "quantity": 10000, "metadata": {"daily_pack_days": 30}},
-          {"reward_type": "stamina", "reward_id": "stamina", "quantity": 20, "metadata": {"daily_pack_days": 30}}
+          {"reward_type": "stamina", "reward_id": "stamina", "quantity": 20, "metadata": {"daily_pack_days": 30}},
+          {"reward_type": "item", "reward_id": "campaign_sweep_ticket", "quantity": 5, "metadata": {"daily_pack_days": 30}}
         ],
         "icon_type": "pack",
         "icon_key": "daily_deal",
         "badge": "30 NGÀY",
-        "desc": "Mỗi ngày: 100 Đá Quý + 10.000 Vàng + 20 Thể Lực. Nhận 1 lần/ngày trong 30 ngày từ lúc mua; không cộng dồn ngày bỏ lỡ.",
-        "reward_summary": "Mỗi ngày: 100 Gem + 10k Vàng + 20 TL (30 ngày)"
+        "desc": "Mỗi ngày: 100 Đá Quý + 10.000 Vàng + 20 Thể Lực + 5 Vé Càn Quét. Nhận 1 lần/ngày trong 30 ngày từ lúc mua; không cộng dồn ngày bỏ lỡ.",
+        "reward_summary": "Mỗi ngày: 100 Gem + 10k Vàng + 20 TL + 5 Vé Càn Quét (30 ngày)"
       },
       {
         "id": "flash_sale",
@@ -183,13 +184,14 @@
           {"reward_type": "currency", "reward_id": "gems", "quantity": 300, "metadata": {"daily_pack_days": 30}},
           {"reward_type": "item", "reward_id": "talisman_enhance_charm", "quantity": 1, "metadata": {"daily_pack_days": 30}},
           {"reward_type": "item", "reward_id": "element_enlightenment_charm", "quantity": 1, "metadata": {"daily_pack_days": 30}},
-          {"reward_type": "stamina", "reward_id": "stamina", "quantity": 50, "metadata": {"daily_pack_days": 30}}
+          {"reward_type": "stamina", "reward_id": "stamina", "quantity": 50, "metadata": {"daily_pack_days": 30}},
+          {"reward_type": "item", "reward_id": "campaign_sweep_ticket", "quantity": 15, "metadata": {"daily_pack_days": 30}}
         ],
         "icon_type": "pack",
         "icon_key": "flash_sale",
         "badge": "30 NGÀY",
-        "desc": "Mỗi ngày: 300 Đá Quý + 1 Cường Hóa Phù + 1 Ngộ Đạo Phù + 50 Thể Lực. Nhận 1 lần/ngày trong 30 ngày từ lúc mua; không cộng dồn ngày bỏ lỡ.",
-        "reward_summary": "Mỗi ngày: 300 Gem + 1 Cường Hóa Phù + 1 Ngộ Đạo Phù + 50 TL (30 ngày)"
+        "desc": "Mỗi ngày: 300 Đá Quý + 1 Cường Hóa Phù + 1 Ngộ Đạo Phù + 50 Thể Lực + 15 Vé Càn Quét. Nhận 1 lần/ngày trong 30 ngày từ lúc mua; không cộng dồn ngày bỏ lỡ.",
+        "reward_summary": "Mỗi ngày: 300 Gem + 1 Cường Hóa Phù + 1 Ngộ Đạo Phù + 50 TL + 15 Vé Càn Quét (30 ngày)"
       }
     ],
     "resources": [

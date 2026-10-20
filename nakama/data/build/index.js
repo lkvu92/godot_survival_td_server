@@ -9281,7 +9281,7 @@ const rpcSweepTick = (ctx, logger, nk, _payload) => {
   });
 };
 
-const SWEEP_TICKET_DEFINITION = { id: "campaign_sweep_ticket", display_name: "V\xE9 c\xE0n qu\xE9t chi\u1EBFn d\u1ECBch", description: "C\xE0n qu\xE9t m\u1ED9t \u1EA3i chi\u1EBFn d\u1ECBch \u0111\xE3 \u0111\u1EA1t S.", category: "consumable", rarity: "rare", icon_id: "consumable_0", stackable: true, max_stack: 99999, order: 49, expires_after_hours: 0, tags: ["sweep", "consumable"], attributes: { sweep_type: "campaign", atlas_index: 0 } };
+const SWEEP_TICKET_DEFINITION = { id: "campaign_sweep_ticket", display_name: "V\xE9 c\xE0n qu\xE9t chi\u1EBFn d\u1ECBch", description: "C\xE0n qu\xE9t m\u1ED9t \u1EA3i chi\u1EBFn d\u1ECBch \u0111\xE3 \u0111\u1EA1t S.", category: "consumable", rarity: "rare", icon_id: "consumable_0", stackable: true, max_stack: 99999, order: 49, expires_after_hours: 0, tags: ["sweep", "ticket", "consumable"], attributes: { sweep_type: "campaign", atlas_index: 0 } };
 function sweepMigrationSql() {
   return `
 CREATE OR REPLACE FUNCTION c144_migrate_stage_sweep(p_rules JSONB,p_ticket JSONB)

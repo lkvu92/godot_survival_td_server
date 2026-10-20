@@ -60,3 +60,7 @@
 - [C144 Stage sweep](contracts/C144_STAGE_SWEEP.md): v1.0.1 ACTIVE; campaign grades, atomic combat exclusion, durable sweep and Home widget.
 
 - [Stage sweep operations](STAGE_SWEEP.md): worker deployment, recovery, queue diagnostics and HP authority.
+
+- C144 v1.0.2: daily ticket rewards 5/15, Huyen Thien Cac 20 gems per ticket; dedicated Tickets filter. Build, daily entitlement/store replay/CAS and static checks PASS.
+
+- C144 v1.0.3: shared cards shop category and live ticket offer correction.

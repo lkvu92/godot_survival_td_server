@@ -1,6 +1,6 @@
 # C144 Stage grades and campaign sweep
 
-Version: 1.0.1 | Status: ACTIVE | Date: 2026-10-20
+Version: 1.0.3 | Status: ACTIVE | Date: 2026-10-20
 
 ## Authority and schema
 
@@ -28,6 +28,7 @@ Old S/new A preserves best S and grants A quantities; exact-mode eligibility; st
 
 | Version | Date | Change |
 |---|---|---|
+| 1.0.2 | 2026-10-20 | Daily packs grant 5/15 sweep tickets; gem-only shop offer 20 per ticket and dedicated ticket filter. |
 | 1.0.0 | 2026-10-20 | Initial grade, sweep, atomic activity exclusion, scheduler and UI contract. |
 
 ## Validation and acceptance
@@ -39,3 +40,11 @@ Gate score: 9/10. Backend build/packaging, full server static with PostgreSQL, n
 Startup upgrades an existing published release missing stage_sweep by appending an immutable copy containing only the validated versioned server sweep defaults. Preserve all existing published settings and never publish unrelated pending drafts. Add the missing campaign ticket idempotently, without changing existing catalog tuning or player data. Existing custom published sweep rules remain untouched. Bootstrap validation failures are explicit actionable errors, not silent generic retry loops. Regression: old release restart upgrades once; repeat restart creates no release; published custom rules and pending drafts preserved; client accepts the migrated snapshot.
 
 Changelog 1.0.1 (2026-10-20): repair Loading after restart against pre-C144 releases and missing ticket catalog.
+
+## Campaign ticket commerce
+
+Daily small daily_deal grants5 campaign sweep tickets per claim; large flash_sale grants15, each with daily_pack_days30 metadata. New purchase snapshots inherit updated rewards; existing entitlements/pending orders keep their purchase snapshot. Huyen Thien Cac sells1 campaign_sweep_ticket for20 gems only under a dedicated Tickets category, item remains consumable with sweep/ticket tags. Server seed inputs own catalog prices; no client-local economic rules. Verify daily30-day totals150/450, replay/CAS and gem shop purchase/no gold offer.
+
+## Card shop category correction (1.0.3)
+
+Use cards as the shared offer category and The (Vietnamese card) as its player label. Remove tickets category. Ticket offer must exist in live server progression, not only seed input; gem view includes the same gem-only20/quantity1 offer. Seed the local targeted offer and item without replacing unrelated configuration. Reconnect reloads server catalog.

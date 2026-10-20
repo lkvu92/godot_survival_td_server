@@ -5,6 +5,7 @@ const items = catalog.filter(i => i.attributes && Number.isInteger(i.attributes.
 assert.equal(items.length, 23);
 assert(!catalog.some(i => i.id === 'loot_magnet_talisman'));
 const offers = progression.talisman_system.store.materials;
+assert.deepEqual(offers.filter(p=>p.item_id==='campaign_sweep_ticket'),[{item_id:'campaign_sweep_ticket',category:'cards',currency:'gems',price:20,quantity:1,enabled:true}]);
 const prices = {
  rename_talisman:[1000,0,'epic'], spirit_root_reset:[5000,0,'mythic'],
  exp_talisman:[500,125000,'epic'],gold_talisman:[300,0,'rare'],
@@ -76,6 +77,11 @@ reset();profile().name_changes_used='invalid';assert(!renameTo('Invalid Quota').
 console.log('PASS consumables: 23 catalog entries, exact prices/rarities, disabled elements, atomic Gold/Gem purchases, replay binding, free/paid rename, stale quota, talent reroll and active-run/CAS guards');
 
 const purchase=(id,currency,request_id,protocol=2)=>JSON.parse(storePurchase({userId:'u'},{},nk,JSON.stringify({item_id:id,currency,request_id,purchase_protocol:protocol})));
+reset();assert(purchase('campaign_sweep_ticket','gems','ticket-buy').success);
+assert.equal(profile().resources.gems,19980);assert.equal(quantity('campaign_sweep_ticket'),1);
+assert(purchase('campaign_sweep_ticket','gems','ticket-buy').duplicate);assert.equal(quantity('campaign_sweep_ticket'),1);
+assert(!purchase('campaign_sweep_ticket','gold','ticket-gold').success);assert.equal(profile().resources.gold,1000000);
+const ticketBeforeConflict=clone(db);conflict=true;assert(!purchase('campaign_sweep_ticket','gems','ticket-conflict').success);assert.deepEqual(db,ticketBeforeConflict);
 reset();const beforeMissingCurrency=clone(db);
 assert(!purchase('fire_aptitude_fruit',undefined,'missing-currency').success);
 assert(!purchase('fire_aptitude_fruit','gem','invalid-currency').success);

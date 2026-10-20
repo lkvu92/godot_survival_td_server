@@ -1,5 +1,5 @@
 // C144 versioned, additive startup migration. Never publish pending draft settings.
-const SWEEP_TICKET_DEFINITION:any={id:'campaign_sweep_ticket',display_name:'Vé càn quét chiến dịch',description:'Càn quét một ải chiến dịch đã đạt S.',category:'consumable',rarity:'rare',icon_id:'consumable_0',stackable:true,max_stack:99999,order:49,expires_after_hours:0,tags:['sweep','consumable'],attributes:{sweep_type:'campaign',atlas_index:0}};
+const SWEEP_TICKET_DEFINITION:any={id:'campaign_sweep_ticket',display_name:'Vé càn quét chiến dịch',description:'Càn quét một ải chiến dịch đã đạt S.',category:'consumable',rarity:'rare',icon_id:'consumable_0',stackable:true,max_stack:99999,order:49,expires_after_hours:0,tags:['sweep','ticket','consumable'],attributes:{sweep_type:'campaign',atlas_index:0}};
 function sweepMigrationSql():string {return `
 CREATE OR REPLACE FUNCTION c144_migrate_stage_sweep(p_rules JSONB,p_ticket JSONB)
 RETURNS INT LANGUAGE plpgsql AS $c144$

@@ -251,6 +251,14 @@
     "store": {
       "materials": [
         {
+          "item_id": "campaign_sweep_ticket",
+          "category": "cards",
+          "currency": "gems",
+          "price": 20,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
           "item_id": "rename_talisman",
           "category": "charms",
           "currency": "gems",
