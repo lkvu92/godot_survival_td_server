@@ -16,9 +16,9 @@ function sweepGrade(nk:nkruntime.Nakama,ratio:number,won:boolean=true):string {
     if(!Number.isFinite(ratio)||ratio<0||ratio>1)throw new Error('INVALID_OBJECTIVE_HP');
     return sweepConfig(nk).grades.find((r:any)=>ratio>r.above).grade;
 }
-function sweepQuantity(nk:nkruntime.Nakama,row:any,grade:string):number {
+function sweepQuantity(nk:nkruntime.Nakama,row:any,grade:string,rules:any=null):number {
     const base=Math.max(0,Math.floor(Number(row.base_quantity===undefined?(row.max_qty===undefined?(row.quantity===undefined?row.min_qty:row.quantity):row.max_qty):row.base_quantity)||0));
-    const rule=sweepConfig(nk).grades.find((r:any)=>r.grade===grade);
+    const rule=(rules||sweepConfig(nk)).grades.find((r:any)=>r.grade===grade);
     return base>0&&rule?Math.max(1,Math.floor(base*rule.multiplier)):0;
 }
 function sweepActive(profile:any):boolean {return !!profile.sweep&&['running','cancelling','blocked'].indexOf(profile.sweep.status)>=0;}
@@ -97,21 +97,40 @@ function sweepWrite(nk:nkruntime.Nakama,userId:string,s:any,full:boolean):void {
     if(s.extraWrites)writes.push.apply(writes,s.extraWrites);
     nk.storageWrite(writes);
 }
-function sweepRewardTable(nk:nkruntime.Nakama,stage:string,mode:string,stageRow:any,level:any,grade:string):any[] {
+function sweepRewardTable(nk:nkruntime.Nakama,stage:string,mode:string,stageRow:any,level:any,grade:string,rules:any=null):any[] {
     const boss=parseJsonb(level.boss_loot_table)||[],normal=parseJsonb(level.loot_table)||[];
     const table=(stageRow.is_boss&&boss.length?boss:normal).filter((r:any)=>r.item_id!==SWEEP_TICKET&&r.resource_id!=='gold');
-    const items=table.map((r:any)=>Object.assign({},r,{quantity:sweepQuantity(nk,r,grade)})).filter((r:any)=>r.quantity>0);
+    const items=table.map((r:any)=>Object.assign({},r,{quantity:sweepQuantity(nk,r,grade,rules)})).filter((r:any)=>r.quantity>0);
     if(mode==='legend'&&stageRow.is_boss===true&&['stage_1_10','stage_2_10','stage_3_10','stage_4_10','stage_5_10'].indexOf(stage)>=0){
         const arcs=nk.sqlQuery('SELECT element FROM game_arcs WHERE id = $1',[stageRow.arc_id]);
         const element=arcs.length?String(arcs[0].element||''):'';
         for(const tier of [{name:'Hạ phẩm',weight:0.85},{name:'Trung phẩm',weight:0.15}]){
             const candidates=nk.sqlQuery('SELECT id, element FROM game_talismans WHERE tier = $1 ORDER BY id',[tier.name]);
             const match=candidates.filter((r:any)=>String(r.element||'')===element),other=candidates.filter((r:any)=>String(r.element||'')!==element);
-            for(const row of candidates){const same=String(row.element||'')===element,weight=tier.weight*(same?(other.length?0.75:1):(match.length?0.25:1))/(same?match.length:other.length);items.push({item_id:'talisman_fragment_'+Number(row.id),quantity:sweepQuantity(nk,{base_quantity:3},grade),group:'fragment',group_drop_rate:0.7,weight,drop_rate:weight});}
+            for(const row of candidates){const same=String(row.element||'')===element,weight=tier.weight*(same?(other.length?0.75:1):(match.length?0.25:1))/(same?match.length:other.length);items.push({item_id:'talisman_fragment_'+Number(row.id),quantity:sweepQuantity(nk,{base_quantity:3},grade,rules),group:'fragment',group_drop_rate:0.7,weight,drop_rate:weight});}
         }
     }
-    const gold=sweepQuantity(nk,{base_quantity:Number(level.gold_reward||0)},grade);if(gold)items.push({resource_id:'gold',quantity:gold,drop_rate:1});
+    const gold=sweepQuantity(nk,{base_quantity:Number(level.gold_reward||0)},grade,rules);if(gold)items.push({resource_id:'gold',quantity:gold,drop_rate:1});
     return items;
+}
+// Presentation snapshot shares the actual completion table; never used to grant.
+function stageCompletionLoot(nk:nkruntime.Nakama,stage:any,level:any,ticketProbabilities?:number[],rules:any=null):any[] {
+    if(stage.arc_id==='arc_0'||stage.id==='stage_0_admin_test')return [];
+    const items=sweepRewardTable(nk,stage.id,level.level_id,stage,level,'S',rules);
+    for(const line of items) {
+        if(line.group==='fragment') {
+            const total=items.filter((r:any)=>r.group==='fragment').reduce((sum:number,r:any)=>sum+Number(r.weight||0),0);
+            line.drop_rate=Number(line.group_drop_rate)*Number(line.weight)/total;
+        }
+    }
+    const probabilities=ticketProbabilities||sweepConfig(nk).ticket_probabilities;
+    items.unshift({item_id:SWEEP_TICKET,min_qty:0,max_qty:2,drop_rate:probabilities[1]+probabilities[2],ordinary_combat_only:true,
+        quantity_outcomes:probabilities.map((probability:number,quantity:number)=>({quantity,probability}))});
+    return items;
+}
+function stageTicketQuantity(nk:nkruntime.Nakama,roll:number=Math.random()):number {
+    const probabilities=sweepConfig(nk).ticket_probabilities;
+    return roll<probabilities[0]?0:(roll<probabilities[0]+probabilities[1]?1:2);
 }
 function sweepPreviewData(nk:nkruntime.Nakama,s:any,req:any):any {
     const c=sweepConfig(nk),stage=String(req.stage_id||''),mode=String(req.level_id||'');
@@ -138,10 +157,10 @@ function sweepRoll(items:any[]):any[] {
     }
     return out;
 }
-function sweepProcess(nk:nkruntime.Nakama,userId:string,logger:nkruntime.Logger,nowMs:number=Date.now(),limit:number=4):any {
-    for(let index=0;index<Math.min(8,Math.max(1,limit));index++) {
-        const s=sweepRead(nk,userId,nowMs),session=s.profile.sweep;if(!sweepActive(s.profile)||session.status==='blocked')return session||null;
-        const cutoff=session.cancel_at_ms===undefined?nowMs:Math.min(nowMs,session.cancel_at_ms);
+function sweepProcess(nk:nkruntime.Nakama,userId:string,logger:nkruntime.Logger,nowMs:number=Date.now(),limit:number=4,atomicState:any=null):any {
+    for(let index=0;index<(atomicState?100:Math.min(8,Math.max(1,limit)));index++) {
+        const s=atomicState||sweepRead(nk,userId,nowMs),session=s.profile.sweep;if(!sweepActive(s.profile)||session.status==='blocked')return session||null;
+        const cutoff=atomicState?Infinity:(session.cancel_at_ms===undefined?nowMs:Math.min(nowMs,session.cancel_at_ms));
         if(session.next_due_at_ms>cutoff||session.completed_rounds>=session.total_rounds) {
             if(session.cancel_at_ms!==undefined||session.completed_rounds>=session.total_rounds){session.status=session.cancel_at_ms!==undefined?'cancelled':'completed';session.reserved_tickets=0;session.reserved_stamina=0;session.state_version++;delete s.profile.activity;sweepRefreshStamina(nk,s.profile,nowMs);sweepWrite(nk,userId,s,false);}
             return session;
@@ -160,17 +179,21 @@ function sweepProcess(nk:nkruntime.Nakama,userId:string,logger:nkruntime.Logger,
         while(level<Math.min(PROGRESSION_MAX_LEVEL,s.profile.level)&&next>0&&xp>=next){xp-=next;level++;next=progressionNextHeroExp(nk,level);}
         hero.level=level;hero.exp=level>=PROGRESSION_MAX_LEVEL?0:xp;hero.next_level_exp=level>=PROGRESSION_MAX_LEVEL?0:next;hero.current_attribute=progressionHeroAttributes(nk,session.hero_id,level);
         session.completed_rounds++;session.reserved_tickets--;session.reserved_stamina--;session.state_version++;
-        session.receipts.push({round_index:session.completed_rounds,receipt_id:session.session_id+':'+session.completed_rounds,completed_at_ms:session.next_due_at_ms,loot:rewards,exp});
+        session.receipts.push({round_index:session.completed_rounds,receipt_id:session.session_id+':'+session.completed_rounds,completed_at_ms:atomicState?nowMs:session.next_due_at_ms,loot:rewards,exp});
         session.next_due_at_ms=session.started_at_ms+(session.completed_rounds+1)*session.config_snapshot.round_duration_ms;
         if(session.completed_rounds===session.total_rounds||(session.cancel_at_ms!==undefined&&session.next_due_at_ms>session.cancel_at_ms)){session.status=session.cancel_at_ms!==undefined?'cancelled':'completed';session.reserved_tickets=0;session.reserved_stamina=0;delete s.profile.activity;}
         if(!sweepActive(s.profile))sweepRefreshStamina(nk,s.profile,nowMs);
-        s.inventory.items=items;sweepWrite(nk,userId,s,true);
+        s.inventory.items=items;if(!atomicState)sweepWrite(nk,userId,s,true);
         try{nk.notificationSend(userId,'Càn quét',{session_id:session.session_id,state_version:session.state_version,status:session.status},144,null,false);}catch(e){if(logger)logger.warn('Sweep notification deferred: %s',String(e));}
         if(!sweepActive(s.profile))return session;
     }
     return sweepRead(nk,userId,nowMs).profile.sweep;
 }
-function sweepResponse(s:any,extra:any={}):string {return JSON.stringify(Object.assign({success:true,session:s.profile.sweep||null,server_time_ms:Date.now(),profile:s.profile,inventory:s.inventory,heroes:s.heroes.heroes||[]},extra));}
+function sweepInstantQuote(session:any,now:number=Date.now()):any {
+    const remaining=session&&session.status==='running'?Math.max(0,session.total_rounds-Math.max(session.completed_rounds,Math.floor((now-session.started_at_ms)/session.config_snapshot.round_duration_ms))):0;
+    return {unit_cost_gems:5,remaining_rounds:remaining,cost_gems:remaining*5};
+}
+function sweepResponse(s:any,extra:any={}):string {return JSON.stringify(Object.assign({success:true,instant_finish:sweepInstantQuote(s.profile.sweep),session:s.profile.sweep||null,server_time_ms:Date.now(),profile:s.profile,inventory:s.inventory,heroes:s.heroes.heroes||[]},extra));}
 function sweepRpc(handler:any):nkruntime.RpcFunction {return (ctx,logger,nk,payload)=>{try{return handler(ctx,logger,nk,JSON.parse(payload||'{}'));}catch(e){return JSON.stringify({success:false,code:String(e).replace(/^Error: /,''),message:String(e),server_time_ms:Date.now()});}};}
 const getSweepOptions=sweepRpc((ctx:any,_logger:any,nk:any)=>{
     const s=sweepRead(nk,ctx.userId),c=sweepConfig(nk),options:any[]=[];
@@ -207,4 +230,21 @@ const cancelSweep=sweepRpc((ctx:any,logger:any,nk:any,req:any)=>{
     }
     if(sweepActive(s.profile)&&session.cancel_at_ms===undefined){session.cancel_at_ms=Date.now();session.status='cancelling';session.state_version++;sweepWrite(nk,ctx.userId,s,false);}
     sweepProcess(nk,ctx.userId,logger);return sweepResponse(sweepRead(nk,ctx.userId));
+});
+
+const finishSweep=sweepRpc((ctx:any,logger:any,nk:any,req:any)=>{
+    const now=Date.now(),s=sweepRead(nk,ctx.userId,now),session=s.profile.sweep;
+    if(!session||session.session_id!==req.session_id)throw new Error('SESSION_NOT_FOUND');
+    if(session.status==='completed')return sweepResponse(s,{duplicate:true});
+    if(session.status!=='running'||session.cancel_at_ms!==undefined)throw new Error('SWEEP_NOT_RUNNING');
+    const quote=sweepInstantQuote(session,now);
+    if(!Number.isSafeInteger(req.max_cost_gems)||req.max_cost_gems<quote.cost_gems)throw new Error('PRICE_CHANGED');
+    const gems=Number((s.profile.resources||{}).gems||0);
+    if(gems<quote.cost_gems)throw new Error('INSUFFICIENT_GEMS');
+    s.profile.resources=s.profile.resources||{};s.profile.resources.gems=gems-quote.cost_gems;
+    sweepProcess(nk,ctx.userId,logger,now,100,s);
+    if(session.status!=='completed')throw new Error('SWEEP_FINISH_FAILED');
+    session.instant_finish={cost_gems:quote.cost_gems,paid_rounds:quote.remaining_rounds,finished_at_ms:now};
+    sweepWrite(nk,ctx.userId,s,true);
+    return sweepResponse(s);
 });

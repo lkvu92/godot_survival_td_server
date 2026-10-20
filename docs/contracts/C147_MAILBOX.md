@@ -1,0 +1,56 @@
+# C147 Mailbox
+Version: 1.1.4 | Status: ACTIVE | Updated: 2026-10-20
+
+## Changelog
+| Version | Change |
+|---|---|
+| 1.1.4 | Manual single/selected/delete-read actions always preserve mails with unclaimed attachments, including expired mail; claimed or rewardless mails remain deletable. |
+| 1.1.3 | Increase the mailbox reader back-to-list button width by 50 percent of its skinned minimum width. |
+| 1.1.2 | Mail EXP attachments use the gameplay result EXP item icons and identical amount thresholds/rarities, instead of UI texture fallback. |
+| 1.1.1 | Borderless 64px filters, 64px card category icons, doubled 56/44px trailing states, contained icon-before-caption footer, styled reader metadata, explicit vertical ScrollBarUI and five local player test messages. |
+| 1.1.0 | Reference-layout redesign: fixed icon filter toolbar, checkbox selection, one modal with embedded reader, fixed horizontal attachment strip and contextual footer; unchanged RPC and reward rules. |
+| 1.0.0 | Server-authoritative mailbox, atomic reward claims, expiry/retention, campaigns, purchase and weekly delivery, shared socket UI. |
+
+## Schema and ownership
+Character-owned player_mail Storage objects use deterministic source-derived IDs. Immutable delivery ledger player_mail_deliveries prevents re-delivery after purge. Fields: id, category(system/event/battle_report), source_type, source_id, title, sender_name, body, attachments[{type(resource/item/exp),id,amount}], created_at_ms, expires_at_ms(null=infinite), purge_at_ms(null), read_at_ms, claimed_at_ms, deleted_at_ms, version. Character keys include server_id and generation via characterRuntime; legacy account scope remains supported. Assets are presentation-only through AtlasRegistry/UiSkin.
+
+## RPC request/response
+All player RPCs authenticated, account/session guarded, version gated and server admitted. mail_summary {}; mail_list {filter:all/unread/read/reward/expiring/system/battle_report,cursor?,limit?}; mail_open {id}; mail_claim {id}; mail_claim_all {cursor?}; mail_delete {id}; mail_delete_read {cursor?}. Response {success,code?,message?,server_time_ms,summary:{unread_count,claimable_count},mails?,mail?,next_cursor?,has_more?,results?,profile?,inventory?}. Keyset pagination newest-first; bulk operations use bounded stable ID cursor across the entire mailbox, return per-mail result and next_cursor. Client handles every batch. No client-authoritative rewards or local fallback.
+
+## Rules
+Read changes only after successful open. Expired at server_now >= expires_at: claim rejected. Defaults warning=24h, retention=7 days, overridden by validated published system.mailbox settings. Infinite mail has no purge deadline. Worker physically deletes expired/soft-deleted mail with version preconditions; immutable delivery ledger survives. Manual delete only when there are no attachments or all attachments are claimed, even after expiry; delete-read additionally requires read. Atomic Storage CAS writes mail+profile+inventory, including progression EXP and unlock rules. All-or-none per mail, bounded bulk independent results; retry of successful claim is idempotent. Item definitions resolved server-side. Delivery once per source/character even after deletion. Push code 147 is a hint, never a reward command. UI synchronizes login/reconnect/resume/open, fences old account/context/epoch replies and coalesces pushes.
+
+## Producers and operator interface
+mail_admin_send {target_user_id,server_id?,generation?,source_id,title,body,category?,attachments?,expires_at_ms?}; mail_admin_campaign {campaign_id,server_id?,generation?,title,body,attachments?,expires_at_ms?}; mail_tick {} is HTTP-key-only or configured admin, no player access. Campaign snapshots recipient population by creation cutoff, scans ready characters/users in bounded batches and retains durable progress. Repeated source/campaign ID does not mutate delivered rewards. Purchases deliver currency/items via infinite mail and apply immediate rights separately in the same purchase batch. Weekly awards are materialized lazily on mailbox recovery and by scheduler; original claim markers and mailbox claims commit together to prevent duplicate legacy claims.
+
+## Client interfaces and UI
+MailService.refresh_summary(), list_mail(filter,cursor), open_mail(id), mutate(action,id), server_now_ms(); changed signal. MainMenu first right-rail button, centered icon gift_mail_10 if unread>0 else gift_mail_11. MailboxDialog filters, paginated scroll, claim-all/delete-read; MailDetailDialog header/body/reward list/claim/delete. All actions disabled offline/busy; server rejection displayed. Expiring counts and expiry rechecked on server; client clock is display only.
+
+## Acceptance
+Backend build, real Storage CAS/concurrency and PostgreSQL query tests, Godot parser, focused service/UI tests, both static runners. Verify expiry equality, infinite retention, unread changes, filters/keyset pagination, duplicate delivery after purge, concurrent claims/legacy weekly claim, retry after timeout, cross-context fence, missed push/reconnect, package immediate rights vs mailed rewards, campaign recovery. Evidence recorded below.
+
+## Gate evidence (2026-10-20)
+Gate score: 8.5/10. Backend build and canonical runtime packaging PASS. Client and server static runners PASS (server includes all JS regressions and Python tests). Mailbox fault-injection PASS: pre-commit failure rolls back all rewards/state; retry, inclusive expiry and pre-commit expiry recheck, infinite lifetime, offline push, scoped ownership, weekly marker, delete guards, durable ledger and atomic combat report.
+Native PostgreSQL + Nakama 3.24.2 smoke PASS in isolated, cleaned-up containers: concurrent claims, actual code 147 WebSocket push, purchase mail + immediate VIP rights, read/delete conditions, cross-server rejection, filters/keyset pagination, claim-all across batches, expired rejection, retention physical purge with retained ledger, infinite survival, delete-read, campaign and coexistence with old weekly claim. Existing migration/account-link/sweep/payment/reset/full-reseed regressions remain green.
+Godot 4.6.3 parser/editor scan and TestMailService/TestMailboxUI PASS: context/disconnect fences, paged bulk results, errors unlock; offline/populated modal, attachment list, claim/delete controls, paging and first right-rail centered icon switching. Physical-device visual review and production deployment are not claimed. Operational rollout is documented in server/docs/MAILBOX_OPERATIONS.md.
+
+## Reference-layout UI (1.1.0)
+One MailboxDialog owns list/read states. Primary icon buttons: all, system, rewards, more filters, refresh. More exposes unread/read/expiring/battle reports; all seven filters remain reachable. Rows have independent checkboxes, category icon, title, preview and right-aligned read state. A select-all checkbox affects loaded rows only. Delete footer removes selected mails through existing guarded mail_delete RPCs; without selection it explicitly says delete-read and uses mail_delete_read. Unclaimed rewards remain protected. Open replaces list with sender/subject/date/expiry, independently scrolling plain text and a horizontal ScrollBarUI attachment strip fixed below it. Footer switches to delete-this/claim; back returns to list within the same modal. Closing/filter/context changes fence pending requests. Assets use AtlasRegistry gift_mail icons and system action fallback icons; all controls use UiSkin/ButtonUI. No player mail-composition/send endpoint is introduced. Offline and mutation guards unchanged. Acceptance: focused Godot runtime tests for filters, checkboxes, embedded navigation, populated/empty/offline states, reward strip axis and fixed layout; static runners.
+
+## 1.1.0 validation (2026-10-20)
+Gate score 9/10. Godot 4.6.3 editor/parser and headless TestMailboxUI/TestMailService PASS. Updated UI test exercises seven icon filters, loaded-row select-all, selected deletion with protected failures retained, same-modal list/read navigation, context/offline guards, horizontal reward overflow and fixed reward position during body scroll. Sprite fitting is asserted to keep reward icons inside their slots. Native OpenGL renders of list and reader reviewed; previews saved in client/temp/mailbox-list.png and client/temp/mailbox-reader.png. Both repository static runners PASS, including server mailbox/27 Python regressions. No backend RPC or reward-policy changes in 1.1.0.
+
+## Arc-open notifications (1.1.1, user correction)
+Ordinary stage victory/defeat never creates mail. A new source arc_opened:<arc_id> is delivered only when a persisted profile gains an arc not in its prior unlocked_arcs (excluding training arc_0). Notice is a rewardless system message, created atomically with the profile update and immutable delivery marker. Repeat progress/arc replay cannot send it again. Hook covers stage settlement, tribulation, mail EXP claims and sweep worker profile writes. Battle-report category remains supported for explicitly sent reports, not automatic per-stage mail.
+
+## 1.1.1 acceptance (2026-10-20)
+PASS backend build/packaging, both static runners, 27 Python tests, Godot service and UI runtime, native OpenGL visual review and isolated Nakama/PostgreSQL/WebSocket integration. UI assertions cover borderless 64px filter skins, 64px category and 56/44px trailing icons, icon-before-text footer containment, vertical ScrollBarUI with overflowing mail rows, reader typography hierarchy and reward strip isolation. Progression regression proves ordinary stage settlement creates no report, new arc mail commits atomically, failed commits produce no notice and repeated arcs do not resend. Native sweep/legacy weekly/reseed/account/server regressions pass. Five targeted local test mails were delivered through the shared delivery validator and one atomic Storage fixture import; all five verified unread in S1. Existing rewards were not granted or claimed by the fixture. Local Nakama restarted with the new arc-only progression rule and healthcheck passed; no production deployment.
+
+## 1.1.2 verification
+Godot mailbox runtime and client static checks PASS. Native OpenGL capture reviewed: EXP attachment displays the gameplay EXP crystal, not the UI fallback frame. Existing reader test asserts the rendered EXP sprite uses AtlasRegistry.get_item_icon(result_exp_low). Amount tiers match HUD: below 2000 common, below 5000 rare, below 10000 epic, otherwise legendary.
+
+## Manual deletion protection (1.1.4)
+Server can_delete is true only for no attachments or confirmed claimed_at_ms. Expiration does not permit manual deletion of unclaimed attachments. This applies to mail_delete, selected-mail deletion and mail_delete_read batches. UI disables single-delete and bulk retains protected rows. Automated expiry retention purge remains unchanged.
+
+## 1.1.4 verification
+Backend build/packaging, both static runners, Godot mailbox runtime and native Nakama/PostgreSQL integration PASS. Single deletion rejects fresh and expired unclaimed rewards, delete-read batches retain the expired/read/unclaimed mail, mixed selected deletion retains protected mails, and claimed reward mail deletes normally. Local Nakama runtime updated and healthy. Automatic expiry purge policy unchanged.

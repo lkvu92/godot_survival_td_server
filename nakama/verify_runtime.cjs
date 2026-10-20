@@ -17,3 +17,6 @@ assert(canonical.includes('purchase_protocol: 2'), 'Mounted runtime must return 
 assert(/js_entrypoint:\s*["']build\/index\.js["']/.test(read('data/local.yml')), 'Mounted data/local.yml must load canonical build/index.js');
 assert(read('docker-compose.yml').includes('--config /nakama/data/local.yml'), 'Docker must use the tracked mounted config, not an ignored legacy local.yml');
 console.log('PASS runtime packaging: canonical build/index.js, matching artifacts, store_purchase v2 registered');
+
+assert(canonical.includes("linkedRpc_mail_claim"), "Runtime missing C147 mailbox RPCs");
+for (const name of ["docker-compose.yml", "docker-compose.local.yml"]) assert(read(name).includes("mail-worker:"), "Deployment missing mailbox worker");

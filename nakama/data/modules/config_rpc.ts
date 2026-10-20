@@ -177,6 +177,25 @@ function processStageLevel(row: any): any {
     return row;
 }
 
+function stageLevelsWithCompletionLoot(nk:nkruntime.Nakama):any[] {
+	// This read-only projection repeatedly resolves identical rules and fragment
+	// catalogs. Keep results only for this call; never retain them across requests.
+	const base=nk,readOnly:any=Object.create(base),reads:any={};
+	readOnly.sqlQuery=(query:string,args:any[])=>{
+		const key=JSON.stringify([query,args]);
+		if(!Object.prototype.hasOwnProperty.call(reads,key))reads[key]=base.sqlQuery(query,args);
+		return reads[key];
+	};
+	nk=readOnly;
+    const stages=nk.sqlQuery('SELECT id,arc_id,is_boss FROM game_stages',[]);
+    const rules=sweepConfig(nk),ticketProbabilities=rules.ticket_probabilities;
+    return nk.sqlQuery("SELECT * FROM game_stage_levels ORDER BY stage_id, sort_order, id", []).map((raw:any)=>{
+        const row=processStageLevel(raw),stage=stages.find((s:any)=>s.id===row.stage_id);
+        if(stage)row.completion_loot=stageCompletionLoot(nk,stage,row,ticketProbabilities,rules);
+        return row;
+    });
+}
+
 function buildStoreConfigs(nk: nkruntime.Nakama): any {
     const products = nk.sqlQuery("SELECT * FROM game_store_products ORDER BY tab_id, product_id", []);
     const platformProducts=nk.sqlQuery("SELECT platform,product_id,store_product_id,active FROM game_store_platform_products ORDER BY platform,product_id",[]);
@@ -251,7 +270,7 @@ const getGameConfig: nkruntime.RpcFunction = (
             return JSON.stringify(stages.map(s => processStage(s, nk)));
         }
         case "stage_levels":
-            return JSON.stringify(nk.sqlQuery("SELECT * FROM game_stage_levels ORDER BY stage_id, sort_order, id", []).map(processStageLevel));
+            return JSON.stringify(stageLevelsWithCompletionLoot(nk));
         case "progression": {
             const rows = nk.sqlQuery("SELECT value FROM game_config WHERE key = 'progression'", []);
             return rows.length > 0 ? JSON.stringify(parseJsonb(rows[0].value)) : "{}";
@@ -273,7 +292,7 @@ const getGameConfig: nkruntime.RpcFunction = (
 
             const stages = nk.sqlQuery("SELECT * FROM game_stages ORDER BY sort_order, level, id", []);
             result.stages = stages.map(s => processStage(s, nk));
-            result.stage_levels = nk.sqlQuery("SELECT * FROM game_stage_levels ORDER BY stage_id, sort_order, id", []).map(processStageLevel);
+            result.stage_levels = stageLevelsWithCompletionLoot(nk);
 
             const progRows = nk.sqlQuery("SELECT value FROM game_config WHERE key = 'progression'", []);
             result.progression = progRows.length > 0 ? parseJsonb(progRows[0].value) : {};
@@ -453,6 +472,11 @@ const publishConfigRelease: nkruntime.RpcFunction = (
         rows.forEach((row: any) => { snapshot[String(row.module)][String(row.key)] = parseRemoteSetting(String(row.value_type), String(row.value)); });
     } catch (e) { return JSON.stringify({ status: "error", code: 422, message: String(e) }); }
     const minVersion = String(snapshot.system.min_app_version || "");
+    if(snapshot.system.mailbox!==undefined){
+        const mail=snapshot.system.mailbox;
+        if(!mail||!Number.isSafeInteger(mail.warning_hours)||mail.warning_hours<1||mail.warning_hours>720||!Number.isSafeInteger(mail.retention_days)||mail.retention_days<1||mail.retention_days>365)
+            return JSON.stringify({status:'error',code:422,message:'Invalid system.mailbox'});
+    }
     if(snapshot.system.stage_sweep!==undefined){
         try{sweepValidateConfig(snapshot.system.stage_sweep);}
         catch(_error){return JSON.stringify({status:'error',code:422,message:'Invalid system.stage_sweep'});}

@@ -106,7 +106,7 @@ const enterGameServer: nkruntime.RpcFunction=(ctx,_logger,nk,payload)=>{
 function serverAdmissionRpc(id: string, handler: nkruntime.RpcFunction): nkruntime.RpcFunction {
     const accountOnly=['session_status','admin_test_access','account_password_status','setup_account_password','google_link_status',
       'prepare_google_link','confirm_google_link','save_compliance_profile','get_compliance_profile','seed_game_data','publish_config_release','resolve_purchase_order'];
-    if (accountOnly.indexOf(id)>=0 || id.indexOf('admin_server_')===0 || id==='list_servers'||id==='list_my_characters'||id==='enter_server') return handler;
+    if (accountOnly.indexOf(id)>=0 || (id.indexOf('admin_server_')===0 || id.indexOf('mail_admin_')===0) || id==='list_servers'||id==='list_my_characters'||id==='enter_server') return handler;
     return (ctx,logger,nk,payload)=>{
         if(id==='admob_ssv_confirm'||id==='google_play_rtdn_confirm')return handler(ctx,logger,nk,payload);
         if (!ctx.userId) return handler(ctx,logger,nk,payload); // verifier authentication stays in account guard

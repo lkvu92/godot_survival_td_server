@@ -47,9 +47,9 @@ const rpcSweepTick: nkruntime.RpcFunction = (ctx, logger, nk, _payload) => {
                 const match=/^([a-z][a-z0-9_]{0,31}):g([1-9][0-9]*):main$/.exec(job.storage_key);
                 if (!match) throw new Error('Invalid sweep character key');
                 scope={accountId:job.user_id,serverId:match[1],generation:Number(match[2])};
-                runtime=characterRuntime(nk,scope);
+                runtime=mailCombatRuntime(characterRuntime(nk,scope),job.user_id);
                 session=withServerRequest(nk,scope,()=>sweepProcess(runtime,job.user_id,logger,Date.now(),4));
-            } else session=sweepProcess(nk,job.user_id,logger,Date.now(),4);
+            } else session=sweepProcess(mailCombatRuntime(nk,job.user_id),job.user_id,logger,Date.now(),4);
             nk.sqlExec(`DELETE FROM sweep_worker_claims WHERE user_id=$1::UUID AND storage_key=$2 AND lease_id=$3`,[job.user_id,job.storage_key,lease]);
             processed++;
             // Notification is a hint; failure never rolls back a committed receipt.

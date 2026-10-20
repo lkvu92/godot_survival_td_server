@@ -600,8 +600,7 @@ const awardStageProgression: nkruntime.RpcFunction = (
         hero_id: heroId, base_exp: awardedExp, first_clear_bonus_exp: firstClearBonusExp,
         base_loot: loot.slice(), claimed: false };
     if(won&&!isTrainingStage){
-        const probabilities=sweepConfig(nk).ticket_probabilities;
-        const roll=Math.random(),quantity=roll<probabilities[0]?0:(roll<probabilities[0]+probabilities[1]?1:2);
+        const quantity=stageTicketQuantity(nk);
         if(quantity>0){if(!serverGrantInventoryItem(nk,inventoryItems,SWEEP_TICKET,quantity))throw new Error('SWEEP_TICKET_CONFIG_MISSING');loot.push({item_id:SWEEP_TICKET,quantity});}
     }
 

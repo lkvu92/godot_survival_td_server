@@ -169,3 +169,9 @@ run-bound HP reports prevent malformed values and stale-run settlement, but
 cannot prove that an altered client played honestly. Full anti-cheat requires
 server combat simulation or verifiable combat evidence and is not implied by
 server-side reward calculation.
+
+## Hi?n th? th??ng ho?n th?nh stage (1.0.4)
+V? c?n qu?t ???c c?p khi th?ng tr?n th??ng: 25% kh?ng v?, 60% m?t v?, 15% hai v?; kh?ng c? khi thua, t?p luy?n ho?c c?n qu?t. Fragment ph?p b?o ch? ? boss cu?i arc (stage_1_10 ? stage_5_10), Legend: 70% r?i m?t lo?i, 30% kh?ng r?i; trong lo?i ???c ch?n: 85% H? ph?m/15% Trung ph?m, 75% c?ng h?/25% kh?c h? khi c? ?? nh?m. ??y l? th??ng k?t to?n, kh?ng ph?i drop tr?n m?t ??t. Danh s?ch loot stage d?ng completion_loot do server t?nh t? logic c?p th??ng; v? n?m ??u danh s?ch, tooltip ghi t? l?/s? l??ng. ??ng nh?p l?i sau c?p nh?t ?? t?i catalog m?i.
+
+## Instant completion (C144 v1.4.0)
+Double-click or double-tap the Home sweep minimap to request an up-to-date quote and confirm immediate completion. Cost is 5 gems per round not yet due, including the current unfinished round. Due rounds cost no gems. Normal tickets and stamina are still consumed, and every remaining round rolls standard sweep rewards/EXP. Close the dialog to continue waiting. Insufficient gems or transaction conflicts leave the paid completion uncommitted; retry refreshes status. Completed-session replay cannot charge twice. Backend RPC: finish_sweep {session_id,max_cost_gems}; quote in status response instant_finish {unit_cost_gems,remaining_rounds,cost_gems}. Deploy the rebuilt runtime before using the new client action.

@@ -66,3 +66,13 @@
 - C144 v1.0.3: shared cards shop category and live ticket offer correction.
 
 - [Campaign sweep operations](STAGE_SWEEP.md): worker, catalog deployment, configuration and diagnostics. [Player guide](../../client/docs/STAGE_SWEEP.md).
+
+- [C147 Mailbox](contracts/C147_MAILBOX.md) v1.1.4 ? atomic claims, expiry, campaigns, shared WebSocket and mailbox UI (ACTIVE).
+
+- [Mailbox operations](MAILBOX_OPERATIONS.md): rollout, worker, settings, admin delivery, campaigns and validation.
+
+- C144 v1.0.4: server-derived completion loot preview includes ticket outcomes and actual fragment probabilities.
+
+- C144 v1.4.0: double-click sweep minimap to confirm instant completion, 5 gems per unfinished timed round, atomic server settlement.
+
+- C144 v1.4.1: request-scoped completion-loot query reuse fixes configuration sync timeouts.

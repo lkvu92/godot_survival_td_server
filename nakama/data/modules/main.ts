@@ -99,10 +99,10 @@ function linkedRpc_upgrade_element(ctx: nkruntime.Context, logger: nkruntime.Log
     return accountGuardedRpc("upgrade_element", gatedUpgradeElement)(ctx, logger, nk, payload);
 }
 function linkedRpc_award_stage_progression(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
-    return accountGuardedRpc("award_stage_progression", gatedAwardStageProgression)(ctx, logger, nk, payload);
+    return accountGuardedRpc("award_stage_progression", (c,l,n,p)=>gatedAwardStageProgression(c,l,mailCombatRuntime(n,c.userId),p))(ctx, logger, nk, payload);
 }
 function linkedRpc_tribulation_action(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
-    return accountGuardedRpc("tribulation_action", gatedTribulationAction)(ctx, logger, nk, payload);
+    return accountGuardedRpc("tribulation_action", (c,l,n,p)=>gatedTribulationAction(c,l,mailCombatRuntime(n,c.userId),p))(ctx, logger, nk, payload);
 }
 function linkedRpc_get_monetization_status(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
     return accountGuardedRpc("get_monetization_status", gatedGetMonetizationStatus)(ctx, logger, nk, payload);
@@ -144,7 +144,11 @@ function linkedRpc_get_weekly_leaderboard_rewards(ctx: nkruntime.Context, logger
     return accountGuardedRpc("get_weekly_leaderboard_rewards", (c,l,n,p) => invokeWithVersionGate(c,l,n,p,getWeeklyLeaderboardRewards))(ctx,logger,nk,payload);
 }
 function linkedRpc_claim_weekly_leaderboard_reward(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
-    return accountGuardedRpc("claim_weekly_leaderboard_reward", (c,l,n,p) => invokeWithVersionGate(c,l,n,p,claimWeeklyLeaderboardReward))(ctx,logger,nk,payload);
+    return accountGuardedRpc("claim_weekly_leaderboard_reward", (c,l,n,p) => invokeWithVersionGate(c,l,n,p,(cc,ll,nn,pp)=>{
+        const result=claimWeeklyLeaderboardReward(cc,ll,nn,pp);
+        if(JSON.parse(result).success)mailSyncWeeklyClaim(nn,cc.userId,pp);
+        return result;
+    }))(ctx,logger,nk,payload);
 }
 function linkedRpc_sync_player_leaderboards(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
     return accountGuardedRpc("sync_player_leaderboards", gatedSyncPlayerLeaderboards)(ctx, logger, nk, payload);
@@ -175,12 +179,24 @@ function InitModule(
 ): void {
     // Phase 2: Create tables on startup
     createServerRegistryTables(nk);
+    createMailboxTables(nk);
+    initializer.registerRpc('mail_summary',linkedRpc_mail_summary);
+    initializer.registerRpc('mail_list',linkedRpc_mail_list);
+    initializer.registerRpc('mail_open',linkedRpc_mail_open);
+    initializer.registerRpc('mail_claim',linkedRpc_mail_claim);
+    initializer.registerRpc('mail_claim_all',linkedRpc_mail_claim_all);
+    initializer.registerRpc('mail_delete',linkedRpc_mail_delete);
+    initializer.registerRpc('mail_delete_read',linkedRpc_mail_delete_read);
+    initializer.registerRpc('mail_admin_send',linkedRpc_mail_admin_send);
+    initializer.registerRpc('mail_admin_campaign',linkedRpc_mail_admin_campaign);
+    initializer.registerRpc('mail_tick',rpcMailTick);
     sweepCreateWorkerIndex(nk);
     initializer.registerRpc('get_sweep_options',linkedRpc_get_sweep_options);
     initializer.registerRpc('preview_sweep',linkedRpc_preview_sweep);
     initializer.registerRpc('start_sweep',linkedRpc_start_sweep);
     initializer.registerRpc('get_sweep_status',linkedRpc_get_sweep_status);
     initializer.registerRpc('cancel_sweep',linkedRpc_cancel_sweep);
+    initializer.registerRpc('finish_sweep',linkedRpc_finish_sweep);
     initializer.registerRpc('sweep_tick',rpcSweepTick);
     initializer.registerRpc('admin_server_list',rpcAdminServerList);
     initializer.registerRpc('admin_server_inspect',rpcAdminServerInspect);
@@ -297,3 +313,23 @@ function linkedRpc_start_sweep(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntim
 function linkedRpc_get_sweep_status(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string{return accountGuardedRpc("get_sweep_status",(cc,ll,nn,pp)=>invokeWithVersionGate(cc,ll,nn,pp,getSweepStatus))(c,l,n,p);}
 
 function linkedRpc_cancel_sweep(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string{return accountGuardedRpc("cancel_sweep",(cc,ll,nn,pp)=>invokeWithVersionGate(cc,ll,nn,pp,cancelSweep))(c,l,n,p);}
+
+function linkedRpc_mail_summary(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string {return accountGuardedRpc("mail_summary",(cc,ll,nn,pp)=>invokeWithVersionGate(cc,ll,nn,pp,mailPlayerHandler("summary")))(c,l,n,p);}
+
+function linkedRpc_mail_list(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string {return accountGuardedRpc("mail_list",(cc,ll,nn,pp)=>invokeWithVersionGate(cc,ll,nn,pp,mailPlayerHandler("list")))(c,l,n,p);}
+
+function linkedRpc_mail_open(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string {return accountGuardedRpc("mail_open",(cc,ll,nn,pp)=>invokeWithVersionGate(cc,ll,nn,pp,mailPlayerHandler("open")))(c,l,n,p);}
+
+function linkedRpc_mail_claim(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string {return accountGuardedRpc("mail_claim",(cc,ll,nn,pp)=>invokeWithVersionGate(cc,ll,nn,pp,mailPlayerHandler("claim")))(c,l,n,p);}
+
+function linkedRpc_mail_claim_all(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string {return accountGuardedRpc("mail_claim_all",(cc,ll,nn,pp)=>invokeWithVersionGate(cc,ll,nn,pp,mailPlayerHandler("claim_all")))(c,l,n,p);}
+
+function linkedRpc_mail_delete(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string {return accountGuardedRpc("mail_delete",(cc,ll,nn,pp)=>invokeWithVersionGate(cc,ll,nn,pp,mailPlayerHandler("delete")))(c,l,n,p);}
+
+function linkedRpc_mail_delete_read(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string {return accountGuardedRpc("mail_delete_read",(cc,ll,nn,pp)=>invokeWithVersionGate(cc,ll,nn,pp,mailPlayerHandler("delete_read")))(c,l,n,p);}
+
+function linkedRpc_mail_admin_send(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string{return accountGuardedRpc("mail_admin_send",rpcMailAdminSend)(c,l,n,p);}
+
+function linkedRpc_mail_admin_campaign(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string{return accountGuardedRpc("mail_admin_campaign",rpcMailAdminCampaign)(c,l,n,p);}
+
+function linkedRpc_finish_sweep(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string{return accountGuardedRpc("finish_sweep",(cc,ll,nn,pp)=>invokeWithVersionGate(cc,ll,mailCombatRuntime(nn,cc.userId),pp,finishSweep))(c,l,n,p);}

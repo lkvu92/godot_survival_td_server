@@ -837,7 +837,7 @@ function fulfillVerifiedStoreOrder(ctx:nkruntime.Context,logger:nkruntime.Logger
             return JSON.stringify({ status: "success", data, idempotent: true });
         }
         if (receiptOwner !== ctx.userId) return monetizationError(409, "Historical linked-account receipt requires support audit; rewards were not replayed");
-        const granted = applyPurchaseStorageRewards(nk, ctx.userId, grantId, productId, fulfillmentType, rewardSnapshot);
+        const granted = applyPurchaseMailRewards(nk, ctx.userId, grantId, productId, fulfillmentType, rewardSnapshot);
         const noAdsSeconds = rewardSnapshot.filter(line => line.reward_type === "entitlement" && line.reward_id === "no_ads_seconds")
             .reduce((total, line) => total + Number(line.quantity), 0);
         if (noAdsSeconds > 0) {

@@ -537,7 +537,9 @@ const CHARACTER_COLLECTIONS = [
   "player_daily_checkin",
   "weekly_leaderboard_claims",
   "player_purchase_grants",
-  "player_item_requests"
+  "player_item_requests",
+  "player_mail",
+  "player_mail_deliveries"
 ];
 function characterContext(nk) {
   return nk.__characterContext || null;
@@ -795,7 +797,7 @@ function serverAdmissionRpc(id, handler) {
     "publish_config_release",
     "resolve_purchase_order"
   ];
-  if (accountOnly.indexOf(id) >= 0 || id.indexOf("admin_server_") === 0 || id === "list_servers" || id === "list_my_characters" || id === "enter_server") return handler;
+  if (accountOnly.indexOf(id) >= 0 || (id.indexOf("admin_server_") === 0 || id.indexOf("mail_admin_") === 0) || id === "list_servers" || id === "list_my_characters" || id === "enter_server") return handler;
   return (ctx, logger, nk, payload) => {
     if (id === "admob_ssv_confirm" || id === "google_play_rtdn_confirm") return handler(ctx, logger, nk, payload);
     if (!ctx.userId) return handler(ctx, logger, nk, payload);
@@ -1398,6 +1400,11 @@ function createMonetizationTables(nk, logger) {
         INSERT INTO store_purchase_voids(token_hash) VALUES(token) ON CONFLICT DO NOTHING;
         WITH revoked AS (
           UPDATE monetization_purchases SET status='voided',updated_at=NOW() WHERE purchase_token_hash=token AND status<>'voided' RETURNING *
+        ), expired_mail AS (
+          UPDATE storage SET value=jsonb_set(jsonb_set(value,'{expires_at_ms}',to_jsonb((EXTRACT(EPOCH FROM clock_timestamp())*1000)::BIGINT)),
+            '{purge_at_ms}',to_jsonb((EXTRACT(EPOCH FROM clock_timestamp()+INTERVAL '7 days')*1000)::BIGINT)),
+            version=md5(version||clock_timestamp()::TEXT),update_time=NOW()
+          WHERE collection='player_mail' AND value->>'source_id'='purchase:'||token AND value->>'claimed_at_ms' IS NULL
         ), entitlements AS (
           UPDATE player_monetization_entitlements e SET no_ads_expires_at=GREATEST(NOW(),e.no_ads_expires_at-(r.granted_seconds*INTERVAL '1 second')),
             source='google_play_voided',updated_at=NOW() FROM revoked r WHERE e.user_id=r.user_id
@@ -2704,6 +2711,22 @@ function processStageLevel(row) {
   row.ui = parseJsonb(row.ui);
   return row;
 }
+function stageLevelsWithCompletionLoot(nk) {
+  const base = nk, readOnly = Object.create(base), reads = {};
+  readOnly.sqlQuery = (query, args) => {
+    const key = JSON.stringify([query, args]);
+    if (!Object.prototype.hasOwnProperty.call(reads, key)) reads[key] = base.sqlQuery(query, args);
+    return reads[key];
+  };
+  nk = readOnly;
+  const stages = nk.sqlQuery("SELECT id,arc_id,is_boss FROM game_stages", []);
+  const rules = sweepConfig(nk), ticketProbabilities = rules.ticket_probabilities;
+  return nk.sqlQuery("SELECT * FROM game_stage_levels ORDER BY stage_id, sort_order, id", []).map((raw) => {
+    const row = processStageLevel(raw), stage = stages.find((s) => s.id === row.stage_id);
+    if (stage) row.completion_loot = stageCompletionLoot(nk, stage, row, ticketProbabilities, rules);
+    return row;
+  });
+}
 function buildStoreConfigs(nk) {
   const products = nk.sqlQuery("SELECT * FROM game_store_products ORDER BY tab_id, product_id", []);
   const platformProducts = nk.sqlQuery("SELECT platform,product_id,store_product_id,active FROM game_store_platform_products ORDER BY platform,product_id", []);
@@ -2771,7 +2794,7 @@ const getGameConfig = (ctx, logger, nk, payload) => {
       return JSON.stringify(stages.map((s) => processStage(s, nk)));
     }
     case "stage_levels":
-      return JSON.stringify(nk.sqlQuery("SELECT * FROM game_stage_levels ORDER BY stage_id, sort_order, id", []).map(processStageLevel));
+      return JSON.stringify(stageLevelsWithCompletionLoot(nk));
     case "progression": {
       const rows = nk.sqlQuery("SELECT value FROM game_config WHERE key = 'progression'", []);
       return rows.length > 0 ? JSON.stringify(parseJsonb(rows[0].value)) : "{}";
@@ -2797,7 +2820,7 @@ const getGameConfig = (ctx, logger, nk, payload) => {
       result.effects = nk.sqlQuery("SELECT * FROM game_effects ORDER BY id", []).map(processEffect);
       const stages = nk.sqlQuery("SELECT * FROM game_stages ORDER BY sort_order, level, id", []);
       result.stages = stages.map((s) => processStage(s, nk));
-      result.stage_levels = nk.sqlQuery("SELECT * FROM game_stage_levels ORDER BY stage_id, sort_order, id", []).map(processStageLevel);
+      result.stage_levels = stageLevelsWithCompletionLoot(nk);
       const progRows = nk.sqlQuery("SELECT value FROM game_config WHERE key = 'progression'", []);
       result.progression = progRows.length > 0 ? parseJsonb(progRows[0].value) : {};
       const store = buildStoreConfigs(nk);
@@ -2984,6 +3007,11 @@ const publishConfigRelease = (ctx, _logger, nk, payload) => {
     return JSON.stringify({ status: "error", code: 422, message: String(e) });
   }
   const minVersion = String(snapshot.system.min_app_version || "");
+  if (snapshot.system.mailbox !== void 0) {
+    const mail = snapshot.system.mailbox;
+    if (!mail || !Number.isSafeInteger(mail.warning_hours) || mail.warning_hours < 1 || mail.warning_hours > 720 || !Number.isSafeInteger(mail.retention_days) || mail.retention_days < 1 || mail.retention_days > 365)
+      return JSON.stringify({ status: "error", code: 422, message: "Invalid system.mailbox" });
+  }
   if (snapshot.system.stage_sweep !== void 0) {
     try {
       sweepValidateConfig(snapshot.system.stage_sweep);
@@ -4102,7 +4130,7 @@ function createMultiAccountLinkFunctions(nk) {
       INSERT INTO storage(collection,key,user_id,value,version,read,write,create_time,update_time)
         SELECT o.collection,o.key,w.id,o.value,o.version,0,0,o.create_time,NOW() FROM storage o JOIN player_characters c
           ON c.account_id=o.user_id AND left(o.key,length(c.server_id||':g'||c.generation||':'))=c.server_id||':g'||c.generation||':'
-        WHERE o.user_id=l.id AND o.collection=ANY('{player_profiles,player_inventory,player_heroes,player_stage_runs,player_identity,player_event_progress,player_daily_checkin,weekly_leaderboard_claims,player_purchase_grants,player_item_requests}'::TEXT[])
+        WHERE o.user_id=l.id AND o.collection=ANY('{player_profiles,player_inventory,player_heroes,player_stage_runs,player_identity,player_event_progress,player_daily_checkin,weekly_leaderboard_claims,player_purchase_grants,player_item_requests,player_mail,player_mail_deliveries}'::TEXT[])
           AND NOT EXISTS(SELECT 1 FROM player_characters other WHERE other.account_id=w.id AND other.server_id=c.server_id);
       UPDATE server_weekly_scores s SET user_id=w.id WHERE user_id=l.id AND NOT EXISTS(SELECT 1 FROM player_characters c WHERE c.account_id=w.id AND c.server_id=s.server_id);
       UPDATE server_weekly_awards s SET user_id=w.id WHERE user_id=l.id AND NOT EXISTS(SELECT 1 FROM player_characters c WHERE c.account_id=w.id AND c.server_id=s.server_id);
@@ -6076,8 +6104,7 @@ const awardStageProgression = (ctx, _logger, nk, payload) => {
     claimed: false
   };
   if (won && !isTrainingStage) {
-    const probabilities = sweepConfig(nk).ticket_probabilities;
-    const roll = Math.random(), quantity = roll < probabilities[0] ? 0 : roll < probabilities[0] + probabilities[1] ? 1 : 2;
+    const quantity = stageTicketQuantity(nk);
     if (quantity > 0) {
       if (!serverGrantInventoryItem(nk, inventoryItems, SWEEP_TICKET, quantity)) throw new Error("SWEEP_TICKET_CONFIG_MISSING");
       loot.push({ item_id: SWEEP_TICKET, quantity });
@@ -7231,7 +7258,7 @@ function fulfillVerifiedStoreOrder(ctx, logger, nk, order, verified) {
       return JSON.stringify({ status: "success", data: data2, idempotent: true });
     }
     if (receiptOwner !== ctx.userId) return monetizationError(409, "Historical linked-account receipt requires support audit; rewards were not replayed");
-    const granted = applyPurchaseStorageRewards(nk, ctx.userId, grantId, productId, fulfillmentType, rewardSnapshot);
+    const granted = applyPurchaseMailRewards(nk, ctx.userId, grantId, productId, fulfillmentType, rewardSnapshot);
     const noAdsSeconds = rewardSnapshot.filter((line) => line.reward_type === "entitlement" && line.reward_id === "no_ads_seconds").reduce((total, line) => total + Number(line.quantity), 0);
     if (noAdsSeconds > 0) {
       applyNoAdsGrant(
@@ -8863,9 +8890,9 @@ function sweepGrade(nk, ratio, won = true) {
   if (!Number.isFinite(ratio) || ratio < 0 || ratio > 1) throw new Error("INVALID_OBJECTIVE_HP");
   return sweepConfig(nk).grades.find((r) => ratio > r.above).grade;
 }
-function sweepQuantity(nk, row, grade) {
+function sweepQuantity(nk, row, grade, rules = null) {
   const base = Math.max(0, Math.floor(Number(row.base_quantity === void 0 ? row.max_qty === void 0 ? row.quantity === void 0 ? row.min_qty : row.quantity : row.max_qty : row.base_quantity) || 0));
-  const rule = sweepConfig(nk).grades.find((r) => r.grade === grade);
+  const rule = (rules || sweepConfig(nk)).grades.find((r) => r.grade === grade);
   return base > 0 && rule ? Math.max(1, Math.floor(base * rule.multiplier)) : 0;
 }
 function sweepActive(profile) {
@@ -8956,10 +8983,10 @@ function sweepWrite(nk, userId, s, full) {
   if (s.extraWrites) writes.push.apply(writes, s.extraWrites);
   nk.storageWrite(writes);
 }
-function sweepRewardTable(nk, stage, mode, stageRow, level, grade) {
+function sweepRewardTable(nk, stage, mode, stageRow, level, grade, rules = null) {
   const boss = parseJsonb(level.boss_loot_table) || [], normal = parseJsonb(level.loot_table) || [];
   const table = (stageRow.is_boss && boss.length ? boss : normal).filter((r) => r.item_id !== SWEEP_TICKET && r.resource_id !== "gold");
-  const items = table.map((r) => Object.assign({}, r, { quantity: sweepQuantity(nk, r, grade) })).filter((r) => r.quantity > 0);
+  const items = table.map((r) => Object.assign({}, r, { quantity: sweepQuantity(nk, r, grade, rules) })).filter((r) => r.quantity > 0);
   if (mode === "legend" && stageRow.is_boss === true && ["stage_1_10", "stage_2_10", "stage_3_10", "stage_4_10", "stage_5_10"].indexOf(stage) >= 0) {
     const arcs = nk.sqlQuery("SELECT element FROM game_arcs WHERE id = $1", [stageRow.arc_id]);
     const element = arcs.length ? String(arcs[0].element || "") : "";
@@ -8968,13 +8995,37 @@ function sweepRewardTable(nk, stage, mode, stageRow, level, grade) {
       const match = candidates.filter((r) => String(r.element || "") === element), other = candidates.filter((r) => String(r.element || "") !== element);
       for (const row of candidates) {
         const same = String(row.element || "") === element, weight = tier.weight * (same ? other.length ? 0.75 : 1 : match.length ? 0.25 : 1) / (same ? match.length : other.length);
-        items.push({ item_id: "talisman_fragment_" + Number(row.id), quantity: sweepQuantity(nk, { base_quantity: 3 }, grade), group: "fragment", group_drop_rate: 0.7, weight, drop_rate: weight });
+        items.push({ item_id: "talisman_fragment_" + Number(row.id), quantity: sweepQuantity(nk, { base_quantity: 3 }, grade, rules), group: "fragment", group_drop_rate: 0.7, weight, drop_rate: weight });
       }
     }
   }
-  const gold = sweepQuantity(nk, { base_quantity: Number(level.gold_reward || 0) }, grade);
+  const gold = sweepQuantity(nk, { base_quantity: Number(level.gold_reward || 0) }, grade, rules);
   if (gold) items.push({ resource_id: "gold", quantity: gold, drop_rate: 1 });
   return items;
+}
+function stageCompletionLoot(nk, stage, level, ticketProbabilities, rules = null) {
+  if (stage.arc_id === "arc_0" || stage.id === "stage_0_admin_test") return [];
+  const items = sweepRewardTable(nk, stage.id, level.level_id, stage, level, "S", rules);
+  for (const line of items) {
+    if (line.group === "fragment") {
+      const total = items.filter((r) => r.group === "fragment").reduce((sum, r) => sum + Number(r.weight || 0), 0);
+      line.drop_rate = Number(line.group_drop_rate) * Number(line.weight) / total;
+    }
+  }
+  const probabilities = ticketProbabilities || sweepConfig(nk).ticket_probabilities;
+  items.unshift({
+    item_id: SWEEP_TICKET,
+    min_qty: 0,
+    max_qty: 2,
+    drop_rate: probabilities[1] + probabilities[2],
+    ordinary_combat_only: true,
+    quantity_outcomes: probabilities.map((probability, quantity) => ({ quantity, probability }))
+  });
+  return items;
+}
+function stageTicketQuantity(nk, roll = Math.random()) {
+  const probabilities = sweepConfig(nk).ticket_probabilities;
+  return roll < probabilities[0] ? 0 : roll < probabilities[0] + probabilities[1] ? 1 : 2;
 }
 function sweepPreviewData(nk, s, req) {
   const c = sweepConfig(nk), stage = String(req.stage_id || ""), mode = String(req.level_id || "");
@@ -9008,11 +9059,11 @@ function sweepRoll(items) {
   }
   return out;
 }
-function sweepProcess(nk, userId, logger, nowMs = Date.now(), limit = 4) {
-  for (let index = 0; index < Math.min(8, Math.max(1, limit)); index++) {
-    const s = sweepRead(nk, userId, nowMs), session = s.profile.sweep;
+function sweepProcess(nk, userId, logger, nowMs = Date.now(), limit = 4, atomicState = null) {
+  for (let index = 0; index < (atomicState ? 100 : Math.min(8, Math.max(1, limit))); index++) {
+    const s = atomicState || sweepRead(nk, userId, nowMs), session = s.profile.sweep;
     if (!sweepActive(s.profile) || session.status === "blocked") return session || null;
-    const cutoff = session.cancel_at_ms === void 0 ? nowMs : Math.min(nowMs, session.cancel_at_ms);
+    const cutoff = atomicState ? Infinity : session.cancel_at_ms === void 0 ? nowMs : Math.min(nowMs, session.cancel_at_ms);
     if (session.next_due_at_ms > cutoff || session.completed_rounds >= session.total_rounds) {
       if (session.cancel_at_ms !== void 0 || session.completed_rounds >= session.total_rounds) {
         session.status = session.cancel_at_ms !== void 0 ? "cancelled" : "completed";
@@ -9066,7 +9117,7 @@ function sweepProcess(nk, userId, logger, nowMs = Date.now(), limit = 4) {
     session.reserved_tickets--;
     session.reserved_stamina--;
     session.state_version++;
-    session.receipts.push({ round_index: session.completed_rounds, receipt_id: session.session_id + ":" + session.completed_rounds, completed_at_ms: session.next_due_at_ms, loot: rewards, exp });
+    session.receipts.push({ round_index: session.completed_rounds, receipt_id: session.session_id + ":" + session.completed_rounds, completed_at_ms: atomicState ? nowMs : session.next_due_at_ms, loot: rewards, exp });
     session.next_due_at_ms = session.started_at_ms + (session.completed_rounds + 1) * session.config_snapshot.round_duration_ms;
     if (session.completed_rounds === session.total_rounds || session.cancel_at_ms !== void 0 && session.next_due_at_ms > session.cancel_at_ms) {
       session.status = session.cancel_at_ms !== void 0 ? "cancelled" : "completed";
@@ -9076,7 +9127,7 @@ function sweepProcess(nk, userId, logger, nowMs = Date.now(), limit = 4) {
     }
     if (!sweepActive(s.profile)) sweepRefreshStamina(nk, s.profile, nowMs);
     s.inventory.items = items;
-    sweepWrite(nk, userId, s, true);
+    if (!atomicState) sweepWrite(nk, userId, s, true);
     try {
       nk.notificationSend(userId, "C\xE0n qu\xE9t", { session_id: session.session_id, state_version: session.state_version, status: session.status }, 144, null, false);
     } catch (e) {
@@ -9086,8 +9137,12 @@ function sweepProcess(nk, userId, logger, nowMs = Date.now(), limit = 4) {
   }
   return sweepRead(nk, userId, nowMs).profile.sweep;
 }
+function sweepInstantQuote(session, now = Date.now()) {
+  const remaining = session && session.status === "running" ? Math.max(0, session.total_rounds - Math.max(session.completed_rounds, Math.floor((now - session.started_at_ms) / session.config_snapshot.round_duration_ms))) : 0;
+  return { unit_cost_gems: 5, remaining_rounds: remaining, cost_gems: remaining * 5 };
+}
 function sweepResponse(s, extra = {}) {
-  return JSON.stringify(Object.assign({ success: true, session: s.profile.sweep || null, server_time_ms: Date.now(), profile: s.profile, inventory: s.inventory, heroes: s.heroes.heroes || [] }, extra));
+  return JSON.stringify(Object.assign({ success: true, instant_finish: sweepInstantQuote(s.profile.sweep), session: s.profile.sweep || null, server_time_ms: Date.now(), profile: s.profile, inventory: s.inventory, heroes: s.heroes.heroes || [] }, extra));
 }
 function sweepRpc(handler) {
   return (ctx, logger, nk, payload) => {
@@ -9163,6 +9218,23 @@ const cancelSweep = sweepRpc((ctx, logger, nk, req) => {
   sweepProcess(nk, ctx.userId, logger);
   return sweepResponse(sweepRead(nk, ctx.userId));
 });
+const finishSweep = sweepRpc((ctx, logger, nk, req) => {
+  const now = Date.now(), s = sweepRead(nk, ctx.userId, now), session = s.profile.sweep;
+  if (!session || session.session_id !== req.session_id) throw new Error("SESSION_NOT_FOUND");
+  if (session.status === "completed") return sweepResponse(s, { duplicate: true });
+  if (session.status !== "running" || session.cancel_at_ms !== void 0) throw new Error("SWEEP_NOT_RUNNING");
+  const quote = sweepInstantQuote(session, now);
+  if (!Number.isSafeInteger(req.max_cost_gems) || req.max_cost_gems < quote.cost_gems) throw new Error("PRICE_CHANGED");
+  const gems = Number((s.profile.resources || {}).gems || 0);
+  if (gems < quote.cost_gems) throw new Error("INSUFFICIENT_GEMS");
+  s.profile.resources = s.profile.resources || {};
+  s.profile.resources.gems = gems - quote.cost_gems;
+  sweepProcess(nk, ctx.userId, logger, now, 100, s);
+  if (session.status !== "completed") throw new Error("SWEEP_FINISH_FAILED");
+  session.instant_finish = { cost_gems: quote.cost_gems, paid_rounds: quote.remaining_rounds, finished_at_ms: now };
+  sweepWrite(nk, ctx.userId, s, true);
+  return sweepResponse(s);
+});
 
 function sweepCreateWorkerIndex(nk) {
   nk.sqlExec(`CREATE INDEX IF NOT EXISTS storage_sweep_due_idx ON storage
@@ -9210,9 +9282,9 @@ const rpcSweepTick = (ctx, logger, nk, _payload) => {
         const match = /^([a-z][a-z0-9_]{0,31}):g([1-9][0-9]*):main$/.exec(job.storage_key);
         if (!match) throw new Error("Invalid sweep character key");
         scope = { accountId: job.user_id, serverId: match[1], generation: Number(match[2]) };
-        runtime = characterRuntime(nk, scope);
+        runtime = mailCombatRuntime(characterRuntime(nk, scope), job.user_id);
         session = withServerRequest(nk, scope, () => sweepProcess(runtime, job.user_id, logger, Date.now(), 4));
-      } else session = sweepProcess(nk, job.user_id, logger, Date.now(), 4);
+      } else session = sweepProcess(mailCombatRuntime(nk, job.user_id), job.user_id, logger, Date.now(), 4);
       nk.sqlExec(`DELETE FROM sweep_worker_claims WHERE user_id=$1::UUID AND storage_key=$2 AND lease_id=$3`, [job.user_id, job.storage_key, lease]);
       processed++;
       if (session) {
@@ -9325,6 +9397,456 @@ function sweepMigratePublishedConfig(nk, logger) {
   logger.info("C144 startup migration verified config release %s", String(rows.length ? rows[0].config_version : ""));
 }
 
+const MAIL_COLLECTION = "player_mail";
+const MAIL_DAY = 864e5;
+const MAIL_FILTERS = ["all", "unread", "read", "reward", "expiring", "system", "battle_report"];
+function mailSettings(nk) {
+  const c = getRemoteConfigValue(nk, "system", "mailbox", { warning_hours: 24, retention_days: 7 });
+  if (!c || !Number.isSafeInteger(c.warning_hours) || c.warning_hours < 1 || c.warning_hours > 720 || !Number.isSafeInteger(c.retention_days) || c.retention_days < 1 || c.retention_days > 365) throw new Error("MAIL_CONFIG_INVALID");
+  return c;
+}
+function mailPrefix(nk) {
+  const scope = characterContext(nk);
+  return scope ? characterStorageKey(scope, "_").slice(0, -1) : "";
+}
+function mailId(nk, source) {
+  return "m_" + String(nk.sqlQuery("SELECT encode(sha256(convert_to($1,'UTF8')),'hex') AS hash", [source])[0].hash).slice(0, 48);
+}
+function mailError(code, message) {
+  return { success: false, code, message };
+}
+function mailValidateAttachments(nk, input) {
+  if (!Array.isArray(input) || input.length > 32) throw new Error("INVALID_ATTACHMENTS");
+  return input.map((r) => {
+    if (!r || !Number.isSafeInteger(r.amount) || r.amount < 1 || r.amount > 1e9) throw new Error("INVALID_REWARD_AMOUNT");
+    if (r.type === "resource" && ["gold", "gems"].indexOf(r.id) >= 0) return { type: r.type, id: r.id, amount: r.amount };
+    if (r.type === "exp" && r.id === "user") return { type: r.type, id: r.id, amount: r.amount };
+    if (r.type === "item" && typeof r.id === "string" && /^[a-z0-9_]{1,100}$/.test(r.id)) {
+      if (r.amount > 1e3 || !nk.sqlQuery("SELECT id FROM game_items WHERE id=$1", [r.id]).length) throw new Error("INVALID_ITEM");
+      return { type: r.type, id: r.id, amount: r.amount };
+    }
+    throw new Error("INVALID_REWARD");
+  });
+}
+function mailDefinition(nk, input) {
+  if (!input || typeof input.source_id !== "string" || !input.source_id.length || input.source_id.length > 240 || typeof input.title !== "string" || !input.title.trim() || input.title.length > 160 || typeof input.body !== "string" || input.body.length > 12e3) throw new Error("INVALID_MAIL");
+  const category = input.category || "system";
+  if (["system", "event", "battle_report"].indexOf(category) < 0) throw new Error("INVALID_CATEGORY");
+  const expiry = input.expires_at_ms === void 0 ? null : input.expires_at_ms;
+  if (expiry !== null && (!Number.isSafeInteger(expiry) || expiry < 0 || expiry > Number.MAX_SAFE_INTEGER - 366 * MAIL_DAY)) throw new Error("INVALID_EXPIRY");
+  const sender = input.sender_name || "H\u1EC7 th\u1ED1ng";
+  if (typeof sender !== "string" || sender.length > 80) throw new Error("INVALID_SENDER");
+  const source = String(input.source_type || "system");
+  if (source.length > 40) throw new Error("INVALID_SOURCE");
+  return {
+    id: mailId(nk, input.source_id),
+    category,
+    source_type: source,
+    source_id: input.source_id,
+    title: input.title.trim(),
+    sender_name: sender,
+    body: input.body,
+    attachments: mailValidateAttachments(nk, input.attachments || []),
+    created_at_ms: Date.now(),
+    expires_at_ms: expiry,
+    purge_at_ms: expiry === null ? null : expiry + mailSettings(nk).retention_days * MAIL_DAY,
+    read_at_ms: null,
+    claimed_at_ms: null,
+    deleted_at_ms: null,
+    version: 1,
+    weekly: input.weekly || null
+  };
+}
+function mailWrite(row, userId) {
+  return { collection: MAIL_COLLECTION, key: row.id, userId, value: row, permissionRead: 0, permissionWrite: 0 };
+}
+function mailPush(nk, userId, id) {
+  const scope = characterContext(nk);
+  try {
+    nk.notificationSend(userId, "H\u1ED9p th\u01B0", { type: "mail_changed", mail_id: id, server_id: scope ? scope.serverId : "", generation: scope ? scope.generation : 0 }, 147, void 0, false);
+  } catch (_e) {
+  }
+}
+function deliverMail(nk, userId, input) {
+  const row = mailDefinition(nk, input), marker = { collection: "player_mail_deliveries", key: row.id, userId };
+  if (nk.storageRead([marker]).length) return { id: row.id, idempotent: true };
+  nk.storageWrite([Object.assign(mailWrite(row, userId), { version: "*" }), Object.assign({}, marker, { value: { source_id: row.source_id, created_at_ms: row.created_at_ms }, version: "*", permissionRead: 0, permissionWrite: 0 })]);
+  if (!nk.__mailBatch) mailPush(nk, userId, row.id);
+  return { id: row.id, idempotent: false };
+}
+function mailVisibleSql() {
+  return "COALESCE((value->>'deleted_at_ms')::BIGINT,0)=0 AND (value->>'purge_at_ms' IS NULL OR (value->>'purge_at_ms')::BIGINT>$3)";
+}
+function mailSummary(nk, userId, now) {
+  const rows = nk.sqlQuery(`SELECT COUNT(*) FILTER(WHERE value->>'read_at_ms' IS NULL)::INT AS unread_count,
+      COUNT(*) FILTER(WHERE jsonb_array_length(value->'attachments')>0 AND value->>'claimed_at_ms' IS NULL
+        AND (value->>'expires_at_ms' IS NULL OR (value->>'expires_at_ms')::BIGINT>$3))::INT AS claimable_count
+      FROM storage WHERE collection='player_mail' AND user_id=$1::UUID AND left(key,length($2))=$2 AND ($2<>'' OR left(key,2)='m_') AND ${mailVisibleSql()}`, [userId, mailPrefix(nk), now]);
+  return rows[0] || { unread_count: 0, claimable_count: 0 };
+}
+function mailPresent(nk, row, now) {
+  const expired = row.expires_at_ms !== null && now >= row.expires_at_ms;
+  return Object.assign({}, row, {
+    expired,
+    expiring: row.expires_at_ms !== null && !expired && row.expires_at_ms - now <= mailSettings(nk).warning_hours * 36e5,
+    can_claim: row.attachments.length > 0 && !row.claimed_at_ms && !expired && !row.deleted_at_ms,
+    can_delete: row.attachments.length === 0 || !!row.claimed_at_ms
+  });
+}
+function mailResponse(nk, userId, data) {
+  const now = Date.now();
+  return JSON.stringify(Object.assign({ success: true, server_time_ms: now, summary: mailSummary(nk, userId, now) }, data));
+}
+function mailRead(nk, userId, id) {
+  if (typeof id !== "string" || !/^m_[a-f0-9]{48}$/.test(id)) throw new Error("INVALID_MAIL_ID");
+  const row = nk.storageRead([{ collection: MAIL_COLLECTION, key: id, userId }])[0];
+  if (!row || row.value.deleted_at_ms || row.value.purge_at_ms !== null && Date.now() >= row.value.purge_at_ms) return null;
+  return row;
+}
+function mailClaimOne(nk, userId, id) {
+  const stored = mailRead(nk, userId, id);
+  if (!stored) return mailError("MAIL_NOT_FOUND", "Th\u01B0 kh\xF4ng c\xF2n t\u1ED3n t\u1EA1i.");
+  const mail = stored.value, now = Date.now();
+  const reads = nk.storageRead([{ collection: "player_profiles", key: "main", userId }, { collection: "player_inventory", key: "items", userId }].concat(mail.weekly ? [{ collection: "weekly_leaderboard_claims", key: weeklyClaimKey(mail.weekly.period_id, mail.weekly.board_id), userId }] : []));
+  const p = reads.find((r) => r.collection === "player_profiles"), i = reads.find((r) => r.collection === "player_inventory");
+  if (!p || !i || !Array.isArray(i.value.items)) return mailError("CHARACTER_INCOMPLETE", "D\u1EEF li\u1EC7u nh\xE2n v\u1EADt ch\u01B0a s\u1EB5n s\xE0ng.");
+  if (mail.claimed_at_ms) return { success: true, already_claimed: true, mail: mailPresent(nk, mail, now), profile: p.value, inventory: i.value.items };
+  if (!mailPresent(nk, mail, now).can_claim) return mailError(mail.attachments.length ? "MAIL_EXPIRED" : "NO_REWARD", mail.attachments.length ? "Th\u01B0 \u0111\xE3 h\u1EBFt h\u1EA1n nh\u1EADn th\u01B0\u1EDFng." : "Th\u01B0 kh\xF4ng c\xF3 ph\u1EA7n th\u01B0\u1EDFng.");
+  const oldWeekly = reads.find((r) => r.collection === "weekly_leaderboard_claims");
+  const writes = [];
+  if (!oldWeekly) {
+    p.value.resources = p.value.resources || {};
+    for (const reward of mail.attachments) {
+      if (reward.type === "resource") {
+        const total = Number(p.value.resources[reward.id] || 0) + reward.amount;
+        if (!Number.isSafeInteger(total)) return mailError("RESOURCE_LIMIT", "T\xE0i nguy\xEAn v\u01B0\u1EE3t gi\u1EDBi h\u1EA1n.");
+        p.value.resources[reward.id] = total;
+      } else if (reward.type === "item") {
+        addStoreInventoryItem(nk, i.value.items, reward.id, reward.amount);
+        if (i.value.items.length > 2e3) return mailError("INVENTORY_FULL", "T\xFAi \u0111\u1ED3 \u0111\u1EA7y. H\xE3y d\u1ECDn t\xFAi r\u1ED3i nh\u1EADn l\u1EA1i.");
+      } else if (reward.type === "exp") {
+        progressionApplyUser(nk, p.value, reward.amount);
+        progressionReconcileLevelUnlocks(nk, p.value);
+      } else throw new Error("INVALID_STORED_REWARD");
+    }
+    writes.push(
+      { collection: "player_profiles", key: "main", userId, value: p.value, version: p.version, permissionRead: 1, permissionWrite: 0 },
+      { collection: "player_inventory", key: "items", userId, value: i.value, version: i.version, permissionRead: 1, permissionWrite: 0 }
+    );
+    if (mail.weekly) writes.push({
+      collection: "weekly_leaderboard_claims",
+      key: weeklyClaimKey(mail.weekly.period_id, mail.weekly.board_id),
+      userId,
+      value: { period_id: mail.weekly.period_id, board_id: mail.weekly.board_id, rewards: mail.attachments },
+      version: "*",
+      permissionRead: 0,
+      permissionWrite: 0
+    });
+  }
+  if (mail.expires_at_ms !== null && Date.now() >= mail.expires_at_ms) return mailError("MAIL_EXPIRED", "Th\u01B0 \u0111\xE3 h\u1EBFt h\u1EA1n nh\u1EADn th\u01B0\u1EDFng.");
+  mail.claimed_at_ms = Date.now();
+  mail.version++;
+  writes.push(Object.assign(mailWrite(mail, userId), { version: stored.version }));
+  try {
+    mailCombatRuntime(nk, userId).storageWrite(writes);
+  } catch (_e) {
+    return mailError("DATA_CHANGED", "D\u1EEF li\u1EC7u v\u1EEBa thay \u0111\u1ED5i. Vui l\xF2ng th\u1EED l\u1EA1i.");
+  }
+  mailPush(nk, userId, id);
+  return { success: true, already_claimed: !!oldWeekly, mail: mailPresent(nk, mail, Date.now()), profile: p.value, inventory: i.value.items };
+}
+function mailMutateOne(nk, userId, id, action) {
+  if (action === "claim") return mailClaimOne(nk, userId, id);
+  const stored = mailRead(nk, userId, id);
+  if (!stored) return mailError("MAIL_NOT_FOUND", "Th\u01B0 kh\xF4ng c\xF2n t\u1ED3n t\u1EA1i.");
+  const row = stored.value, now = Date.now();
+  if (action === "delete" && !mailPresent(nk, row, now).can_delete) return mailError("UNCLAIMED_REWARD", "H\xE3y nh\u1EADn ph\u1EA7n th\u01B0\u1EDFng tr\u01B0\u1EDBc khi x\xF3a th\u01B0.");
+  if (action === "open" && !row.read_at_ms) row.read_at_ms = now;
+  if (action === "delete") row.deleted_at_ms = now;
+  row.version++;
+  try {
+    nk.storageWrite([Object.assign(mailWrite(row, userId), { version: stored.version })]);
+  } catch (_e) {
+    return mailError("DATA_CHANGED", "D\u1EEF li\u1EC7u v\u1EEBa thay \u0111\u1ED5i. Vui l\xF2ng th\u1EED l\u1EA1i.");
+  }
+  mailPush(nk, userId, id);
+  return { success: true, mail: mailPresent(nk, row, now) };
+}
+function mailList(nk, userId, req) {
+  const now = Date.now(), filter = req.filter || "all";
+  if (MAIL_FILTERS.indexOf(filter) < 0) throw new Error("INVALID_FILTER");
+  const limit = Number.isSafeInteger(req.limit) ? Math.min(50, Math.max(1, req.limit)) : 20;
+  let cursor = [Number.MAX_SAFE_INTEGER, "~"];
+  if (req.cursor) {
+    cursor = JSON.parse(req.cursor);
+    if (!Array.isArray(cursor) || cursor.length !== 2 || !Number.isSafeInteger(cursor[0]) || typeof cursor[1] !== "string" || cursor[1].length > 150) throw new Error("INVALID_CURSOR");
+  }
+  const clauses = {
+    all: "TRUE",
+    unread: "value->>'read_at_ms' IS NULL",
+    read: "value->>'read_at_ms' IS NOT NULL",
+    reward: "jsonb_array_length(value->'attachments')>0",
+    expiring: "value->>'expires_at_ms' IS NOT NULL AND (value->>'expires_at_ms')::BIGINT>$3 AND (value->>'expires_at_ms')::BIGINT<=$7",
+    system: "value->>'category'='system'",
+    battle_report: "value->>'category'='battle_report'"
+  };
+  const rows = nk.sqlQuery(`SELECT key,value FROM storage WHERE collection='player_mail' AND user_id=$1::UUID AND left(key,length($2))=$2 AND ($2<>'' OR left(key,2)='m_')
+        AND ${mailVisibleSql()} AND ${clauses[filter]} AND ((value->>'created_at_ms')::BIGINT,key)<($4::BIGINT,$5)
+        ORDER BY (value->>'created_at_ms')::BIGINT DESC,key DESC LIMIT $6`, [userId, mailPrefix(nk), now, cursor[0], cursor[1], limit + 1].concat(filter === "expiring" ? [now + mailSettings(nk).warning_hours * 36e5] : []));
+  const more = rows.length > limit;
+  if (more) rows.pop();
+  const last = rows[rows.length - 1];
+  return { mails: rows.map((r) => mailPresent(nk, parseJsonObject(r.value), now)), next_cursor: more ? JSON.stringify([Number(parseJsonObject(last.value).created_at_ms), last.key]) : "", has_more: more };
+}
+function mailBulk(nk, userId, req, action) {
+  const cursor = req.cursor || "";
+  if (typeof cursor !== "string" || cursor.length > 150) throw new Error("INVALID_CURSOR");
+  const rows = nk.sqlQuery(`SELECT key,value FROM storage WHERE collection='player_mail' AND user_id=$1::UUID AND left(key,length($2))=$2 AND ($2<>'' OR left(key,2)='m_') AND key>$4
+        AND ${mailVisibleSql()} ORDER BY key LIMIT 26`, [userId, mailPrefix(nk), Date.now(), cursor]);
+  const more = rows.length > 25;
+  if (more) rows.pop();
+  const results = [];
+  let latest = {};
+  for (const stored of rows) {
+    const row = parseJsonObject(stored.value), eligible = action === "claim" ? mailPresent(nk, row, Date.now()).can_claim : !!row.read_at_ms && mailPresent(nk, row, Date.now()).can_delete;
+    if (!eligible) {
+      results.push({ id: row.id, success: false, code: "INELIGIBLE" });
+      continue;
+    }
+    const result = mailMutateOne(nk, userId, row.id, action);
+    results.push({ id: row.id, success: result.success, code: result.code || "" });
+    if (result.profile) latest = { profile: result.profile, inventory: result.inventory };
+  }
+  return Object.assign(latest, { results, has_more: more, next_cursor: more ? rows[rows.length - 1].key : "" });
+}
+function mailRecoverWeekly(nk, userId) {
+  const scope = characterContext(nk), table = scope ? "server_weekly_awards" : "weekly_leaderboard_awards";
+  const args = [userId, mailPrefix(nk)];
+  if (scope) args.push(scope.serverId, scope.generation);
+  const awards = nk.sqlQuery(`SELECT a.period_id,a.board_id,a.rank,a.rewards,EXTRACT(EPOCH FROM a.expires_at)*1000 AS expires_at_ms FROM ${table} a
+      WHERE a.user_id=$1::UUID AND a.expires_at>clock_timestamp() ${scope ? "AND a.server_id=$3 AND a.generation=$4" : ""}
+      AND NOT EXISTS(SELECT 1 FROM storage s WHERE s.collection='player_mail_deliveries' AND s.user_id=a.user_id
+        AND s.key=$2||'m_'||substring(encode(sha256(convert_to('weekly:'||a.period_id||':'||a.board_id,'UTF8')),'hex'),1,48))
+      ORDER BY a.period_id,a.board_id LIMIT 25`, args);
+  for (const a of awards) {
+    const source = "weekly:" + a.period_id + ":" + a.board_id;
+    const marker = nk.storageRead([{ collection: "weekly_leaderboard_claims", key: weeklyClaimKey(a.period_id, a.board_id), userId }])[0];
+    const input = {
+      source_id: source,
+      source_type: "weekly",
+      category: "system",
+      title: "Ph\u1EA7n th\u01B0\u1EDFng x\u1EBFp h\u1EA1ng tu\u1EA7n",
+      body: "B\u1EA3ng " + a.board_id + " \u2014 H\u1EA1ng " + a.rank + ".",
+      attachments: parseJsonb(a.rewards),
+      expires_at_ms: Math.floor(Number(a.expires_at_ms)),
+      weekly: { period_id: String(a.period_id), board_id: a.board_id }
+    };
+    if (marker) {
+      const id = mailId(nk, source);
+      try {
+        nk.storageWrite([{ collection: "player_mail_deliveries", key: id, userId, value: { source_id: source, already_claimed: true }, version: "*", permissionRead: 0, permissionWrite: 0 }]);
+      } catch (_e) {
+      }
+    } else {
+      try {
+        deliverMail(nk, userId, input);
+      } catch (error) {
+        if (String(error).indexOf("version") < 0) throw error;
+      }
+    }
+  }
+}
+function mailPlayerHandler(action) {
+  return (ctx, _logger, nk, payload) => {
+    if (!ctx.userId) return JSON.stringify(mailError("AUTH_REQUIRED", "C\u1EA7n \u0111\u0103ng nh\u1EADp."));
+    try {
+      const req = serverRequest(payload);
+      let result = {};
+      if (action === "summary" || action === "list") mailRecoverWeekly(nk, ctx.userId);
+      if (action === "list") result = mailList(nk, ctx.userId, req);
+      else if (action === "claim_all" || action === "delete_read") result = mailBulk(nk, ctx.userId, req, action === "claim_all" ? "claim" : "delete");
+      else if (action !== "summary") result = mailMutateOne(nk, ctx.userId, req.id, action);
+      return mailResponse(nk, ctx.userId, result);
+    } catch (error) {
+      _logger.error("Mailbox: " + String(error));
+      return JSON.stringify(mailError("MAIL_UNAVAILABLE", "Kh\xF4ng th\u1EC3 x\u1EED l\xFD h\u1ED9p th\u01B0. Vui l\xF2ng t\u1EA3i l\u1EA1i v\xE0 th\u1EED l\u1EA1i."));
+    }
+  };
+}
+function createMailboxTables(nk) {
+  nk.sqlExec(`CREATE INDEX IF NOT EXISTS player_mail_owner_idx ON storage(user_id,key) WHERE collection='player_mail';
+      CREATE INDEX IF NOT EXISTS player_mail_order_idx ON storage(user_id,((value->>'created_at_ms')::BIGINT) DESC,key DESC) WHERE collection='player_mail';
+      CREATE INDEX IF NOT EXISTS player_mail_purge_idx ON storage(((value->>'purge_at_ms')::BIGINT)) WHERE collection='player_mail';
+      CREATE TABLE IF NOT EXISTS mail_campaigns(id TEXT PRIMARY KEY,server_id TEXT NOT NULL,generation INT NOT NULL,definition JSONB NOT NULL,
+      cutoff TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp(),cursor TEXT NOT NULL DEFAULT '',done BOOLEAN NOT NULL DEFAULT FALSE);`, []);
+}
+function mailAdminRuntime(nk, userId, req) {
+  if (!req.server_id) return nk;
+  if (typeof req.server_id !== "string" || !/^[a-z][a-z0-9_]{0,31}$/.test(req.server_id) || !Number.isSafeInteger(req.generation) || req.generation < 1) throw new Error("INVALID_CONTEXT");
+  const rows = nk.sqlQuery(`SELECT 1 FROM player_characters c JOIN game_servers s ON s.server_id=c.server_id AND s.generation=c.generation
+        WHERE c.account_id=$1::UUID AND c.server_id=$2 AND c.generation=$3 AND c.status='ready' AND s.status='open'`, [userId, req.server_id, req.generation]);
+  if (!rows.length) throw new Error("CHARACTER_NOT_READY");
+  return characterRuntime(nk, { accountId: userId, serverId: req.server_id, generation: req.generation });
+}
+const rpcMailAdminSend = (ctx, _logger, nk, payload) => {
+  const denied = requireServerAdmin(ctx);
+  if (denied) return denied;
+  try {
+    const req = serverRequest(payload);
+    if (!/^[a-f0-9-]{36}$/.test(req.target_user_id || "")) throw new Error("INVALID_USER");
+    if (ctx.env.MULTI_SERVER_ENABLED === "true" && !req.server_id) throw new Error("CONTEXT_REQUIRED");
+    return JSON.stringify({ success: true, delivery: deliverMail(mailAdminRuntime(nk, req.target_user_id, req), req.target_user_id, req) });
+  } catch (error) {
+    return JSON.stringify(mailError("INVALID_MAIL", String(error)));
+  }
+};
+const rpcMailAdminCampaign = (ctx, _logger, nk, payload) => {
+  const denied = requireServerAdmin(ctx);
+  if (denied) return denied;
+  try {
+    const req = serverRequest(payload);
+    if (typeof req.campaign_id !== "string" || !/^[a-zA-Z0-9_:.-]{1,100}$/.test(req.campaign_id)) throw new Error("INVALID_CAMPAIGN");
+    if (ctx.env.MULTI_SERVER_ENABLED === "true" && !req.server_id) throw new Error("CONTEXT_REQUIRED");
+    if (req.server_id && !nk.sqlQuery("SELECT 1 FROM game_servers WHERE server_id=$1 AND generation=$2 AND status='open'", [req.server_id, req.generation]).length) throw new Error("INVALID_CONTEXT");
+    req.source_id = "campaign:" + req.campaign_id;
+    req.source_type = "campaign";
+    mailDefinition(nk, req);
+    nk.sqlExec(
+      `INSERT INTO mail_campaigns(id,server_id,generation,definition) VALUES($1,$2,$3,$4::JSONB) ON CONFLICT DO NOTHING`,
+      [req.campaign_id, req.server_id || "", req.generation || 0, JSON.stringify(req)]
+    );
+    return JSON.stringify({ success: true, campaign_id: req.campaign_id });
+  } catch (error) {
+    return JSON.stringify(mailError("INVALID_CAMPAIGN", String(error)));
+  }
+};
+const rpcMailTick = (ctx, logger, nk, _payload) => {
+  if (ctx.userId && requireServerAdmin(ctx)) return JSON.stringify(mailError("FORBIDDEN", "Forbidden"));
+  let purged = 0, delivered = 0;
+  const failures = [];
+  const deadline = Date.now() + 2e3;
+  const expired = nk.sqlQuery(`SELECT user_id::TEXT AS user_id,key,version FROM storage WHERE collection='player_mail'
+        AND (value->>'deleted_at_ms' IS NOT NULL OR (value->>'purge_at_ms')::BIGINT<= $1) ORDER BY update_time LIMIT 100`, [Date.now()]);
+  for (const row of expired) {
+    try {
+      nk.storageDelete([{ collection: MAIL_COLLECTION, key: row.key, userId: row.user_id, version: row.version }]);
+      purged++;
+    } catch (_e) {
+    }
+  }
+  const campaigns = nk.sqlQuery("SELECT * FROM mail_campaigns c WHERE NOT done AND (c.server_id='' OR EXISTS(SELECT 1 FROM game_servers s WHERE s.server_id=c.server_id AND s.generation=c.generation AND s.status='open')) ORDER BY cutoff,id LIMIT 5", []);
+  for (const campaign of campaigns) {
+    if (Date.now() >= deadline) break;
+    try {
+      const users = campaign.server_id ? nk.sqlQuery(`SELECT c.account_id::TEXT AS user_id FROM player_characters c JOIN users u ON u.id=c.account_id WHERE c.server_id=$1 AND c.generation=$2 AND c.status='ready' AND c.created_at<=$3 AND c.account_id::TEXT>$4 AND COALESCE(u.disable_time,to_timestamp(0))<=to_timestamp(0) AND NOT EXISTS(SELECT 1 FROM account_link_state a WHERE a.user_id=u.id AND a.status='archived') ORDER BY c.account_id::TEXT LIMIT 26`, [campaign.server_id, campaign.generation, campaign.cutoff, campaign.cursor]) : nk.sqlQuery(`SELECT u.id::TEXT AS user_id FROM users u WHERE u.create_time<=$1 AND u.id::TEXT>$2 AND u.id<>'00000000-0000-0000-0000-000000000000' AND COALESCE(u.disable_time,to_timestamp(0))<=to_timestamp(0) AND NOT EXISTS(SELECT 1 FROM account_link_state a WHERE a.user_id=u.id AND a.status='archived') ORDER BY u.id::TEXT LIMIT 26`, [campaign.cutoff, campaign.cursor]);
+      const more = users.length > 25;
+      if (more) users.pop();
+      let last = campaign.cursor, processed = 0;
+      for (const user of users) {
+        if (Date.now() >= deadline) break;
+        deliverMail(mailAdminRuntime(nk, user.user_id, campaign), user.user_id, parseJsonObject(campaign.definition));
+        delivered++;
+        processed++;
+        last = user.user_id;
+      }
+      nk.sqlExec("UPDATE mail_campaigns SET cursor=$2,done=$3 WHERE id=$1 AND cursor=$4", [campaign.id, last, !more && processed === users.length, campaign.cursor]);
+    } catch (error) {
+      failures.push({ id: campaign.id, error: String(error) });
+    }
+  }
+  const multi = ctx.env && ctx.env.MULTI_SERVER_ENABLED === "true", table = multi ? "server_weekly_awards" : "weekly_leaderboard_awards";
+  const targets = nk.sqlQuery(`SELECT DISTINCT a.user_id::TEXT AS user_id ${multi ? ",a.server_id,a.generation" : ""} FROM ${table} a
+        WHERE expires_at>clock_timestamp() AND EXISTS(SELECT 1 FROM users u WHERE u.id=a.user_id AND COALESCE(u.disable_time,to_timestamp(0))<=to_timestamp(0))
+        AND NOT EXISTS(SELECT 1 FROM account_link_state l WHERE l.user_id=a.user_id AND l.status='archived')
+        ${multi ? "AND EXISTS(SELECT 1 FROM game_servers g JOIN player_characters p ON p.server_id=g.server_id AND p.generation=g.generation WHERE g.server_id=a.server_id AND g.generation=a.generation AND g.status='open' AND p.account_id=a.user_id AND p.status='ready')" : ""}
+        AND NOT EXISTS(SELECT 1 FROM storage s WHERE s.collection='player_mail_deliveries' AND s.user_id=a.user_id
+        AND s.key=${multi ? "a.server_id||':g'||a.generation||':'||" : ""}'m_'||substring(encode(sha256(convert_to('weekly:'||a.period_id||':'||a.board_id,'UTF8')),'hex'),1,48)) LIMIT 25`, []);
+  for (const target of targets) {
+    if (Date.now() >= deadline) break;
+    try {
+      mailRecoverWeekly(mailAdminRuntime(nk, target.user_id, target), target.user_id);
+    } catch (error) {
+      logger.error("Mail weekly recovery: " + String(error));
+      failures.push({ user: target.user_id });
+    }
+  }
+  return JSON.stringify({ success: failures.length === 0, purged, delivered, failures });
+};
+function applyPurchaseMailRewards(nk, userId, grantId, productId, fulfillmentType, rewards) {
+  const marker = { collection: "player_purchase_grants", key: grantId, userId };
+  const p = nk.storageRead([{ collection: "player_profiles", key: "main", userId }])[0];
+  if (nk.storageRead([marker]).length || p && Array.isArray(p.value._iap_reward_ids) && p.value._iap_reward_ids.indexOf(grantId) >= 0) return { idempotent: true };
+  const recurring = DAILY_PACK_IDS.indexOf(productId) >= 0 && rewards.length > 0 && rewards.every((r) => r.metadata && Number(r.metadata.daily_pack_days) === 30);
+  const mailed = recurring ? [] : rewards.filter((r) => r.reward_type === "currency" || r.reward_type === "item");
+  const immediate = recurring ? rewards : rewards.filter((r) => r.reward_type !== "currency" && r.reward_type !== "item");
+  const writes = [], batch = Object.create(nk);
+  batch.__purchaseBatch = true;
+  batch.__mailBatch = true;
+  batch.storageWrite = (changes) => {
+    for (const w of changes) writes.push(w);
+    return [];
+  };
+  const result = applyPurchaseStorageRewards(batch, userId, grantId, productId, fulfillmentType, immediate);
+  if (mailed.length) result.mail = deliverMail(batch, userId, {
+    source_id: "purchase:" + grantId,
+    source_type: "purchase",
+    title: "Ph\u1EA7n th\u01B0\u1EDFng g\xF3i " + productId,
+    body: "Thanh to\xE1n \u0111\xE3 \u0111\u01B0\u1EE3c x\xE1c nh\u1EADn. H\xE3y nh\u1EADn v\u1EADt ph\u1EA9m c\u1EE7a g\xF3i t\u1EA1i \u0111\xE2y.",
+    attachments: mailed.map((r) => ({ type: r.reward_type === "currency" ? "resource" : "item", id: r.reward_id, amount: Number(r.quantity) }))
+  });
+  writes.push(Object.assign({}, marker, { value: { product_id: productId, granted_at_ms: Date.now(), delivery: mailed.length ? "mail" : "direct" }, version: "*", permissionRead: 0, permissionWrite: 0 }));
+  nk.storageWrite(writes);
+  if (result.mail) mailPush(nk, userId, result.mail.id);
+  return result;
+}
+function mailCombatRuntime(base, userId) {
+  const runtime = Object.create(base);
+  runtime.storageWrite = (changes) => {
+    const writes = changes.slice(), reports = [];
+    const profile = changes.find((w) => w.collection === "player_profiles" && w.key === "main" && w.userId === userId);
+    if (profile) {
+      const previous = base.storageRead([{ collection: "player_profiles", key: "main", userId }])[0];
+      const oldArcs = previous && Array.isArray(previous.value.unlocked_arcs) ? previous.value.unlocked_arcs : [];
+      const nextArcs = Array.isArray(profile.value.unlocked_arcs) ? profile.value.unlocked_arcs : [];
+      const batch = Object.create(base);
+      batch.__mailBatch = true;
+      batch.storageWrite = (extra) => {
+        for (const w of extra) writes.push(w);
+        return [];
+      };
+      for (const arcId of nextArcs.filter((id, index, list) => typeof id === "string" && id !== "arc_0" && oldArcs.indexOf(id) < 0 && list.indexOf(id) === index)) {
+        const arc = base.sqlQuery("SELECT display_name FROM game_arcs WHERE id=$1", [arcId])[0];
+        if (!arc) throw new Error("UNKNOWN_UNLOCKED_ARC");
+        const name = String(arc.display_name || arcId);
+        reports.push(deliverMail(batch, userId, {
+          source_id: "arc_opened:" + arcId,
+          source_type: "arc_opened",
+          category: "system",
+          title: "Khai m\u1EDF " + name,
+          body: "Ch\xFAc m\u1EEBng tu gi\u1EA3 \u0111\xE3 khai m\u1EDF " + name + "!\n\nM\u1ED9t h\xE0nh tr\xECnh m\u1EDBi \u0111ang ch\u1EDD \u0111\xF3n b\u1EA1n. H\xE3y \u0111\u1EBFn Chi\u1EBFn d\u1ECBch \u0111\u1EC3 kh\xE1m ph\xE1 c\xE1c \u1EA3i v\xE0 th\u1EED th\xE1ch c\u1EE7a khu v\u1EF1c n\xE0y.",
+          expires_at_ms: null
+        }));
+      }
+    }
+    const ack = base.storageWrite(writes);
+    for (const report of reports) if (!report.idempotent) mailPush(base, userId, report.id);
+    return ack;
+  };
+  return runtime;
+}
+function mailSyncWeeklyClaim(nk, userId, payload) {
+  const req = serverRequest(payload), id = mailId(nk, "weekly:" + req.period_id + ":" + req.board_id);
+  const stored = mailRead(nk, userId, id);
+  if (!stored || stored.value.claimed_at_ms) return;
+  stored.value.claimed_at_ms = Date.now();
+  stored.value.version++;
+  try {
+    nk.storageWrite([Object.assign(mailWrite(stored.value, userId), { version: stored.version })]);
+    mailPush(nk, userId, id);
+  } catch (_e) {
+  }
+}
+
 function linkedRpc_rename_player(ctx, logger, nk, payload) {
   return accountGuardedRpc("rename_player", renamePlayer)(ctx, logger, nk, payload);
 }
@@ -9422,10 +9944,10 @@ function linkedRpc_upgrade_element(ctx, logger, nk, payload) {
   return accountGuardedRpc("upgrade_element", gatedUpgradeElement)(ctx, logger, nk, payload);
 }
 function linkedRpc_award_stage_progression(ctx, logger, nk, payload) {
-  return accountGuardedRpc("award_stage_progression", gatedAwardStageProgression)(ctx, logger, nk, payload);
+  return accountGuardedRpc("award_stage_progression", (c, l, n, p) => gatedAwardStageProgression(c, l, mailCombatRuntime(n, c.userId), p))(ctx, logger, nk, payload);
 }
 function linkedRpc_tribulation_action(ctx, logger, nk, payload) {
-  return accountGuardedRpc("tribulation_action", gatedTribulationAction)(ctx, logger, nk, payload);
+  return accountGuardedRpc("tribulation_action", (c, l, n, p) => gatedTribulationAction(c, l, mailCombatRuntime(n, c.userId), p))(ctx, logger, nk, payload);
 }
 function linkedRpc_get_monetization_status(ctx, logger, nk, payload) {
   return accountGuardedRpc("get_monetization_status", gatedGetMonetizationStatus)(ctx, logger, nk, payload);
@@ -9467,7 +9989,11 @@ function linkedRpc_get_weekly_leaderboard_rewards(ctx, logger, nk, payload) {
   return accountGuardedRpc("get_weekly_leaderboard_rewards", (c, l, n, p) => invokeWithVersionGate(c, l, n, p, getWeeklyLeaderboardRewards))(ctx, logger, nk, payload);
 }
 function linkedRpc_claim_weekly_leaderboard_reward(ctx, logger, nk, payload) {
-  return accountGuardedRpc("claim_weekly_leaderboard_reward", (c, l, n, p) => invokeWithVersionGate(c, l, n, p, claimWeeklyLeaderboardReward))(ctx, logger, nk, payload);
+  return accountGuardedRpc("claim_weekly_leaderboard_reward", (c, l, n, p) => invokeWithVersionGate(c, l, n, p, (cc, ll, nn, pp) => {
+    const result = claimWeeklyLeaderboardReward(cc, ll, nn, pp);
+    if (JSON.parse(result).success) mailSyncWeeklyClaim(nn, cc.userId, pp);
+    return result;
+  }))(ctx, logger, nk, payload);
 }
 function linkedRpc_sync_player_leaderboards(ctx, logger, nk, payload) {
   return accountGuardedRpc("sync_player_leaderboards", gatedSyncPlayerLeaderboards)(ctx, logger, nk, payload);
@@ -9501,12 +10027,24 @@ function linkedRpc_resolve_purchase_order(c, l, n, p) {
 }
 function InitModule(ctx, logger, nk, initializer) {
   createServerRegistryTables(nk);
+  createMailboxTables(nk);
+  initializer.registerRpc("mail_summary", linkedRpc_mail_summary);
+  initializer.registerRpc("mail_list", linkedRpc_mail_list);
+  initializer.registerRpc("mail_open", linkedRpc_mail_open);
+  initializer.registerRpc("mail_claim", linkedRpc_mail_claim);
+  initializer.registerRpc("mail_claim_all", linkedRpc_mail_claim_all);
+  initializer.registerRpc("mail_delete", linkedRpc_mail_delete);
+  initializer.registerRpc("mail_delete_read", linkedRpc_mail_delete_read);
+  initializer.registerRpc("mail_admin_send", linkedRpc_mail_admin_send);
+  initializer.registerRpc("mail_admin_campaign", linkedRpc_mail_admin_campaign);
+  initializer.registerRpc("mail_tick", rpcMailTick);
   sweepCreateWorkerIndex(nk);
   initializer.registerRpc("get_sweep_options", linkedRpc_get_sweep_options);
   initializer.registerRpc("preview_sweep", linkedRpc_preview_sweep);
   initializer.registerRpc("start_sweep", linkedRpc_start_sweep);
   initializer.registerRpc("get_sweep_status", linkedRpc_get_sweep_status);
   initializer.registerRpc("cancel_sweep", linkedRpc_cancel_sweep);
+  initializer.registerRpc("finish_sweep", linkedRpc_finish_sweep);
   initializer.registerRpc("sweep_tick", rpcSweepTick);
   initializer.registerRpc("admin_server_list", rpcAdminServerList);
   initializer.registerRpc("admin_server_inspect", rpcAdminServerInspect);
@@ -9617,4 +10155,34 @@ function linkedRpc_get_sweep_status(c, l, n, p) {
 }
 function linkedRpc_cancel_sweep(c, l, n, p) {
   return accountGuardedRpc("cancel_sweep", (cc, ll, nn, pp) => invokeWithVersionGate(cc, ll, nn, pp, cancelSweep))(c, l, n, p);
+}
+function linkedRpc_mail_summary(c, l, n, p) {
+  return accountGuardedRpc("mail_summary", (cc, ll, nn, pp) => invokeWithVersionGate(cc, ll, nn, pp, mailPlayerHandler("summary")))(c, l, n, p);
+}
+function linkedRpc_mail_list(c, l, n, p) {
+  return accountGuardedRpc("mail_list", (cc, ll, nn, pp) => invokeWithVersionGate(cc, ll, nn, pp, mailPlayerHandler("list")))(c, l, n, p);
+}
+function linkedRpc_mail_open(c, l, n, p) {
+  return accountGuardedRpc("mail_open", (cc, ll, nn, pp) => invokeWithVersionGate(cc, ll, nn, pp, mailPlayerHandler("open")))(c, l, n, p);
+}
+function linkedRpc_mail_claim(c, l, n, p) {
+  return accountGuardedRpc("mail_claim", (cc, ll, nn, pp) => invokeWithVersionGate(cc, ll, nn, pp, mailPlayerHandler("claim")))(c, l, n, p);
+}
+function linkedRpc_mail_claim_all(c, l, n, p) {
+  return accountGuardedRpc("mail_claim_all", (cc, ll, nn, pp) => invokeWithVersionGate(cc, ll, nn, pp, mailPlayerHandler("claim_all")))(c, l, n, p);
+}
+function linkedRpc_mail_delete(c, l, n, p) {
+  return accountGuardedRpc("mail_delete", (cc, ll, nn, pp) => invokeWithVersionGate(cc, ll, nn, pp, mailPlayerHandler("delete")))(c, l, n, p);
+}
+function linkedRpc_mail_delete_read(c, l, n, p) {
+  return accountGuardedRpc("mail_delete_read", (cc, ll, nn, pp) => invokeWithVersionGate(cc, ll, nn, pp, mailPlayerHandler("delete_read")))(c, l, n, p);
+}
+function linkedRpc_mail_admin_send(c, l, n, p) {
+  return accountGuardedRpc("mail_admin_send", rpcMailAdminSend)(c, l, n, p);
+}
+function linkedRpc_mail_admin_campaign(c, l, n, p) {
+  return accountGuardedRpc("mail_admin_campaign", rpcMailAdminCampaign)(c, l, n, p);
+}
+function linkedRpc_finish_sweep(c, l, n, p) {
+  return accountGuardedRpc("finish_sweep", (cc, ll, nn, pp) => invokeWithVersionGate(cc, ll, mailCombatRuntime(nn, cc.userId), pp, finishSweep))(c, l, n, p);
 }

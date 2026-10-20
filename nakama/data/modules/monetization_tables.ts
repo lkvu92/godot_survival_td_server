@@ -207,6 +207,11 @@ function createMonetizationTables(nk: nkruntime.Nakama, logger: nkruntime.Logger
         INSERT INTO store_purchase_voids(token_hash) VALUES(token) ON CONFLICT DO NOTHING;
         WITH revoked AS (
           UPDATE monetization_purchases SET status='voided',updated_at=NOW() WHERE purchase_token_hash=token AND status<>'voided' RETURNING *
+        ), expired_mail AS (
+          UPDATE storage SET value=jsonb_set(jsonb_set(value,'{expires_at_ms}',to_jsonb((EXTRACT(EPOCH FROM clock_timestamp())*1000)::BIGINT)),
+            '{purge_at_ms}',to_jsonb((EXTRACT(EPOCH FROM clock_timestamp()+INTERVAL '7 days')*1000)::BIGINT)),
+            version=md5(version||clock_timestamp()::TEXT),update_time=NOW()
+          WHERE collection='player_mail' AND value->>'source_id'='purchase:'||token AND value->>'claimed_at_ms' IS NULL
         ), entitlements AS (
           UPDATE player_monetization_entitlements e SET no_ads_expires_at=GREATEST(NOW(),e.no_ads_expires_at-(r.granted_seconds*INTERVAL '1 second')),
             source='google_play_voided',updated_at=NOW() FROM revoked r WHERE e.user_id=r.user_id

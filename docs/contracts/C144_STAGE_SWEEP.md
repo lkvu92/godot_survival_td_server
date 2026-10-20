@@ -1,6 +1,6 @@
 # C144 Stage grades and campaign sweep
 
-Version: 1.0.3 | Status: ACTIVE | Date: 2026-10-20
+Version: 1.4.1 | Status: ACTIVE | Date: 2026-10-20
 
 ## Authority and schema
 
@@ -50,3 +50,21 @@ Daily small daily_deal grants5 campaign sweep tickets per claim; large flash_sal
 Use cards as the shared offer category and Thẻ as its player label. Remove tickets category. Ticket offer must exist in live server progression, not only seed input; gem view includes the same gem-only20/quantity1 offer. Seed the local targeted offer and item without replacing unrelated configuration. Reconnect reloads server catalog.
 
 Documentation: [Vietnamese feature guide](../../../client/docs/STAGE_SWEEP.md), [backend operations](../../../server/docs/STAGE_SWEEP.md). Current UI/commerce sections supersede historical layouts described in earlier changelog entries.
+
+## Completion reward visibility (1.0.4)
+Stage-level config includes completion_loot derived server-side from the same sweepRewardTable used by combat settlement, at S/base quantities, plus ordinary-combat-only ticket outcomes. Existing raw loot tables remain intact. Training/admin have no ticket or fragment preview. Ticket row exposes quantity_outcomes [{quantity:0,probability:.25},{quantity:1,probability:.60},{quantity:2,probability:.15}] from published sweep rules, drop_rate=.75, min_qty=0,max_qty=2. Ticket rewards remain independently rolled once only on ordinary victory, outside grade/ads and never sweep. Fragment preview exposes effective unconditional probability group_drop_rate*weight/sum(weight), preserving the 70% group roll and conditional 85/15 tier, 75/25 element distribution for final campaign boss Legend only. Client displays server completion_loot without local gameplay rules, with quantity/probability tooltip. Regression: real local catalog roll simulations and server config/settlement shared reward table, no tickets for losses/training/sweep, no fragments on normal/epic/nonfinal.
+
+### 1.0.4 verification
+PASS backend build/canonical packaging, server static regressions (including exact ticket boundaries and shared fragment table preview), client static, Godot parser and TestCompletionPreview with an actual local server catalog snapshot. Read-only local catalog audit: 150 campaign stage/mode previews include tickets; exactly five final-stage Legend previews include 25 eligible H?/Trung fragment candidates with total unconditional drop probability 0.7. Stratified 10,000 ticket rolls yield 2500/6000/1500; 20,000 production fragment rolls on the live local catalog yielded 13,879 drops (69.395%). Native isolated Nakama/PostgreSQL integration PASS for migration/reseed/config, ordinary/sweep concurrency and settlement. Local runtime restarted and healthcheck PASS. No player inventory mutated by probability simulations. Completion loot is a server-derived read projection, not a duplicated writable loot table.
+
+## Instant finish (1.4.0, 2026-10-20)
+Double-click/tap minimap opens UiDialog confirmation after authoritative status refresh. Response instant_finish quote contains unit_cost_gems=5, remaining_rounds and cost_gems. Due rounds are free; charge only rounds not yet due at server request time. finish_sweep {session_id,max_cost_gems} rejects costs above consent, insufficient gems, cancellation and blocked sessions. Server settles ALL remaining rounds with normal ticket/stamina and reward rules in one version-checked profile/inventory/heroes transaction including gem debit. No partial debit/grant; concurrent worker/cancel/purchases serialize via CAS. Completed session replay returns success without recharging. UI blocks duplicates, binds confirmation to session, recovers uncertain responses and refreshes balance; no offline fallback.
+
+Changelog 1.4.0: minimap instant finish confirmation, server quote at 5 gems per outstanding timed round, atomic settlement and replay protection.
+
+Validation 1.4.0: backend build/packaging and both static runners PASS. Atomic runtime regressions PASS: 3-round completion, due-round exclusion, quote consent cap, insufficient gems, pre/post-commit crash replay and worker CAS race. Godot project parser and TestSweepUI PASS: single click ignored, double-click confirmation quote15, explicit confirmation only, duplicate submit blocked and widget hidden on completion. Full isolated native Nakama/PostgreSQL integration PASS. Local runtime restarted and healthcheck PASS; no production deployment. Gate score 9/10.
+
+## Loading regression fix (1.4.1)
+Completion-loot projection must reuse read-only SQL results within the single stage-level catalog request, rather than re-query the published config for every reward quantity. Cache scope is the current projection only, never cross-request or writable gameplay data. Preserve identical probability/quantity output and online-only admission. Verify actual saved-session bootstrap and get_game_config before accepting.
+
+Validation 1.4.1: reproduced saved-session Godot get_game_config timeout before fix; now actual LoadingScreen reaches MainMenu successfully. Live catalog HTTP latency 0.672s, identical decoded catalog before/after fix. Regression with150 stage levels asserts one rules decode and no repeated SQL; backend build, both static suites and sweep runtime tests PASS. Rebuilt local runtime active. Separate existing missing Home texture assets/ui/ui.png warning does not block loading.

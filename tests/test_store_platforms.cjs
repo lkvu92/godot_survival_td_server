@@ -7,7 +7,7 @@ context.monetizationMode=()=> 'production';context.isLinkedReceiptOwner=(_nk,a,b
 context.buildMonetizationResponse=()=>({});
 let grants=0,validated=0,writes=0,order={id:'order-a',platform:'android',product_id:'canonical_pack',store_product_id:'play.sku.pack',
   status:'pending',fulfillment_type:'consumable',reward_snapshot:[{reward_type:'currency',reward_id:'gems',quantity:10}],vip_exp:1,vip_environment:'production'};
-context.applyPurchaseStorageRewards=()=>{grants++;return {};};
+context.applyPurchaseMailRewards=()=>{grants++;return {};};
 let purchase={productId:'play.sku.pack',userId:'buyer',transactionId:'tx-1',environment:'production'};
 const nk={sqlQuery(sql){if(sql.includes('FROM monetization_purchase_orders'))return [order];if(sql.includes('sha256'))return[{token_hash:'verified-hash'}];return [];},
   sqlExec(){writes++;},purchaseValidateGoogle(){validated++;return{validatedPurchases:[purchase]};}};

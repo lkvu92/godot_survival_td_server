@@ -13,6 +13,8 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Character repository regression failed' }
     & node tests/test_store_platforms.cjs
     if ($LASTEXITCODE -ne 0) { throw 'Store platform boundary regression failed' }
+    & node tests/test_mailbox_runtime.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Mailbox regression failed' }
     & node tests/test_run_lifecycle.cjs
     if ($LASTEXITCODE -ne 0) { throw 'Run lifecycle regression failed' }
     & node tests/test_stage_sweep.cjs

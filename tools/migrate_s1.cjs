@@ -1,6 +1,6 @@
 // C143 offline S1 migration. No startup execution, no deletion of legacy data.
 // Uses psql (PGPASSWORD/service file supported); never prints connection secrets.
-const collections=['player_profiles','player_inventory','player_heroes','player_stage_runs','player_identity','player_event_progress','player_daily_checkin','weekly_leaderboard_claims','player_purchase_grants','player_item_requests'];
+const collections=['player_profiles','player_inventory','player_heroes','player_stage_runs','player_identity','player_event_progress','player_daily_checkin','weekly_leaderboard_claims','player_purchase_grants','player_item_requests','player_mail','player_mail_deliveries'];
 const owned="collection=ANY('{"+collections.join(',')+"}'::TEXT[]) AND key !~ '^[a-z][a-z0-9_]{0,31}:g[1-9][0-9]*:'";
 const boards="'{best_wave,most_kills,total_wins,cultivation_realm,campaign_stage,combat_power_v2}'::TEXT[]";
 const sources={

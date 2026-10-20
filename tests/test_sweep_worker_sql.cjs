@@ -17,6 +17,7 @@ const c=vm.createContext({Date:Clock});
 vm.runInContext(fs.readFileSync(path.join(__dirname,'../nakama/data/modules/build/sweep_worker.js'),'utf8'),c);
 const fn=n=>vm.runInContext(n,c),uid=n=>'00000000-0000-0000-0000-'+String(n).padStart(12,'0');
 const nk={sqlExec:sql,sqlQuery:rows,uuidv4:()=>String(Math.random()),notificationSend(){notifications++;throw Error('socket unavailable');}};
+c.mailCombatRuntime=runtime=>runtime;
 c.characterRuntime=(_base,scope)=>({scope});c.withServerRequest=(_base,scope,action)=>action();
 c.sweepProcess=(runtime,user,logger,time,limit)=>{assert.equal(limit,4);processed.push({user,scope:runtime.scope});if(advance)now+=800;if(fail)throw Error('simulated storage outage');return {session_id:user,state_version:2};};
 const logger={warn(){}};

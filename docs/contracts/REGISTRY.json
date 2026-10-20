@@ -1,8 +1,17 @@
 {
   "contracts": [
     {
+      "id": "C147_MAILBOX",
+      "feature_id": "F147_MAILBOX",
+      "name": "Server-authoritative mailbox",
+      "version": "1.1.4",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-20",
+      "contract_file": "docs/contracts/C147_MAILBOX.md"
+    },
+    {
       "id": "C144_STAGE_SWEEP",
-      "version": "1.0.3",
+      "version": "1.4.1",
       "status": "ACTIVE",
       "updated_at": "2026-10-20",
       "contract_file": "docs/contracts/C144_STAGE_SWEEP.md"

@@ -81,6 +81,27 @@ services:
     mem_limit: 64m
     cpus: 0.25
 
+  mail-worker:
+    image: python:3.12-alpine
+    command: ["python", "-B", "/app/mail_tick.py"]
+    environment:
+      NAKAMA_URL: http://nakama:7350
+      NAKAMA_HTTP_KEY: ${NAKAMA_HTTP_KEY:?Required}
+    volumes:
+      - ./mail_tick.py:/app/mail_tick.py:ro
+    depends_on:
+      nakama:
+        condition: service_healthy
+    restart: unless-stopped
+    init: true
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    mem_limit: 64m
+    cpus: 0.25
+
   monetization-verifier:
     build:
       context: ../services/monetization-verifier
