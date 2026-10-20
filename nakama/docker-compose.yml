@@ -91,6 +91,15 @@ services:
       NAKAMA_PRODUCTION_URL: "${NAKAMA_PRODUCTION_URL:-http://nakama:7350}"
       NAKAMA_HTTP_KEY: "${NAKAMA_HTTP_KEY:?Required in .env}"
       GOOGLE_PUBSUB_AUDIENCE: "${GOOGLE_PUBSUB_AUDIENCE:-http://localhost:8082/google-play/rtdn}"
+      GOOGLE_PLAY_PACKAGE_NAME: "${ANDROID_PACKAGE_NAME:-vn.lkvu92.survivaltd}"
+      GOOGLE_APPLICATION_CREDENTIALS: /run/secrets/google-play-service-account.json
+    volumes:
+      - type: bind
+        source: ./google-play-service-account.json
+        target: /run/secrets/google-play-service-account.json
+        read_only: true
+        bind:
+          create_host_path: false
     ports:
       - "${MONETIZATION_BIND:-127.0.0.1}:${MONETIZATION_PORT:-8082}:8080"
     restart: unless-stopped

@@ -1,6 +1,10 @@
 # C109 Store catalog and purchase orders
 
-Version: 1.1.1 | Status: ACTIVE | Updated: 2026-10-18
+Version: 1.1.2 | Status: ACTIVE | Updated: 2026-10-20
+
+## Google verifier deployment
+
+Production Compose passes ANDROID_PACKAGE_NAME as GOOGLE_PLAY_PACKAGE_NAME and mounts the ignored google-play-service-account.json read-only at GOOGLE_APPLICATION_CREDENTIALS. Missing credential files fail container creation instead of silently creating a directory. The service account must have Google Play API access for the package. Existing Nakama IAP credentials may supply the same service account; never commit keys or print tokens. Validate ADC token acquisition and package API access before testing a new purchase. Verification remains mandatory; cancelled/refunded receipts cannot grant rewards. This deployment change does not change RPC payloads, order snapshots or player data; failures have no offline fallback.
 
 ## Daily-tab reward correction and audit
 
@@ -22,6 +26,7 @@ Generate the targeted SQL with `node nakama/build_daily_pack_patch.cjs` (reviewa
 
 | Version | Date | Change |
 |---|---|---|
+| 1.1.2 | 2026-10-20 | Wire production verifier package and read-only Google credentials; document deployment validation. |
 | 1.1.1 | 2026-10-18 | Increase Gem Sack base/first bonus to 1000 each, Gem Chest to 5000 and Gold Vault to 1000000; synchronize descriptions. |
 | 1.1.0 | 2026-10-18 | Thirty purchase-relative daily claim windows, atomic rewards, repeat protection, shop claim states and paid stamina overflow preservation. |
 | 1.0.1 | 2026-10-18 | Correct breakthrough pack charms and document one-time purchase versus missing recurring rewards. |
