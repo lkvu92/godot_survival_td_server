@@ -325,10 +325,25 @@ const startStage: nkruntime.RpcFunction = (ctx, _logger, nk, payload): string =>
     const stageId = String(req.stage_id || "");
     const levelId = String(req.level_id || "");
     if (!stageId || !levelId) return JSON.stringify({ success: false, message: "Invalid stage" });
-    if (stageId === "stage_0_admin_test") return JSON.stringify({success: false, message: "Admin test is not a reward-bearing stage"});
     const stored = nk.storageRead([{ collection: "player_profiles", key: "main", userId: ctx.userId }]);
     if (stored.length === 0) return JSON.stringify({ success: false, message: "Player profile is incomplete" });
     const profile = parseJsonObject(stored[0].value);
+    const sweepBlock = sweepCombatError(profile);
+    if (sweepBlock) return JSON.stringify(sweepBlock);
+    if ((profile.breakthrough || {}).in_tribulation === true) return JSON.stringify({success:false,code:'COMBAT_ACTIVE',message:'Tribulation is active'});
+    const existingRuns=nk.storageRead([{collection:'player_stage_runs',key:'active',userId:ctx.userId}]);
+    if(existingRuns.length&&existingRuns[0].value.status==='active'&&Number(existingRuns[0].value.expires_at_ms)>Date.now())return JSON.stringify({success:false,code:'COMBAT_ACTIVE',message:'Combat is active'});
+    if(stageId==='stage_0_admin_test') {
+        const allowed=nk.sqlQuery("SELECT 1 FROM users WHERE id=$1::UUID AND LOWER(email)=LOWER($2) AND COALESCE(EXTRACT(EPOCH FROM disable_time),0)=0 LIMIT 1",[ctx.userId,'lkvu92@gmail.com']);
+        if(!allowed.length)return JSON.stringify({success:false,code:'FORBIDDEN'});
+        const state=talismanCreateStageRun(nk,ctx.userId,stageId,levelId);
+        profile.activity={type:'combat',activity_id:state.run.run_id};
+        nk.storageWrite([{collection:'player_profiles',key:'main',userId:ctx.userId,value:profile,version:stored[0].version,permissionRead:1,permissionWrite:0},{collection:'player_stage_runs',key:'active',userId:ctx.userId,value:state.run,version:state.version,permissionRead:1,permissionWrite:0}]);
+        return JSON.stringify({success:true,run_id:state.run.run_id,stamina_cost:0,stamina_remaining:profile.stamina});
+    }
+    // A run must never charge stamina if its mandatory grading/reward rules
+    // cannot also be used at settlement on this release.
+    try{sweepConfig(nk);}catch(_error){return JSON.stringify({success:false,code:'SWEEP_CONFIG_INVALID',message:'Stage grading configuration is unavailable'});}
     // Migrate campaign completions produced before final-stage cross-arc
     // unlocking existed, before validating the requested stage.
     progressionReconcileCampaignUnlocks(nk, profile);
@@ -344,6 +359,7 @@ const startStage: nkruntime.RpcFunction = (ctx, _logger, nk, payload): string =>
     if (stamina < cost) return JSON.stringify({ success: false, message: "Not enough stamina", stamina_cost: cost, stamina });
     profile.stamina = stamina - cost;
 	const runState = talismanCreateStageRun(nk, ctx.userId, stageId, levelId);
+	profile.activity={type:'combat',activity_id:runState.run.run_id};
 	nk.storageWrite([
 		{ collection: "player_profiles", key: "main", userId: ctx.userId, value: profile,
 			permissionRead: 1, permissionWrite: 0, version: stored[0].version },

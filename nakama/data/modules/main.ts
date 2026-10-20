@@ -175,6 +175,13 @@ function InitModule(
 ): void {
     // Phase 2: Create tables on startup
     createServerRegistryTables(nk);
+    sweepCreateWorkerIndex(nk);
+    initializer.registerRpc('get_sweep_options',linkedRpc_get_sweep_options);
+    initializer.registerRpc('preview_sweep',linkedRpc_preview_sweep);
+    initializer.registerRpc('start_sweep',linkedRpc_start_sweep);
+    initializer.registerRpc('get_sweep_status',linkedRpc_get_sweep_status);
+    initializer.registerRpc('cancel_sweep',linkedRpc_cancel_sweep);
+    initializer.registerRpc('sweep_tick',rpcSweepTick);
     initializer.registerRpc('admin_server_list',rpcAdminServerList);
     initializer.registerRpc('admin_server_inspect',rpcAdminServerInspect);
     initializer.registerRpc('admin_server_create',rpcAdminServerCreate);
@@ -193,6 +200,7 @@ function InitModule(
     initializer.registerRpc("enter_server", linkedRpc_enter_server);
     initializer.registerRpc("create_character", linkedRpc_create_character);
     createGameConfigTables(nk, logger);
+    sweepMigratePublishedConfig(nk,logger);
     createMonetizationTables(nk, logger);
     initializer.registerRpc("iap_claim", linkedRpc_iap_claim);
     initializer.registerRpc("resolve_purchase_order", linkedRpc_resolve_purchase_order);
@@ -279,3 +287,13 @@ function InitModule(
 
     logger.info("Survival TD — Server modules initialized.");
 }
+
+function linkedRpc_get_sweep_options(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string{return accountGuardedRpc("get_sweep_options",(cc,ll,nn,pp)=>invokeWithVersionGate(cc,ll,nn,pp,getSweepOptions))(c,l,n,p);}
+
+function linkedRpc_preview_sweep(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string{return accountGuardedRpc("preview_sweep",(cc,ll,nn,pp)=>invokeWithVersionGate(cc,ll,nn,pp,previewSweep))(c,l,n,p);}
+
+function linkedRpc_start_sweep(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string{return accountGuardedRpc("start_sweep",(cc,ll,nn,pp)=>invokeWithVersionGate(cc,ll,nn,pp,startSweep))(c,l,n,p);}
+
+function linkedRpc_get_sweep_status(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string{return accountGuardedRpc("get_sweep_status",(cc,ll,nn,pp)=>invokeWithVersionGate(cc,ll,nn,pp,getSweepStatus))(c,l,n,p);}
+
+function linkedRpc_cancel_sweep(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string{return accountGuardedRpc("cancel_sweep",(cc,ll,nn,pp)=>invokeWithVersionGate(cc,ll,nn,pp,cancelSweep))(c,l,n,p);}

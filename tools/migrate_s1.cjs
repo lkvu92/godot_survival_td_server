@@ -62,6 +62,7 @@ function migrationSql(mode,expectedHash,stopped=false){
       IF EXISTS(SELECT 1 FROM monetization_purchase_orders WHERE status='pending') OR EXISTS(SELECT 1 FROM monetization_ad_rewards WHERE status IN('prepared','verified'))
         THEN RAISE EXCEPTION 'PENDING_FINANCIAL_DELIVERY'; END IF;
       IF EXISTS(SELECT 1 FROM storage WHERE collection='player_stage_runs' AND value->>'status'='active') THEN RAISE EXCEPTION 'ACTIVE_RUN_REQUIRES_ABANDON'; END IF;
+      IF EXISTS(SELECT 1 FROM storage WHERE collection='player_profiles' AND value->'sweep'->>'status' IN('running','cancelling','blocked')) THEN RAISE EXCEPTION 'ACTIVE_SWEEP_REQUIRES_CANCEL'; END IF;
       current_hash:=${hash};IF current_hash<>'${expectedHash}' THEN RAISE EXCEPTION 'PLAN_STALE';END IF;
       INSERT INTO storage(collection,key,user_id,value,version,read,write,create_time,update_time)
         SELECT collection,'s001:g1:'||key,user_id,value,version,0,0,create_time,NOW() FROM storage WHERE ${owned};

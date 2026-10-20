@@ -56,3 +56,7 @@
 - C135 v1.0.1: production users.display_name ambiguity regression and retryable weekly dialog errors.
 
 - [C137 Layered talisman skills](contracts/C137_LAYERED_TALISMAN_SKILLS.md): skills 16, 26-30, phase damage, statuses and four-layer assets.
+
+- [C144 Stage sweep](contracts/C144_STAGE_SWEEP.md): v1.0.1 ACTIVE; campaign grades, atomic combat exclusion, durable sweep and Home widget.
+
+- [Stage sweep operations](STAGE_SWEEP.md): worker deployment, recovery, queue diagnostics and HP authority.

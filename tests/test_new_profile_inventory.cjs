@@ -4,7 +4,7 @@ const path = require('path');
 const vm = require('vm');
 
 const context = vm.createContext({});
-for (const name of ['progression_rpc', 'player_rpc']) {
+for (const name of ['progression_rpc', 'player_rpc', 'sweep_rpc']) {
   vm.runInContext(fs.readFileSync(path.join(__dirname, '../nakama/data/modules/build', `${name}.js`), 'utf8'), context);
 }
 const loadPlayerProfile = vm.runInContext('loadPlayerProfile', context);

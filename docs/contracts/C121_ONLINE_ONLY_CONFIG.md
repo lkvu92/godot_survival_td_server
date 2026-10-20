@@ -1,6 +1,6 @@
 # C121 Online-only gameplay configuration
 
-Version: 1.0.2
+Version: 1.1.0
 Status: ACTIVE
 Updated: 2026-10-19
 
@@ -76,3 +76,7 @@ explicit operations step; these local tests did not modify production.
 Server JSON remains versioned seed input only; no shared-data repository is
 needed. Authenticated clients can inspect configuration received at runtime;
 removing packaged JSON is not a secrecy guarantee.
+
+## C144 integration (2026-10-20)
+
+C144 client API version is 1.1.0. A complete published system.stage_sweep is required by client bootstrap and campaign start before stamina debit. Invalid supplied sweep settings are rejected on publication. Missing/invalid rules have no local fallback; see C144_STAGE_SWEEP.md.

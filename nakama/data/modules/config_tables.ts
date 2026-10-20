@@ -341,6 +341,7 @@ function createGameConfigTables(nk: nkruntime.Nakama, logger: nkruntime.Logger) 
 
     const defaultSettings: any = {
         system: {
+            stage_sweep: SWEEP_DEFAULTS,
             min_app_version: "1.0.0", latest_app_version: "1.0.0",
             supported_languages: ["vi", "en"], default_language: "vi",
             stamina_regen_interval_sec: 300, stamina_regen_amount: 1,

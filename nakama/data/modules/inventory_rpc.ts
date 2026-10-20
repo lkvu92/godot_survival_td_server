@@ -68,7 +68,7 @@ const useConsumable: nkruntime.RpcFunction = (ctx, _logger, nk, payload): string
             const before = Number(profile.stamina || 0);
             if (before >= 30 || (quantity > 1 && before + (quantity - 1) * value >= 30)) return fail("Stamina full or quantity exceeds capacity");
             profile.stamina = Math.min(30, before + value * quantity);
-            if (profile.stamina === 30) profile.last_stamina_update = Math.floor(now / 1000);
+            if (profile.stamina === 30) profile.last_stamina_update = Math.floor(sweepStaminaTime(profile,now) / 1000);
         } else if (kind === "affinity") {
             if (CULTIVATION_ELEMENTS.indexOf(String(effect.element)) < 0) return fail("Unsupported element");
             cultivationEnsureSources(profile);
@@ -121,6 +121,7 @@ const updateInventory: nkruntime.RpcFunction = (
     if (!itemId || quantity <= 0) {
         throw new Error("Invalid item_id or quantity");
     }
+    if(itemId===SWEEP_TICKET)return JSON.stringify({success:false,code:'SWEEP_TICKET_MANAGED',message:'Vé càn quét chỉ được sử dụng trong Càn quét.'});
 
     // Validate item exists in game_items
     const itemRows = nk.sqlQuery("SELECT * FROM game_items WHERE id = $1", [itemId]);
@@ -173,6 +174,7 @@ const updateInventory: nkruntime.RpcFunction = (
         collection: "player_inventory", key: "items",
         userId: ctx.userId,
         value: { items: inventory, _iap_reward_ids: iapRewardIds },
+        version:stored.length?stored[0].version:'*',
         permissionRead: 1, permissionWrite: 0
     }]);
 

@@ -3,7 +3,7 @@ const root=path.join(__dirname,'..'),clone=x=>JSON.parse(JSON.stringify(x));
 let now=1800000000000,noAds=true,conflict=false,sequence=0;
 class ServerDate extends Date {static now(){return now;}}
 const context=vm.createContext({Date:ServerDate});
-for(const file of ['config_rpc','progression_rpc','monetization_rpc'])vm.runInContext(fs.readFileSync(path.join(root,'nakama/data/modules/build',file+'.js'),'utf8'),context);
+for(const file of ['config_rpc','progression_rpc','monetization_rpc','sweep_rpc'])vm.runInContext(fs.readFileSync(path.join(root,'nakama/data/modules/build',file+'.js'),'utf8'),context);
 const fn=name=>vm.runInContext(name,context);
 let config=JSON.parse(fs.readFileSync(path.join(root,'data/rewarded_ads.json'),'utf8'));
 const db={},sessions=new Map(),claims=new Map();
@@ -17,7 +17,7 @@ const nk={
  storageRead(reads){return reads.filter(r=>db[r.collection]).map(r=>clone(db[r.collection]));},
  storageWrite(writes){if(conflict)throw Error('CAS conflict');for(const w of writes)assert.equal(w.version,db[w.collection].version);for(const w of writes)row(w.collection,w.value);},
  sqlQuery(sql,args=[]){
-  if(sql.includes('FROM remote_config_releases'))return[{config_version:1,snapshot:{system:{rewarded_ads:config,ads_enabled:true}}}];
+  if(sql.includes('FROM remote_config_releases'))return[{config_version:1,snapshot:{system:{rewarded_ads:config,ads_enabled:true,stage_sweep:clone(fn('SWEEP_DEFAULTS'))}}}];
   if(sql.includes('FROM player_monetization_entitlements'))return[{server_time:now/1000,no_ads_expires_at:noAds?now/1000+86400:0}];
   if(sql.includes('SELECT exp_weight'))return[{exp_weight:1,is_boss:false,arc_id:'arc_1'}];
   if(sql.includes('SELECT exp_multiplier'))return[{exp_multiplier:1,gold_reward:50,loot_table:[{item_id:'stone_fixture',weight:1,min_qty:2,max_qty:2}],boss_loot_table:[]}];
@@ -55,7 +55,7 @@ context.serverGrantInventoryItem=(_nk,items,id,qty)=>{fn('addStoreInventoryItem'
 context.buildMonetizationResponse=()=>({daily_rewards:fn('buildDailyRewardStatus')(nk,'u')});
 const ctx={userId:'u',env:{APP_ENVIRONMENT:'mock'}},logger={warn(){},error(){}};
 const rpc=(name,body)=>JSON.parse(fn(name)(ctx,logger,nk,JSON.stringify(body)));
-function settle(id,won=true){row('player_stage_runs',{run_id:id,status:'active',stage_id:'stage_1_1',difficulty_id:'normal',expires_at_ms:now+86400000});const r=rpc('awardStageProgression',{run_id:id,stage_id:'stage_1_1',difficulty_id:'normal',hero_id:'hero',base_exp:100,won});assert(r.success);return r;}
+function settle(id,won=true){row('player_stage_runs',{run_id:id,status:'active',stage_id:'stage_1_1',difficulty_id:'normal',expires_at_ms:now+86400000});const r=rpc('awardStageProgression',{run_id:id,stage_id:'stage_1_1',difficulty_id:'normal',hero_id:'hero',base_exp:100,won,objective_hp_ratio:1});assert(r.success);return r;}
 const prepare=(run,request)=>rpc('prepareRewardedAd',{placement_id:'stage_reward_x2_ad',request_id:request,context:{run_id:run,loot:[{item_id:'forged',quantity:9999}]}});
 let result=settle('victory');assert(result.stage_reward.eligible);
 const before=clone(db);

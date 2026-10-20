@@ -1,6 +1,6 @@
 const fs = require('fs'), path = require('path'), vm = require('vm'), assert = require('assert');
 const c = vm.createContext({});
-for (const name of ['progression_rpc', 'player_rpc']) vm.runInContext(fs.readFileSync(path.join(__dirname, '../nakama/data/modules/build', name + '.js'), 'utf8'), c);
+for (const name of ['progression_rpc', 'player_rpc', 'sweep_rpc']) vm.runInContext(fs.readFileSync(path.join(__dirname, '../nakama/data/modules/build', name + '.js'), 'utf8'), c);
 const fn = name => vm.runInContext(name, c), clone = x => JSON.parse(JSON.stringify(x));
 // Keep actual cultivation recovery/penalties; isolate unrelated name, VIP and catalog code.
 c.getRemoteConfigValue = (_nk, _section, _key, fallback) => fallback;
@@ -76,6 +76,10 @@ c.progressionReconcileLevelUnlocks = () => {};
 c.eventRecord = () => {};
 c.talismanCreateStageRun = () => ({run:{run_id:'new-run',status:'active'},version:db['player_stage_runs:active'].version});
 const stageNk={...nk,sqlQuery(sql,args){return sql.includes('stamina_cost')?[{stamina_cost:5}]:nk.sqlQuery(sql,args);}};
+stage().status='settled'; // Previous regression fixture left an active run; a new start now correctly excludes it.
+const missingRules=JSON.parse(fn('startStage')({userId:'u'},{},stageNk,JSON.stringify({stage_id:'stage_0_1',level_id:'normal'})));
+assert.equal(missingRules.code,'SWEEP_CONFIG_INVALID');assert.equal(profile().stamina,80,'Missing grading rules must block before charging stamina');
+c.getRemoteConfigValue=(_nk,_section,key,fallback)=>key==='stage_sweep'?clone(fn('SWEEP_DEFAULTS')):fallback;
 const started=JSON.parse(fn('startStage')({userId:'u'},{},stageNk,JSON.stringify({stage_id:'stage_0_1',level_id:'normal'})));
 assert(started.success); assert.equal(profile().stamina,75,'Starting a stage must debit from the full paid stamina balance');
 console.log('PASS run lifecycle: exit/retry/stale/terminal/expired/CAS, tribulation penalty once, fresh login vs refresh, paid stamina and daily-pack preservation');

@@ -1,6 +1,6 @@
 # C130 — Consumable use and permanent cultivation sources
 
-- Version: `1.0.1`
+- Version: `1.2.0`
 - Status: `IN_PROGRESS`
 - Date: `2026-10-17`
 
@@ -51,3 +51,7 @@ Build backend, client/server static checks. Additive config patch generator only
 - Rebuild runtime with npm run build in server/nakama. build_consumable_patch.cjs now emits both item effects and progression.consumables via additive SQL. Generate/review SQL, apply it through the normal operator workflow, then publish an immutable config release. Do not reseed player data.
 - No live runtime deployment, SQL application or config publish was performed.
 
+
+## C144 integration (2026-10-20)
+
+C144 adds campaign_sweep_ticket using consumable atlas index zero. Reserved sweep tickets/stamina cannot be consumed by other actions; profile and inventory writes use observed CAS versions. Ordinary exclusive ticket drops are outside grade/ad multipliers and never occur on sweep; see C144_STAGE_SWEEP.md.

@@ -157,7 +157,7 @@
       "level": 20,
       "vip": 0
     },
-    "visual_scale": 1.25,
+    "visual_scale": 1.0,
     "display_name": "U Ảnh Độc Tôn",
     "role": "Thần Tốc Du Đấu",
     "element": "wood",
@@ -206,6 +206,7 @@
       "level": 25,
       "vip": 0
     },
+    "visual_scale": 1.0,
     "display_name": "Vạn Tượng Quán Âm",
     "role": "Kim Cương Hộ Pháp",
     "element": "metal",

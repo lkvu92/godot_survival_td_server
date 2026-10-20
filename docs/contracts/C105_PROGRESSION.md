@@ -1,6 +1,6 @@
 # C105 User, Hero & Run Experience Progression
 
-Version: 1.2.1 | Status: ACTIVE | Updated: 2026-10-18
+Version: 2.0.0 | Status: ACTIVE | Updated: 2026-10-18
 
 ## Schema and behavior
 
@@ -16,9 +16,14 @@ User thresholds equal five times Hero thresholds. Existing levels and banked EXP
 
 Completion, EXP, inventory and active run settlement use one version-checked storage transaction. Replayed or concurrent settlements cannot award the bonus twice. Clients display server totals and the included bonus through `stage_result_stats`; no local awards or offline fallback are permitted.
 
+## C144 integration (2026-10-20)
+
+C144 requires numeric objective_hp_ratio on victorious award_stage_progression. Response includes grade/best_grade and stage_grades keyed by stage:mode. Ordinary loot uses current grade; best grade only increases. Sweep uses standard user/hero EXP with no first-clear bonus; see C144_STAGE_SWEEP.md.
+
 ## Changelog
 
 | Version | Date | Change |
 |---|---|---|
+| 2.0.0 | 2026-10-20 | C144 stage grading, sweep and activity/reservation integration. |
 | 1.2.1 | 2026-10-18 | Diễn Võ Trường grants no permanent User/Hero EXP; temporary in-run skill progression is unchanged. |
 | 1.2.0 | 2026-10-17 | User ratio x5; first winning stage/difficulty clear grants x2 EXP and UI bonus breakdown. |

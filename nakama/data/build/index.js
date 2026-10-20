@@ -1139,6 +1139,7 @@ function createGameConfigTables(nk, logger) {
     `, []);
   const defaultSettings = {
     system: {
+      stage_sweep: SWEEP_DEFAULTS,
       min_app_version: "1.0.0",
       latest_app_version: "1.0.0",
       supported_languages: ["vi", "en"],
@@ -2901,7 +2902,7 @@ function invokeWithVersionGate(ctx, logger, nk, payload, handler) {
       store_url: ""
     });
   }
-  const raw = handler(ctx, logger, nk, payload);
+  const raw = handler(ctx, logger, sweepResourceRuntime(nk, ctx.userId), payload);
   try {
     const response = JSON.parse(raw || "{}");
     if (response && typeof response === "object" && !Array.isArray(response)) {
@@ -2983,6 +2984,13 @@ const publishConfigRelease = (ctx, _logger, nk, payload) => {
     return JSON.stringify({ status: "error", code: 422, message: String(e) });
   }
   const minVersion = String(snapshot.system.min_app_version || "");
+  if (snapshot.system.stage_sweep !== void 0) {
+    try {
+      sweepValidateConfig(snapshot.system.stage_sweep);
+    } catch (_error) {
+      return JSON.stringify({ status: "error", code: 422, message: "Invalid system.stage_sweep" });
+    }
+  }
   if (!validRewardedAdsConfig(snapshot.system.rewarded_ads)) return JSON.stringify({ status: "error", code: 422, message: "Missing or invalid system.rewarded_ads" });
   if (snapshot.system.leaderboard_rewards !== void 0 && (!validWeeklyLeaderboardConfig(snapshot.system.leaderboard_rewards) || !weeklyConfigItemsExist(nk, snapshot.system.leaderboard_rewards))) return JSON.stringify({ status: "error", code: 422, message: "Invalid system.leaderboard_rewards or unknown reward items" });
   const latestVersion = String(snapshot.system.latest_app_version || "");
@@ -3362,6 +3370,7 @@ const abandonRun = (ctx, _logger, nk, payload) => {
   }
   if (encounterId && storedProfile && (storedProfile.value.breakthrough || {}).in_tribulation === true) {
     cultivationEnsureProfile(nk, storedProfile.value, true);
+    if ((storedProfile.value.activity || {}).type === "combat") delete storedProfile.value.activity;
     writes.push({
       collection: "player_profiles",
       key: "main",
@@ -3371,6 +3380,10 @@ const abandonRun = (ctx, _logger, nk, payload) => {
       permissionWrite: 0,
       version: storedProfile.version
     });
+  }
+  if (runId && stage && stage.value.status === "abandoned" && storedProfile && (storedProfile.value.activity || {}).type === "combat") {
+    delete storedProfile.value.activity;
+    if (!writes.some((w) => w.collection === "player_profiles")) writes.push({ collection: "player_profiles", key: "main", userId: ctx.userId, value: storedProfile.value, version: storedProfile.version, permissionRead: 1, permissionWrite: 0 });
   }
   try {
     if (writes.length) nk.storageWrite(writes);
@@ -3465,6 +3478,10 @@ const loadPlayerProfile = (ctx, logger, nk, payload) => {
       version: profileObject.version
     });
   }
+  if (freshLogin && profileObject && (result.profile.activity || {}).type === "combat") {
+    delete result.profile.activity;
+    if (!repairWrites.some((w) => w.collection === "player_profiles")) repairWrites.push({ collection: "player_profiles", key: "main", userId: ctx.userId, value: result.profile, version: profileObject.version, permissionRead: 1, permissionWrite: 0 });
+  }
   const canonicalHeroes = canonicalHeroStates(nk, result.heroes);
   const heroesChanged = !result.heroes || JSON.stringify(result.heroes.heroes || []) !== JSON.stringify(canonicalHeroes);
   if (heroesChanged) {
@@ -3519,7 +3536,8 @@ const loadPlayerProfile = (ctx, logger, nk, payload) => {
     let profileChanged = cultivationEnsureProfile(nk, result.profile, freshLogin);
     if (cultivationEnsurePreview(nk, result.profile)) profileChanged = true;
     const nowRows = nk.sqlQuery("SELECT EXTRACT(EPOCH FROM NOW())::BIGINT AS now", []);
-    const now = Number(nowRows.length > 0 ? nowRows[0].now : 0);
+    const realNow = Number(nowRows.length > 0 ? nowRows[0].now : 0);
+    const now = Math.floor(sweepStaminaTime(result.profile, realNow * 1e3) / 1e3);
     const interval = Math.max(1, Number(getRemoteConfigValue(nk, "system", "stamina_regen_interval_sec", 300)));
     const amount = Math.max(0, Number(getRemoteConfigValue(nk, "system", "stamina_regen_amount", 1)));
     const hasLastStaminaUpdate = Number(result.profile.last_stamina_update || 0) > 0;
@@ -3545,7 +3563,7 @@ const loadPlayerProfile = (ctx, logger, nk, payload) => {
       amount: canRegenerate ? amount : 0,
       interval_sec: interval,
       seconds_remaining: canRegenerate ? interval - elapsedInTick : 0,
-      server_time: now
+      server_time: realNow
     };
     if (!result.profile.avatar_url) {
       result.profile.avatar_url = "hero_1";
@@ -3750,7 +3768,8 @@ function createAccountLinkTables(nk) {
             WHERE COALESCE(to_jsonb(l)->>k,'')<>'') THEN RAISE EXCEPTION 'Other linked identities require support'; END IF;
         IF EXISTS(SELECT 1 FROM monetization_purchase_orders WHERE user_id IN(a.id::TEXT,b.id::TEXT) AND status='pending' AND (expires_at>NOW() OR validated_at IS NOT NULL))
             OR EXISTS(SELECT 1 FROM monetization_ad_rewards WHERE user_id IN(a.id::TEXT,b.id::TEXT) AND (status='verified' OR (status='prepared' AND expires_at>NOW())))
-            OR EXISTS(SELECT 1 FROM storage WHERE user_id IN(a.id,b.id) AND collection='player_stage_runs' AND key='active'
+            OR EXISTS(SELECT 1 FROM storage WHERE user_id IN(a.id,b.id) AND collection='player_profiles' AND value->'sweep'->>'status' IN ('running','cancelling','blocked'))
+        OR EXISTS(SELECT 1 FROM storage WHERE user_id IN(a.id,b.id) AND collection='player_stage_runs' AND key='active'
                 AND value->>'status'='active' AND COALESCE((value->>'expires_at_ms')::BIGINT,0)>EXTRACT(EPOCH FROM NOW())*1000) THEN
             RAISE EXCEPTION 'Finish active run, ad or purchase before linking'; END IF;
         PERFORM 1 FROM storage WHERE user_id IN(a.id,b.id) ORDER BY user_id,collection,key FOR UPDATE;
@@ -4060,6 +4079,7 @@ function createMultiAccountLinkFunctions(nk) {
         WHERE COALESCE(to_jsonb(l)->>k,'')<>'') THEN RAISE EXCEPTION 'OTHER_PROVIDER_REQUIRES_SUPPORT'; END IF;
       IF EXISTS(SELECT 1 FROM monetization_purchase_orders WHERE user_id IN(a.id::TEXT,b.id::TEXT) AND status='pending')
         OR EXISTS(SELECT 1 FROM monetization_ad_rewards WHERE user_id IN(a.id::TEXT,b.id::TEXT) AND status IN('prepared','verified'))
+        OR EXISTS(SELECT 1 FROM storage WHERE user_id IN(a.id,b.id) AND collection='player_profiles' AND value->'sweep'->>'status' IN ('running','cancelling','blocked'))
         OR EXISTS(SELECT 1 FROM storage WHERE user_id IN(a.id,b.id) AND collection='player_stage_runs'
           AND value->>'status'='active' AND COALESCE((value->>'expires_at_ms')::BIGINT,0)>EXTRACT(EPOCH FROM NOW())*1000)
         THEN RAISE EXCEPTION 'FINISH_ACTIVE_DELIVERIES_OR_RUN'; END IF;
@@ -4334,7 +4354,7 @@ const useConsumable = (ctx, _logger, nk, payload) => {
       const before = Number(profile.stamina || 0);
       if (before >= 30 || quantity > 1 && before + (quantity - 1) * value >= 30) return fail("Stamina full or quantity exceeds capacity");
       profile.stamina = Math.min(30, before + value * quantity);
-      if (profile.stamina === 30) profile.last_stamina_update = Math.floor(now / 1e3);
+      if (profile.stamina === 30) profile.last_stamina_update = Math.floor(sweepStaminaTime(profile, now) / 1e3);
     } else if (kind === "affinity") {
       if (CULTIVATION_ELEMENTS.indexOf(String(effect.element)) < 0) return fail("Unsupported element");
       cultivationEnsureSources(profile);
@@ -4387,6 +4407,7 @@ const updateInventory = (ctx, logger, nk, payload) => {
   if (!itemId || quantity <= 0) {
     throw new Error("Invalid item_id or quantity");
   }
+  if (itemId === SWEEP_TICKET) return JSON.stringify({ success: false, code: "SWEEP_TICKET_MANAGED", message: "V\xE9 c\xE0n qu\xE9t ch\u1EC9 \u0111\u01B0\u1EE3c s\u1EED d\u1EE5ng trong C\xE0n qu\xE9t." });
   const itemRows = nk.sqlQuery("SELECT * FROM game_items WHERE id = $1", [itemId]);
   if (itemRows.length === 0) {
     throw new Error(`Unknown item: ${itemId}`);
@@ -4429,6 +4450,7 @@ const updateInventory = (ctx, logger, nk, payload) => {
     key: "items",
     userId: ctx.userId,
     value: { items: inventory, _iap_reward_ids: iapRewardIds },
+    version: stored.length ? stored[0].version : "*",
     permissionRead: 1,
     permissionWrite: 0
   }]);
@@ -5343,10 +5365,27 @@ const startStage = (ctx, _logger, nk, payload) => {
   const stageId = String(req.stage_id || "");
   const levelId = String(req.level_id || "");
   if (!stageId || !levelId) return JSON.stringify({ success: false, message: "Invalid stage" });
-  if (stageId === "stage_0_admin_test") return JSON.stringify({ success: false, message: "Admin test is not a reward-bearing stage" });
   const stored = nk.storageRead([{ collection: "player_profiles", key: "main", userId: ctx.userId }]);
   if (stored.length === 0) return JSON.stringify({ success: false, message: "Player profile is incomplete" });
   const profile = parseJsonObject(stored[0].value);
+  const sweepBlock = sweepCombatError(profile);
+  if (sweepBlock) return JSON.stringify(sweepBlock);
+  if ((profile.breakthrough || {}).in_tribulation === true) return JSON.stringify({ success: false, code: "COMBAT_ACTIVE", message: "Tribulation is active" });
+  const existingRuns = nk.storageRead([{ collection: "player_stage_runs", key: "active", userId: ctx.userId }]);
+  if (existingRuns.length && existingRuns[0].value.status === "active" && Number(existingRuns[0].value.expires_at_ms) > Date.now()) return JSON.stringify({ success: false, code: "COMBAT_ACTIVE", message: "Combat is active" });
+  if (stageId === "stage_0_admin_test") {
+    const allowed = nk.sqlQuery("SELECT 1 FROM users WHERE id=$1::UUID AND LOWER(email)=LOWER($2) AND COALESCE(EXTRACT(EPOCH FROM disable_time),0)=0 LIMIT 1", [ctx.userId, "lkvu92@gmail.com"]);
+    if (!allowed.length) return JSON.stringify({ success: false, code: "FORBIDDEN" });
+    const state = talismanCreateStageRun(nk, ctx.userId, stageId, levelId);
+    profile.activity = { type: "combat", activity_id: state.run.run_id };
+    nk.storageWrite([{ collection: "player_profiles", key: "main", userId: ctx.userId, value: profile, version: stored[0].version, permissionRead: 1, permissionWrite: 0 }, { collection: "player_stage_runs", key: "active", userId: ctx.userId, value: state.run, version: state.version, permissionRead: 1, permissionWrite: 0 }]);
+    return JSON.stringify({ success: true, run_id: state.run.run_id, stamina_cost: 0, stamina_remaining: profile.stamina });
+  }
+  try {
+    sweepConfig(nk);
+  } catch (_error) {
+    return JSON.stringify({ success: false, code: "SWEEP_CONFIG_INVALID", message: "Stage grading configuration is unavailable" });
+  }
   progressionReconcileCampaignUnlocks(nk, profile);
   const unlock = (Array.isArray(profile.unlocked_stages) ? profile.unlocked_stages : []).find((entry) => entry && String(entry.stage_id || entry) === stageId);
   const unlockedLevels = unlock && typeof unlock === "object" && Array.isArray(unlock.unlocked_levels) ? unlock.unlocked_levels : unlock ? ["normal"] : [];
@@ -5358,6 +5397,7 @@ const startStage = (ctx, _logger, nk, payload) => {
   if (stamina < cost) return JSON.stringify({ success: false, message: "Not enough stamina", stamina_cost: cost, stamina });
   profile.stamina = stamina - cost;
   const runState = talismanCreateStageRun(nk, ctx.userId, stageId, levelId);
+  profile.activity = { type: "combat", activity_id: runState.run.run_id };
   nk.storageWrite([
     {
       collection: "player_profiles",
@@ -5901,6 +5941,7 @@ const awardStageProgression = (ctx, _logger, nk, payload) => {
   const heroId = String(req.hero_id || "");
   const runId = String(req.run_id || "").slice(0, 128);
   const won = req.won === true;
+  if (won && (!Number.isFinite(req.objective_hp_ratio) || req.objective_hp_ratio < 0 || req.objective_hp_ratio > 1)) return JSON.stringify({ success: false, code: "INVALID_OBJECTIVE_HP", message: "Invalid objective HP report" });
   const killedEnemies = Math.max(0, Math.floor(Number(req.killed_enemies || 0)));
   const requestedBaseExp = Number(req.base_exp || 0);
   if (!stageId || !difficultyId || !heroId || !runId || !Number.isSafeInteger(requestedBaseExp) || requestedBaseExp < 0 || !Number.isSafeInteger(killedEnemies) || killedEnemies > 1e4) {
@@ -5938,6 +5979,9 @@ const awardStageProgression = (ctx, _logger, nk, payload) => {
   const maxBaseExp = progressionMaxStageBaseExp(nk, stageId);
   if (requestedBaseExp > maxBaseExp) return JSON.stringify({ success: false, message: "Invalid stage EXP" });
   const profile = progressionObject(profileObject.value);
+  const grade = sweepGrade(nk, Number(req.objective_hp_ratio), won);
+  if (won) sweepSetBest(profile, stageId, difficultyId, grade);
+  delete profile.activity;
   const heroesData = progressionObject(heroesObject.value);
   const heroes = Array.isArray(heroesData.heroes) ? heroesData.heroes : [];
   const inventoryValue = progressionObject(inventoryObject.value);
@@ -6008,88 +6052,16 @@ const awardStageProgression = (ctx, _logger, nk, payload) => {
   }
   const loot = [];
   if (won) {
-    const resources = progressionObject(profile.resources);
-    const goldReward = Math.max(0, Math.floor(Number(difficultyRows[0].gold_reward || 0)));
-    resources.gold = Math.max(0, Number(resources.gold || 0)) + goldReward;
-    profile.resources = resources;
-    const normalLoot = parseJsonb(difficultyRows[0].loot_table) || [];
-    const bossLoot = parseJsonb(difficultyRows[0].boss_loot_table) || [];
-    const isBoss = stageRows[0].is_boss === true;
-    const tableToUse = isBoss && bossLoot.length > 0 ? bossLoot : normalLoot;
-    const runeEntries = [];
-    const independentEntries = [];
-    for (const reward of tableToUse) {
-      if (!reward) continue;
-      const itemId = String(reward.item_id || "");
-      if (String(reward.group || "") === "rune" || itemId.startsWith("stone_") || itemId.startsWith("rune_")) {
-        runeEntries.push(reward);
-      } else if (String(reward.resource_id || "") !== "gold") {
-        independentEntries.push(reward);
+    const rewards = sweepRoll(sweepRewardTable(nk, stageId, difficultyId, stageRows[0], difficultyRows[0], grade));
+    for (const reward of rewards) {
+      if (reward.item_id) {
+        if (!serverGrantInventoryItem(nk, inventoryItems, reward.item_id, reward.quantity)) throw new Error("REWARD_ITEM_INVALID");
+      } else if (reward.resource_id) {
+        profile.resources = progressionObject(profile.resources);
+        profile.resources[reward.resource_id] = Number(profile.resources[reward.resource_id] || 0) + reward.quantity;
       }
+      loot.push({ item_id: reward.item_id, resource_id: reward.resource_id, quantity: reward.quantity });
     }
-    const appendLootItem = (itemId, quantity) => {
-      if (quantity <= 0 || !itemId) return;
-      if (serverGrantInventoryItem(nk, inventoryItems, itemId, quantity)) {
-        const existing = loot.find((item) => item.item_id === itemId);
-        if (existing) {
-          existing.quantity += quantity;
-        } else {
-          loot.push({ item_id: itemId, quantity });
-        }
-      }
-    };
-    if (runeEntries.length > 0) {
-      let totalWeight = 0;
-      for (const r of runeEntries) {
-        totalWeight += Math.max(0, Number(r.weight || r.drop_rate || 0));
-      }
-      if (totalWeight > 0) {
-        let roll = Math.random() * totalWeight;
-        let selectedRune = runeEntries[0];
-        for (const r of runeEntries) {
-          const w = Math.max(0, Number(r.weight || r.drop_rate || 0));
-          if (roll <= w) {
-            selectedRune = r;
-            break;
-          }
-          roll -= w;
-        }
-        const itemId = String(selectedRune.item_id || "");
-        const minQty = Math.max(1, Math.floor(Number(selectedRune.min_qty || 1)));
-        const maxQty = Math.max(minQty, Math.floor(Number(selectedRune.max_qty || minQty)));
-        const quantity = minQty + Math.floor(Math.random() * (maxQty - minQty + 1));
-        appendLootItem(itemId, quantity);
-      }
-    }
-    for (const reward of independentEntries) {
-      if (Math.random() > Math.max(0, Math.min(1, Number(reward.drop_rate || 0)))) continue;
-      const itemId = String(reward.item_id || "");
-      const minQty = Math.max(1, Math.floor(Number(reward.min_qty || 1)));
-      const maxQty = Math.max(minQty, Math.floor(Number(reward.max_qty || minQty)));
-      const quantity = minQty + Math.floor(Math.random() * (maxQty - minQty + 1));
-      appendLootItem(itemId, quantity);
-    }
-    const fragmentStages = ["stage_1_10", "stage_2_10", "stage_3_10", "stage_4_10", "stage_5_10"];
-    if (difficultyId.toLowerCase() === "legend" && stageRows[0].is_boss === true && fragmentStages.indexOf(stageId) >= 0) {
-      const quantityRoll = Math.random() * 100;
-      const fragmentQuantity = quantityRoll < 30 ? 0 : quantityRoll < 80 ? 1 : quantityRoll < 95 ? 2 : 3;
-      if (fragmentQuantity > 0) {
-        const quality = Math.random() * 100 < 85 ? "low" : "mid";
-        const arcRows = nk.sqlQuery("SELECT element FROM game_arcs WHERE id = $1", [String(stageRows[0].arc_id || "")]);
-        const arcElement = arcRows.length > 0 ? String(arcRows[0].element || "") : "";
-        const tierName = quality === "low" ? "H\u1EA1 ph\u1EA9m" : "Trung ph\u1EA9m";
-        let candidates = nk.sqlQuery("SELECT id, element FROM game_talismans WHERE tier = $1 ORDER BY id", [tierName]);
-        const preferMatch = Math.random() * 100 < 75;
-        const preferred = candidates.filter((row) => String(row.element || "") === arcElement === preferMatch);
-        if (preferred.length > 0) candidates = preferred;
-        if (candidates.length > 0) {
-          const selected = candidates[Math.floor(Math.random() * candidates.length)];
-          const fragmentId = `talisman_fragment_${Number(selected.id)}`;
-          appendLootItem(fragmentId, fragmentQuantity);
-        }
-      }
-    }
-    if (goldReward > 0) loot.push({ resource_id: "gold", quantity: goldReward });
   }
   inventoryValue.items = inventoryItems;
   run.status = "settled";
@@ -6100,9 +6072,17 @@ const awardStageProgression = (ctx, _logger, nk, payload) => {
     hero_id: heroId,
     base_exp: awardedExp,
     first_clear_bonus_exp: firstClearBonusExp,
-    base_loot: loot,
+    base_loot: loot.slice(),
     claimed: false
   };
+  if (won && !isTrainingStage) {
+    const probabilities = sweepConfig(nk).ticket_probabilities;
+    const roll = Math.random(), quantity = roll < probabilities[0] ? 0 : roll < probabilities[0] + probabilities[1] ? 1 : 2;
+    if (quantity > 0) {
+      if (!serverGrantInventoryItem(nk, inventoryItems, SWEEP_TICKET, quantity)) throw new Error("SWEEP_TICKET_CONFIG_MISSING");
+      loot.push({ item_id: SWEEP_TICKET, quantity });
+    }
+  }
   nk.storageWrite([
     { collection: "player_profiles", key: "main", userId: ctx.userId, value: profile, permissionRead: 1, permissionWrite: 0, version: profileObject.version },
     { collection: "player_heroes", key: "states", userId: ctx.userId, value: { heroes }, permissionRead: 1, permissionWrite: 0, version: heroesObject.version },
@@ -6129,8 +6109,11 @@ const awardStageProgression = (ctx, _logger, nk, payload) => {
   userResult.unlocked_arcs = profile.unlocked_arcs;
   userResult.unlocked_stages = profile.unlocked_stages;
   userResult.completed_stage_levels = profile.completed_stage_levels;
+  userResult.stage_grades = profile.stage_grades;
   return JSON.stringify({
     success: true,
+    grade,
+    best_grade: (profile.stage_grades || {})[stageId + ":" + difficultyId] || "",
     stage_reward: stageRewardSummary(run),
     exp_awarded: awardedExp,
     first_clear: firstClear,
@@ -6260,6 +6243,10 @@ const tribulationAction = (ctx, _logger, nk, payload) => {
   const ready = isBreakthroughMilestone(level) && threshold > 0 && Number(profile.exp || 0) >= threshold;
   let state = profile.breakthrough;
   if (action === "start") {
+    const block = sweepCombatError(profile);
+    if (block) return JSON.stringify(block);
+    const runs = nk.storageRead([{ collection: "player_stage_runs", key: "active", userId: ctx.userId }]);
+    if (runs.length && runs[0].value.status === "active" && Number(runs[0].value.expires_at_ms) > Date.now()) return JSON.stringify({ ok: false, success: false, code: "COMBAT_ACTIVE", message: "Combat is active" });
     if (!ready) return JSON.stringify({ ok: false, message: "Breakthrough is not ready" });
     if (state.in_tribulation === true) return JSON.stringify({ ok: false, message: "Tribulation is already in progress" });
     if (Number(state.milestone_level || 0) !== level) state = cultivationDefaultBreakthrough(state.history);
@@ -6273,6 +6260,7 @@ const tribulationAction = (ctx, _logger, nk, payload) => {
     state.in_tribulation = true;
     state.penalty_applied = false;
     profile.breakthrough = state;
+    profile.activity = { type: "combat", activity_id: state.encounter_id };
     nk.storageWrite([{
       collection: "player_profiles",
       key: "main",
@@ -6298,6 +6286,7 @@ const tribulationAction = (ctx, _logger, nk, payload) => {
   if (!Number.isFinite(durationMs) || durationMs < 0 || durationMs > 36e5) return JSON.stringify({ ok: false, message: "Invalid encounter duration" });
   if (action === "success" && (wavesCleared < Number(state.tribulation_count || 1) || wavesCleared > Number(state.tribulation_count || 1))) return JSON.stringify({ ok: false, message: "Invalid waves cleared" });
   state.in_tribulation = false;
+  delete profile.activity;
   if (action === "fail") {
     state.failures = Math.max(0, Number(state.failures || 0)) + 1;
     state.attempts_left = Math.max(0, Number(state.attempts_left || CULTIVATION_MAX_ATTEMPTS) - 1);
@@ -8849,6 +8838,493 @@ const weeklyLeaderboardTickRpc = (ctx, _logger, nk, _payload) => {
   return JSON.stringify(__spreadValues({ success: true }, result));
 };
 
+const SWEEP_TICKET = "campaign_sweep_ticket";
+const SWEEP_DEFAULTS = {
+  version: 1,
+  enabled: true,
+  round_duration_ms: 9e4,
+  max_rounds: 100,
+  ticket_cost: 1,
+  stamina_cost: 1,
+  grades: [{ grade: "S", above: 0.9, multiplier: 1 }, { grade: "A", above: 0.8, multiplier: 0.9 }, { grade: "B", above: 0.7, multiplier: 0.8 }, { grade: "C", above: 0.6, multiplier: 0.7 }, { grade: "D", above: -1, multiplier: 0.6 }],
+  ticket_probabilities: [0.25, 0.6, 0.15]
+};
+function sweepConfig(nk) {
+  const c = getRemoteConfigValue(nk, "system", "stage_sweep", null);
+  return sweepValidateConfig(c);
+}
+function sweepValidateConfig(c) {
+  if (!c || !Array.isArray(c.grades) || c.grades.length !== 5 || !Number.isSafeInteger(c.round_duration_ms) || c.round_duration_ms < 1e3 || !Number.isSafeInteger(c.max_rounds) || c.max_rounds < 1 || c.max_rounds > 100 || c.ticket_cost !== 1 || c.stamina_cost !== 1) throw new Error("SWEEP_CONFIG_INVALID");
+  if (c.version !== 1 || typeof c.enabled !== "boolean" || c.grades.some((r) => !r || typeof r !== "object") || c.grades.map((r) => r.grade).join(",") !== "S,A,B,C,D" || c.grades.some((r, index) => !Number.isFinite(r.above) || !Number.isFinite(r.multiplier) || r.multiplier <= 0 || r.multiplier > 1 || index < 4 && (r.above < 0 || r.above >= 1) || index > 0 && (r.above >= c.grades[index - 1].above || r.multiplier > c.grades[index - 1].multiplier)) || c.grades[4].above >= 0 || !Array.isArray(c.ticket_probabilities) || c.ticket_probabilities.length !== 3 || c.ticket_probabilities.some((p) => !Number.isFinite(p) || p < 0 || p > 1) || Math.abs(c.ticket_probabilities.reduce((a, b) => a + b, 0) - 1) > 1e-6) throw new Error("SWEEP_CONFIG_INVALID");
+  return c;
+}
+function sweepGrade(nk, ratio, won = true) {
+  if (!won) return "";
+  if (!Number.isFinite(ratio) || ratio < 0 || ratio > 1) throw new Error("INVALID_OBJECTIVE_HP");
+  return sweepConfig(nk).grades.find((r) => ratio > r.above).grade;
+}
+function sweepQuantity(nk, row, grade) {
+  const base = Math.max(0, Math.floor(Number(row.base_quantity === void 0 ? row.max_qty === void 0 ? row.quantity === void 0 ? row.min_qty : row.quantity : row.max_qty : row.base_quantity) || 0));
+  const rule = sweepConfig(nk).grades.find((r) => r.grade === grade);
+  return base > 0 && rule ? Math.max(1, Math.floor(base * rule.multiplier)) : 0;
+}
+function sweepActive(profile) {
+  return !!profile.sweep && ["running", "cancelling", "blocked"].indexOf(profile.sweep.status) >= 0;
+}
+function sweepResourceRuntime(base, userId) {
+  if (!userId) return base;
+  const runtime = Object.create(base);
+  const observed = {};
+  const identity = (r) => (r.userId || userId) + "/" + r.collection + "/" + r.key;
+  runtime.storageRead = (refs) => {
+    const rows = base.storageRead(refs);
+    for (const ref of refs) observed[identity(ref)] = "*";
+    for (const row of rows) observed[identity(row)] = row.version;
+    return rows;
+  };
+  runtime.storageWrite = (input) => {
+    let writes = input.map((w) => {
+      if ((w.collection === "player_profiles" || w.collection === "player_inventory") && w.userId === userId && !w.version) {
+        const version = observed[identity(w)];
+        if (!version) throw new Error("RESOURCE_WRITE_REQUIRES_READ");
+        return Object.assign({}, w, { version });
+      }
+      return w;
+    });
+    const profileWrite = writes.find((w) => w.collection === "player_profiles" && w.key === "main" && w.userId === userId);
+    const inventoryWrite = writes.find((w) => w.collection === "player_inventory" && w.key === "items" && w.userId === userId);
+    if (profileWrite || inventoryWrite) {
+      const rows = base.storageRead([{ collection: "player_profiles", key: "main", userId }]);
+      if (rows.length) {
+        const old = parseJsonObject(rows[0].value), next = profileWrite ? parseJsonObject(profileWrite.value) : old;
+        if (sweepActive(old) || sweepActive(next)) {
+          if (profileWrite && !profileWrite.version) profileWrite.version = rows[0].version;
+          if (!profileWrite) writes.push({ collection: "player_profiles", key: "main", userId, value: old, version: rows[0].version, permissionRead: 1, permissionWrite: 0 });
+          const held = sweepActive(next) ? next.sweep : null;
+          if (held && Number(next.stamina || 0) < Number(held.reserved_stamina || 0)) throw new Error("STAMINA_RESERVED");
+          if (held && inventoryWrite && sweepCount(parseJsonObject(inventoryWrite.value).items || []) < Number(held.reserved_tickets || 0)) throw new Error("TICKETS_RESERVED");
+        } else if (inventoryWrite && !profileWrite) {
+          writes.push({ collection: "player_profiles", key: "main", userId, value: old, version: rows[0].version, permissionRead: 1, permissionWrite: 0 });
+        }
+      }
+    }
+    const acks = base.storageWrite(writes);
+    for (const ack of acks) observed[identity(ack)] = ack.version;
+    return acks;
+  };
+  return runtime;
+}
+function sweepCombatError(profile) {
+  return sweepActive(profile) ? { success: false, ok: false, code: "SWEEP_ACTIVE", message: "\u0110ang c\xE0n qu\xE9t. H\xE3y k\u1EBFt th\xFAc ho\u1EB7c h\u1EE7y c\xE0n qu\xE9t \u0111\u1EC3 tham chi\u1EBFn." } : null;
+}
+function sweepSetBest(profile, stage, mode, grade) {
+  if (!grade) return;
+  const order = ["D", "C", "B", "A", "S"];
+  profile.stage_grades = profile.stage_grades || {};
+  const key = stage + ":" + mode;
+  if (order.indexOf(grade) > order.indexOf(profile.stage_grades[key])) profile.stage_grades[key] = grade;
+}
+function sweepCount(items) {
+  return items.reduce((n, r) => n + (r.item_id === SWEEP_TICKET ? Math.max(0, Number(r.quantity) || 0) : 0), 0);
+}
+function sweepStaminaTime(p, nowMs) {
+  const session = p.sweep;
+  if (!session || ["running", "cancelling"].indexOf(session.status) < 0) return nowMs;
+  return Math.min(nowMs, Number(session.next_due_at_ms), session.cancel_at_ms === void 0 ? nowMs : Number(session.cancel_at_ms));
+}
+function sweepRefreshStamina(nk, p, now) {
+  const sec = Math.max(Number(p.last_stamina_update || 0), Math.floor(sweepStaminaTime(p, now) / 1e3)), interval = Number(getRemoteConfigValue(nk, "system", "stamina_regen_interval_sec", 300)), amount = Number(getRemoteConfigValue(nk, "system", "stamina_regen_amount", 1));
+  if (!Number.isFinite(interval) || interval <= 0 || !Number.isFinite(amount) || amount < 0) throw new Error("STAMINA_CONFIG_INVALID");
+  const last = Number(p.last_stamina_update || sec), current = Number(p.stamina || 0), ticks = Math.max(0, Math.floor((sec - last) / interval));
+  if (current < 30 && ticks > 0) {
+    p.stamina = Math.min(30, current + ticks * amount);
+    p.last_stamina_update = p.stamina >= 30 ? sec : last + ticks * interval;
+  } else if (current >= 30 || !p.last_stamina_update) p.last_stamina_update = sec;
+}
+function sweepRead(nk, userId, nowMs = Date.now()) {
+  const rows = nk.storageRead(["player_profiles", "player_inventory", "player_heroes", "player_stage_runs"].map((collection) => ({ collection, key: collection === "player_profiles" ? "main" : collection === "player_inventory" ? "items" : collection === "player_heroes" ? "states" : "active", userId })));
+  const get = (c) => rows.find((r2) => r2.collection === c);
+  const p = get("player_profiles"), i = get("player_inventory"), h = get("player_heroes"), r = get("player_stage_runs");
+  if (!p || !i || !h) throw new Error("PLAYER_INCOMPLETE");
+  const profile = parseJsonObject(p.value);
+  sweepRefreshStamina(nk, profile, nowMs);
+  return { p, i, h, r, profile, inventory: parseJsonObject(i.value), heroes: parseJsonObject(h.value) };
+}
+function sweepWrite(nk, userId, s, full) {
+  const writes = [{ collection: "player_profiles", key: "main", userId, value: s.profile, version: s.p.version, permissionRead: 1, permissionWrite: 0 }];
+  if (full) writes.push({ collection: "player_inventory", key: "items", userId, value: s.inventory, version: s.i.version, permissionRead: 1, permissionWrite: 0 }, { collection: "player_heroes", key: "states", userId, value: s.heroes, version: s.h.version, permissionRead: 1, permissionWrite: 0 });
+  if (s.extraWrites) writes.push.apply(writes, s.extraWrites);
+  nk.storageWrite(writes);
+}
+function sweepRewardTable(nk, stage, mode, stageRow, level, grade) {
+  const boss = parseJsonb(level.boss_loot_table) || [], normal = parseJsonb(level.loot_table) || [];
+  const table = (stageRow.is_boss && boss.length ? boss : normal).filter((r) => r.item_id !== SWEEP_TICKET && r.resource_id !== "gold");
+  const items = table.map((r) => Object.assign({}, r, { quantity: sweepQuantity(nk, r, grade) })).filter((r) => r.quantity > 0);
+  if (mode === "legend" && stageRow.is_boss === true && ["stage_1_10", "stage_2_10", "stage_3_10", "stage_4_10", "stage_5_10"].indexOf(stage) >= 0) {
+    const arcs = nk.sqlQuery("SELECT element FROM game_arcs WHERE id = $1", [stageRow.arc_id]);
+    const element = arcs.length ? String(arcs[0].element || "") : "";
+    for (const tier of [{ name: "H\u1EA1 ph\u1EA9m", weight: 0.85 }, { name: "Trung ph\u1EA9m", weight: 0.15 }]) {
+      const candidates = nk.sqlQuery("SELECT id, element FROM game_talismans WHERE tier = $1 ORDER BY id", [tier.name]);
+      const match = candidates.filter((r) => String(r.element || "") === element), other = candidates.filter((r) => String(r.element || "") !== element);
+      for (const row of candidates) {
+        const same = String(row.element || "") === element, weight = tier.weight * (same ? other.length ? 0.75 : 1 : match.length ? 0.25 : 1) / (same ? match.length : other.length);
+        items.push({ item_id: "talisman_fragment_" + Number(row.id), quantity: sweepQuantity(nk, { base_quantity: 3 }, grade), group: "fragment", group_drop_rate: 0.7, weight, drop_rate: weight });
+      }
+    }
+  }
+  const gold = sweepQuantity(nk, { base_quantity: Number(level.gold_reward || 0) }, grade);
+  if (gold) items.push({ resource_id: "gold", quantity: gold, drop_rate: 1 });
+  return items;
+}
+function sweepPreviewData(nk, s, req) {
+  const c = sweepConfig(nk), stage = String(req.stage_id || ""), mode = String(req.level_id || "");
+  if (!c.enabled) throw new Error("SWEEP_DISABLED");
+  if (!s.profile.stage_grades || s.profile.stage_grades[stage + ":" + mode] !== "S") throw new Error("STAGE_S_REQUIRED");
+  const heroes = s.heroes.heroes || [];
+  if (!heroes.some((h) => h.hero_id === req.hero_id && h.owned === true)) throw new Error("HERO_NOT_OWNED");
+  const stages = nk.sqlQuery("SELECT exp_weight, is_boss, arc_id FROM game_stages WHERE id = $1", [stage]);
+  const levels = nk.sqlQuery("SELECT exp_multiplier, gold_reward, loot_table, boss_loot_table FROM game_stage_levels WHERE stage_id = $1 AND level_id = $2", [stage, mode]);
+  if (!stages.length || !levels.length || stages[0].arc_id === "arc_0" || stage === "stage_0_admin_test" || ["normal", "epic", "legend"].indexOf(mode) < 0) throw new Error("INVALID_STAGE");
+  const level = levels[0], items = sweepRewardTable(nk, stage, mode, stages[0], level, "S");
+  const exp = Math.max(0, Math.round(progressionMaxStageBaseExp(nk, stage) * Number(stages[0].exp_weight || 1) * Number(level.exp_multiplier || 1)));
+  const held = sweepActive(s.profile) ? Number(s.profile.sweep.reserved_tickets || 0) : 0;
+  const staminaHeld = sweepActive(s.profile) ? Number(s.profile.sweep.reserved_stamina || 0) : 0;
+  return { items, exp, modifiers: { exp: 1, gold: 1 }, round_duration_ms: c.round_duration_ms, max_rounds: Math.max(0, Math.min(c.max_rounds, sweepCount(s.inventory.items || []) - held, Math.floor(Number(s.profile.stamina || 0)) - staminaHeld)), arc_id: stages[0].arc_id, is_boss: stages[0].is_boss, config: c };
+}
+function sweepRoll(items) {
+  const rune = (r) => r.group === "rune" || String(r.item_id || "").indexOf("stone_") === 0 || String(r.item_id || "").indexOf("rune_") === 0;
+  const out = items.filter((r) => !rune(r) && r.group !== "fragment" && Math.random() < Math.max(0, Math.min(1, Number(r.drop_rate || 0)))).map((r) => Object.assign({}, r));
+  for (const group of [items.filter(rune), items.filter((r) => r.group === "fragment")]) {
+    if (group.length && group[0].group_drop_rate !== void 0 && Math.random() >= Number(group[0].group_drop_rate)) continue;
+    const total = group.reduce((n, r) => n + Math.max(0, Number(r.weight || r.drop_rate || 0)), 0);
+    let roll = Math.random() * total;
+    if (total > 0) for (const r of group) {
+      roll -= Math.max(0, Number(r.weight || r.drop_rate || 0));
+      if (roll <= 0) {
+        out.push(Object.assign({}, r));
+        break;
+      }
+    }
+  }
+  return out;
+}
+function sweepProcess(nk, userId, logger, nowMs = Date.now(), limit = 4) {
+  for (let index = 0; index < Math.min(8, Math.max(1, limit)); index++) {
+    const s = sweepRead(nk, userId, nowMs), session = s.profile.sweep;
+    if (!sweepActive(s.profile) || session.status === "blocked") return session || null;
+    const cutoff = session.cancel_at_ms === void 0 ? nowMs : Math.min(nowMs, session.cancel_at_ms);
+    if (session.next_due_at_ms > cutoff || session.completed_rounds >= session.total_rounds) {
+      if (session.cancel_at_ms !== void 0 || session.completed_rounds >= session.total_rounds) {
+        session.status = session.cancel_at_ms !== void 0 ? "cancelled" : "completed";
+        session.reserved_tickets = 0;
+        session.reserved_stamina = 0;
+        session.state_version++;
+        delete s.profile.activity;
+        sweepRefreshStamina(nk, s.profile, nowMs);
+        sweepWrite(nk, userId, s, false);
+      }
+      return session;
+    }
+    const items = s.inventory.items || [], held = sweepCount(items);
+    if (held < 1 || Number(s.profile.stamina || 0) < 1) throw new Error("RESERVATION_CORRUPTED");
+    let debit = 1;
+    for (let k = items.length - 1; k >= 0 && debit; k--) {
+      if (items[k].item_id !== SWEEP_TICKET) continue;
+      const n = Math.min(debit, Number(items[k].quantity));
+      items[k].quantity -= n;
+      debit -= n;
+      if (items[k].quantity <= 0) items.splice(k, 1);
+    }
+    s.profile.stamina -= 1;
+    const modifiers = session.config_snapshot.modifiers || { exp: 1, gold: 1 };
+    const rewards = sweepRoll(session.config_snapshot.items).map((r) => r.resource_id === "gold" ? Object.assign({}, r, { quantity: Math.floor(r.quantity * modifiers.gold) }) : r);
+    for (const reward of rewards) {
+      if (reward.item_id) {
+        if (!serverGrantInventoryItem(nk, items, reward.item_id, reward.quantity)) throw new Error("REWARD_ITEM_INVALID");
+      } else if (reward.resource_id) {
+        s.profile.resources = s.profile.resources || {};
+        s.profile.resources[reward.resource_id] = Number(s.profile.resources[reward.resource_id] || 0) + reward.quantity;
+      }
+    }
+    const heroes = s.heroes.heroes || [], hero = heroes.find((h) => h.hero_id === session.hero_id && h.owned === true);
+    if (!hero) throw new Error("HERO_NOT_OWNED");
+    progressionMigrate(nk, s.profile, heroes);
+    const exp = Math.floor(session.config_snapshot.exp * modifiers.exp);
+    progressionApplyUser(nk, s.profile, exp);
+    progressionReconcileLevelUnlocks(nk, s.profile);
+    let level = Number(hero.level || 1), xp = Number(hero.exp || 0) + exp, next = progressionNextHeroExp(nk, level);
+    while (level < Math.min(PROGRESSION_MAX_LEVEL, s.profile.level) && next > 0 && xp >= next) {
+      xp -= next;
+      level++;
+      next = progressionNextHeroExp(nk, level);
+    }
+    hero.level = level;
+    hero.exp = level >= PROGRESSION_MAX_LEVEL ? 0 : xp;
+    hero.next_level_exp = level >= PROGRESSION_MAX_LEVEL ? 0 : next;
+    hero.current_attribute = progressionHeroAttributes(nk, session.hero_id, level);
+    session.completed_rounds++;
+    session.reserved_tickets--;
+    session.reserved_stamina--;
+    session.state_version++;
+    session.receipts.push({ round_index: session.completed_rounds, receipt_id: session.session_id + ":" + session.completed_rounds, completed_at_ms: session.next_due_at_ms, loot: rewards, exp });
+    session.next_due_at_ms = session.started_at_ms + (session.completed_rounds + 1) * session.config_snapshot.round_duration_ms;
+    if (session.completed_rounds === session.total_rounds || session.cancel_at_ms !== void 0 && session.next_due_at_ms > session.cancel_at_ms) {
+      session.status = session.cancel_at_ms !== void 0 ? "cancelled" : "completed";
+      session.reserved_tickets = 0;
+      session.reserved_stamina = 0;
+      delete s.profile.activity;
+    }
+    if (!sweepActive(s.profile)) sweepRefreshStamina(nk, s.profile, nowMs);
+    s.inventory.items = items;
+    sweepWrite(nk, userId, s, true);
+    try {
+      nk.notificationSend(userId, "C\xE0n qu\xE9t", { session_id: session.session_id, state_version: session.state_version, status: session.status }, 144, null, false);
+    } catch (e) {
+      if (logger) logger.warn("Sweep notification deferred: %s", String(e));
+    }
+    if (!sweepActive(s.profile)) return session;
+  }
+  return sweepRead(nk, userId, nowMs).profile.sweep;
+}
+function sweepResponse(s, extra = {}) {
+  return JSON.stringify(Object.assign({ success: true, session: s.profile.sweep || null, server_time_ms: Date.now(), profile: s.profile, inventory: s.inventory, heroes: s.heroes.heroes || [] }, extra));
+}
+function sweepRpc(handler) {
+  return (ctx, logger, nk, payload) => {
+    try {
+      return handler(ctx, logger, nk, JSON.parse(payload || "{}"));
+    } catch (e) {
+      return JSON.stringify({ success: false, code: String(e).replace(/^Error: /, ""), message: String(e), server_time_ms: Date.now() });
+    }
+  };
+}
+const getSweepOptions = sweepRpc((ctx, _logger, nk) => {
+  const s = sweepRead(nk, ctx.userId), c = sweepConfig(nk), options = [];
+  for (const key of Object.keys(s.profile.stage_grades || {})) {
+    if (s.profile.stage_grades[key] !== "S") continue;
+    const split = key.lastIndexOf(":"), stage = key.slice(0, split), mode = key.slice(split + 1);
+    const rows = nk.sqlQuery("SELECT id, arc_id, is_boss FROM game_stages WHERE id = $1", [stage]);
+    if (rows.length && rows[0].arc_id !== "arc_0" && stage !== "stage_0_admin_test" && ["normal", "epic", "legend"].indexOf(mode) >= 0) options.push({ stage_id: stage, level_id: mode, arc_id: rows[0].arc_id, is_boss: rows[0].is_boss });
+  }
+  const held = sweepActive(s.profile) ? s.profile.sweep.reserved_tickets : 0;
+  return sweepResponse(s, { options, available_tickets: Math.max(0, sweepCount(s.inventory.items || []) - held), available_stamina: Math.max(0, Number(s.profile.stamina || 0) - (sweepActive(s.profile) ? s.profile.sweep.reserved_stamina : 0)), max_rounds: c.max_rounds });
+});
+const previewSweep = sweepRpc((ctx, _logger, nk, req) => {
+  const s = sweepRead(nk, ctx.userId);
+  return sweepResponse(s, { preview: sweepPreviewData(nk, s, req) });
+});
+const startSweep = sweepRpc((ctx, _logger, nk, req) => {
+  const s = sweepRead(nk, ctx.userId), old = s.profile.sweep;
+  if (typeof req.request_id !== "string" || !/^[a-zA-Z0-9_-]{8,60}$/.test(req.request_id)) throw new Error("INVALID_REQUEST_ID");
+  const fingerprint = JSON.stringify([req.stage_id, req.level_id, req.hero_id, req.rounds]), requestKey = "sweep_" + req.request_id;
+  const requestRows = nk.storageRead([{ collection: "player_item_requests", key: requestKey, userId: ctx.userId }]);
+  if (requestRows.length) {
+    if (requestRows[0].value.fingerprint !== fingerprint) throw new Error("REQUEST_CONFLICT");
+    return sweepResponse(s, { duplicate: true, request_session_id: requestRows[0].value.session_id });
+  }
+  if (old && old.request_id === req.request_id) return sweepResponse(s);
+  if ((s.profile.sweep_request_ids || []).indexOf(req.request_id) >= 0) throw new Error("REQUEST_ALREADY_COMPLETED");
+  if (sweepActive(s.profile)) throw new Error("SWEEP_ACTIVE");
+  const run = s.r ? parseJsonObject(s.r.value) : {};
+  if (run.status === "active" && Number(run.expires_at_ms) > Date.now() || (s.profile.breakthrough || {}).in_tribulation === true) throw new Error("COMBAT_ACTIVE");
+  const preview = sweepPreviewData(nk, s, req), rounds = Number(req.rounds);
+  if (!Number.isSafeInteger(rounds) || rounds < 1 || rounds > preview.max_rounds) throw new Error("INSUFFICIENT_TICKETS_OR_STAMINA");
+  const now = Date.now();
+  s.profile.sweep = { session_id: nk.uuidv4(), request_id: req.request_id, stage_id: req.stage_id, level_id: req.level_id, hero_id: req.hero_id, arc_id: preview.arc_id, is_boss: preview.is_boss, total_rounds: rounds, completed_rounds: 0, started_at_ms: now, next_due_at_ms: now + preview.round_duration_ms, status: "running", reserved_tickets: rounds, reserved_stamina: rounds, config_snapshot: preview, state_version: 1, receipts: [] };
+  s.profile.activity = { type: "sweeping", activity_id: s.profile.sweep.session_id };
+  s.profile.sweep_request_ids = (s.profile.sweep_request_ids || []).concat([req.request_id]).slice(-100);
+  s.extraWrites = [{ collection: "player_item_requests", key: requestKey, userId: ctx.userId, value: { fingerprint, session_id: s.profile.sweep.session_id, created_at: now }, version: "*", permissionRead: 0, permissionWrite: 0 }];
+  sweepWrite(nk, ctx.userId, s, false);
+  return sweepResponse(s);
+});
+const getSweepStatus = sweepRpc((ctx, logger, nk) => {
+  sweepProcess(nk, ctx.userId, logger);
+  return sweepResponse(sweepRead(nk, ctx.userId));
+});
+const cancelSweep = sweepRpc((ctx, logger, nk, req) => {
+  const s = sweepRead(nk, ctx.userId), session = s.profile.sweep;
+  if (!session || session.session_id !== req.session_id) throw new Error("SESSION_NOT_FOUND");
+  if (session.status === "blocked") {
+    session.cancel_at_ms = Date.now();
+    session.status = "cancelled";
+    session.reserved_tickets = 0;
+    session.reserved_stamina = 0;
+    session.state_version++;
+    delete s.profile.activity;
+    sweepWrite(nk, ctx.userId, s, false);
+    return sweepResponse(s);
+  }
+  if (sweepActive(s.profile) && session.cancel_at_ms === void 0) {
+    session.cancel_at_ms = Date.now();
+    session.status = "cancelling";
+    session.state_version++;
+    sweepWrite(nk, ctx.userId, s, false);
+  }
+  sweepProcess(nk, ctx.userId, logger);
+  return sweepResponse(sweepRead(nk, ctx.userId));
+});
+
+function sweepCreateWorkerIndex(nk) {
+  nk.sqlExec(`CREATE INDEX IF NOT EXISTS storage_sweep_due_idx ON storage
+      ((LEAST((value->'sweep'->>'next_due_at_ms')::BIGINT, (value->'sweep'->>'cancel_at_ms')::BIGINT)),user_id,key)
+      WHERE collection='player_profiles' AND value->'sweep'->>'status' IN ('running','cancelling');
+    CREATE TABLE IF NOT EXISTS sweep_worker_claims (
+      user_id UUID NOT NULL, storage_key TEXT NOT NULL, lease_id TEXT NOT NULL,
+      lease_until TIMESTAMPTZ NOT NULL, retry_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      attempts INT NOT NULL DEFAULT 0, PRIMARY KEY(user_id,storage_key));
+    CREATE INDEX IF NOT EXISTS sweep_worker_claim_expiry_idx ON sweep_worker_claims(lease_until);`, []);
+}
+const rpcSweepTick = (ctx, logger, nk, _payload) => {
+  if (ctx.userId && ctx.userId !== String((ctx.env || {}).CONFIG_ADMIN_USER_ID || ""))
+    return JSON.stringify({ success: false, code: "FORBIDDEN" });
+  const multi = !!ctx.env && ctx.env.MULTI_SERVER_ENABLED === "true";
+  const now = Date.now(), deadline = now + 750;
+  const jobs = nk.sqlQuery(`SELECT p.user_id::TEXT AS user_id,p.key AS storage_key,p.value->'sweep'->>'session_id' AS session_id
+      FROM storage p JOIN users u ON u.id=p.user_id
+      LEFT JOIN sweep_worker_claims c ON c.user_id=p.user_id AND c.storage_key=p.key
+      WHERE p.collection='player_profiles' AND p.value->'sweep'->>'status' IN ('running','cancelling')
+        AND LEAST((p.value->'sweep'->>'next_due_at_ms')::BIGINT, (p.value->'sweep'->>'cancel_at_ms')::BIGINT) <= $1::BIGINT
+        AND COALESCE(u.disable_time,to_timestamp(0))<=to_timestamp(0)
+        AND NOT EXISTS(SELECT 1 FROM account_link_state a WHERE a.user_id=p.user_id AND a.status='archived')
+        AND (c.user_id IS NULL OR (c.lease_until<=NOW() AND c.retry_at<=NOW()))
+        AND (($2::BOOLEAN AND EXISTS(SELECT 1 FROM game_servers g JOIN player_characters pc
+              ON pc.server_id=g.server_id AND pc.generation=g.generation AND pc.account_id=p.user_id AND pc.status='ready'
+              WHERE p.key=g.server_id||':g'||g.generation||':main' AND g.status='open' AND g.opens_at<=NOW()))
+          OR (NOT $2::BOOLEAN AND p.key='main'))
+      ORDER BY LEAST((p.value->'sweep'->>'next_due_at_ms')::BIGINT, (p.value->'sweep'->>'cancel_at_ms')::BIGINT),p.user_id,p.key LIMIT 32`, [now, multi]);
+  let processed = 0, failed = 0, claimedCount = 0;
+  for (const job of jobs) {
+    if (Date.now() >= deadline) break;
+    const lease = nk.uuidv4();
+    const claimed = nk.sqlQuery(`INSERT INTO sweep_worker_claims(user_id,storage_key,lease_id,lease_until)
+          VALUES($1::UUID,$2,$3,NOW()+INTERVAL '15 seconds')
+          ON CONFLICT(user_id,storage_key) DO UPDATE SET lease_id=EXCLUDED.lease_id,lease_until=EXCLUDED.lease_until
+          WHERE sweep_worker_claims.lease_until<=NOW() AND sweep_worker_claims.retry_at<=NOW()
+          RETURNING attempts`, [job.user_id, job.storage_key, lease]);
+    if (!claimed.length) continue;
+    claimedCount++;
+    let runtime = nk, scope = null;
+    try {
+      let session;
+      if (multi) {
+        const match = /^([a-z][a-z0-9_]{0,31}):g([1-9][0-9]*):main$/.exec(job.storage_key);
+        if (!match) throw new Error("Invalid sweep character key");
+        scope = { accountId: job.user_id, serverId: match[1], generation: Number(match[2]) };
+        runtime = characterRuntime(nk, scope);
+        session = withServerRequest(nk, scope, () => sweepProcess(runtime, job.user_id, logger, Date.now(), 4));
+      } else session = sweepProcess(nk, job.user_id, logger, Date.now(), 4);
+      nk.sqlExec(`DELETE FROM sweep_worker_claims WHERE user_id=$1::UUID AND storage_key=$2 AND lease_id=$3`, [job.user_id, job.storage_key, lease]);
+      processed++;
+      if (session) {
+        try {
+          nk.notificationSend(job.user_id, "C\xE0n qu\xE9t", {
+            type: "sweep_updated",
+            session_id: session.session_id,
+            state_version: session.state_version,
+            status: session.status,
+            server_time_ms: Date.now(),
+            storage_key: job.storage_key
+          }, 144, null, false);
+        } catch (error) {
+          logger.warn("Sweep notification failed: %s", String(error));
+        }
+      }
+    } catch (error) {
+      failed++;
+      const message = String(error);
+      const permanent = /RESERVATION_CORRUPTED|HERO_NOT_OWNED|REWARD_ITEM_INVALID|SWEEP_CONFIG_INVALID/.test(message);
+      const exhausted = Number(claimed[0].attempts) >= 11 && !/CAS|version|conflict|SERVER_REQUEST_FENCED/i.test(message);
+      if (permanent || exhausted) {
+        const block = () => {
+          const rows = runtime.storageRead([{ collection: "player_profiles", key: "main", userId: job.user_id }]);
+          if (!rows.length) return;
+          const profile = parseJsonObject(rows[0].value), session = profile.sweep;
+          if (!session || session.session_id !== job.session_id || !sweepActive(profile)) return;
+          session.status = "blocked";
+          session.last_error = message.slice(0, 240);
+          session.state_version++;
+          runtime.storageWrite([{
+            collection: "player_profiles",
+            key: "main",
+            userId: job.user_id,
+            value: profile,
+            version: rows[0].version,
+            permissionRead: 1,
+            permissionWrite: 0
+          }]);
+        };
+        try {
+          if (scope) withServerRequest(nk, scope, block);
+          else block();
+        } catch (blockError) {
+          logger.warn("Sweep error state retry: %s", String(blockError));
+        }
+      }
+      nk.sqlExec(`UPDATE sweep_worker_claims SET lease_until=NOW(),
+              retry_at=NOW()+make_interval(secs=>LEAST(60,5*(attempts+1))),attempts=LEAST(12,attempts+1)
+              WHERE user_id=$1::UUID AND storage_key=$2 AND lease_id=$3`, [job.user_id, job.storage_key, lease]);
+      logger.warn("Sweep retry user=%s key=%s: %s", job.user_id, job.storage_key, String(error));
+    }
+  }
+  nk.sqlExec(`DELETE FROM sweep_worker_claims WHERE (user_id,storage_key) IN
+      (SELECT c.user_id,c.storage_key FROM sweep_worker_claims c WHERE c.lease_until<NOW()-INTERVAL '1 day'
+       AND NOT EXISTS(SELECT 1 FROM storage p WHERE p.user_id=c.user_id AND p.key=c.storage_key
+         AND p.collection='player_profiles' AND p.value->'sweep'->>'status' IN ('running','cancelling')) LIMIT 32)`, []);
+  return JSON.stringify({
+    success: true,
+    scanned: jobs.length,
+    claimed: claimedCount,
+    processed,
+    failed,
+    elapsed_ms: Date.now() - now,
+    server_time_ms: Date.now()
+  });
+};
+
+const SWEEP_TICKET_DEFINITION = { id: "campaign_sweep_ticket", display_name: "V\xE9 c\xE0n qu\xE9t chi\u1EBFn d\u1ECBch", description: "C\xE0n qu\xE9t m\u1ED9t \u1EA3i chi\u1EBFn d\u1ECBch \u0111\xE3 \u0111\u1EA1t S.", category: "consumable", rarity: "rare", icon_id: "consumable_0", stackable: true, max_stack: 99999, order: 49, expires_after_hours: 0, tags: ["sweep", "consumable"], attributes: { sweep_type: "campaign", atlas_index: 0 } };
+function sweepMigrationSql() {
+  return `
+CREATE OR REPLACE FUNCTION c144_migrate_stage_sweep(p_rules JSONB,p_ticket JSONB)
+RETURNS INT LANGUAGE plpgsql AS $c144$
+DECLARE published remote_config_releases%ROWTYPE; new_snapshot JSONB; minimum TEXT; latest TEXT;
+BEGIN
+  PERFORM pg_advisory_xact_lock(144,20261020);
+  LOCK TABLE remote_config_releases IN EXCLUSIVE MODE;
+  SELECT * INTO published FROM remote_config_releases ORDER BY config_version DESC LIMIT 1;
+  IF NOT FOUND THEN RAISE EXCEPTION 'C144 requires an existing published config release'; END IF;
+  IF jsonb_typeof(p_rules) IS DISTINCT FROM 'object' OR p_rules->>'version' IS DISTINCT FROM '1'
+    OR p_ticket->>'id' IS DISTINCT FROM 'campaign_sweep_ticket' THEN RAISE EXCEPTION 'Invalid C144 migration inputs'; END IF;
+  INSERT INTO game_items(id,display_name,description,category,rarity,icon_id,stackable,max_stack,sort_order,expires_after_hours,tags,attributes)
+  VALUES(p_ticket->>'id',p_ticket->>'display_name',p_ticket->>'description',p_ticket->>'category',p_ticket->>'rarity',p_ticket->>'icon_id',
+    (p_ticket->>'stackable')::BOOLEAN,(p_ticket->>'max_stack')::INT,(p_ticket->>'order')::INT,(p_ticket->>'expires_after_hours')::INT,p_ticket->'tags',p_ticket->'attributes')
+  ON CONFLICT(id) DO NOTHING;
+  -- Existing published rules, including deliberately disabled/custom rules, win.
+  IF (published.snapshot->'system') ? 'stage_sweep' THEN RETURN published.config_version; END IF;
+  IF jsonb_typeof(published.snapshot) IS DISTINCT FROM 'object'
+    OR jsonb_typeof(COALESCE(published.snapshot->'system','{}'::JSONB)) IS DISTINCT FROM 'object' THEN
+    RAISE EXCEPTION 'Invalid published config snapshot'; END IF;
+  minimum:='1.1.0'; latest:='1.1.0';
+  IF published.min_app_version ~ '^[0-9]+[.][0-9]+[.][0-9]+$' THEN
+    IF string_to_array(published.min_app_version,'.')::INT[]>=ARRAY[1,1,0] THEN minimum:=published.min_app_version; END IF;
+  END IF;
+  IF published.latest_app_version ~ '^[0-9]+[.][0-9]+[.][0-9]+$' THEN
+    IF string_to_array(published.latest_app_version,'.')::INT[]>=ARRAY[1,1,0] THEN latest:=published.latest_app_version; END IF;
+  END IF;
+  IF string_to_array(latest,'.')::INT[]<string_to_array(minimum,'.')::INT[] THEN latest:=minimum; END IF;
+  new_snapshot:=published.snapshot||jsonb_build_object('system',COALESCE(published.snapshot->'system','{}'::JSONB)
+    ||jsonb_build_object('stage_sweep',p_rules,'min_app_version',minimum,'latest_app_version',latest));
+  INSERT INTO remote_config_releases(config_version,snapshot,min_app_version,latest_app_version,store_url,published_by)
+  VALUES(published.config_version+1,new_snapshot,minimum,latest,published.store_url,'migration:C144:v1');
+  RETURN published.config_version+1;
+END $c144$;`;
+}
+function sweepMigratePublishedConfig(nk, logger) {
+  const rules = sweepValidateConfig(SWEEP_DEFAULTS);
+  nk.sqlExec(sweepMigrationSql(), []);
+  const rows = nk.sqlQuery("SELECT c144_migrate_stage_sweep($1::JSONB,$2::JSONB) AS config_version", [JSON.stringify(rules), JSON.stringify(SWEEP_TICKET_DEFINITION)]);
+  logger.info("C144 startup migration verified config release %s", String(rows.length ? rows[0].config_version : ""));
+}
+
 function linkedRpc_rename_player(ctx, logger, nk, payload) {
   return accountGuardedRpc("rename_player", renamePlayer)(ctx, logger, nk, payload);
 }
@@ -9025,6 +9501,13 @@ function linkedRpc_resolve_purchase_order(c, l, n, p) {
 }
 function InitModule(ctx, logger, nk, initializer) {
   createServerRegistryTables(nk);
+  sweepCreateWorkerIndex(nk);
+  initializer.registerRpc("get_sweep_options", linkedRpc_get_sweep_options);
+  initializer.registerRpc("preview_sweep", linkedRpc_preview_sweep);
+  initializer.registerRpc("start_sweep", linkedRpc_start_sweep);
+  initializer.registerRpc("get_sweep_status", linkedRpc_get_sweep_status);
+  initializer.registerRpc("cancel_sweep", linkedRpc_cancel_sweep);
+  initializer.registerRpc("sweep_tick", rpcSweepTick);
   initializer.registerRpc("admin_server_list", rpcAdminServerList);
   initializer.registerRpc("admin_server_inspect", rpcAdminServerInspect);
   initializer.registerRpc("admin_server_create", rpcAdminServerCreate);
@@ -9043,6 +9526,7 @@ function InitModule(ctx, logger, nk, initializer) {
   initializer.registerRpc("enter_server", linkedRpc_enter_server);
   initializer.registerRpc("create_character", linkedRpc_create_character);
   createGameConfigTables(nk, logger);
+  sweepMigratePublishedConfig(nk, logger);
   createMonetizationTables(nk, logger);
   initializer.registerRpc("iap_claim", linkedRpc_iap_claim);
   initializer.registerRpc("resolve_purchase_order", linkedRpc_resolve_purchase_order);
@@ -9118,4 +9602,19 @@ function InitModule(ctx, logger, nk, initializer) {
   initializer.registerRpc("get_leaderboard_records", linkedRpc_get_leaderboard_records);
   initializer.registerRpc("sync_all_leaderboards", linkedRpc_sync_all_leaderboards);
   logger.info("Survival TD \u2014 Server modules initialized.");
+}
+function linkedRpc_get_sweep_options(c, l, n, p) {
+  return accountGuardedRpc("get_sweep_options", (cc, ll, nn, pp) => invokeWithVersionGate(cc, ll, nn, pp, getSweepOptions))(c, l, n, p);
+}
+function linkedRpc_preview_sweep(c, l, n, p) {
+  return accountGuardedRpc("preview_sweep", (cc, ll, nn, pp) => invokeWithVersionGate(cc, ll, nn, pp, previewSweep))(c, l, n, p);
+}
+function linkedRpc_start_sweep(c, l, n, p) {
+  return accountGuardedRpc("start_sweep", (cc, ll, nn, pp) => invokeWithVersionGate(cc, ll, nn, pp, startSweep))(c, l, n, p);
+}
+function linkedRpc_get_sweep_status(c, l, n, p) {
+  return accountGuardedRpc("get_sweep_status", (cc, ll, nn, pp) => invokeWithVersionGate(cc, ll, nn, pp, getSweepStatus))(c, l, n, p);
+}
+function linkedRpc_cancel_sweep(c, l, n, p) {
+  return accountGuardedRpc("cancel_sweep", (cc, ll, nn, pp) => invokeWithVersionGate(cc, ll, nn, pp, cancelSweep))(c, l, n, p);
 }

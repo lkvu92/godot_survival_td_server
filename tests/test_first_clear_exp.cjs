@@ -2,6 +2,7 @@ const fs = require('fs'), vm = require('vm'), assert = require('assert');
 const clone = value => JSON.parse(JSON.stringify(value));
 const context = vm.createContext({});
 vm.runInContext(fs.readFileSync(require('path').join(__dirname, '../nakama/data/modules/build/progression_rpc.js'), 'utf8'), context);
+vm.runInContext(fs.readFileSync(require('path').join(__dirname, '../nakama/data/modules/build/sweep_rpc.js'), 'utf8'), context);
 // Isolate settlement from unrelated cultivation, unlock and event systems.
 vm.runInContext(`
 progressionMigrate = () => {};
@@ -35,7 +36,8 @@ const nk = {
   }
 };
 context.parseJsonb = x => x;
-context.getRemoteConfigValue = (_nk, _key, _field, fallback) => fallback;
+context.getRemoteConfigValue = (_nk, _key, field, fallback) => field==='stage_sweep'?clone(vm.runInContext('SWEEP_DEFAULTS',context)):fallback;
+context.serverGrantInventoryItem=(_nk,items,item_id,quantity)=>{items.push({item_id,quantity});return true;};
 function run(id, difficulty = 'normal') {
   row('player_stage_runs', 'active', {run_id: id, status: 'active', stage_id: stageId, difficulty_id: difficulty, expires_at_ms: Date.now() + 60000});
 }
@@ -47,7 +49,7 @@ function reset(completed = []) {
   run('one');
 }
 function settle(id, won = true, difficulty = 'normal', base_exp = 101) {
-  return JSON.parse(award({userId: 'u'}, {}, nk, JSON.stringify({stage_id: stageId, difficulty_id: difficulty, hero_id: 'hero', run_id: id, won, base_exp})));
+  return JSON.parse(award({userId: 'u'}, {}, nk, JSON.stringify({stage_id: stageId, difficulty_id: difficulty, hero_id: 'hero', run_id: id, won, base_exp,objective_hp_ratio:1})));
 }
 reset();
 let result = settle('one');

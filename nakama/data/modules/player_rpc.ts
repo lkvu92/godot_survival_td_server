@@ -299,8 +299,13 @@ const abandonRun: nkruntime.RpcFunction = (ctx, _logger, nk, payload) => {
     }
     if (encounterId && storedProfile && (storedProfile.value.breakthrough || {}).in_tribulation === true) {
         cultivationEnsureProfile(nk, storedProfile.value, true);
+        if((storedProfile.value.activity||{}).type==='combat')delete storedProfile.value.activity;
         writes.push({collection: "player_profiles", key: "main", userId: ctx.userId,
             value: storedProfile.value, permissionRead: 1, permissionWrite: 0, version: storedProfile.version});
+    }
+    if(runId&&stage&&stage.value.status==='abandoned'&&storedProfile&&(storedProfile.value.activity||{}).type==='combat'){
+        delete storedProfile.value.activity;
+        if(!writes.some(w=>w.collection==='player_profiles'))writes.push({collection:'player_profiles',key:'main',userId:ctx.userId,value:storedProfile.value,version:storedProfile.version,permissionRead:1,permissionWrite:0});
     }
     try { if (writes.length) nk.storageWrite(writes); }
     catch (_) { return JSON.stringify({success: false, message: "Run changed; please retry exiting"}); }
@@ -368,6 +373,10 @@ const loadPlayerProfile: nkruntime.RpcFunction = (
         repairWrites.push({collection:"player_profiles",key:"main",userId:ctx.userId,value:result.profile,
             permissionRead:1,permissionWrite:0,version:profileObject.version});
     }
+    if(freshLogin&&profileObject&&(result.profile.activity||{}).type==='combat'){
+        delete result.profile.activity;
+        if(!repairWrites.some(w=>w.collection==='player_profiles'))repairWrites.push({collection:'player_profiles',key:'main',userId:ctx.userId,value:result.profile,version:profileObject.version,permissionRead:1,permissionWrite:0});
+    }
     const canonicalHeroes = canonicalHeroStates(nk, result.heroes);
     const heroesChanged = !result.heroes || JSON.stringify(result.heroes.heroes || []) !== JSON.stringify(canonicalHeroes);
     if (heroesChanged) {
@@ -405,7 +414,10 @@ const loadPlayerProfile: nkruntime.RpcFunction = (
         // Stamina regeneration uses server UTC and the currently published
         // interval/amount; device time is never trusted.
         const nowRows = nk.sqlQuery("SELECT EXTRACT(EPOCH FROM NOW())::BIGINT AS now", []);
-        const now = Number(nowRows.length > 0 ? nowRows[0].now : 0);
+        const realNow = Number(nowRows.length > 0 ? nowRows[0].now : 0);
+        // Never advance beyond an unsettled historical sweep debit. The bounded
+        // worker reconstructs regeneration between rounds after a restart.
+        const now = Math.floor(sweepStaminaTime(result.profile,realNow*1000)/1000);
         const interval = Math.max(1, Number(getRemoteConfigValue(nk, "system", "stamina_regen_interval_sec", 300)));
         const amount = Math.max(0, Number(getRemoteConfigValue(nk, "system", "stamina_regen_amount", 1)));
         const hasLastStaminaUpdate = Number(result.profile.last_stamina_update || 0) > 0;
@@ -433,7 +445,7 @@ const loadPlayerProfile: nkruntime.RpcFunction = (
             amount: canRegenerate ? amount : 0,
             interval_sec: interval,
             seconds_remaining: canRegenerate ? interval - elapsedInTick : 0,
-            server_time: now,
+            server_time: realNow,
         };
         if (!result.profile.avatar_url) {
             result.profile.avatar_url = "hero_1";

@@ -202,6 +202,47 @@ const keepAlive=setInterval(()=>{},1000);
   const pruned=await call('seed_game_data',{table:'heroes',rows:[JSON.parse(fs.readFileSync(path.join(root,'data/heroes.json'),'utf8'))[0]],replace_all:true});
   assert.notEqual(pruned.success,true,'prune blocked when player-owned profiles/heroes exist');
   assert.equal(fingerprint(protectedTables),beforeReseed);
+  // C144: actual Nakama Storage transactions and concurrent HTTP requests.
+  // This fixture is created only after C143 preservation fingerprints finish.
+  const sweepVm=require('vm').createContext({});require('vm').runInContext(fs.readFileSync(path.join(root,'nakama/data/modules/build/sweep_rpc.js'),'utf8'),sweepVm);
+  const sweepConfig=require('vm').runInContext('SWEEP_DEFAULTS',sweepVm);
+  assert(sweepConfig,'seed system sweep config');
+  sql(`UPDATE remote_config_releases SET snapshot=jsonb_set(snapshot,'{system,stage_sweep}',${"'"+JSON.stringify(sweepConfig).replace(/'/g,"''")+"'"}::JSONB,TRUE) WHERE config_version=1`);
+  const sweepStage=sql("SELECT s.id FROM game_stages s JOIN game_stage_levels l ON l.stage_id=s.id AND l.level_id='normal' WHERE s.arc_id<>'arc_0' ORDER BY s.id LIMIT 1");
+  const sweepHero=sql('SELECT id FROM game_heroes ORDER BY id LIMIT 1');
+  assert(/^[a-zA-Z0-9_]+$/.test(sweepStage)&&/^[a-zA-Z0-9_]+$/.test(sweepHero));
+  sql(`UPDATE game_stage_levels SET loot_table='[]',boss_loot_table='[]',gold_reward=10 WHERE stage_id='${sweepStage}' AND level_id='normal'`);
+  const sweepScope={server_id:'s003',generation:1};
+  const nativeFixture=()=>sql(`DELETE FROM storage WHERE user_id='${uid}' AND key IN('s003:g1:active');
+    UPDATE storage SET value=jsonb_build_object('level',10,'exp',0,'stamina',20,'resources',jsonb_build_object('gold',0),'stage_grades',jsonb_build_object('${sweepStage}:normal','S'),'unlocked_stages',jsonb_build_array(jsonb_build_object('stage_id','${sweepStage}','unlocked_levels',jsonb_build_array('normal')))),version=md5(random()::TEXT)
+      WHERE user_id='${uid}' AND collection='player_profiles' AND key='s003:g1:main';
+    UPDATE storage SET value='{"items":[{"item_id":"campaign_sweep_ticket","quantity":20}]}',version=md5(random()::TEXT)
+      WHERE user_id='${uid}' AND collection='player_inventory' AND key='s003:g1:items';
+    UPDATE storage SET value='{"heroes":[{"hero_id":"${sweepHero}","owned":true,"level":1,"exp":0}]}',version=md5(random()::TEXT)
+      WHERE user_id='${uid}' AND collection='player_heroes' AND key='s003:g1:states';`);
+  for(let attempt=0;attempt<5;attempt++){
+    nativeFixture();
+    const sweepBody={...sweepScope,stage_id:sweepStage,level_id:'normal',hero_id:sweepHero,rounds:2,request_id:'native_sweep_race_'+attempt};
+    const results=await Promise.allSettled([call('start_sweep',sweepBody),call('start_stage',{...sweepScope,stage_id:sweepStage,level_id:'normal'})]);
+    const successes=results.filter(r=>r.status==='fulfilled'&&r.value.success===true);
+    assert.equal(successes.length,1,JSON.stringify(results));
+    const state=JSON.parse(sql(`SELECT value FROM storage WHERE user_id='${uid}' AND collection='player_profiles' AND key='s003:g1:main'`));
+    if(state.sweep){assert.equal(state.sweep.status,'running');assert.equal((await call('start_stage',{...sweepScope,stage_id:sweepStage,level_id:'normal'})).code,'SWEEP_ACTIVE');}
+  }
+  nativeFixture();
+  const nativeStart={...sweepScope,stage_id:sweepStage,level_id:'normal',hero_id:sweepHero,rounds:2,request_id:'native_sweep_worker'};
+  const startedSweep=await call('start_sweep',nativeStart);assert(startedSweep.success,JSON.stringify(startedSweep));
+  assert.equal((await call('start_sweep',nativeStart)).session.session_id,startedSweep.session.session_id,'native request replay');
+  sql(`UPDATE storage SET value=jsonb_set(jsonb_set(value,'{sweep,started_at_ms}',to_jsonb((EXTRACT(EPOCH FROM NOW())*1000)::BIGINT-180001)),'{sweep,next_due_at_ms}',to_jsonb((EXTRACT(EPOCH FROM NOW())*1000)::BIGINT-90001)),version=md5(random()::TEXT)
+    WHERE user_id='${uid}' AND collection='player_profiles' AND key='s003:g1:main'`);
+  const nativeTick=()=>http('/v2/rpc/sweep_tick?http_key=c143-test-key&unwrap=true',{});
+  await Promise.all([nativeTick(),nativeTick(),nativeTick()]);
+  const nativeRecovered=await call('get_sweep_status',sweepScope);assert(nativeRecovered.success,JSON.stringify(nativeRecovered));
+  assert.equal(nativeRecovered.session.completed_rounds,2);assert.equal(nativeRecovered.session.receipts.length,2);assert.equal(new Set(nativeRecovered.session.receipts.map(r=>r.receipt_id)).size,2);
+  assert.equal(nativeRecovered.session.status,'completed');assert.equal(nativeRecovered.profile.activity,undefined);
+  assert.equal(nativeRecovered.inventory.items.find(r=>r.item_id==='campaign_sweep_ticket').quantity,18);assert.equal(nativeRecovered.profile.resources.gold,20);
+  const nativeBefore=nativeRecovered.session;await nativeTick();assert.deepEqual((await call('get_sweep_status',sweepScope)).session,nativeBefore);
+  console.log('PASS C144 native Nakama: five actual simultaneous combat/sweep races, exact one winner, retry replay, concurrent workers, two unique receipts, socket-free reconnect, resources and unlock');
   console.log('PASS atomic full reseed twice after multi-server data: account/Storage/registry/ledger preservation, late SQL failure rollback, unsafe hero prune rejected');
   console.log('PASS native Nakama 3.24.2: isolated migration/replay/verify, Google merge/archive/replay, scoped IAP/VIP and ads, late callback inbox, reset/recreate/delete/retained cleanup, S1/shared/legacy isolation');
 }finally{

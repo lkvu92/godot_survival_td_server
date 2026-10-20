@@ -2,7 +2,7 @@ const fs=require('fs'),path=require('path'),vm=require('vm'),assert=require('ass
 const read=p=>JSON.parse(fs.readFileSync(path.join(__dirname,'..',p),'utf8'));
 const catalog=read('data/items.json'), progression=read('data/progression.json');
 const context=vm.createContext({});
-for(const f of ['config_rpc','progression_rpc','inventory_rpc']) vm.runInContext(fs.readFileSync(path.join(__dirname,'../nakama/data/modules/build/'+f+'.js'),'utf8'),context);
+for(const f of ['config_rpc','progression_rpc','inventory_rpc','sweep_rpc']) vm.runInContext(fs.readFileSync(path.join(__dirname,'../nakama/data/modules/build/'+f+'.js'),'utf8'),context);
 const use=vm.runInContext('useConsumable',context),reroll=vm.runInContext('cultivationApplyReroll',context), reward=vm.runInContext('cultivationReward',context);
 const clone=x=>JSON.parse(JSON.stringify(x));
 let db,revision=0,conflict=false;

@@ -1,6 +1,13 @@
 {
   "contracts": [
     {
+      "id": "C144_STAGE_SWEEP",
+      "version": "1.0.1",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-20",
+      "contract_file": "docs/contracts/C144_STAGE_SWEEP.md"
+    },
+    {
       "id": "C143_MULTI_SERVER",
       "version": "1.5.2",
       "status": "IN_PROGRESS",
@@ -65,16 +72,16 @@
     },
     {
       "id": "C133_RUN_LIFECYCLE",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "status": "ACTIVE",
-      "updated_at": "2026-10-17",
+      "updated_at": "2026-10-20",
       "contract_file": "docs/contracts/C133_RUN_LIFECYCLE.md"
     },
     {
       "id": "C105_PROGRESSION",
-      "version": "1.2.1",
+      "version": "2.0.0",
       "status": "ACTIVE",
-      "updated_at": "2026-10-17",
+      "updated_at": "2026-10-20",
       "contract_file": "docs/contracts/C105_PROGRESSION.md"
     },
     {
@@ -93,9 +100,9 @@
     },
     {
       "id": "C130_CONSUMABLE_USE",
-      "version": "1.0.1",
+      "version": "1.2.0",
       "status": "IN_PROGRESS",
-      "updated_at": "2026-10-17",
+      "updated_at": "2026-10-20",
       "contract_file": "docs/contracts/C130_CONSUMABLE_USE.md"
     },
     {
@@ -135,10 +142,10 @@
     },
     {
       "id": "C121_ONLINE_ONLY_CONFIG",
-      "version": "1.0.2",
+      "version": "1.1.0",
       "status": "ACTIVE",
       "contract_file": "docs/contracts/C121_ONLINE_ONLY_CONFIG.md",
-      "updated_at": "2026-10-19"
+      "updated_at": "2026-10-20"
     },
     {
       "id": "C119_CONFIG_SEED_INTEGRITY",

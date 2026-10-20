@@ -376,7 +376,7 @@ function invokeWithVersionGate(ctx: nkruntime.Context, logger: nkruntime.Logger,
                 latest_app_version: getRemoteConfigValue(nk, "system", "latest_app_version", minVersion),
                 store_url: "" });
         }
-        const raw = handler(ctx, logger, nk, payload);
+        const raw = handler(ctx, logger, sweepResourceRuntime(nk,ctx.userId), payload);
         try {
             const response = JSON.parse(raw || "{}");
             if (response && typeof response === "object" && !Array.isArray(response)) {
@@ -453,6 +453,10 @@ const publishConfigRelease: nkruntime.RpcFunction = (
         rows.forEach((row: any) => { snapshot[String(row.module)][String(row.key)] = parseRemoteSetting(String(row.value_type), String(row.value)); });
     } catch (e) { return JSON.stringify({ status: "error", code: 422, message: String(e) }); }
     const minVersion = String(snapshot.system.min_app_version || "");
+    if(snapshot.system.stage_sweep!==undefined){
+        try{sweepValidateConfig(snapshot.system.stage_sweep);}
+        catch(_error){return JSON.stringify({status:'error',code:422,message:'Invalid system.stage_sweep'});}
+    }
     if (!validRewardedAdsConfig(snapshot.system.rewarded_ads)) return JSON.stringify({ status: "error", code: 422, message: "Missing or invalid system.rewarded_ads" });
     if (snapshot.system.leaderboard_rewards !== undefined && (!validWeeklyLeaderboardConfig(snapshot.system.leaderboard_rewards)
         || !weeklyConfigItemsExist(nk,snapshot.system.leaderboard_rewards))) return JSON.stringify({status:"error",code:422,message:"Invalid system.leaderboard_rewards or unknown reward items"});

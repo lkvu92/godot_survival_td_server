@@ -1,6 +1,6 @@
 # C133 Run lifecycle
 
-Version: 1.0.0 | Status: ACTIVE | Date: 2026-10-17
+Version: 1.1.0 | Status: ACTIVE | Date: 2026-10-17
 
 ## Schema and RPC
 
@@ -12,10 +12,15 @@ Version: 1.0.0 | Status: ACTIVE | Date: 2026-10-17
 
 PlayerService.abandon_run(run_id, encounter_id); Main._on_main_menu_requested owns async exit; HUD cancellation resets its navigation guard on failure. Both stage and tribulation cancellation are safe to retry. Test normal exit, terminal/replayed/stale IDs, expired run, login recovery versus profile refresh, tribulation penalty once and transaction conflicts.
 
+## C144 integration (2026-10-20)
+
+C144 adds a shared version-fenced activity lock for every combat entry versus sweep. Abandon/fresh-login recovery clears combat activity only and preserves durable sweeps. Sweep completion/cancellation releases its own activity after atomic settlement; see C144_STAGE_SWEEP.md.
+
 ## Changelog
 
 | Version | Date | Change |
 |---|---|---|
+| 1.1.0 | 2026-10-20 | C144 stage grading, sweep and activity/reservation integration. |
 | 1.0.0 | 2026-10-17 | Explicit abandon plus fresh-login recovery; preserve active runs during profile refresh. |
 
 Local validation: backend build/packaging and compiled lifecycle tests pass, including stale/terminal/expired IDs, atomic conflict, penalty once and login versus refresh. Consumable, single-login and first-clear regressions pass. Godot actual exit failure/retry test and client static checks pass. Full server static runner still references pre-existing missing test_new_profile_inventory.cjs. No production runtime or player data changed by this implementation; updated server and client must both be rolled out.

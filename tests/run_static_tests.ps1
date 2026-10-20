@@ -15,6 +15,10 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Store platform boundary regression failed' }
     & node tests/test_run_lifecycle.cjs
     if ($LASTEXITCODE -ne 0) { throw 'Run lifecycle regression failed' }
+    & node tests/test_stage_sweep.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Stage sweep acceptance failed' }
+    & node tests/test_sweep_config.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Stage sweep config publication failed' }
     & node tests/test_layered_talisman_config.cjs
     if ($LASTEXITCODE -ne 0) { throw 'Layered talisman config regression failed' }
     & node tests/test_weekly_leaderboard_config.cjs
@@ -46,6 +50,10 @@ try {
     & python -B -m unittest discover -s tests -p 'test_*.py'
     if ($LASTEXITCODE -ne 0) { throw 'Seed CLI regressions failed' }
     if ($env:SEED_TEST_PSQL -and $env:SEED_TEST_PORT) {
+        & node tests/test_sweep_migration.cjs
+        if ($LASTEXITCODE -ne 0) { throw 'Sweep startup migration PostgreSQL regression failed' }
+        & node tests/test_sweep_worker_sql.cjs
+        if ($LASTEXITCODE -ne 0) { throw 'Sweep worker PostgreSQL regression failed' }
         & node tests/test_server_registry_sql.cjs
         if ($LASTEXITCODE -ne 0) { throw 'Server registry PostgreSQL regressions failed' }
         & node tests/test_weekly_leaderboard.cjs

@@ -8,6 +8,10 @@ assert(canonical.includes('registerRpc("enter_server"'), 'Runtime missing enter_
 assert(canonical.includes('registerRpc("store_purchase"'), 'Mounted runtime is missing store_purchase registration');
 assert(canonical.includes('registerRpc("abandon_run"'), 'Mounted runtime is missing abandon_run registration');
 assert(canonical.includes('request.fresh_login === true'), 'Mounted runtime is missing fresh-login recovery');
+assert(canonical.includes('rpcSweepTick'), 'Mounted runtime is missing C144 sweep worker');
+assert(canonical.includes('sweepCreateWorkerIndex'), 'Mounted runtime is missing durable sweep discovery');
+assert(read('docker-compose.yml').includes('sweep-worker:'), 'Deployment must include the sweep worker');
+assert(read('docker-compose.local.yml').includes('sweep-worker:'), 'Local deployment must include the sweep worker');
 assert(canonical.includes('Store purchase protocol v2 loaded'), 'Mounted runtime is missing purchase protocol v2');
 assert(canonical.includes('purchase_protocol: 2'), 'Mounted runtime must return currency protocol proof');
 assert(/js_entrypoint:\s*["']build\/index\.js["']/.test(read('data/local.yml')), 'Mounted data/local.yml must load canonical build/index.js');

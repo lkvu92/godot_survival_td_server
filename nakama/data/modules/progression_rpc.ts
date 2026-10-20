@@ -468,6 +468,7 @@ const awardStageProgression: nkruntime.RpcFunction = (
     const heroId = String(req.hero_id || "");
     const runId = String(req.run_id || "").slice(0, 128);
     const won = req.won === true;
+    if(won&&(!Number.isFinite(req.objective_hp_ratio)||req.objective_hp_ratio<0||req.objective_hp_ratio>1))return JSON.stringify({success:false,code:'INVALID_OBJECTIVE_HP',message:'Invalid objective HP report'});
     const killedEnemies = Math.max(0, Math.floor(Number(req.killed_enemies || 0)));
     const requestedBaseExp = Number(req.base_exp || 0);
     if (!stageId || !difficultyId || !heroId || !runId || !Number.isSafeInteger(requestedBaseExp) || requestedBaseExp < 0
@@ -511,6 +512,9 @@ const awardStageProgression: nkruntime.RpcFunction = (
     if (requestedBaseExp > maxBaseExp) return JSON.stringify({ success: false, message: "Invalid stage EXP" });
 
     const profile = progressionObject(profileObject.value);
+    const grade = sweepGrade(nk, Number(req.objective_hp_ratio), won);
+    if(won) sweepSetBest(profile,stageId,difficultyId,grade);
+    delete profile.activity;
     const heroesData = progressionObject(heroesObject.value);
     const heroes: any[] = Array.isArray(heroesData.heroes) ? heroesData.heroes : [];
 	const inventoryValue = progressionObject(inventoryObject.value);
@@ -576,104 +580,30 @@ const awardStageProgression: nkruntime.RpcFunction = (
 	}
 
 	const loot: any[] = [];
-	if (won) {
-		const resources = progressionObject(profile.resources);
-		const goldReward = Math.max(0, Math.floor(Number(difficultyRows[0].gold_reward || 0)));
-		resources.gold = Math.max(0, Number(resources.gold || 0)) + goldReward;
-		profile.resources = resources;
-		const normalLoot: any[] = parseJsonb(difficultyRows[0].loot_table) || [];
-		const bossLoot: any[] = parseJsonb(difficultyRows[0].boss_loot_table) || [];
-		const isBoss = stageRows[0].is_boss === true;
-		const tableToUse: any[] = (isBoss && bossLoot.length > 0) ? bossLoot : normalLoot;
-
-		const runeEntries: any[] = [];
-		const independentEntries: any[] = [];
-		for (const reward of tableToUse) {
-			if (!reward) continue;
-			const itemId = String(reward.item_id || "");
-			if (String(reward.group || "") === "rune" || itemId.startsWith("stone_") || itemId.startsWith("rune_")) {
-				runeEntries.push(reward);
-			} else if (String(reward.resource_id || "") !== "gold") {
-				independentEntries.push(reward);
-			}
-		}
-
-		const appendLootItem = (itemId: string, quantity: number) => {
-			if (quantity <= 0 || !itemId) return;
-			if (serverGrantInventoryItem(nk, inventoryItems, itemId, quantity)) {
-				const existing = loot.find(item => item.item_id === itemId);
-				if (existing) {
-					existing.quantity += quantity;
-				} else {
-					loot.push({ item_id: itemId, quantity });
-				}
-			}
-		};
-
-		// 1. Roll đúng 1 loại Rune duy nhất từ rune group theo weight / drop_rate
-		if (runeEntries.length > 0) {
-			let totalWeight = 0;
-			for (const r of runeEntries) {
-				totalWeight += Math.max(0, Number(r.weight || r.drop_rate || 0));
-			}
-			if (totalWeight > 0) {
-				let roll = Math.random() * totalWeight;
-				let selectedRune: any = runeEntries[0];
-				for (const r of runeEntries) {
-					const w = Math.max(0, Number(r.weight || r.drop_rate || 0));
-					if (roll <= w) {
-						selectedRune = r;
-						break;
-					}
-					roll -= w;
-				}
-				const itemId = String(selectedRune.item_id || "");
-				const minQty = Math.max(1, Math.floor(Number(selectedRune.min_qty || 1)));
-				const maxQty = Math.max(minQty, Math.floor(Number(selectedRune.max_qty || minQty)));
-				const quantity = minQty + Math.floor(Math.random() * (maxQty - minQty + 1));
-				appendLootItem(itemId, quantity);
-			}
-		}
-
-		// 2. Roll các item độc lập (Thiên Tinh, Bùa tẩy điểm...) theo drop_rate riêng
-		for (const reward of independentEntries) {
-			if (Math.random() > Math.max(0, Math.min(1, Number(reward.drop_rate || 0)))) continue;
-			const itemId = String(reward.item_id || "");
-			const minQty = Math.max(1, Math.floor(Number(reward.min_qty || 1)));
-			const maxQty = Math.max(minQty, Math.floor(Number(reward.max_qty || minQty)));
-			const quantity = minQty + Math.floor(Math.random() * (maxQty - minQty + 1));
-			appendLootItem(itemId, quantity);
-		}
-
-		const fragmentStages = ["stage_1_10", "stage_2_10", "stage_3_10", "stage_4_10", "stage_5_10"];
-		if (difficultyId.toLowerCase() === "legend" && stageRows[0].is_boss === true && fragmentStages.indexOf(stageId) >= 0) {
-			const quantityRoll = Math.random() * 100;
-			const fragmentQuantity = quantityRoll < 30 ? 0 : (quantityRoll < 80 ? 1 : (quantityRoll < 95 ? 2 : 3));
-			if (fragmentQuantity > 0) {
-				const quality = Math.random() * 100 < 85 ? "low" : "mid";
-				const arcRows = nk.sqlQuery("SELECT element FROM game_arcs WHERE id = $1", [String(stageRows[0].arc_id || "")]);
-				const arcElement = arcRows.length > 0 ? String(arcRows[0].element || "") : "";
-				const tierName = quality === "low" ? "Hạ phẩm" : "Trung phẩm";
-				let candidates = nk.sqlQuery("SELECT id, element FROM game_talismans WHERE tier = $1 ORDER BY id", [tierName]);
-				const preferMatch = Math.random() * 100 < 75;
-				const preferred = candidates.filter((row: any) => (String(row.element || "") === arcElement) === preferMatch);
-				if (preferred.length > 0) candidates = preferred;
-				if (candidates.length > 0) {
-					const selected = candidates[Math.floor(Math.random() * candidates.length)];
-					const fragmentId = `talisman_fragment_${Number(selected.id)}`;
-					appendLootItem(fragmentId, fragmentQuantity);
-				}
-			}
-		}
-		if (goldReward > 0) loot.push({ resource_id: "gold", quantity: goldReward });
-	}
+    if(won){
+        const rewards=sweepRoll(sweepRewardTable(nk,stageId,difficultyId,stageRows[0],difficultyRows[0],grade));
+        for(const reward of rewards){
+            if(reward.item_id){
+                if(!serverGrantInventoryItem(nk,inventoryItems,reward.item_id,reward.quantity))throw new Error('REWARD_ITEM_INVALID');
+            }else if(reward.resource_id){
+                profile.resources=progressionObject(profile.resources);
+                profile.resources[reward.resource_id]=Number(profile.resources[reward.resource_id]||0)+reward.quantity;
+            }
+            loot.push({item_id:reward.item_id,resource_id:reward.resource_id,quantity:reward.quantity});
+        }
+    }
 	inventoryValue.items = inventoryItems;
 	run.status = "settled";
 	run.settled_at_ms = Date.now();
 	run.won = won;
 	run.stage_reward = { eligible: won && !isTrainingStage && (awardedExp > 0 || loot.length > 0),
         hero_id: heroId, base_exp: awardedExp, first_clear_bonus_exp: firstClearBonusExp,
-        base_loot: loot, claimed: false };
+        base_loot: loot.slice(), claimed: false };
+    if(won&&!isTrainingStage){
+        const probabilities=sweepConfig(nk).ticket_probabilities;
+        const roll=Math.random(),quantity=roll<probabilities[0]?0:(roll<probabilities[0]+probabilities[1]?1:2);
+        if(quantity>0){if(!serverGrantInventoryItem(nk,inventoryItems,SWEEP_TICKET,quantity))throw new Error('SWEEP_TICKET_CONFIG_MISSING');loot.push({item_id:SWEEP_TICKET,quantity});}
+    }
 
     nk.storageWrite([
         { collection: "player_profiles", key: "main", userId: ctx.userId, value: profile, permissionRead: 1, permissionWrite: 0, version: profileObject.version },
@@ -700,7 +630,8 @@ const awardStageProgression: nkruntime.RpcFunction = (
     userResult.unlocked_arcs = profile.unlocked_arcs;
     userResult.unlocked_stages = profile.unlocked_stages;
     userResult.completed_stage_levels = profile.completed_stage_levels;
-	return JSON.stringify({ success: true, stage_reward: stageRewardSummary(run), exp_awarded: awardedExp, first_clear: firstClear,
+    userResult.stage_grades=profile.stage_grades;
+	return JSON.stringify({ success: true, grade, best_grade:(profile.stage_grades||{})[stageId+':'+difficultyId]||'', stage_reward: stageRewardSummary(run), exp_awarded: awardedExp, first_clear: firstClear,
         first_clear_bonus_exp: firstClearBonusExp, profile: userResult,
 		inventory: inventoryValue, resources: profile.resources, loot, talisman_durability: talismanDurability, hero: {
 
@@ -810,6 +741,9 @@ const tribulationAction: nkruntime.RpcFunction = (
     let state = profile.breakthrough;
 
     if (action === "start") {
+        const block=sweepCombatError(profile);if(block)return JSON.stringify(block);
+        const runs=nk.storageRead([{collection:'player_stage_runs',key:'active',userId:ctx.userId}]);
+        if(runs.length&&runs[0].value.status==='active'&&Number(runs[0].value.expires_at_ms)>Date.now())return JSON.stringify({ok:false,success:false,code:'COMBAT_ACTIVE',message:'Combat is active'});
         if (!ready) return JSON.stringify({ ok: false, message: "Breakthrough is not ready" });
         if (state.in_tribulation === true) return JSON.stringify({ ok: false, message: "Tribulation is already in progress" });
         if (Number(state.milestone_level || 0) !== level) state = cultivationDefaultBreakthrough(state.history);
@@ -818,6 +752,7 @@ const tribulationAction: nkruntime.RpcFunction = (
         if (Number(state.attempts_left || 0) <= 0) return JSON.stringify({ ok: false, message: "No attempts remaining" });
 		cultivationPhase2Encounter(state);
         state.in_tribulation = true; state.penalty_applied = false; profile.breakthrough = state;
+        profile.activity={type:'combat',activity_id:state.encounter_id};
         nk.storageWrite([{ collection: "player_profiles", key: "main", userId: ctx.userId, value: profile,
             permissionRead: 1, permissionWrite: 0, version: object.version }]);
         return JSON.stringify({ ok: true, outcome_success: false, attempts_left: state.attempts_left,
@@ -831,6 +766,7 @@ const tribulationAction: nkruntime.RpcFunction = (
 	if (!Number.isFinite(durationMs) || durationMs < 0 || durationMs > 3600000) return JSON.stringify({ ok: false, message: "Invalid encounter duration" });
 	if (action === "success" && (wavesCleared < Number(state.tribulation_count || 1) || wavesCleared > Number(state.tribulation_count || 1))) return JSON.stringify({ ok: false, message: "Invalid waves cleared" });
     state.in_tribulation = false;
+    delete profile.activity;
     if (action === "fail") {
         state.failures = Math.max(0, Number(state.failures || 0)) + 1;
         state.attempts_left = Math.max(0, Number(state.attempts_left || CULTIVATION_MAX_ATTEMPTS) - 1);
