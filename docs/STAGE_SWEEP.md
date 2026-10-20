@@ -1,5 +1,49 @@
 # Campaign sweep operations (C144)
 
+Player flow, grading boundaries, rewards, current dialog/widget and ticket commerce
+are documented in the [Vietnamese feature guide](../../client/docs/STAGE_SWEEP.md).
+
+## Ticket catalog deployment
+
+`campaign_sweep_ticket` is a consumable with sweep/ticket/consumable tags and
+`consumable_0` icon. `data/progression.json` defines its shop offer under
+`talisman_system.store.materials`: category `cards` (UI label **Thẻ**), currency
+`gems`, price20, quantity1, enabledtrue. Both the Cards filter and Gem filter
+must expose this same offer; no Gold offer exists. The old `tickets` tab is removed.
+
+`data/packs.json` adds an item reward with `daily_pack_days:30`: small
+`daily_deal` grants5 tickets per claim, large `flash_sale` grants15. Existing
+active entitlements and purchase orders retain their original reward snapshots.
+Do not rewrite those snapshots as a catalog migration.
+
+Changing seed JSON alone does not change the live shop. Seed the item, progression
+offer and daily-pack catalog into the target database using the existing seed
+workflow; verify target/environment before writing. For a targeted shop repair,
+merge only this offer into live progression, preserving other tuning, and seed
+the item and progression together through an atomic `seed_game_data` bundle.
+Do not replace a live progression document with a partial object.
+
+Catalog progression is read directly from `game_config` by config RPCs; this shop
+repair needs a client reconnect/rebootstrap, not a Nakama restart or publication
+of `remote_config_releases`. By contrast, changes to `system.stage_sweep` require
+the remote-settings draft/publish workflow described below. Deploy the updated
+client for the Cards label and filter.
+
+Verify the live offer with this read-only query:
+
+```sql
+SELECT offer->>'category' AS category, offer->>'currency' AS currency,
+       offer->>'price' AS price, offer->>'quantity' AS quantity
+FROM game_config
+CROSS JOIN LATERAL jsonb_array_elements(
+  value->'talisman_system'->'store'->'materials') offer
+WHERE key='progression' AND offer->>'item_id'='campaign_sweep_ticket';
+```
+
+Expected: exactly one row, `cards / gems / 20 / 1`. Verify actual purchase,
+request replay, CAS failure and both UI filters. Local catalog repair was applied
+and checked on2026-10-20; that does not imply deployment to other environments.
+
 Sweep runs on Nakama and the existing PostgreSQL database. No Redis is required.
 On startup, C144 runs an additive migration after config tables are ready. If the
 latest published snapshot lacks `system.stage_sweep`, it appends one immutable

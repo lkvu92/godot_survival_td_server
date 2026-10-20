@@ -64,3 +64,5 @@
 - C144 v1.0.2: daily ticket rewards 5/15, Huyen Thien Cac 20 gems per ticket; dedicated Tickets filter. Build, daily entitlement/store replay/CAS and static checks PASS.
 
 - C144 v1.0.3: shared cards shop category and live ticket offer correction.
+
+- [Campaign sweep operations](STAGE_SWEEP.md): worker, catalog deployment, configuration and diagnostics. [Player guide](../../client/docs/STAGE_SWEEP.md).

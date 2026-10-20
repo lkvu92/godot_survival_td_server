@@ -18,7 +18,7 @@ Inventory and stamina mutation paths preserve reserved amounts. Ordinary clear r
 
 ## Presentation
 
-Home widget below rank, dialog filtered arc/stage/mode S, owned hero selector, inventory-framed previews, default min available stamina/tickets/config cap. Client locks all combat navigation while sweeping and before authoritative recovery. Mini-map uses AtlasRegistry backgrounds per arc, UiSkin controls, pooled hero run/attack and enemy run/death, 18 five-second encounters per 90-second round, boss last. Animation never grants rewards. Show progress/cancel/recovery and restore after reconnect.
+Entry at CharacterSelect beside deploy for exact selected stage/mode S and owned hero. Quantity-only dialog retains that context; default min available stamina/tickets/config cap. Home widget below rank is visible only for active/recovering sessions. Client locks all combat navigation while sweeping and before authoritative recovery. Mini-map uses AtlasRegistry backgrounds per arc, UiSkin controls, pooled hero run/attack and enemy run/death, 18 five-second encounters per 90-second round, boss last. Animation never grants rewards. Show progress/cancel/recovery and restore after reconnect.
 
 ## Acceptance
 
@@ -43,8 +43,10 @@ Changelog 1.0.1 (2026-10-20): repair Loading after restart against pre-C144 rele
 
 ## Campaign ticket commerce
 
-Daily small daily_deal grants5 campaign sweep tickets per claim; large flash_sale grants15, each with daily_pack_days30 metadata. New purchase snapshots inherit updated rewards; existing entitlements/pending orders keep their purchase snapshot. Huyen Thien Cac sells1 campaign_sweep_ticket for20 gems only under a dedicated Tickets category, item remains consumable with sweep/ticket tags. Server seed inputs own catalog prices; no client-local economic rules. Verify daily30-day totals150/450, replay/CAS and gem shop purchase/no gold offer.
+Daily small daily_deal grants5 campaign sweep tickets per claim; large flash_sale grants15, each with daily_pack_days30 metadata. New purchase snapshots inherit updated rewards; existing entitlements/pending orders keep their purchase snapshot. Huyen Thien Cac sells1 campaign_sweep_ticket for20 gems only under the shared cards category (player label: Thẻ), item remains consumable with sweep/ticket tags. Server seed inputs own catalog prices; no client-local economic rules. Verify daily30-day totals150/450, replay/CAS and gem shop purchase/no gold offer.
 
 ## Card shop category correction (1.0.3)
 
-Use cards as the shared offer category and The (Vietnamese card) as its player label. Remove tickets category. Ticket offer must exist in live server progression, not only seed input; gem view includes the same gem-only20/quantity1 offer. Seed the local targeted offer and item without replacing unrelated configuration. Reconnect reloads server catalog.
+Use cards as the shared offer category and Thẻ as its player label. Remove tickets category. Ticket offer must exist in live server progression, not only seed input; gem view includes the same gem-only20/quantity1 offer. Seed the local targeted offer and item without replacing unrelated configuration. Reconnect reloads server catalog.
+
+Documentation: [Vietnamese feature guide](../../../client/docs/STAGE_SWEEP.md), [backend operations](../../../server/docs/STAGE_SWEEP.md). Current UI/commerce sections supersede historical layouts described in earlier changelog entries.
