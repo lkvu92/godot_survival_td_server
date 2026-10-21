@@ -96,3 +96,19 @@ class RuntimeSecretsTests(unittest.TestCase):
         seed_env = calls.call_args_list[1].kwargs["env"]
         self.assertEqual(seed_env["NAKAMA_URL"], "http://127.0.0.1:17350")
         self.assertNotIn("NAKAMA_SEED_URL", seed_env)
+
+    def test_seed_forwards_exact_args_token_only_in_environment_and_exit_code(self):
+        env = self.env()
+        verifier = {name: env[name] for name in ["NAKAMA_HTTP_KEY", "MONETIZATION_VERIFIER_SECRET"]}
+        doc = {"services": {"nakama": {"environment": env}, "monetization-verifier": {"environment": verifier}}}
+        resolved = mock.Mock(returncode=0, stdout=json.dumps(doc))
+        args = ["--publish", "--settings", "reviewed settings/my production.json", "--app-version", "1.2.3"]
+        secret = "synthetic-admin-token-not-for-logs"
+        with mock.patch.object(runtime.subprocess, "run", side_effect=[resolved, mock.Mock(returncode=37)]) as calls, mock.patch.object(runtime, "write_private"), mock.patch.dict(os.environ, {"NAKAMA_CONFIG_ADMIN_TOKEN": secret}, clear=True), contextlib.redirect_stdout(io.StringIO()) as output, contextlib.redirect_stderr(io.StringIO()) as errors:
+            self.assertEqual(runtime.main(seed=True, seed_args=args), 37)
+        invocation = calls.call_args_list[1]
+        self.assertEqual(invocation.args[0][2:], args)
+        self.assertEqual(invocation.kwargs["env"]["NAKAMA_CONFIG_ADMIN_TOKEN"], secret)
+        self.assertNotIn(secret, " ".join(invocation.args[0]))
+        self.assertNotIn(secret, output.getvalue() + errors.getvalue())
+        self.assertFalse(invocation.kwargs.get("shell", False))

@@ -81,6 +81,7 @@ function createGameConfigTables(nk: nkruntime.Nakama, logger: nkruntime.Logger) 
             attributes      JSONB NOT NULL DEFAULT '{}',
             skills          JSONB DEFAULT '[]',
             attack_effects  JSONB DEFAULT '[]',
+            attack_skill    JSONB,
             generic_skills  JSONB DEFAULT '[]',
             boss_skills     JSONB DEFAULT '[]',
             reward          JSONB DEFAULT '{}',
@@ -90,6 +91,7 @@ function createGameConfigTables(nk: nkruntime.Nakama, logger: nkruntime.Logger) 
     `, []);
     nk.sqlExec("ALTER TABLE game_enemies ADD COLUMN IF NOT EXISTS generic_skills JSONB DEFAULT '[]'", []);
     nk.sqlExec("ALTER TABLE game_enemies ADD COLUMN IF NOT EXISTS attack_effects JSONB DEFAULT '[]'", []);
+    nk.sqlExec("ALTER TABLE game_enemies ADD COLUMN IF NOT EXISTS attack_skill JSONB", []);
     nk.sqlExec("ALTER TABLE game_enemies ADD COLUMN IF NOT EXISTS visual_scale REAL DEFAULT 0.364", []);
     nk.sqlExec("ALTER TABLE game_enemies ADD COLUMN IF NOT EXISTS boss_visual_scale REAL DEFAULT 0.442", []);
 
@@ -364,7 +366,7 @@ function createGameConfigTables(nk: nkruntime.Nakama, logger: nkruntime.Logger) 
         game_play: {
             boss_enrage_after_sec: 90, boss_enrage_hero_atk_per_sec: 0.01,
             regular_wave_warning_sec: 120, regular_wave_warning_delay_sec: 10,
-            exp_to_level: [0, 100, 250, 450, 700],
+            exp_to_level: [0, 1000, 2228, 5894, 13516, 26718, 47211, 76776, 117254, 170541, 238580, 323359, 426906, 551285, 698596, 870972, 1070576, 1299600, 1560264, 1854813, 2185519, 2554677, 2964606, 3417646, 3916159, 4462528, 5059155, 5708462, 6412889, 7174895, 7996957, 8881567, 9831236, 10848491, 11935873, 13095940, 14331265, 15644436, 17038054, 18514736, 20077111, 21727823, 23469528, 25304896, 27236610, 29267364, 31399865, 33636833, 35980999, 38435105, 41001905],
             element_upgrade_stones: [10, 25, 50, 100, 200]
         }
     };

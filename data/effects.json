@@ -136,6 +136,19 @@
     }
   },
   {
+    "id": "attack_slow",
+    "display_name": "Hàn Tức",
+    "category": "debuff",
+    "is_harmful": true,
+    "priority": 70,
+    "stack_mode": "replace_stronger",
+    "behavior": "attack_slow",
+    "default_props": {
+      "duration": 1.5,
+      "attack_speed_percent": 0.2
+    }
+  },
+  {
     "id": "burn",
     "display_name": "Thiêu Đốt",
     "category": "dot",
@@ -179,6 +192,21 @@
     "default_props": {
       "duration": 3.0,
       "dps": 8,
+      "tick_interval": 0.5
+    }
+  },
+  {
+    "id": "poison_percent",
+    "display_name": "Hủ Cốt Độc",
+    "category": "dot",
+    "is_harmful": true,
+    "icon_frame": 11,
+    "priority": 76,
+    "stack_mode": "refresh",
+    "behavior": "dot",
+    "default_props": {
+      "duration": 2.0,
+      "hp_percent_per_sec": 0.02,
       "tick_interval": 0.5
     }
   },

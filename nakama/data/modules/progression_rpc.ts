@@ -2,7 +2,9 @@
 const PROGRESSION_VERSION = 2;
 const PROGRESSION_MAX_LEVEL = 50;
 const PROGRESSION_HERO_BASE_EXP = 1000;
-const PROGRESSION_GROWTH = 1.25;
+const PROGRESSION_USER_BASE_EXP = 5000;
+const PROGRESSION_POWER_C = 750;
+const PROGRESSION_POWER_P = 3.2;
 const PROGRESSION_USER_RATIO = 5;
 
 const CULTIVATION_MAX_ATTEMPTS = 3;
@@ -250,11 +252,17 @@ function progressionObject(value: any): any {
     return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
 }
 
+function progressionCumulativeUserExp(level: number): number {
+    if (level <= 0) return 0;
+    if (level === 1) return PROGRESSION_USER_BASE_EXP;
+    return PROGRESSION_USER_BASE_EXP + Math.floor(PROGRESSION_POWER_C * Math.pow(level, PROGRESSION_POWER_P) - PROGRESSION_POWER_C);
+}
+
 function progressionNextHeroExp(nk: nkruntime.Nakama, level: number): number {
     if (level >= PROGRESSION_MAX_LEVEL) return 0;
     // Remote config is a cumulative EXP table: [level 0 total, level 1 total,
     // ...]. Convert it to the amount required for the current level. Keeping
-    // the former curve as a fallback makes old/invalid releases safe.
+    // the power curve as a fallback makes old/invalid releases safe.
     const configured: any = getRemoteConfigValue(nk, "game_play", "exp_to_level", []);
     if (Array.isArray(configured) && configured.length > level) {
         const currentTotal = Number(configured[level - 1]);
@@ -263,13 +271,16 @@ function progressionNextHeroExp(nk: nkruntime.Nakama, level: number): number {
             return Math.max(1, Math.floor(nextTotal - currentTotal));
         }
     }
-    let required = PROGRESSION_HERO_BASE_EXP;
-    for (let current = 1; current < level; current++) required = Math.max(1, Math.round(required * PROGRESSION_GROWTH));
-    return required;
+    const userReq = progressionNextUserExp(nk, level);
+    return Math.max(1, Math.floor(userReq / PROGRESSION_USER_RATIO));
 }
 
 function progressionNextUserExp(nk: nkruntime.Nakama, level: number): number {
-    return progressionNextHeroExp(nk, level) * PROGRESSION_USER_RATIO;
+    if (level >= PROGRESSION_MAX_LEVEL) return 0;
+    if (level === 1) return PROGRESSION_USER_BASE_EXP;
+    const current = progressionCumulativeUserExp(level);
+    const prev = progressionCumulativeUserExp(level - 1);
+    return Math.max(1, current - prev);
 }
 
 function progressionApplyUser(nk: nkruntime.Nakama, profile: any, awarded: number): any {

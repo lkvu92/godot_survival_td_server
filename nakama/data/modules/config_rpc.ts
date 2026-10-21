@@ -78,6 +78,7 @@ function processHero(row: any): any {
 
 function processEnemy(row: any): any {
     if (!row) return row;
+    row.attack_skill = parseJsonb(row.attack_skill);
     row.attributes = parseJsonb(row.attributes);
     row.boss_skills = parseJsonb(row.boss_skills);
     row.attack_effects = parseJsonb(row.attack_effects);

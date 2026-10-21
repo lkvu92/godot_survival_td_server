@@ -119,8 +119,8 @@ def main(argv=None):
         if args.settings_only and not args.settings:
             raise SeedError("--settings-only requires --settings")
         admin = os.environ.get("NAKAMA_CONFIG_ADMIN_TOKEN")
-        if args.publish and (not args.settings or not admin):
-            raise SeedError("--publish requires --settings and NAKAMA_CONFIG_ADMIN_TOKEN")
+        if args.publish and not admin:
+            raise SeedError("--publish requires NAKAMA_CONFIG_ADMIN_TOKEN")
         settings = None
         if args.settings:
             settings = json.loads(args.settings.read_text(encoding="utf-8-sig"))

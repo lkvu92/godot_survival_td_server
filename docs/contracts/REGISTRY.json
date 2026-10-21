@@ -1,12 +1,96 @@
 {
   "contracts": [
     {
+      "id": "C158_CREEP_WOOD_SKILLS",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-21",
+      "contract_file": "docs/contracts/C158_CREEP_WOOD_SKILLS.md"
+    },
+    {
+      "id": "C157_CREEP_ICE_SKILLS",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-21",
+      "contract_file": "docs/contracts/C157_CREEP_ICE_SKILLS.md"
+    },
+    {
+      "id": "C156_CAMPAIGN_MODE_STAT_MULTIPLIERS",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-21",
+      "contract_file": "docs/contracts/C156_CAMPAIGN_MODE_STAT_MULTIPLIERS.md"
+    },
+    {
+      "id": "C155_ARC_3_5_BOSS_REDUCTION",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-21",
+      "contract_file": "docs/contracts/C155_ARC_3_5_BOSS_REDUCTION.md"
+    },
+    {
+      "id": "C154_UNIFIED_DEFENSE_CURVE",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-21",
+      "contract_file": "docs/contracts/C154_UNIFIED_DEFENSE_CURVE.md"
+    },
+    {
+      "id": "C153_EXACT_CAMPAIGN_WAVE_EXP",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-21",
+      "contract_file": "docs/contracts/C153_EXACT_CAMPAIGN_WAVE_EXP.md"
+    },
+    {
+      "id": "C152_HALVE_OPENING_WAVES",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-21",
+      "contract_file": "docs/contracts/C152_HALVE_OPENING_WAVES.md"
+    },
+    {
+      "id": "C151_PROGRESSIVE_SPAWN_CADENCE",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-21",
+      "contract_file": "docs/contracts/C151_PROGRESSIVE_SPAWN_CADENCE.md"
+    },
+    {
+      "id": "C150_DEPLOY_SEED_PUBLISH",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-21",
+      "contract_file": "docs/contracts/C150_DEPLOY_SEED_PUBLISH.md"
+    },
+    {
+      "id": "C149_CAMPAIGN_WAVE_ROLE_UNLOCKS",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-21",
+      "contract_file": "docs/contracts/C149_CAMPAIGN_WAVE_ROLE_UNLOCKS.md"
+    },
+    {
+      "id": "C110_CULTIVATION_TRIBULATION",
+      "version": "2.2.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-21",
+      "contract_file": "docs/contracts/C110_CULTIVATION_TRIBULATION.md"
+    },
+    {
+      "id": "C148_CREEP_FIRE_SKILLS",
+      "version": "1.1.2",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-21",
+      "contract_file": "docs/contracts/C148_CREEP_FIRE_SKILLS.md"
+    },
+    {
       "id": "C147_MAILBOX",
       "feature_id": "F147_MAILBOX",
       "name": "Server-authoritative mailbox",
-      "version": "1.1.4",
+      "version": "1.2.0",
       "status": "ACTIVE",
-      "updated_at": "2026-10-20",
+      "updated_at": "2026-10-21",
       "contract_file": "docs/contracts/C147_MAILBOX.md"
     },
     {
@@ -32,9 +116,9 @@
     },
     {
       "id": "C141_HERO_SKILL1_RANGE",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "status": "IN_PROGRESS",
-      "updated_at": "2026-10-19",
+      "updated_at": "2026-10-21",
       "contract_file": "docs/contracts/C141_HERO_SKILL1_RANGE.md"
     },
     {
@@ -116,9 +200,9 @@
     },
     {
       "id": "C129_CONSUMABLE_STORE",
-      "version": "1.1.1",
+      "version": "1.2.0",
       "status": "IN_PROGRESS",
-      "updated_at": "2026-10-17",
+      "updated_at": "2026-10-21",
       "contract_file": "docs/contracts/C129_CONSUMABLE_STORE.md"
     },
     {

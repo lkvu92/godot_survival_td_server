@@ -66,7 +66,7 @@ cmd_restart() {
 
 cmd_seed() {
     echo "[INFO] Seeding game configurations into PostgreSQL via Nakama..."
-    python3 configure_runtime.py --seed
+    python3 configure_runtime.py --seed -- "$@"
 }
 
 cmd_build() {
@@ -101,12 +101,15 @@ cmd_health() {
 # Entrypoint
 # ------------------------------------------------------------------------------
 ACTION="${1:-deploy}"
+if [ "$#" -gt 0 ]; then
+    shift
+fi
 
 case "${ACTION}" in
     deploy|up|start)
         cmd_start
         echo ""
-        cmd_seed
+        cmd_seed "$@"
         echo ""
         echo "=== [SUCCESS] Survival TD Stack deployed and seeded successfully! ==="
         ;;
@@ -117,19 +120,20 @@ case "${ACTION}" in
         cmd_restart
         ;;
     seed)
-        cmd_seed
+        cmd_seed "$@"
         ;;
     build)
         cmd_build
         ;;
     logs)
-        cmd_logs "${2:-}"
+        cmd_logs "${1:-}"
         ;;
     status|health)
         cmd_health
         ;;
     *)
-        echo "Usage: $0 {deploy|start|stop|restart|seed|build|logs|status}"
+        echo "Usage: $0 {deploy|start|stop|restart|seed|build|logs|status} [seed options]"
+        echo "Example: $0 seed --publish --app-version 1.0.0 [--settings FILE]"
         exit 1
         ;;
 esac

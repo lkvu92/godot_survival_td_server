@@ -2,6 +2,22 @@
 
 For rewarded-ad amounts and limits, see [System Settings](SYSTEM_SETTINGS.md). C134 reads published `system.rewarded_ads`; updating the legacy content row alone does not change rewarded settings.
 
+For catalog-only changes with the current server runtime already deployed, run
+from the server repository root; this seeds and publishes without a restart:
+
+```bash
+export NAKAMA_CONFIG_ADMIN_TOKEN='<admin session JWT>'
+bash deploy.sh seed --publish --app-version 1.0.0
+```
+
+Use the app version accepted by the current release. The wrapper resolves the
+HTTP key and endpoint from Compose as before. Publication reuses the existing
+active draft settings. Optionally add `--settings ./my-settings.json` to stage a
+reviewed settings file; paths are relative to `nakama/`. No example settings are
+selected automatically. Seed arguments also work after `deploy`/`start`, which
+still build and start services before seeding. `seed` alone never builds or
+restarts services. Refresh the client configuration and start a new battle.
+
 Build and restart the server before using the new seed payloads. Startup adds
 nullable columns without removing existing data. Seed fills them from data/.
 

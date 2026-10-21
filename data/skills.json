@@ -1453,7 +1453,7 @@
         "stats": {
           "damage_pct": 85,
           "speed_pct": 285,
-          "range": 747.5,
+          "range": 768,
           "projectile_count": 1,
           "cooldown": 2.4,
           "radius": 28,
@@ -1569,7 +1569,7 @@
         "stats": {
           "damage_pct": 215,
           "speed_pct": 360,
-          "range": 931.5,
+          "range": 896,
           "projectile_count": 5,
           "cooldown": 1.6,
           "radius": 35,
@@ -2220,7 +2220,7 @@
         "stats": {
           "damage_pct": 70,
           "speed_pct": 260,
-          "range": 1152,
+          "range": 896,
           "projectile_count": 1,
           "cooldown": 2.4,
           "radius": 13,
@@ -2238,7 +2238,7 @@
         "stats": {
           "damage_pct": 90,
           "speed_pct": 270,
-          "range": 1152,
+          "range": 896,
           "projectile_count": 1,
           "cooldown": 2.25,
           "radius": 13.5,
@@ -2256,7 +2256,7 @@
         "stats": {
           "damage_pct": 115,
           "speed_pct": 280,
-          "range": 1152,
+          "range": 896,
           "projectile_count": 2,
           "cooldown": 2.1,
           "radius": 14,
@@ -2274,7 +2274,7 @@
         "stats": {
           "damage_pct": 145,
           "speed_pct": 290,
-          "range": 1152,
+          "range": 896,
           "projectile_count": 2,
           "cooldown": 1.95,
           "radius": 14.5,
@@ -2292,7 +2292,7 @@
         "stats": {
           "damage_pct": 180,
           "speed_pct": 300,
-          "range": 1152,
+          "range": 896,
           "projectile_count": 3,
           "cooldown": 1.8,
           "radius": 15,
@@ -2765,7 +2765,7 @@
         "stats": {
           "damage_pct": 35,
           "speed_pct": 230,
-          "range": 713,
+          "range": 768,
           "projectile_count": 1,
           "volley_interval": 0.12,
           "cooldown": 2,
@@ -2792,7 +2792,7 @@
         "stats": {
           "damage_pct": 46,
           "speed_pct": 244,
-          "range": 724.5,
+          "range": 768,
           "projectile_count": 1,
           "volley_interval": 0.12,
           "cooldown": 1.9,
@@ -2873,7 +2873,7 @@
         "stats": {
           "damage_pct": 90,
           "speed_pct": 292,
-          "range": 966,
+          "range": 896,
           "projectile_count": 3,
           "volley_interval": 0.1,
           "cooldown": 1.5,
@@ -3697,7 +3697,7 @@
         "stats": {
           "damage_pct": 75,
           "speed_pct": 200,
-          "range": 713,
+          "range": 768,
           "strike_count": 1,
           "projectile_count": 1,
           "cooldown": 2,
@@ -3724,7 +3724,7 @@
         "stats": {
           "damage_pct": 95,
           "speed_pct": 220,
-          "range": 713,
+          "range": 768,
           "strike_count": 1,
           "projectile_count": 1,
           "cooldown": 1.9,
@@ -3751,7 +3751,7 @@
         "stats": {
           "damage_pct": 120,
           "speed_pct": 240,
-          "range": 713,
+          "range": 768,
           "strike_count": 2,
           "projectile_count": 2,
           "cooldown": 1.8,
@@ -3778,7 +3778,7 @@
         "stats": {
           "damage_pct": 150,
           "speed_pct": 260,
-          "range": 713,
+          "range": 768,
           "strike_count": 2,
           "projectile_count": 2,
           "cooldown": 1.7,
@@ -3807,7 +3807,7 @@
         "stats": {
           "damage_pct": 185,
           "speed_pct": 280,
-          "range": 713,
+          "range": 768,
           "strike_count": 3,
           "projectile_count": 3,
           "cooldown": 1.6,
@@ -4309,7 +4309,7 @@
         "stats": {
           "damage_pct": 65,
           "cooldown": 2,
-          "range": 1030.4,
+          "range": 896,
           "speed_pct": 240,
           "projectile_count": 1,
           "radius": 24,
@@ -4339,7 +4339,7 @@
         "stats": {
           "damage_pct": 82,
           "cooldown": 1.9,
-          "range": 1030.4,
+          "range": 896,
           "speed_pct": 250,
           "projectile_count": 1,
           "radius": 26,
@@ -4369,7 +4369,7 @@
         "stats": {
           "damage_pct": 98,
           "cooldown": 1.8,
-          "range": 1030.4,
+          "range": 896,
           "speed_pct": 260,
           "projectile_count": 2,
           "radius": 28,
@@ -4400,7 +4400,7 @@
         "stats": {
           "damage_pct": 114,
           "cooldown": 1.7,
-          "range": 1030.4,
+          "range": 896,
           "speed_pct": 270,
           "projectile_count": 2,
           "radius": 30,
@@ -4431,7 +4431,7 @@
         "stats": {
           "damage_pct": 130,
           "cooldown": 1.6,
-          "range": 1030.4,
+          "range": 896,
           "speed_pct": 280,
           "projectile_count": 3,
           "radius": 32,

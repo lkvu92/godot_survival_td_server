@@ -11,6 +11,7 @@ const base={sqlQuery(sql,args){
  if(sql.includes('sha256'))return[{hash:crypto.createHash('sha256').update(args[0]).digest('hex')}];
  if(sql.includes('FROM game_arcs'))return[{display_name:'Arc Test'}];
  if(sql.includes('FROM game_items'))return args[0]==='ticket'?[{id:'ticket',stackable:true,max_stack:999}]:[];
+ if(sql.includes('FROM game_heroes'))return args[0]==='hero_5'?[{id:'hero_5'}]:[];
  throw Error('Unexpected SQL '+sql);
 },storageRead(refs){return refs.map(r=>store.get(key(r))).filter(Boolean).map(copy);},
  storageWrite(writes){
@@ -24,7 +25,7 @@ c.weeklyClaimKey=(p,b)=>p+'_'+b;
 c.progressionApplyUser=(_nk,p,amount)=>{p.exp=(p.exp||0)+amount;};c.progressionReconcileLevelUnlocks=()=>{};
 const scope={accountId:'buyer',serverId:'s001',generation:1},nk=fn('characterRuntime')(base,scope),userId='buyer';
 const seed=(collection,key,value)=>nk.storageWrite([{collection,key,userId,value,version:'*'}]);
-seed('player_profiles','main',{resources:{gold:0,gems:0},exp:0});seed('player_inventory','items',{items:[]});
+seed('player_profiles','main',{resources:{gold:0,gems:0},exp:0});seed('player_inventory','items',{items:[]});seed('player_heroes','states',{heroes:[{hero_id:'hero_5',owned:false,level:1,exp:0,next_level_exp:1000,current_attribute:{}}]});
 const input={source_id:'gift:1',title:'Gift',body:'Test',attachments:[{type:'resource',id:'gold',amount:7},{type:'item',id:'ticket',amount:2},{type:'exp',id:'user',amount:3}]};
 const deliver=overrides=>fn('deliverMail')(nk,userId,{...input,...overrides});
 const claim=id=>fn('mailClaimOne')(nk,userId,id),read=(collection,key)=>nk.storageRead([{collection,key,userId}])[0];
@@ -32,6 +33,11 @@ const id=deliver({}).id;assert.equal(deliver({}).idempotent,true);assert.equal(n
 fail=true;assert.equal(claim(id).code,'DATA_CHANGED');assert.equal(read('player_profiles','main').value.resources.gold,0);assert.equal(read('player_inventory','items').value.items.length,0);assert.equal(read('player_mail',id).value.claimed_at_ms,null);
 assert.equal(claim(id).success,true);assert.equal(read('player_profiles','main').value.resources.gold,7);assert.equal(read('player_profiles','main').value.exp,3);assert.equal(read('player_inventory','items').value.items[0].quantity,2);
 assert.equal(claim(id).already_claimed,true);assert.equal(read('player_profiles','main').value.resources.gold,7);
+const purchase=fn('applyPurchaseMailRewards')(nk,userId,'purchase-hero-mail','first_topup_pack','non_consumable',[{reward_type:'hero',reward_id:'hero_5',quantity:1}]);
+assert(purchase.mail&&purchase.mail.id,'paid hero must be sent through purchase mail');
+assert.equal(read('player_heroes','states').value.heroes[0].owned,false,'hero must remain locked before the mail claim');
+assert.equal(claim(purchase.mail.id).success,true);
+assert.equal(read('player_heroes','states').value.heroes[0].owned,true,'mail claim must grant the purchased hero');
 const expired=deliver({source_id:'expired',expires_at_ms:now}).id;assert.equal(claim(expired).code,'MAIL_EXPIRED');assert.equal(fn('mailMutateOne')(nk,userId,expired,'delete').code,'UNCLAIMED_REWARD');assert.equal(fn('mailPresent')(nk,read('player_mail',expired).value,now).can_delete,false);
 const boundary=deliver({source_id:'boundary',expires_at_ms:now+1}).id;
 const originalAdd=fn('addStoreInventoryItem');c.addStoreInventoryItem=(...args)=>{originalAdd(...args);if(advance)now+=1;};advance=true;

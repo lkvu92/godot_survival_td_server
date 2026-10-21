@@ -17,7 +17,7 @@ const sandbox = vm.createContext({console});
 for (const file of ['sweep_rpc','config_tables','monetization_tables','seed','event_service_rpc','config_rpc','monetization_rpc','weekly_leaderboard']) {
   vm.runInContext(fs.readFileSync(path.join(root,'nakama/data/modules/build',file+'.js'),'utf8'), sandbox);
 }
-const api = vm.runInContext('({seedGameData,createGameConfigTables,createMonetizationTables,seedBindSql,processHero,processArc,processCard,processTalisman,processSkill,processStage,processEffect,publishConfigRelease,getGameConfig})',sandbox);
+const api = vm.runInContext('({seedGameData,createGameConfigTables,createMonetizationTables,seedBindSql,processEnemy,processHero,processArc,processCard,processTalisman,processSkill,processStage,processEffect,publishConfigRelease,getGameConfig})',sandbox);
 let mutations = 0;
 const nk = {
  sqlExec(query, params) { mutations++; return sql(params.length ? api.seedBindSql(query, params) : query); },
@@ -34,6 +34,21 @@ api.createGameConfigTables(nk,logger);
 api.createMonetizationTables(nk,logger);
 api.createGameConfigTables(nk,logger); // Additive migration is idempotent.
 for (const table of ['heroes','enemies','items','skills','arcs','stages','stage_levels','cards','effects','talismans']) {console.log('Seeding',table); good(table,read(table));}
+// C148: migrate a pre-feature table, then persist and update the ordinary attack object.
+sql('ALTER TABLE game_enemies DROP COLUMN attack_skill');
+api.createGameConfigTables(nk,logger);
+api.createGameConfigTables(nk,logger);
+good('enemies',read('enemies'));
+for (const source of read('enemies').filter(row=>row.attack_skill)) {
+  assert.deepEqual(nk.sqlQuery('SELECT attack_skill FROM game_enemies WHERE id=$1',[source.id])[0].attack_skill,source.attack_skill);
+}
+const fireEnemy=read('enemies').find(row=>row.attack_skill);
+for (const encoded of [fireEnemy.attack_skill, JSON.stringify(fireEnemy.attack_skill), Array.from(Buffer.from(JSON.stringify(fireEnemy.attack_skill)))]) {
+  assert.deepEqual(JSON.parse(JSON.stringify(api.processEnemy({attack_skill:encoded}))).attack_skill,fireEnemy.attack_skill);
+}
+good('enemies',[{...fireEnemy,attack_skill:{...fireEnemy.attack_skill,damage_multiplier:1.23}}]);
+assert.equal(nk.sqlQuery('SELECT attack_skill FROM game_enemies WHERE id=$1',[fireEnemy.id])[0].attack_skill.damage_multiplier,1.23);
+good('enemies',[fireEnemy]);
 for (const [table,process] of [['heroes','processHero'],['arcs','processArc'],['cards','processCard'],['talismans','processTalisman'],['skills','processSkill'],['stages','processStage'],['effects','processEffect']]) {
   const columns = vm.runInContext('seedExtensionColumns()',sandbox)[table] || {};
   for (const source of read(table)) {
@@ -100,6 +115,13 @@ assert.equal(published.config_version,versions+1);
 assert.equal(nk.sqlQuery("SELECT snapshot->'system'->>'payment_enabled' AS value FROM remote_config_releases ORDER BY config_version DESC LIMIT 1",[])[0].value,'true');
 const content=JSON.parse(api.getGameConfig({...ctx,userId:'admin'},logger,nk,JSON.stringify({table:'all'})));
 assert.equal(content.schema_version,2);
+assert.equal(content.enemies.find(row=>row.id===read('enemies').find(source=>!source.attack_skill).id).attack_skill,null);
+for (const source of read('enemies').filter(row=>row.attack_skill || row.boss_skills)) {
+  const actual=content.enemies.find(row=>row.id===source.id);
+  assert.ok(actual,source.id);
+  if(source.attack_skill) assert.deepEqual(actual.attack_skill,source.attack_skill);
+  if(source.boss_skills) assert.deepEqual(actual.boss_skills,source.boss_skills);
+}
 assert.deepEqual(content.enemy_skills,read('enemy_skills'));
 assert.deepEqual(content.boss_skills,read('boss_skills'));
 assert.deepEqual(content.tribulation,read('tribulation_config'));

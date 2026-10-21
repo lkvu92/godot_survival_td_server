@@ -57,8 +57,10 @@ def write_private(config, target):
             os.unlink(temporary)
 
 
-def main(seed=False, compose_file="docker-compose.yml", env_file=None, output="runtime.secret.yml"):
+def main(seed=False, compose_file="docker-compose.yml", env_file=None, output="runtime.secret.yml", seed_args=None):
     try:
+        if seed_args and not seed:
+            raise ConfigError("Seed arguments require --seed")
         command = ["docker", "compose", "-f", compose_file]
         if env_file:
             command.extend(["--env-file", env_file])
@@ -87,7 +89,7 @@ def main(seed=False, compose_file="docker-compose.yml", env_file=None, output="r
                         process_env["NAKAMA_URL"] = local_url
                     else:
                         process_env.setdefault("NAKAMA_URL", local_url)
-            return subprocess.run([sys.executable, str(ROOT / "seed_all.py")],
+            return subprocess.run([sys.executable, str(ROOT / "seed_all.py"), *(seed_args or [])],
                                   cwd=ROOT, env=process_env, check=False).returncode
     except ConfigError as error:
         print("[ERR] " + str(error), file=sys.stderr)
@@ -105,6 +107,10 @@ if __name__ == "__main__":
     parser.add_argument("--compose-file", default="docker-compose.yml")
     parser.add_argument("--env-file")
     parser.add_argument("--output", default="runtime.secret.yml")
+    parser.add_argument("seed_args", nargs=argparse.REMAINDER, help="Seed options following --")
     args = parser.parse_args()
+    seed_args = args.seed_args[1:] if args.seed_args[:1] == ["--"] else args.seed_args
+    if seed_args and not args.seed:
+        parser.error("Seed arguments require --seed")
     sys.exit(main(seed=args.seed, compose_file=args.compose_file,
-                  env_file=args.env_file, output=args.output))
+                  env_file=args.env_file, output=args.output, seed_args=seed_args))

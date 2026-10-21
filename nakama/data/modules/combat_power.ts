@@ -140,7 +140,9 @@ function cpEvaluate(hero: any, level: number, affinities: any, roots: any, equip
             healing+=cpNumber(a.hp)*cpNumber(effect.hp_percent_per_sec)*cpNumber(stats.duration)*casts;
         }
     }
-    const defense = Math.max(cpNumber(cfg.min_defense_multiplier),1-defenseValue/Math.max(1,cpNumber(ec.defense_divisor)));
+    // Mirror the Godot CombatFormulaService. Permanent talisman DEF must rate
+    // survival using the exact same diminishing-return curve as live combat.
+    const defense = 100/(100+defenseValue);
     const regen = cpClamp(cpNumber(a.regen_percent_per_10s),0,cpNumber(cfg.regen_cap));
     const hp = Math.max(0,cpNumber(a.hp))*(1+regen*cpNumber(cfg.horizon_seconds)/10)+healing;
     const ehp = hp/(Math.max(cpNumber(cfg.min_defense_multiplier),incoming)*defense*(1-cpClamp(cpNumber(a.dodge_rate),0,cpNumber(cfg.dodge_cap))));

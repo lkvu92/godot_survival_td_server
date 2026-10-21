@@ -24,6 +24,8 @@ function mailValidateAttachments(nk:nkruntime.Nakama,input:any):any[] {
             if(r.amount>1000||!nk.sqlQuery('SELECT id FROM game_items WHERE id=$1',[r.id]).length)throw new Error('INVALID_ITEM');
             return {type:r.type,id:r.id,amount:r.amount};
         }
+        if(r.type==='hero'&&r.amount===1&&typeof r.id==='string'&&/^[a-z0-9_]{1,100}$/.test(r.id)
+            &&nk.sqlQuery('SELECT id FROM game_heroes WHERE id=$1',[r.id]).length)return {type:r.type,id:r.id,amount:r.amount};
         throw new Error('INVALID_REWARD');
     });
 }
@@ -80,17 +82,19 @@ function mailRead(nk:nkruntime.Nakama,userId:string,id:any):any {
 function mailClaimOne(nk:nkruntime.Nakama,userId:string,id:string):any {
     const stored=mailRead(nk,userId,id);if(!stored)return mailError('MAIL_NOT_FOUND','Thư không còn tồn tại.');
     const mail=stored.value,now=Date.now();
-    const reads=nk.storageRead([{collection:'player_profiles',key:'main',userId},{collection:'player_inventory',key:'items',userId}]
+    const reads=nk.storageRead([{collection:'player_profiles',key:'main',userId},{collection:'player_inventory',key:'items',userId},{collection:'player_heroes',key:'states',userId}]
         .concat(mail.weekly?[{collection:'weekly_leaderboard_claims',key:weeklyClaimKey(mail.weekly.period_id,mail.weekly.board_id),userId}]:[]));
-    const p=reads.find((r:any)=>r.collection==='player_profiles'),i=reads.find((r:any)=>r.collection==='player_inventory');
-    if(!p||!i||!Array.isArray(i.value.items))return mailError('CHARACTER_INCOMPLETE','Dữ liệu nhân vật chưa sẵn sàng.');
-    if(mail.claimed_at_ms)return {success:true,already_claimed:true,mail:mailPresent(nk,mail,now),profile:p.value,inventory:i.value.items};
+    const p=reads.find((r:any)=>r.collection==='player_profiles'),i=reads.find((r:any)=>r.collection==='player_inventory'),h=reads.find((r:any)=>r.collection==='player_heroes');
+    if(!p||!i||!h||!Array.isArray(i.value.items))return mailError('CHARACTER_INCOMPLETE','Dữ liệu nhân vật chưa sẵn sàng.');
+    if(mail.claimed_at_ms)return {success:true,already_claimed:true,mail:mailPresent(nk,mail,now),profile:p.value,inventory:i.value.items,heroes:h.value.heroes||[]};
     if(!mailPresent(nk,mail,now).can_claim)return mailError(mail.attachments.length?'MAIL_EXPIRED':'NO_REWARD',mail.attachments.length?'Thư đã hết hạn nhận thưởng.':'Thư không có phần thưởng.');
     // CAS on the shared weekly marker also serializes with older weekly clients.
     const oldWeekly=reads.find((r:any)=>r.collection==='weekly_leaderboard_claims');
     const writes:any[]=[];
     if(!oldWeekly) {
         p.value.resources=p.value.resources||{};
+        h.value.heroes=Array.isArray(h.value.heroes)?h.value.heroes:[];
+        let heroesChanged=false;
         for(const reward of mail.attachments) {
             if(reward.type==='resource') {
                 const total=Number(p.value.resources[reward.id]||0)+reward.amount;
@@ -98,10 +102,17 @@ function mailClaimOne(nk:nkruntime.Nakama,userId:string,id:string):any {
                 p.value.resources[reward.id]=total;
             }else if(reward.type==='item'){addStoreInventoryItem(nk,i.value.items,reward.id,reward.amount);if(i.value.items.length>2000)return mailError('INVENTORY_FULL','Túi đồ đầy. Hãy dọn túi rồi nhận lại.');}
             else if(reward.type==='exp'){progressionApplyUser(nk,p.value,reward.amount);progressionReconcileLevelUnlocks(nk,p.value);}
+            else if(reward.type==='hero'){
+                const hero=h.value.heroes.find((entry:any)=>entry&&String(entry.hero_id||'')===reward.id);
+                if(hero)hero.owned=true;
+                else h.value.heroes.push({hero_id:reward.id,level:1,exp:0,next_level_exp:1000,owned:true,current_attribute:{}});
+                heroesChanged=true;
+            }
             else throw new Error('INVALID_STORED_REWARD');
         }
         writes.push({collection:'player_profiles',key:'main',userId,value:p.value,version:p.version,permissionRead:1,permissionWrite:0},
             {collection:'player_inventory',key:'items',userId,value:i.value,version:i.version,permissionRead:1,permissionWrite:0});
+        if(heroesChanged)writes.push({collection:'player_heroes',key:'states',userId,value:h.value,version:h.version,permissionRead:1,permissionWrite:0});
         if(mail.weekly)writes.push({collection:'weekly_leaderboard_claims',key:weeklyClaimKey(mail.weekly.period_id,mail.weekly.board_id),userId,
             value:{period_id:mail.weekly.period_id,board_id:mail.weekly.board_id,rewards:mail.attachments},version:'*',permissionRead:0,permissionWrite:0});
     }
@@ -111,7 +122,7 @@ function mailClaimOne(nk:nkruntime.Nakama,userId:string,id:string):any {
     writes.push(Object.assign(mailWrite(mail,userId),{version:stored.version}));
     try{mailCombatRuntime(nk,userId).storageWrite(writes);}catch(_e){return mailError('DATA_CHANGED','Dữ liệu vừa thay đổi. Vui lòng thử lại.');}
     mailPush(nk,userId,id);
-    return {success:true,already_claimed:!!oldWeekly,mail:mailPresent(nk,mail,Date.now()),profile:p.value,inventory:i.value.items};
+    return {success:true,already_claimed:!!oldWeekly,mail:mailPresent(nk,mail,Date.now()),profile:p.value,inventory:i.value.items,heroes:h.value.heroes||[]};
 }
 function mailMutateOne(nk:nkruntime.Nakama,userId:string,id:string,action:string):any {
     if(action==='claim')return mailClaimOne(nk,userId,id);
@@ -147,7 +158,7 @@ function mailBulk(nk:nkruntime.Nakama,userId:string,req:any,action:string):any {
         const row=parseJsonObject(stored.value),eligible=action==='claim'?mailPresent(nk,row,Date.now()).can_claim:!!row.read_at_ms&&mailPresent(nk,row,Date.now()).can_delete;
         if(!eligible){results.push({id:row.id,success:false,code:'INELIGIBLE'});continue;}
         const result=mailMutateOne(nk,userId,row.id,action);results.push({id:row.id,success:result.success,code:result.code||''});
-        if(result.profile)latest={profile:result.profile,inventory:result.inventory};
+        if(result.profile)latest={profile:result.profile,inventory:result.inventory,heroes:result.heroes||[]};
     }
     return Object.assign(latest,{results,has_more:more,next_cursor:more?rows[rows.length-1].key:''});
 }
@@ -252,13 +263,13 @@ function applyPurchaseMailRewards(nk:nkruntime.Nakama,userId:string,grantId:stri
     const p=nk.storageRead([{collection:'player_profiles',key:'main',userId}])[0];
     if(nk.storageRead([marker]).length||(p&&Array.isArray(p.value._iap_reward_ids)&&p.value._iap_reward_ids.indexOf(grantId)>=0))return {idempotent:true};
     const recurring=DAILY_PACK_IDS.indexOf(productId)>=0&&rewards.length>0&&rewards.every(r=>r.metadata&&Number(r.metadata.daily_pack_days)===30);
-    const mailed=recurring?[]:rewards.filter(r=>r.reward_type==='currency'||r.reward_type==='item');
-    const immediate=recurring?rewards:rewards.filter(r=>r.reward_type!=='currency'&&r.reward_type!=='item');
+    const mailed=recurring?[]:rewards.filter(r=>['currency','item','hero'].indexOf(r.reward_type)>=0);
+    const immediate=recurring?rewards:rewards.filter(r=>['currency','item','hero'].indexOf(r.reward_type)<0);
     const writes:any[]=[],batch:any=Object.create(nk);batch.__purchaseBatch=true;batch.__mailBatch=true;
     batch.storageWrite=(changes:any[])=>{for(const w of changes)writes.push(w);return [];};
     const result=applyPurchaseStorageRewards(batch,userId,grantId,productId,fulfillmentType,immediate);
     if(mailed.length)result.mail=deliverMail(batch,userId,{source_id:'purchase:'+grantId,source_type:'purchase',title:'Phần thưởng gói '+productId,
-        body:'Thanh toán đã được xác nhận. Hãy nhận vật phẩm của gói tại đây.',attachments:mailed.map(r=>({type:r.reward_type==='currency'?'resource':'item',id:r.reward_id,amount:Number(r.quantity)}))});
+        body:'Thanh toán đã được xác nhận. Hãy nhận vật phẩm của gói tại đây.',attachments:mailed.map(r=>({type:r.reward_type==='currency'?'resource':r.reward_type,id:r.reward_id,amount:Number(r.quantity)}))});
     writes.push(Object.assign({},marker,{value:{product_id:productId,granted_at_ms:Date.now(),delivery:mailed.length?'mail':'direct'},version:'*',permissionRead:0,permissionWrite:0}));
     nk.storageWrite(writes);
     if(result.mail)mailPush(nk,userId,result.mail.id);

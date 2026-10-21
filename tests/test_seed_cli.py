@@ -87,6 +87,38 @@ class SeedCliTests(unittest.TestCase):
         with patch.dict(os.environ, {"NAKAMA_URL": "https://example.test", "NAKAMA_HTTP_KEY": "a&b"}, clear=True):
             self.assertEqual(cli.rpc_url("seed_game_data"), "https://example.test/v2/rpc/seed_game_data?http_key=a%26b")
 
+    def test_publish_without_settings_commits_bundle_before_authenticated_publish(self):
+        calls = []
+        secret = "synthetic-admin-no-log"
+        def respond(name, body, bearer=None):
+            calls.append((name, body, bearer))
+            if name == "seed_game_data":
+                self.assertIsNone(bearer)
+                self.assertEqual(body["table"], "bundle")
+                self.assertNotIn("remote_settings", [request["table"] for request in body["requests"]])
+                return {"success": True, "atomic": True, "table": "bundle", "results": [
+                    {"success": True, "table": request["table"], "inserted": len(request["rows"]) if "rows" in request else 1}
+                    for request in body["requests"]]}
+            self.assertEqual(name, "publish_config_release")
+            self.assertEqual(bearer, secret)
+            self.assertEqual(body, {"app_version": "1.2.3", "store_url": "https://store.example/app"})
+            return {"status": "ok", "config_version": 88}
+        with patch.dict(os.environ, {"NAKAMA_CONFIG_ADMIN_TOKEN": secret}, clear=True), patch.object(cli, "invoke_rpc", side_effect=respond), contextlib.redirect_stdout(io.StringIO()) as output, contextlib.redirect_stderr(io.StringIO()) as errors:
+            self.assertEqual(cli.main(["--publish", "--app-version", "1.2.3", "--store-url", "https://store.example/app"]), 0)
+        self.assertEqual([call[0] for call in calls], ["seed_game_data", "publish_config_release"])
+        self.assertNotIn(secret, output.getvalue() + errors.getvalue())
+
+    def test_publish_without_token_sends_no_rpc(self):
+        with patch.dict(os.environ, {}, clear=True), patch.object(cli, "invoke_rpc") as rpc:
+            self.assertEqual(self.run_main(["--publish"]), 1)
+            rpc.assert_not_called()
+
+    def test_failed_bundle_prevents_publication(self):
+        with patch.dict(os.environ, {"NAKAMA_CONFIG_ADMIN_TOKEN": "synthetic-token"}, clear=True), patch.object(cli, "invoke_rpc", return_value={"success": False}) as rpc:
+            self.assertEqual(self.run_main(["--publish"]), 1)
+        self.assertEqual(rpc.call_count, 1)
+        self.assertEqual(rpc.call_args.args[0], "seed_game_data")
+
     def test_content_only_seeds_complete_remote_supplements(self):
         with patch.object(cli, "invoke_seed") as seed:
             self.assertEqual(self.run_main(["--content-only"]), 0)

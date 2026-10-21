@@ -163,15 +163,15 @@ const seedGameData: nkruntime.RpcFunction = (
             for (const row of rows) {
                 write(`
                     INSERT INTO game_enemies (id, display_name, element, attack_type, visual_scale, boss_visual_scale, exp,
-                        is_boss, boss_scale, attributes, skills, attack_effects, generic_skills, boss_skills, reward)
-                    VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10::jsonb,$11::jsonb,$12::jsonb,$13::jsonb,$14::jsonb,$15::jsonb)
+                        is_boss, boss_scale, attributes, skills, attack_effects, generic_skills, boss_skills, reward, attack_skill)
+                    VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10::jsonb,$11::jsonb,$12::jsonb,$13::jsonb,$14::jsonb,$15::jsonb,$16::jsonb)
                     ON CONFLICT (id) DO UPDATE SET
                         display_name=EXCLUDED.display_name, element=EXCLUDED.element,
                         attack_type=EXCLUDED.attack_type, visual_scale=EXCLUDED.visual_scale,
                         boss_visual_scale=EXCLUDED.boss_visual_scale, exp=EXCLUDED.exp,
                         is_boss=EXCLUDED.is_boss, boss_scale=EXCLUDED.boss_scale,
                         attributes=EXCLUDED.attributes, skills=EXCLUDED.skills, attack_effects=EXCLUDED.attack_effects, generic_skills=EXCLUDED.generic_skills,
-                        boss_skills=EXCLUDED.boss_skills, reward=EXCLUDED.reward,
+                        boss_skills=EXCLUDED.boss_skills, reward=EXCLUDED.reward, attack_skill=EXCLUDED.attack_skill,
                         updated_at=NOW()
                 `, [
                     row.id, row.display_name, row.element || '',
@@ -183,7 +183,8 @@ const seedGameData: nkruntime.RpcFunction = (
                     JSON.stringify(row.attack_effects || []),
                     JSON.stringify(row.generic_skills || []),
                     JSON.stringify(row.boss_skills || []),
-                    JSON.stringify(row.reward || {})
+                    JSON.stringify(row.reward || {}),
+                    row.attack_skill ? JSON.stringify(row.attack_skill) : null
                 ]);
                 inserted++;
             }

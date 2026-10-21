@@ -914,6 +914,7 @@ function createGameConfigTables(nk, logger) {
             attributes      JSONB NOT NULL DEFAULT '{}',
             skills          JSONB DEFAULT '[]',
             attack_effects  JSONB DEFAULT '[]',
+            attack_skill    JSONB,
             generic_skills  JSONB DEFAULT '[]',
             boss_skills     JSONB DEFAULT '[]',
             reward          JSONB DEFAULT '{}',
@@ -923,6 +924,7 @@ function createGameConfigTables(nk, logger) {
     `, []);
   nk.sqlExec("ALTER TABLE game_enemies ADD COLUMN IF NOT EXISTS generic_skills JSONB DEFAULT '[]'", []);
   nk.sqlExec("ALTER TABLE game_enemies ADD COLUMN IF NOT EXISTS attack_effects JSONB DEFAULT '[]'", []);
+  nk.sqlExec("ALTER TABLE game_enemies ADD COLUMN IF NOT EXISTS attack_skill JSONB", []);
   nk.sqlExec("ALTER TABLE game_enemies ADD COLUMN IF NOT EXISTS visual_scale REAL DEFAULT 0.364", []);
   nk.sqlExec("ALTER TABLE game_enemies ADD COLUMN IF NOT EXISTS boss_visual_scale REAL DEFAULT 0.442", []);
   nk.sqlExec(`
@@ -1171,7 +1173,7 @@ function createGameConfigTables(nk, logger) {
       boss_enrage_hero_atk_per_sec: 0.01,
       regular_wave_warning_sec: 120,
       regular_wave_warning_delay_sec: 10,
-      exp_to_level: [0, 100, 250, 450, 700],
+      exp_to_level: [0, 1e3, 2228, 5894, 13516, 26718, 47211, 76776, 117254, 170541, 238580, 323359, 426906, 551285, 698596, 870972, 1070576, 1299600, 1560264, 1854813, 2185519, 2554677, 2964606, 3417646, 3916159, 4462528, 5059155, 5708462, 6412889, 7174895, 7996957, 8881567, 9831236, 10848491, 11935873, 13095940, 14331265, 15644436, 17038054, 18514736, 20077111, 21727823, 23469528, 25304896, 27236610, 29267364, 31399865, 33636833, 35980999, 38435105, 41001905],
       element_upgrade_stones: [10, 25, 50, 100, 200]
     }
   };
@@ -1590,15 +1592,15 @@ const seedGameData = (ctx, logger, nk, payload) => {
         for (const row of rows) {
           write(`
                     INSERT INTO game_enemies (id, display_name, element, attack_type, visual_scale, boss_visual_scale, exp,
-                        is_boss, boss_scale, attributes, skills, attack_effects, generic_skills, boss_skills, reward)
-                    VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10::jsonb,$11::jsonb,$12::jsonb,$13::jsonb,$14::jsonb,$15::jsonb)
+                        is_boss, boss_scale, attributes, skills, attack_effects, generic_skills, boss_skills, reward, attack_skill)
+                    VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10::jsonb,$11::jsonb,$12::jsonb,$13::jsonb,$14::jsonb,$15::jsonb,$16::jsonb)
                     ON CONFLICT (id) DO UPDATE SET
                         display_name=EXCLUDED.display_name, element=EXCLUDED.element,
                         attack_type=EXCLUDED.attack_type, visual_scale=EXCLUDED.visual_scale,
                         boss_visual_scale=EXCLUDED.boss_visual_scale, exp=EXCLUDED.exp,
                         is_boss=EXCLUDED.is_boss, boss_scale=EXCLUDED.boss_scale,
                         attributes=EXCLUDED.attributes, skills=EXCLUDED.skills, attack_effects=EXCLUDED.attack_effects, generic_skills=EXCLUDED.generic_skills,
-                        boss_skills=EXCLUDED.boss_skills, reward=EXCLUDED.reward,
+                        boss_skills=EXCLUDED.boss_skills, reward=EXCLUDED.reward, attack_skill=EXCLUDED.attack_skill,
                         updated_at=NOW()
                 `, [
             row.id,
@@ -1615,7 +1617,8 @@ const seedGameData = (ctx, logger, nk, payload) => {
             JSON.stringify(row.attack_effects || []),
             JSON.stringify(row.generic_skills || []),
             JSON.stringify(row.boss_skills || []),
-            JSON.stringify(row.reward || {})
+            JSON.stringify(row.reward || {}),
+            row.attack_skill ? JSON.stringify(row.attack_skill) : null
           ]);
           inserted++;
         }
@@ -2620,6 +2623,7 @@ function processHero(row) {
 }
 function processEnemy(row) {
   if (!row) return row;
+  row.attack_skill = parseJsonb(row.attack_skill);
   row.attributes = parseJsonb(row.attributes);
   row.boss_skills = parseJsonb(row.boss_skills);
   row.attack_effects = parseJsonb(row.attack_effects);
@@ -4425,7 +4429,8 @@ const storePurchase = (ctx, logger, nk, payload) => {
     return JSON.stringify({ success: false, purchase_protocol: 2, message: "Invalid store currency or purchase protocol" });
   }
   const response = JSON.parse(talismanAction(ctx, logger, nk, JSON.stringify(Object.assign({}, req, { action: "buy_material" }))));
-  return JSON.stringify(Object.assign(response, { purchase_protocol: 2, item_id: req.item_id, currency: req.currency }));
+  const quantity = req.quantity === void 0 ? 1 : req.quantity;
+  return JSON.stringify(Object.assign(response, { purchase_protocol: 2, item_id: req.item_id, currency: req.currency, quantity }));
 };
 const updateInventory = (ctx, logger, nk, payload) => {
   const req = JSON.parse(payload);
@@ -4803,12 +4808,15 @@ const talismanAction = (ctx, _logger, nk, payload) => {
   let target = items.find((entry) => entry && String(entry.item_id || "") === itemId);
   const requestId = String(req.request_id || "");
   const isItemRequest = action === "buy_material" || action === "reroll_talent";
-  const fingerprint = JSON.stringify([action, action === "reroll_talent" ? "spirit_root_reset" : String(req.item_id || ""), req.currency === void 0 ? "gold" : String(req.currency)]);
+  const requestedQuantity = req.quantity === void 0 ? 1 : Number(req.quantity);
+  const legacyFingerprint = JSON.stringify([action, action === "reroll_talent" ? "spirit_root_reset" : String(req.item_id || ""), req.currency === void 0 ? "gold" : String(req.currency)]);
+  const fingerprint = JSON.stringify([action, action === "reroll_talent" ? "spirit_root_reset" : String(req.item_id || ""), req.currency === void 0 ? "gold" : String(req.currency), action === "buy_material" ? requestedQuantity : 1]);
   if (isItemRequest) {
     if (!/^[A-Za-z0-9_-]{1,128}$/.test(requestId)) return JSON.stringify({ success: false, message: "M\xE3 y\xEAu c\u1EA7u kh\xF4ng h\u1EE3p l\u1EC7" });
     const previous = nk.storageRead([{ collection: "player_item_requests", key: requestId, userId: ctx.userId }]);
     if (previous.length) {
-      if (previous[0].value.fingerprint !== fingerprint) return JSON.stringify({ success: false, message: "M\xE3 y\xEAu c\u1EA7u \u0111\xE3 d\xF9ng cho giao d\u1ECBch kh\xE1c" });
+      const acceptsLegacyUnitPurchase = action === "buy_material" && requestedQuantity === 1 && previous[0].value.fingerprint === legacyFingerprint;
+      if (previous[0].value.fingerprint !== fingerprint && !acceptsLegacyUnitPurchase) return JSON.stringify({ success: false, message: "M\xE3 y\xEAu c\u1EA7u \u0111\xE3 d\xF9ng cho giao d\u1ECBch kh\xE1c" });
       return JSON.stringify({ success: true, duplicate: true, inventory: items, resources, profile, rolled: previous[0].value.rolled });
     }
   }
@@ -4839,13 +4847,15 @@ const talismanAction = (ctx, _logger, nk, payload) => {
   } else if (action === "buy_material") {
     const requestedItemId = String(req.item_id || "");
     const currency = req.currency === void 0 ? "gold" : String(req.currency);
-    if (["gold", "gems"].indexOf(currency) < 0 || !requestedItemId || !requestId || requestId.length > 128) {
+    const purchaseQuantity = req.quantity === void 0 ? 1 : Number(req.quantity);
+    if (["gold", "gems"].indexOf(currency) < 0 || !requestedItemId || !requestId || requestId.length > 128 || !Number.isSafeInteger(purchaseQuantity) || purchaseQuantity < 1 || purchaseQuantity > 99) {
       return JSON.stringify({ success: false, message: "Y\xEAu c\u1EA7u mua v\u1EADt ph\u1EA9m kh\xF4ng h\u1EE3p l\u1EC7" });
     }
     const receipts = Array.isArray(inventoryValue._store_receipts) ? inventoryValue._store_receipts : [];
     const receipt = receipts.find((entry) => entry.request_id === requestId);
     if (receipt) {
-      if (receipt.item_id !== requestedItemId || receipt.currency !== currency) return JSON.stringify({ success: false, message: "M\xE3 giao d\u1ECBch \u0111\xE3 d\xF9ng cho v\u1EADt ph\u1EA9m kh\xE1c" });
+      const receiptQuantity = receipt.quantity === void 0 ? 1 : Number(receipt.quantity);
+      if (receipt.item_id !== requestedItemId || receipt.currency !== currency || receiptQuantity !== purchaseQuantity) return JSON.stringify({ success: false, message: "M\xE3 giao d\u1ECBch \u0111\xE3 d\xF9ng cho giao d\u1ECBch kh\xE1c" });
       return JSON.stringify({ success: true, duplicate: true, inventory: items, resources });
     }
     if (handledRequestIds.indexOf(requestId) >= 0) return JSON.stringify({ success: false, message: "M\xE3 giao d\u1ECBch \u0111\xE3 \u0111\u01B0\u1EE3c s\u1EED d\u1EE5ng" });
@@ -4856,14 +4866,17 @@ const talismanAction = (ctx, _logger, nk, payload) => {
     const price = Number(product.price);
     const grantQuantity = Number(product.quantity);
     if (!Number.isSafeInteger(price) || price <= 0 || !Number.isSafeInteger(grantQuantity) || grantQuantity <= 0) return JSON.stringify({ success: false, message: "C\u1EA5u h\xECnh gi\xE1 kh\xF4ng h\u1EE3p l\u1EC7" });
+    const totalPrice = price * purchaseQuantity;
+    const totalGrantQuantity = grantQuantity * purchaseQuantity;
+    if (!Number.isSafeInteger(totalPrice) || totalPrice <= 0 || !Number.isSafeInteger(totalGrantQuantity) || totalGrantQuantity <= 0) return JSON.stringify({ success: false, message: "S\u1ED1 l\u01B0\u1EE3ng mua v\u01B0\u1EE3t gi\u1EDBi h\u1EA1n an to\xE0n" });
     const balance = Number(resources[currency] || 0);
     if (!Number.isSafeInteger(balance) || balance < 0) return JSON.stringify({ success: false, message: "S\u1ED1 d\u01B0 kh\xF4ng h\u1EE3p l\u1EC7; vui l\xF2ng \u0111\u1ED3ng b\u1ED9 l\u1EA1i h\u1ED3 s\u01A1" });
-    if (balance < price) return JSON.stringify({ success: false, message: currency === "gold" ? "Kh\xF4ng \u0111\u1EE7 V\xE0ng" : "Kh\xF4ng \u0111\u1EE7 Gem" });
-    if (!serverGrantInventoryItem(nk, items, requestedItemId, grantQuantity)) {
+    if (balance < totalPrice) return JSON.stringify({ success: false, message: currency === "gold" ? "Kh\xF4ng \u0111\u1EE7 V\xE0ng" : "Kh\xF4ng \u0111\u1EE7 Gem" });
+    if (!serverGrantInventoryItem(nk, items, requestedItemId, totalGrantQuantity)) {
       return JSON.stringify({ success: false, message: "Kh\xF4ng th\u1EC3 c\u1EA5p v\u1EADt ph\u1EA9m" });
     }
-    resources[currency] = balance - price;
-    receipts.push({ request_id: requestId, item_id: requestedItemId, currency });
+    resources[currency] = balance - totalPrice;
+    receipts.push({ request_id: requestId, item_id: requestedItemId, currency, quantity: purchaseQuantity });
     inventoryValue._store_receipts = receipts.slice(-100);
     if (requestId) handledRequestIds.push(requestId);
   } else if (action === "buy_fragment") {
@@ -5466,7 +5479,9 @@ const startStage = (ctx, _logger, nk, payload) => {
 const PROGRESSION_VERSION = 2;
 const PROGRESSION_MAX_LEVEL = 50;
 const PROGRESSION_HERO_BASE_EXP = 1e3;
-const PROGRESSION_GROWTH = 1.25;
+const PROGRESSION_USER_BASE_EXP = 5e3;
+const PROGRESSION_POWER_C = 750;
+const PROGRESSION_POWER_P = 3.2;
 const PROGRESSION_USER_RATIO = 5;
 const CULTIVATION_MAX_ATTEMPTS = 3;
 const CULTIVATION_ELEMENTS = ["metal", "wood", "water", "fire", "earth"];
@@ -5760,6 +5775,11 @@ function progressionObject(value) {
   const parsed = parseJsonb(value);
   return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
 }
+function progressionCumulativeUserExp(level) {
+  if (level <= 0) return 0;
+  if (level === 1) return PROGRESSION_USER_BASE_EXP;
+  return PROGRESSION_USER_BASE_EXP + Math.floor(PROGRESSION_POWER_C * Math.pow(level, PROGRESSION_POWER_P) - PROGRESSION_POWER_C);
+}
 function progressionNextHeroExp(nk, level) {
   if (level >= PROGRESSION_MAX_LEVEL) return 0;
   const configured = getRemoteConfigValue(nk, "game_play", "exp_to_level", []);
@@ -5770,12 +5790,15 @@ function progressionNextHeroExp(nk, level) {
       return Math.max(1, Math.floor(nextTotal - currentTotal));
     }
   }
-  let required = PROGRESSION_HERO_BASE_EXP;
-  for (let current = 1; current < level; current++) required = Math.max(1, Math.round(required * PROGRESSION_GROWTH));
-  return required;
+  const userReq = progressionNextUserExp(nk, level);
+  return Math.max(1, Math.floor(userReq / PROGRESSION_USER_RATIO));
 }
 function progressionNextUserExp(nk, level) {
-  return progressionNextHeroExp(nk, level) * PROGRESSION_USER_RATIO;
+  if (level >= PROGRESSION_MAX_LEVEL) return 0;
+  if (level === 1) return PROGRESSION_USER_BASE_EXP;
+  const current = progressionCumulativeUserExp(level);
+  const prev = progressionCumulativeUserExp(level - 1);
+  return Math.max(1, current - prev);
 }
 function progressionApplyUser(nk, profile, awarded) {
   cultivationEnsureSources(profile);
@@ -8283,7 +8306,7 @@ function cpEvaluate(hero, level, affinities, roots, equipped, skills, progressio
       healing += cpNumber(a.hp) * cpNumber(effect.hp_percent_per_sec) * cpNumber(stats.duration) * casts;
     }
   }
-  const defense = Math.max(cpNumber(cfg.min_defense_multiplier), 1 - defenseValue / Math.max(1, cpNumber(ec.defense_divisor)));
+  const defense = 100 / (100 + defenseValue);
   const regen = cpClamp(cpNumber(a.regen_percent_per_10s), 0, cpNumber(cfg.regen_cap));
   const hp = Math.max(0, cpNumber(a.hp)) * (1 + regen * cpNumber(cfg.horizon_seconds) / 10) + healing;
   const ehp = hp / (Math.max(cpNumber(cfg.min_defense_multiplier), incoming) * defense * (1 - cpClamp(cpNumber(a.dodge_rate), 0, cpNumber(cfg.dodge_cap))));
@@ -9425,6 +9448,7 @@ function mailValidateAttachments(nk, input) {
       if (r.amount > 1e3 || !nk.sqlQuery("SELECT id FROM game_items WHERE id=$1", [r.id]).length) throw new Error("INVALID_ITEM");
       return { type: r.type, id: r.id, amount: r.amount };
     }
+    if (r.type === "hero" && r.amount === 1 && typeof r.id === "string" && /^[a-z0-9_]{1,100}$/.test(r.id) && nk.sqlQuery("SELECT id FROM game_heroes WHERE id=$1", [r.id]).length) return { type: r.type, id: r.id, amount: r.amount };
     throw new Error("INVALID_REWARD");
   });
 }
@@ -9507,15 +9531,17 @@ function mailClaimOne(nk, userId, id) {
   const stored = mailRead(nk, userId, id);
   if (!stored) return mailError("MAIL_NOT_FOUND", "Th\u01B0 kh\xF4ng c\xF2n t\u1ED3n t\u1EA1i.");
   const mail = stored.value, now = Date.now();
-  const reads = nk.storageRead([{ collection: "player_profiles", key: "main", userId }, { collection: "player_inventory", key: "items", userId }].concat(mail.weekly ? [{ collection: "weekly_leaderboard_claims", key: weeklyClaimKey(mail.weekly.period_id, mail.weekly.board_id), userId }] : []));
-  const p = reads.find((r) => r.collection === "player_profiles"), i = reads.find((r) => r.collection === "player_inventory");
-  if (!p || !i || !Array.isArray(i.value.items)) return mailError("CHARACTER_INCOMPLETE", "D\u1EEF li\u1EC7u nh\xE2n v\u1EADt ch\u01B0a s\u1EB5n s\xE0ng.");
-  if (mail.claimed_at_ms) return { success: true, already_claimed: true, mail: mailPresent(nk, mail, now), profile: p.value, inventory: i.value.items };
+  const reads = nk.storageRead([{ collection: "player_profiles", key: "main", userId }, { collection: "player_inventory", key: "items", userId }, { collection: "player_heroes", key: "states", userId }].concat(mail.weekly ? [{ collection: "weekly_leaderboard_claims", key: weeklyClaimKey(mail.weekly.period_id, mail.weekly.board_id), userId }] : []));
+  const p = reads.find((r) => r.collection === "player_profiles"), i = reads.find((r) => r.collection === "player_inventory"), h = reads.find((r) => r.collection === "player_heroes");
+  if (!p || !i || !h || !Array.isArray(i.value.items)) return mailError("CHARACTER_INCOMPLETE", "D\u1EEF li\u1EC7u nh\xE2n v\u1EADt ch\u01B0a s\u1EB5n s\xE0ng.");
+  if (mail.claimed_at_ms) return { success: true, already_claimed: true, mail: mailPresent(nk, mail, now), profile: p.value, inventory: i.value.items, heroes: h.value.heroes || [] };
   if (!mailPresent(nk, mail, now).can_claim) return mailError(mail.attachments.length ? "MAIL_EXPIRED" : "NO_REWARD", mail.attachments.length ? "Th\u01B0 \u0111\xE3 h\u1EBFt h\u1EA1n nh\u1EADn th\u01B0\u1EDFng." : "Th\u01B0 kh\xF4ng c\xF3 ph\u1EA7n th\u01B0\u1EDFng.");
   const oldWeekly = reads.find((r) => r.collection === "weekly_leaderboard_claims");
   const writes = [];
   if (!oldWeekly) {
     p.value.resources = p.value.resources || {};
+    h.value.heroes = Array.isArray(h.value.heroes) ? h.value.heroes : [];
+    let heroesChanged = false;
     for (const reward of mail.attachments) {
       if (reward.type === "resource") {
         const total = Number(p.value.resources[reward.id] || 0) + reward.amount;
@@ -9527,12 +9553,18 @@ function mailClaimOne(nk, userId, id) {
       } else if (reward.type === "exp") {
         progressionApplyUser(nk, p.value, reward.amount);
         progressionReconcileLevelUnlocks(nk, p.value);
+      } else if (reward.type === "hero") {
+        const hero = h.value.heroes.find((entry) => entry && String(entry.hero_id || "") === reward.id);
+        if (hero) hero.owned = true;
+        else h.value.heroes.push({ hero_id: reward.id, level: 1, exp: 0, next_level_exp: 1e3, owned: true, current_attribute: {} });
+        heroesChanged = true;
       } else throw new Error("INVALID_STORED_REWARD");
     }
     writes.push(
       { collection: "player_profiles", key: "main", userId, value: p.value, version: p.version, permissionRead: 1, permissionWrite: 0 },
       { collection: "player_inventory", key: "items", userId, value: i.value, version: i.version, permissionRead: 1, permissionWrite: 0 }
     );
+    if (heroesChanged) writes.push({ collection: "player_heroes", key: "states", userId, value: h.value, version: h.version, permissionRead: 1, permissionWrite: 0 });
     if (mail.weekly) writes.push({
       collection: "weekly_leaderboard_claims",
       key: weeklyClaimKey(mail.weekly.period_id, mail.weekly.board_id),
@@ -9553,7 +9585,7 @@ function mailClaimOne(nk, userId, id) {
     return mailError("DATA_CHANGED", "D\u1EEF li\u1EC7u v\u1EEBa thay \u0111\u1ED5i. Vui l\xF2ng th\u1EED l\u1EA1i.");
   }
   mailPush(nk, userId, id);
-  return { success: true, already_claimed: !!oldWeekly, mail: mailPresent(nk, mail, Date.now()), profile: p.value, inventory: i.value.items };
+  return { success: true, already_claimed: !!oldWeekly, mail: mailPresent(nk, mail, Date.now()), profile: p.value, inventory: i.value.items, heroes: h.value.heroes || [] };
 }
 function mailMutateOne(nk, userId, id, action) {
   if (action === "claim") return mailClaimOne(nk, userId, id);
@@ -9615,7 +9647,7 @@ function mailBulk(nk, userId, req, action) {
     }
     const result = mailMutateOne(nk, userId, row.id, action);
     results.push({ id: row.id, success: result.success, code: result.code || "" });
-    if (result.profile) latest = { profile: result.profile, inventory: result.inventory };
+    if (result.profile) latest = { profile: result.profile, inventory: result.inventory, heroes: result.heroes || [] };
   }
   return Object.assign(latest, { results, has_more: more, next_cursor: more ? rows[rows.length - 1].key : "" });
 }
@@ -9777,8 +9809,8 @@ function applyPurchaseMailRewards(nk, userId, grantId, productId, fulfillmentTyp
   const p = nk.storageRead([{ collection: "player_profiles", key: "main", userId }])[0];
   if (nk.storageRead([marker]).length || p && Array.isArray(p.value._iap_reward_ids) && p.value._iap_reward_ids.indexOf(grantId) >= 0) return { idempotent: true };
   const recurring = DAILY_PACK_IDS.indexOf(productId) >= 0 && rewards.length > 0 && rewards.every((r) => r.metadata && Number(r.metadata.daily_pack_days) === 30);
-  const mailed = recurring ? [] : rewards.filter((r) => r.reward_type === "currency" || r.reward_type === "item");
-  const immediate = recurring ? rewards : rewards.filter((r) => r.reward_type !== "currency" && r.reward_type !== "item");
+  const mailed = recurring ? [] : rewards.filter((r) => ["currency", "item", "hero"].indexOf(r.reward_type) >= 0);
+  const immediate = recurring ? rewards : rewards.filter((r) => ["currency", "item", "hero"].indexOf(r.reward_type) < 0);
   const writes = [], batch = Object.create(nk);
   batch.__purchaseBatch = true;
   batch.__mailBatch = true;
@@ -9792,7 +9824,7 @@ function applyPurchaseMailRewards(nk, userId, grantId, productId, fulfillmentTyp
     source_type: "purchase",
     title: "Ph\u1EA7n th\u01B0\u1EDFng g\xF3i " + productId,
     body: "Thanh to\xE1n \u0111\xE3 \u0111\u01B0\u1EE3c x\xE1c nh\u1EADn. H\xE3y nh\u1EADn v\u1EADt ph\u1EA9m c\u1EE7a g\xF3i t\u1EA1i \u0111\xE2y.",
-    attachments: mailed.map((r) => ({ type: r.reward_type === "currency" ? "resource" : "item", id: r.reward_id, amount: Number(r.quantity) }))
+    attachments: mailed.map((r) => ({ type: r.reward_type === "currency" ? "resource" : r.reward_type, id: r.reward_id, amount: Number(r.quantity) }))
   });
   writes.push(Object.assign({}, marker, { value: { product_id: productId, granted_at_ms: Date.now(), delivery: mailed.length ? "mail" : "direct" }, version: "*", permissionRead: 0, permissionWrite: 0 }));
   nk.storageWrite(writes);

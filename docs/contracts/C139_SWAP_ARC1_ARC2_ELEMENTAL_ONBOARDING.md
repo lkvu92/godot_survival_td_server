@@ -87,5 +87,6 @@
 
 | Version | Ngày | Người thực hiện | Nội dung |
 | :--- | :--- | :--- | :--- |
+| **1.2.0** | 2026-10-21 | Antigravity | Chuẩn hóa Archetype & Hitbox va chạm chân thực (Authentic Sizing) cho Arc 1 & Arc 2: Rusher 16px, Mage 18px, Grunt 20px, Tanker 32-34px, Boss 46.8-76.8px. Dynamic `CircleShape2D` & UI anchoring trong `Enemy.gd`. Chuẩn hóa wave modifiers $M \in [0.35, 1.20]$ (Arc 1) và $M \in [1.05, 2.00]$ (Arc 2), xóa bỏ hoàn toàn `def_add` âm, bảo toàn 100% EXP. |
 | **1.0.1** | 2026-10-19 | Codex | Reduced Arc 1/3/4/5 creep presentation scale by 20%; capped their boss render sizes at 1.3x the Arc 2 Ice Golem. |
 | **1.0.0** | 2026-10-19 | The Architect | Khởi tạo Contract: Đảo Hỏa Giới thành Arc 1 (Lvl 1-10) và Băng Giới thành Arc 2 (Lvl 11-20), đảo số wave, creep stats và milestone bosses. |

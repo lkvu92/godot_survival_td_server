@@ -48,7 +48,7 @@ function reset(){db={};conflict=false;row('player_profiles','main',{display_name
 const profile=()=>db['player_profiles:main'].value;
 const inventory=()=>db['player_inventory:items'].value.items;
 const quantity=id=>inventory().filter(i=>i.item_id===id).reduce((n,i)=>n+i.quantity,0);
-const buy=(id,currency,request)=>JSON.parse(action({userId:'u'}, {}, nk,JSON.stringify({action:'buy_material',item_id:id,currency,request_id:request})));
+const buy=(id,currency,request,quantity=1)=>JSON.parse(action({userId:'u'}, {}, nk,JSON.stringify({action:'buy_material',item_id:id,currency,quantity,request_id:request})));
 const renameTo=name=>JSON.parse(rename({userId:'u'}, {}, nk,JSON.stringify({display_name:name})));
 const reroll=id=>JSON.parse(action({userId:'u'}, {}, nk,JSON.stringify({action:'reroll_talent',request_id:id})));
 reset();assert(renameTo('Free Name').used_free);assert.equal(quantity('rename_talisman'),2);
@@ -61,7 +61,18 @@ assert(!renameTo('Legacy Counter Bypass').success);assert.equal(db['player_ident
 reset();renameTo('Free Name');const before=clone(db);conflict=true;assert(!renameTo('Failed Paid Name').success);assert.deepEqual(db,before,'CAS rejection must not consume a rename card');
 reset();assert(buy('attack_talisman','gems','buy-a').success);assert.equal(profile().resources.gems,19800);assert.equal(quantity('attack_talisman'),1);
 assert(buy('attack_talisman','gems','buy-a').duplicate);assert.equal(quantity('attack_talisman'),1);
-assert(!buy('shield_elixir','gems','buy-a').success);assert(!buy('attack_talisman','gold','buy-a').success);
+reset();assert(buy('attack_talisman','gems','buy-bulk',3).success);assert.equal(profile().resources.gems,19400);assert.equal(quantity('attack_talisman'),3);
+assert(buy('attack_talisman','gems','buy-bulk',3).duplicate);assert.equal(quantity('attack_talisman'),3);
+assert(!buy('attack_talisman','gems','buy-bulk',2).success);assert.equal(quantity('attack_talisman'),3,'request replay must bind quantity');
+const invalidQuantityBefore=clone(db);assert(!buy('attack_talisman','gems','buy-zero',0).success);assert(!buy('attack_talisman','gems','buy-over',100).success);assert(!buy('attack_talisman','gems','buy-fraction',1.5).success);assert.deepEqual(db,invalidQuantityBefore,'invalid bundle quantity cannot mutate');
+reset();assert(!buy('attack_talisman','gems','buy-insufficient',101).success);assert.equal(quantity('attack_talisman'),0);
+reset();assert(buy('attack_talisman','gems','buy-bulk-limit',99).success);assert.equal(quantity('attack_talisman'),99);
+reset();profile().resources.gems=500;assert(!buy('attack_talisman','gems','buy-insufficient',3).success);assert.equal(quantity('attack_talisman'),0);
+reset();assert(buy('attack_talisman','gems','buy-balance',2).success);assert.equal(profile().resources.gems,19600);assert.equal(quantity('attack_talisman'),2);
+reset();assert(buy('attack_talisman','gems','buy-limit',99).success);assert.equal(quantity('attack_talisman'),99);
+reset();assert(!buy('attack_talisman','gems','buy-over-limit',100).success);assert.equal(quantity('attack_talisman'),0);
+reset();assert(buy('attack_talisman','gems','buy-binding').success);
+assert(!buy('shield_elixir','gems','buy-binding').success);assert(!buy('attack_talisman','gold','buy-binding').success);
 assert(buy('attack_talisman','gold','buy-b').success);assert.equal(profile().resources.gold,950000);
 assert(!buy('rename_talisman','gold','bad-currency').success);assert(!buy('wind_aptitude_fruit','gems','disabled').success);
 assert(!buy('loot_magnet_talisman','gems','excluded').success);assert(!buy('attack_talisman','gems','').success);
@@ -76,10 +87,13 @@ reset();conflict=true;assert(!reroll('failed-roll').success);assert.equal(quanti
 reset();profile().name_changes_used='invalid';assert(!renameTo('Invalid Quota').success);assert.equal(quantity('rename_talisman'),2);
 console.log('PASS consumables: 23 catalog entries, exact prices/rarities, disabled elements, atomic Gold/Gem purchases, replay binding, free/paid rename, stale quota, talent reroll and active-run/CAS guards');
 
-const purchase=(id,currency,request_id,protocol=2)=>JSON.parse(storePurchase({userId:'u'},{},nk,JSON.stringify({item_id:id,currency,request_id,purchase_protocol:protocol})));
+const purchase=(id,currency,request_id,protocol=2,quantity=1)=>JSON.parse(storePurchase({userId:'u'},{},nk,JSON.stringify({item_id:id,currency,request_id,purchase_protocol:protocol,quantity})));
 reset();assert(purchase('campaign_sweep_ticket','gems','ticket-buy').success);
 assert.equal(profile().resources.gems,19980);assert.equal(quantity('campaign_sweep_ticket'),1);
 assert(purchase('campaign_sweep_ticket','gems','ticket-buy').duplicate);assert.equal(quantity('campaign_sweep_ticket'),1);
+reset();const ticketBulk=purchase('campaign_sweep_ticket','gems','ticket-bulk',2,4);assert(ticketBulk.success);assert.equal(ticketBulk.quantity,4);assert.equal(profile().resources.gems,19920);assert.equal(quantity('campaign_sweep_ticket'),4);
+assert(purchase('campaign_sweep_ticket','gems','ticket-bulk',2,4).duplicate);assert.equal(quantity('campaign_sweep_ticket'),4);
+assert(!purchase('campaign_sweep_ticket','gems','ticket-bulk',2,3).success);assert.equal(quantity('campaign_sweep_ticket'),4);
 assert(!purchase('campaign_sweep_ticket','gold','ticket-gold').success);assert.equal(profile().resources.gold,1000000);
 const ticketBeforeConflict=clone(db);conflict=true;assert(!purchase('campaign_sweep_ticket','gems','ticket-conflict').success);assert.deepEqual(db,ticketBeforeConflict);
 reset();const beforeMissingCurrency=clone(db);

@@ -104,7 +104,8 @@ const storePurchase: nkruntime.RpcFunction = (ctx, logger, nk, payload): string 
         return JSON.stringify({success:false,purchase_protocol:2,message:"Invalid store currency or purchase protocol"});
     }
     const response = JSON.parse(talismanAction(ctx, logger, nk, JSON.stringify(Object.assign({}, req, {action:"buy_material"}))));
-    return JSON.stringify(Object.assign(response, {purchase_protocol:2,item_id:req.item_id,currency:req.currency}));
+    const quantity = req.quantity === undefined ? 1 : req.quantity;
+    return JSON.stringify(Object.assign(response, {purchase_protocol:2,item_id:req.item_id,currency:req.currency,quantity}));
 };
 
 const updateInventory: nkruntime.RpcFunction = (
@@ -482,12 +483,15 @@ const talismanAction: nkruntime.RpcFunction = (ctx, _logger, nk, payload): strin
     let target = items.find((entry: any) => entry && String(entry.item_id || "") === itemId);
 	const requestId = String(req.request_id || "");
 	const isItemRequest = action === "buy_material" || action === "reroll_talent";
-	const fingerprint = JSON.stringify([action,action === "reroll_talent" ? "spirit_root_reset" : String(req.item_id||""),req.currency===undefined?"gold":String(req.currency)]);
+	const requestedQuantity = req.quantity === undefined ? 1 : Number(req.quantity);
+	const legacyFingerprint = JSON.stringify([action,action === "reroll_talent" ? "spirit_root_reset" : String(req.item_id||""),req.currency===undefined?"gold":String(req.currency)]);
+	const fingerprint = JSON.stringify([action,action === "reroll_talent" ? "spirit_root_reset" : String(req.item_id||""),req.currency===undefined?"gold":String(req.currency),action === "buy_material" ? requestedQuantity : 1]);
 	if (isItemRequest) {
 		if (!/^[A-Za-z0-9_-]{1,128}$/.test(requestId)) return JSON.stringify({success:false,message:"Mã yêu cầu không hợp lệ"});
 		const previous=nk.storageRead([{collection:"player_item_requests",key:requestId,userId:ctx.userId}]);
 		if (previous.length) {
-			if (previous[0].value.fingerprint!==fingerprint) return JSON.stringify({success:false,message:"Mã yêu cầu đã dùng cho giao dịch khác"});
+			const acceptsLegacyUnitPurchase = action === "buy_material" && requestedQuantity === 1 && previous[0].value.fingerprint === legacyFingerprint;
+			if (previous[0].value.fingerprint!==fingerprint && !acceptsLegacyUnitPurchase) return JSON.stringify({success:false,message:"Mã yêu cầu đã dùng cho giao dịch khác"});
 			return JSON.stringify({success:true,duplicate:true,inventory:items,resources,profile,rolled:previous[0].value.rolled});
 		}
 	}
@@ -519,13 +523,16 @@ const talismanAction: nkruntime.RpcFunction = (ctx, _logger, nk, payload): strin
     } else if (action === "buy_material") {
 		const requestedItemId = String(req.item_id || "");
 		const currency = req.currency === undefined ? "gold" : String(req.currency);
-		if (["gold", "gems"].indexOf(currency) < 0 || !requestedItemId || !requestId || requestId.length > 128) {
+		const purchaseQuantity = req.quantity === undefined ? 1 : Number(req.quantity);
+		if (["gold", "gems"].indexOf(currency) < 0 || !requestedItemId || !requestId || requestId.length > 128
+			|| !Number.isSafeInteger(purchaseQuantity) || purchaseQuantity < 1 || purchaseQuantity > 99) {
 			return JSON.stringify({ success: false, message: "Yêu cầu mua vật phẩm không hợp lệ" });
 		}
 		const receipts: any[] = Array.isArray(inventoryValue._store_receipts) ? inventoryValue._store_receipts : [];
 		const receipt = receipts.find((entry: any) => entry.request_id === requestId);
 		if (receipt) {
-			if (receipt.item_id !== requestedItemId || receipt.currency !== currency) return JSON.stringify({ success: false, message: "Mã giao dịch đã dùng cho vật phẩm khác" });
+			const receiptQuantity = receipt.quantity === undefined ? 1 : Number(receipt.quantity);
+			if (receipt.item_id !== requestedItemId || receipt.currency !== currency || receiptQuantity !== purchaseQuantity) return JSON.stringify({ success: false, message: "Mã giao dịch đã dùng cho giao dịch khác" });
 			return JSON.stringify({ success: true, duplicate: true, inventory: items, resources });
 		}
 		if (handledRequestIds.indexOf(requestId) >= 0) return JSON.stringify({ success: false, message: "Mã giao dịch đã được sử dụng" });
@@ -538,14 +545,17 @@ const talismanAction: nkruntime.RpcFunction = (ctx, _logger, nk, payload): strin
 		const price = Number(product.price);
 		const grantQuantity = Number(product.quantity);
 		if (!Number.isSafeInteger(price) || price <= 0 || !Number.isSafeInteger(grantQuantity) || grantQuantity <= 0) return JSON.stringify({ success: false, message: "Cấu hình giá không hợp lệ" });
+		const totalPrice = price * purchaseQuantity;
+		const totalGrantQuantity = grantQuantity * purchaseQuantity;
+		if (!Number.isSafeInteger(totalPrice) || totalPrice <= 0 || !Number.isSafeInteger(totalGrantQuantity) || totalGrantQuantity <= 0) return JSON.stringify({ success: false, message: "Số lượng mua vượt giới hạn an toàn" });
 		const balance = Number(resources[currency] || 0);
 		if (!Number.isSafeInteger(balance) || balance < 0) return JSON.stringify({success:false,message:"Số dư không hợp lệ; vui lòng đồng bộ lại hồ sơ"});
-		if (balance < price) return JSON.stringify({ success: false, message: currency === "gold" ? "Không đủ Vàng" : "Không đủ Gem" });
-		if (!serverGrantInventoryItem(nk, items, requestedItemId, grantQuantity)) {
+		if (balance < totalPrice) return JSON.stringify({ success: false, message: currency === "gold" ? "Không đủ Vàng" : "Không đủ Gem" });
+		if (!serverGrantInventoryItem(nk, items, requestedItemId, totalGrantQuantity)) {
 			return JSON.stringify({ success: false, message: "Không thể cấp vật phẩm" });
 		}
-		resources[currency] = balance - price;
-		receipts.push({ request_id: requestId, item_id: requestedItemId, currency });
+		resources[currency] = balance - totalPrice;
+		receipts.push({ request_id: requestId, item_id: requestedItemId, currency, quantity: purchaseQuantity });
 		inventoryValue._store_receipts = receipts.slice(-100);
 		if (requestId) handledRequestIds.push(requestId);
     } else if (action === "buy_fragment") {
