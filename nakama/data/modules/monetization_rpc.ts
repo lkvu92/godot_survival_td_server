@@ -435,6 +435,7 @@ function dailyPackState(profile: any, now: number): any {
         const day = active ? Math.floor((now - Number(pack.started_at_ms)) / DAILY_PACK_DAY_MS) : -1;
         result[id] = { active, claimable: active && day > Number(pack.last_claim_day), day: day + 1,
             days_remaining: active ? 30 - day : 0, expires_at: pack ? Math.floor(Number(pack.expires_at_ms) / 1000) : 0,
+            rewards: active && Array.isArray(pack.rewards) ? pack.rewards : [],
             next_claim_at: active ? Math.floor((Number(pack.started_at_ms) + (day + 1) * DAILY_PACK_DAY_MS) / 1000) : 0 };
     }
     return result;
@@ -520,8 +521,9 @@ function applyPurchaseStorageRewards(
     const profileObjects = nk.storageRead([{ collection: "player_profiles", key: "main", userId }]);
     if (profileObjects.length === 0) throw new Error("Player profile does not exist");
     const profile = profileObjects[0].value || {};
-    const recurring = DAILY_PACK_IDS.indexOf(productId) >= 0 && rewards.length > 0
-        && rewards.every(line => line.metadata && Number(line.metadata.daily_pack_days) === 30);
+    const dailyRewards = DAILY_PACK_IDS.indexOf(productId) >= 0
+        ? rewards.filter(line => line.metadata && Number(line.metadata.daily_pack_days) === 30) : [];
+    const recurring = dailyRewards.length > 0;
     if (recurring) {
         profile.daily_packs = profile.daily_packs || {};
         const existing = profile.daily_packs[productId];
@@ -529,11 +531,14 @@ function applyPurchaseStorageRewards(
         const now = Date.now();
         if (dailyPackState(profile, now)[productId].active) throw Error("Daily pack already active");
         const pack = { grant_id: grantId, started_at_ms: now, expires_at_ms: now + 30 * DAILY_PACK_DAY_MS, last_claim_day: -1,
-            rewards: rewards.map(line => ({ reward_type: line.reward_type, reward_id: line.reward_id, quantity: line.quantity })) };
+            rewards: dailyRewards.map(line => ({ reward_type: line.reward_type, reward_id: line.reward_id, quantity: line.quantity })) };
         profile.daily_packs[productId] = pack;
-        nk.storageWrite([{ collection: "player_profiles", key: "main", userId, value: profile,
-            permissionRead: 1, permissionWrite: 0, version: profileObjects[0].version }]);
-        return { daily_pack: pack };
+        rewards = rewards.filter(line => dailyRewards.indexOf(line) < 0);
+        if (!rewards.length) {
+            nk.storageWrite([{ collection: "player_profiles", key: "main", userId, value: profile,
+                permissionRead: 1, permissionWrite: 0, version: profileObjects[0].version }]);
+            return { daily_pack: pack };
+        }
     }
     const profileGrants: string[] = Array.isArray(profile._iap_reward_ids)
         ? profile._iap_reward_ids.map((value: any) => String(value)) : [];
@@ -650,11 +655,14 @@ const createPurchaseOrder: nkruntime.RpcFunction = (ctx, _logger, nk, payload) =
             already_fulfilled: true }, idempotent: true });
     }
     const monthlyCatalog = DAILY_PACK_IDS.indexOf(productId) >= 0 && Number((parseJsonb(product.ui) || {}).duration_days) === 30;
-    // Never launch a newly advertised monthly purchase against an older one-time
-    // pending snapshot. Keep old orders claimable for already-paid receipts.
+    // Keep old snapshots claimable, but do not launch a new advertised purchase
+    // against an older catalog version or a legacy one-time monthly order.
+    const catalogPricingVersion = Number((parseJsonb(product.ui) || {}).pricing_version || 0);
     const pending = previous.find((row: any) => String(row.status) === "pending" && (!monthlyCatalog || (
         Array.isArray(parseJsonb(row.reward_snapshot)) && parseJsonb(row.reward_snapshot).length > 0
-        && parseJsonb(row.reward_snapshot).every((line: any) => Number((line.metadata || {}).daily_pack_days) === 30))));
+        && parseJsonb(row.reward_snapshot).some((line: any) => Number((line.metadata || {}).daily_pack_days) === 30)))
+        && (!catalogPricingVersion || (Array.isArray(parseJsonb(row.reward_snapshot)) && parseJsonb(row.reward_snapshot).length > 0
+        && parseJsonb(row.reward_snapshot).every((line: any) => Number((line.metadata || {}).pricing_version || 0) === catalogPricingVersion))));
     if (pending) {
         return JSON.stringify({ status: "success", data: { purchase_order_id: String(pending.id),
             product_id: productId, platform:String(pending.platform||'android'), store_product_id:String(pending.store_product_id||productId), fulfillment_type: String(product.fulfillment_type) }, idempotent: true });

@@ -52,11 +52,11 @@
     "auto_basic_attack": true,
     "basic_attack_range": 450,
     "price": {
-      "gold": 50000,
+      "gold": 250000,
       "gems": 0
     },
     "require": {
-      "level": 5,
+      "level": 15,
       "vip": 0
     },
     "display_name": "Liệt Diễm Tiễn Tôn",
@@ -99,8 +99,8 @@
     "id": "hero_3",
     "basic_attack_range": 250,
     "price": {
-      "gold": 250000,
-      "gems": 1000
+      "gold": 100000,
+      "gems": 400
     },
     "require": {
       "level": 10,
@@ -151,7 +151,7 @@
     "basic_attack_range": 400,
     "price": {
       "gold": 500000,
-      "gems": 2500
+      "gems": 2000
     },
     "require": {
       "level": 20,

@@ -1,12 +1,32 @@
 {
   "contracts": [
+    {"id":"C173_CURRENCY_PRICING","version":"1.0.0","status":"ACTIVE","updated_at":"2026-10-22","contract_file":"docs/contracts/C173_CURRENCY_PRICING.md"},
+    {"id":"C172_PRIMORDIAL_WRAITH_SKILLS","version":"1.0.0","status":"ACTIVE","updated_at":"2026-10-22","contract_file":"docs/contracts/C172_PRIMORDIAL_WRAITH_SKILLS.md"},
+    {"id":"C171_ARC5_BOSS_SKILLS","version":"1.0.1","status":"ACTIVE","updated_at":"2026-10-23","contract_file":"docs/contracts/C171_ARC5_BOSS_SKILLS.md"},
+    {"id":"C169_CREEP_EARTH_SKILLS","version":"1.0.0","status":"IN_PROGRESS","updated_at":"2026-10-22","contract_file":"docs/contracts/C169_CREEP_EARTH_SKILLS.md"},
+    {"id":"C168_CREEP_METAL_SKILLS","version":"1.0.0","status":"ACTIVE","updated_at":"2026-10-22","contract_file":"docs/contracts/C168_CREEP_METAL_SKILLS.md"},
+    {"id":"C167_TOWER_SWEEP","version":"1.0.0","status":"IN_PROGRESS","updated_at":"2026-10-22","contract_file":"docs/contracts/C167_TOWER_SWEEP.md"},
+    {"id":"C166_TRIAL_TOWER_FEATURE","version":"1.0.0","status":"ACTIVE","updated_at":"2026-10-22","contract_file":"docs/contracts/C166_TRIAL_TOWER_FEATURE.md"},
+    {"id":"C165_TOWER_FLOOR_BALANCE","version":"1.1.0","status":"ACTIVE","updated_at":"2026-10-22","contract_file":"docs/contracts/C165_TOWER_FLOOR_BALANCE.md"},
+    {"id":"C164_TOWER_MIRROR_AND_MANUAL_CONTROLS","version":"1.0.0","status":"ACTIVE","updated_at":"2026-10-22","contract_file":"docs/contracts/C164_TOWER_MIRROR_AND_MANUAL_CONTROLS.md"},
+    {"id":"C163_ADDITIVE_COMBAT_BONUSES","version":"1.0.0","status":"ACTIVE","updated_at":"2026-10-22","contract_file":"docs/contracts/C163_ADDITIVE_COMBAT_BONUSES.md"},
+    {"id":"C162_HERO_SKILL_DAMAGE_CURVES","version":"1.0.0","status":"ACTIVE","updated_at":"2026-10-22","contract_file":"docs/contracts/C162_HERO_SKILL_DAMAGE_CURVES.md"},
+    {"id":"C161_TRIAL_TOWER_CHALLENGE","version":"1.2.0","status":"ACTIVE","updated_at":"2026-10-22","contract_file":"docs/contracts/C161_TRIAL_TOWER_CHALLENGE.md"},
     {
-      "id": "C158_CREEP_WOOD_SKILLS",
+      "id": "C160_TRIAL_TOWER_STATUS",
+      "version": "1.1.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-22",
+      "contract_file": "docs/contracts/C160_TRIAL_TOWER_STATUS.md"
+    },
+    {
+      "id": "C159_INVENTORY_STACK_CONSOLIDATION",
       "version": "1.0.0",
       "status": "ACTIVE",
       "updated_at": "2026-10-21",
-      "contract_file": "docs/contracts/C158_CREEP_WOOD_SKILLS.md"
+      "contract_file": "docs/contracts/C159_INVENTORY_STACK_CONSOLIDATION.md"
     },
+    {"id": "C158_CREEP_WOOD_SKILLS", "version": "1.1.2", "status": "ACTIVE", "updated_at": "2026-10-23", "contract_file": "docs/contracts/C158_CREEP_WOOD_SKILLS.md"},
     {
       "id": "C157_CREEP_ICE_SKILLS",
       "version": "1.0.0",
@@ -88,7 +108,7 @@
       "id": "C147_MAILBOX",
       "feature_id": "F147_MAILBOX",
       "name": "Server-authoritative mailbox",
-      "version": "1.2.0",
+      "version": "1.3.0",
       "status": "ACTIVE",
       "updated_at": "2026-10-21",
       "contract_file": "docs/contracts/C147_MAILBOX.md"
@@ -97,7 +117,7 @@
       "id": "C144_STAGE_SWEEP",
       "version": "1.4.1",
       "status": "ACTIVE",
-      "updated_at": "2026-10-20",
+      "updated_at": "2026-10-22",
       "contract_file": "docs/contracts/C144_STAGE_SWEEP.md"
     },
     {
@@ -193,9 +213,9 @@
     },
     {
       "id": "C130_CONSUMABLE_USE",
-      "version": "1.2.0",
+      "version": "1.3.0",
       "status": "IN_PROGRESS",
-      "updated_at": "2026-10-20",
+      "updated_at": "2026-10-22",
       "contract_file": "docs/contracts/C130_CONSUMABLE_USE.md"
     },
     {

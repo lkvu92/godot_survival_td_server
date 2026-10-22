@@ -96,7 +96,7 @@ def seed_commerce(replace_all=False):
 
 
 def seed_content_configs():
-    configs = [("daily_checkin", "daily_checkin.json"), ("events", "events.json"),
+    configs = [("trial_tower", "trial_tower.json"), ("daily_checkin", "daily_checkin.json"), ("events", "events.json"),
                ("stamina", "stamina_config.json"), ("vip", "vip_config.json"), ("rewarded_ads", "rewarded_ads.json"),
                ("enemy_skills", "enemy_skills.json"), ("boss_skills", "boss_skills.json"), ("tribulation", "tribulation_config.json")]
     invoke_seed("content_configs", {"rows": [{"id": key, "payload": read_json(filename), "active": True} for key, filename in configs]})

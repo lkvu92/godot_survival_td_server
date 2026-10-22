@@ -262,9 +262,9 @@ function applyPurchaseMailRewards(nk:nkruntime.Nakama,userId:string,grantId:stri
     const marker={collection:'player_purchase_grants',key:grantId,userId};
     const p=nk.storageRead([{collection:'player_profiles',key:'main',userId}])[0];
     if(nk.storageRead([marker]).length||(p&&Array.isArray(p.value._iap_reward_ids)&&p.value._iap_reward_ids.indexOf(grantId)>=0))return {idempotent:true};
-    const recurring=DAILY_PACK_IDS.indexOf(productId)>=0&&rewards.length>0&&rewards.every(r=>r.metadata&&Number(r.metadata.daily_pack_days)===30);
-    const mailed=recurring?[]:rewards.filter(r=>['currency','item','hero'].indexOf(r.reward_type)>=0);
-    const immediate=recurring?rewards:rewards.filter(r=>['currency','item','hero'].indexOf(r.reward_type)<0);
+    const isDaily=(r:StoreRewardLine)=>DAILY_PACK_IDS.indexOf(productId)>=0&&r.metadata&&Number(r.metadata.daily_pack_days)===30;
+    const mailed=rewards.filter(r=>!isDaily(r)&&['currency','item','hero'].indexOf(r.reward_type)>=0);
+    const immediate=rewards.filter(r=>isDaily(r)||['currency','item','hero'].indexOf(r.reward_type)<0);
     const writes:any[]=[],batch:any=Object.create(nk);batch.__purchaseBatch=true;batch.__mailBatch=true;
     batch.storageWrite=(changes:any[])=>{for(const w of changes)writes.push(w);return [];};
     const result=applyPurchaseStorageRewards(batch,userId,grantId,productId,fulfillmentType,immediate);

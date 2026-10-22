@@ -52,7 +52,7 @@
       "requirements": {"level": 1, "vip": 0},
       "route_id": "inventory",
       "quests": [
-        {"quest_id":"earn_runes_20","type":"item_earned","name":"Kiếm được 20 Rune","target":20,"icon_type":"extra","icon_key":"dismantle","filters":{"item_prefixes":["rune_"]},"rewards":{"normal":[{"type":"random_item","pool":["rune_metal_low","rune_wood_low","rune_water_low","rune_fire_low","rune_earth_low"],"amount":10}],"vip":{"required_vip":1,"grants":[{"type":"random_item","pool":["rune_metal_low","rune_wood_low","rune_water_low","rune_fire_low","rune_earth_low"],"amount":15}]}}}
+        {"quest_id":"earn_runes_20","type":"item_earned","name":"Kiếm được 20 Rune","target":20,"icon_type":"extra","icon_key":"dismantle","filters":{"item_prefixes":["stone_"]},"rewards":{"normal":[{"type":"random_item","pool":["stone_metal_low","stone_wood_low","stone_water_low","stone_fire_low","stone_earth_low"],"amount":10}],"vip":{"required_vip":1,"grants":[{"type":"random_item","pool":["stone_metal_low","stone_wood_low","stone_water_low","stone_fire_low","stone_earth_low"],"amount":15}]}}}
       ]
     },
     {
@@ -69,7 +69,7 @@
       "requirements": {"level": 10, "vip": 0},
       "route_id": "element_upgrade",
       "quests": [
-        {"quest_id":"upgrade_element_5","type":"element_upgrade","name":"Nâng cấp Ngũ Hành 5 lần","target":5,"icon_type":"ui","icon_key":"detail_stamina","filters":{},"rewards":{"normal":[{"type":"resource","id":"gold","amount":15000},{"type":"resource","id":"gems","amount":10},{"type":"random_item","pool":["rune_metal_low","rune_wood_low","rune_water_low","rune_fire_low","rune_earth_low"],"amount":10}],"vip":{"required_vip":1,"grants":[{"type":"resource","id":"gold","amount":22500},{"type":"resource","id":"gems","amount":15},{"type":"random_item","pool":["rune_metal_low","rune_wood_low","rune_water_low","rune_fire_low","rune_earth_low"],"amount":15}]}}}
+        {"quest_id":"upgrade_element_5","type":"element_upgrade","name":"Nâng cấp Ngũ Hành 5 lần","target":5,"icon_type":"ui","icon_key":"detail_stamina","filters":{},"rewards":{"normal":[{"type":"resource","id":"gold","amount":15000},{"type":"resource","id":"gems","amount":10},{"type":"random_item","pool":["stone_metal_low","stone_wood_low","stone_water_low","stone_fire_low","stone_earth_low"],"amount":10}],"vip":{"required_vip":1,"grants":[{"type":"resource","id":"gold","amount":22500},{"type":"resource","id":"gems","amount":15},{"type":"random_item","pool":["stone_metal_low","stone_wood_low","stone_water_low","stone_fire_low","stone_earth_low"],"amount":15}]}}}
       ]
     },
     {

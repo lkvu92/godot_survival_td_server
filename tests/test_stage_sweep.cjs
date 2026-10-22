@@ -6,7 +6,7 @@ const c=vm.createContext({Date:Clock});
 for(const file of ['progression_rpc','resource_rpc','sweep_rpc'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../nakama/data/modules/build',file+'.js'),'utf8'),c);
 const fn=n=>vm.runInContext(n,c),config=clone(fn('SWEEP_DEFAULTS'));
 c.parseJsonObject=v=>typeof v==='string'?JSON.parse(v):v||{};c.parseJsonb=c.parseJsonObject;
-c.getRemoteConfigValue=(_nk,section,key,fallback)=>key==='stage_sweep'?clone(config):fallback;
+c.getRemoteConfigValue=(_nk,section,key,fallback)=>key==='stage_sweep'?clone(config):key==='tower_sweep'?clone(fn('TOWER_SWEEP_DEFAULTS')):fallback;
 vm.runInContext(`progressionMigrate=()=>{};cultivationEnsureProfile=()=>{};cultivationEnsurePreview=()=>{};progressionReconcileLevelUnlocks=()=>{};progressionReconcileCampaignUnlocks=()=>{};progressionMaxStageBaseExp=()=>100;progressionHeroAttributes=()=>({});progressionNextHeroExp=()=>100000;progressionNextUserExp=()=>100000;progressionApplyUser=(_nk,p,exp)=>{p.exp=(p.exp||0)+exp;return {};};eventRecord=()=>{};`,c);
 c.serverGrantInventoryItem=(_nk,items,id,quantity)=>{const item=items.find(r=>r.item_id===id);if(item)item.quantity+=quantity;else items.push({item_id:id,quantity});return true;};
 const id=r=>r.collection+':'+r.key;
@@ -124,7 +124,7 @@ console.log('PASS instant finish: quote, due-round exclusion, all rewards, insuf
 // Catalog projection must not re-read/re-decode published rules for every loot line.
 vm.runInContext(fs.readFileSync(path.join(__dirname,'../nakama/data/modules/build/config_rpc.js'),'utf8'),c);
 let ruleReads=0;
-c.getRemoteConfigValue=(_nk,section,key,fallback)=>{if(key==='stage_sweep'){ruleReads++;return clone(config);}return fallback;};
+c.getRemoteConfigValue=(_nk,section,key,fallback)=>{if(key==='stage_sweep'){ruleReads++;return clone(config);}if(key==='tower_sweep')return clone(fn('TOWER_SWEEP_DEFAULTS'));return fallback;};
 const projectionNk=Object.create(nk),projectionQueries=[];
 projectionNk.sqlQuery=(sql,args)=>{
  projectionQueries.push(JSON.stringify([sql,args]));

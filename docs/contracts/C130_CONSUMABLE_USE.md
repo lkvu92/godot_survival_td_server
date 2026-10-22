@@ -1,6 +1,6 @@
 # C130 — Consumable use and permanent cultivation sources
 
-- Version: `1.2.0`
+- Version: `1.3.0`
 - Status: `IN_PROGRESS`
 - Date: `2026-10-17`
 
@@ -25,6 +25,28 @@ Unsupported wind/thunder/space fruit remain blocked; slot23 excluded.
 Permanent items are blocked during active stage or tribulation. Full stamina, max level, capped affinity and ineffective heals do not consume.
 EXP follows existing account progression and breakthrough gate, not in-run hero EXP.
 
+## Timed gameplay reward boosts
+
+The consumable catalog includes EXP and Gold reward cards with multipliers
+`1.10`, `1.25`, `1.50`, `2.00`, and `5.00`; every card lasts 24 hours. The
+server owns their state at `profile.gameplay_boosts.{exp,gold}` as
+`{multiplier,expires_at_ms}`. No client clock or multiplier is accepted.
+
+Using the same multiplier extends the existing expiry by 24 hours per card.
+An equal-or-lower incoming multiplier than an active card is rejected without
+consuming an item. A stronger card requires a second identical request with
+`confirm_replace:true`; that replaces the active card and starts its duration
+from the authoritative server time. The first response returns
+`BOOST_REPLACEMENT_CONFIRMATION_REQUIRED`, active and replacement data, and
+does not consume the item.
+
+Active EXP boosts multiply ordinary and first-clear account EXP when a stage
+or sweep settles. Active Gold boosts multiply only Gold resource grants in
+the same reward snapshot. They therefore also flow through an accepted
+advertisement double-claim, because the ad multiplier acts on the already
+settled snapshot. Expired/malformed boosts evaluate as `1.0` and never alter
+rewards. Other resource rewards and exclusive drops remain unchanged.
+
 ## Battle UI/lifecycle
 Left HUD vertical ScrollBarUI hosts inventory-style UiItemSlot rarity frames with bottom-right quantity (including 1), aligned to the opposite skill rail. The viewport fits at most six slots (fewer on short screens), with no horizontal scrolling. Restore the original hero HP bar offsets; item layout must not move the HP bar.
 Tap uses one. Paused/dead/finished/offline/empty/unsupported items are disabled.
@@ -40,6 +62,7 @@ Build backend, client/server static checks. Additive config patch generator only
 
 | Version | Date | Change |
 |---|---|---|
+| 1.3.0 | 2026-10-22 | Added authoritative 24-hour EXP/Gold reward cards, duration stacking and stronger-card replacement confirmation. |
 | 1.0.1 | 2026-10-17 | Left vertical item rail, maximum six visible slots, original HP placement. |
 | 1.0.0 | 2026-10-17 | Full consumable activation, source-safe reroll and bottom battle item bar. |
 

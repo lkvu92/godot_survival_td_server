@@ -18,7 +18,7 @@ progressionCompleteStage = (_nk, p, stage_id, level_id) => {
 eventRecord = () => {};
 `, context);
 const award = vm.runInContext('awardStageProgression', context);
-let db, version = 0, conflict = false, stageId = 'stage_1_1', arcId = 'arc_1';
+let db, version = 0, conflict = false, stageId = 'stage_1_1', arcId = 'arc_1', goldReward = 0;
 function row(collection, key, value) {
   db[collection] = {collection, key, value: clone(value), version: String(++version)};
 }
@@ -31,7 +31,7 @@ const nk = {
   },
   sqlQuery(sql) {
     if (sql.includes('exp_weight')) return [{exp_weight: 1.1, is_boss: false, arc_id: arcId}];
-    if (sql.includes('exp_multiplier')) return [{exp_multiplier: 1.25, gold_reward: 0, loot_table: [], boss_loot_table: []}];
+    if (sql.includes('exp_multiplier')) return [{exp_multiplier: 1.25, gold_reward: goldReward, loot_table: [], boss_loot_table: []}];
     return [];
   }
 };
@@ -69,6 +69,15 @@ reset(); result = settle('one', false);
 assert(!result.first_clear); assert.equal(result.exp_awarded, 139);
 assert.equal(db.player_profiles.value.completed_stage_levels.length, 0);
 run('after-loss'); assert(settle('after-loss').first_clear);
+reset(); db.player_profiles.value.gameplay_boosts={exp:{multiplier:1.5,expires_at_ms:Date.now()+60000}};
+result = settle('one');
+assert.equal(result.exp_awarded, 417);
+assert.equal(result.first_clear_bonus_exp, 209);
+assert.equal(result.profile.exp, 417);
+reset(); goldReward = 101; db.player_profiles.value.gameplay_boosts={gold:{multiplier:1.25,expires_at_ms:Date.now()+60000}};
+result = settle('one');
+assert.equal(result.loot.find(reward => reward.resource_id === 'gold').quantity, 126);
+goldReward = 0;
 reset([{stage_id: 'stage_1_1', level_id: 'normal'}]);
 assert(!settle('one').first_clear);
 reset(); conflict = true;
@@ -99,4 +108,4 @@ for (const training of [{stage: 'stage_0_1', arc: 'arc_0'}, {stage: 'stage_0_1',
     }
   }
 }
-console.log('PASS first-clear EXP: normal first/repeat/difficulty/loss/replay/conflict; training victory/defeat/repeat grant zero User/Hero EXP');
+console.log('PASS first-clear EXP: normal first/repeat/difficulty/loss/replay/conflict, active EXP boost; training victory/defeat/repeat grant zero User/Hero EXP');

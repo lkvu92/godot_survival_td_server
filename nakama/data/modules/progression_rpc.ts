@@ -1,4 +1,228 @@
 // Persistent progression is server-owned. In-run XP remains entirely client/runtime state.
+
+function trialTowerStatus(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, _payload: string): string {
+    const fail = (code: number, message: string) => JSON.stringify({success:false,code,message});
+    if (!ctx.userId) return fail(401, "Authentication required");
+    const config = readContentConfig(nk, "trial_tower");
+    if (config.floor_count !== 20 || config.daily_tickets !== 5 || config.ticket_cap !== 20
+        || config.base_stat_multiplier !== 0.7 || config.stat_increase_per_floor !== 0.1 || config.speed_increase_per_floor !== 0.05 || !Array.isArray(config.floors) || config.floors.length !== 20)
+        return fail(503, "Tháp chưa được cấu hình.");
+    const validRewards = (rewards: any) => Array.isArray(rewards) && rewards.every((r: any) =>
+        r && typeof r.label === "string" && r.label.trim().length > 0);
+    for (let i = 0; i < config.floors.length; i++) {
+        const f = config.floors[i];
+        if (!f || f.floor !== i + 1 || !validRewards(f.first_rewards) || !validRewards(f.repeat_rewards))
+            return fail(503, "Cấu hình tầng không hợp lệ.");
+    }
+    const now = Date.now();
+    const rewardProfileRow=nk.storageRead([{collection:'player_profiles',key:'main',userId:ctx.userId}])[0];
+    const rewardProfile=rewardProfileRow?rewardProfileRow.value:{};
+    const day = Math.floor((now + 7 * 3600000) / 86400000);
+    const ref = {collection:"player_trial_tower",key:"main",userId:ctx.userId};
+    for (let attempt = 0; attempt < 3; attempt++) {
+        const rows = nk.storageRead([ref]);
+        const previous = rows.length ? rows[0].value as any : null;
+        if (previous && (!Number.isInteger(previous.highest_cleared) || previous.highest_cleared < 0
+            || previous.highest_cleared > 20 || !Number.isInteger(previous.tickets) || previous.tickets < 0
+            || previous.tickets > 20 || !Number.isSafeInteger(previous.last_ticket_day) || previous.last_ticket_day < 0))
+            return fail(503, "Tiến độ tháp không hợp lệ.");
+        if (rows.length && !previous) return fail(503, "Tiến độ tháp không hợp lệ.");
+        const state = previous ? Object.assign({}, previous) : {highest_cleared:0,tickets:5,last_ticket_day:day};
+        if (previous && day > previous.last_ticket_day) {
+            state.tickets = Math.min(20, previous.tickets + Math.min(4, day - previous.last_ticket_day) * 5);
+            state.last_ticket_day = day;
+        }
+        if (!previous || state.last_ticket_day !== previous.last_ticket_day) {
+            try {
+                nk.storageWrite([Object.assign({},ref,{value:state,version:rows.length ? rows[0].version : "*",
+                    permissionRead:0,permissionWrite:0})]);
+            } catch (error) {
+                if (attempt < 2) continue;
+                logger.warn("Trial tower status write could not complete");
+                return fail(409, "Tiến độ đang được cập nhật. Hãy thử lại.");
+            }
+        }
+        return JSON.stringify({success:true,snapshot:{
+            floors:config.floors.map((f:any)=>Object.assign({},f,{first_rewards:towerRewardEntries(nk,f.first_rewards,rewardProfile,f.floor),repeat_rewards:towerRewardEntries(nk,f.repeat_rewards,rewardProfile,f.floor),stat_multiplier:Math.round((config.base_stat_multiplier+(f.floor-1)*config.stat_increase_per_floor)*10000)/10000,
+                speed_multiplier:Math.round((config.base_stat_multiplier+(f.floor-1)*config.speed_increase_per_floor)*10000)/10000})),
+            highest_cleared:state.highest_cleared,tickets:state.tickets,daily_tickets:5,ticket_cap:20,
+            server_time:Math.floor(now/1000),next_ticket_at:Math.floor(((Math.max(day,state.last_ticket_day)+1)*86400000-7*3600000)/1000)
+        }});
+    }
+    return fail(409, "Hãy thử lại.");
+}
+
+function startTrialTower(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    const fail = (code:string,message:string,extra:any={})=>JSON.stringify(Object.assign({success:false,code,message},extra));
+    if(!ctx.userId)return fail('AUTH_REQUIRED','Authentication required');
+    let req:any;try{req=JSON.parse(payload||'{}');}catch(_e){return fail('INVALID_REQUEST','Invalid JSON');}
+    if(!req||typeof req!=='object'||Array.isArray(req)||!Number.isInteger(req.floor)||req.floor<1||req.floor>20||typeof req.hero_id!=='string'
+        ||typeof req.request_id!=='string'||!/^[a-zA-Z0-9_-]{8,128}$/.test(req.request_id))return fail('INVALID_REQUEST','Yêu cầu không hợp lệ.');
+    const status=JSON.parse(trialTowerStatus(ctx,logger,nk,'{}'));
+    if(!status.success)return JSON.stringify(status);
+    if(req.floor>status.snapshot.highest_cleared+1)return fail('FLOOR_LOCKED','Chưa mở tầng này.');
+    const config=readContentConfig(nk,'trial_tower'),rules=config.combat_rules,arena=config.arena;
+    if(!arena||!Array.isArray(arena.world_size)||arena.world_size.length!==2
+        ||arena.world_size.some((v:any)=>!Number.isFinite(v)||v>10000)
+        ||arena.world_size[0]<720||arena.world_size[1]<1280||!Number.isFinite(arena.edge_margin)
+        ||arena.edge_margin<=0||arena.edge_margin>=Math.min(...arena.world_size)/4
+        ||!Number.isFinite(arena.spawn_gap)||arena.spawn_gap<=0||arena.spawn_gap>=arena.world_size[1]-2*arena.edge_margin)
+        return fail('CONFIG_INVALID','Chưa cấu hình đấu trường tháp.');
+    if(!rules||!Number.isFinite(rules.frenzy_after_sec)||rules.frenzy_after_sec<=0
+        ||!(rules.frenzy_atk_per_sec>0)||!(rules.frenzy_resist_per_sec>0)
+        ||!(rules.frenzy_resist_cap>=0&&rules.frenzy_resist_cap<100)||!(rules.frenzy_control_resist_per_sec>0))
+        return fail('CONFIG_INVALID','Chưa cấu hình trận tháp.');
+    const refs=[{collection:'player_profiles',key:'main',userId:ctx.userId},
+        {collection:'player_heroes',key:'states',userId:ctx.userId},{collection:'player_stage_runs',key:'active',userId:ctx.userId},
+        {collection:'player_inventory',key:'items',userId:ctx.userId},{collection:'player_trial_tower',key:'main',userId:ctx.userId}];
+    const rows=nk.storageRead(refs),p=rows.find(r=>r.collection==='player_profiles'),h=rows.find(r=>r.collection==='player_heroes'),
+        old=rows.find(r=>r.collection==='player_stage_runs'),inv=rows.find(r=>r.collection==='player_inventory');
+    if(!p||!h)return fail('PROFILE_INCOMPLETE','Chưa tải đủ nhân vật.');
+    const profile=cpObject(p.value),previous=old?cpObject(old.value):{};
+    if(previous.request_id===req.request_id&&previous.stage_id==='stage_trial_tower') {
+        if(previous.hero_id!==req.hero_id||previous.floor!==req.floor)return fail('REQUEST_CONFLICT','Yêu cầu đã dùng.');
+        if(previous.status==='active'&&previous.expires_at_ms>Date.now())return JSON.stringify({success:true,run:previous});
+        return fail('REQUEST_COMPLETED','Lượt thử này đã kết thúc.');
+    }
+    if(previous.status==='active'&&previous.expires_at_ms>Date.now())return fail(previous.stage_id==='stage_trial_tower'?'TOWER_RUN_ACTIVE':'COMBAT_ACTIVE',
+        'Bạn đang có trận chưa kết thúc.',previous.stage_id==='stage_trial_tower'?{run_id:previous.run_id}:{});
+    if((profile.breakthrough||{}).in_tribulation||sweepCombatError(profile))return fail('COMBAT_ACTIVE','Hãy kết thúc hoạt động hiện tại.');
+    const towerRow=rows.find(r=>r.collection==='player_trial_tower');
+    if(!towerRow||Number(towerRow.value.tickets||0)<1)return fail('NO_TOWER_ENTRIES','Không còn lượt vào tháp.');
+    const catalog=readCombatPowerCatalog(nk),hero=catalog.heroes.find((v:any)=>v.id===req.hero_id),
+        state=cpArray(h.value.heroes).find((v:any)=>v.hero_id===req.hero_id);
+    if(!hero||!state||state.owned!==true)return fail('HERO_NOT_OWNED','Bạn chưa sở hữu nhân vật này.');
+    const level=Math.max(1,Math.min(50,Number(state.level)||1));
+    const storedAttributes=cpObject(state.current_attribute);
+    const demonAttributes=Object.assign({},Object.keys(storedAttributes).length?storedAttributes:progressionHeroAttributes(nk,req.hero_id,level));
+    const heroElementProfile={affinities:Object.assign({},cpObject(profile.element_affinities)),levels:Object.assign({},cpObject(profile.elements))};
+    const zeroRoots:any={};
+    for(const key of Object.keys(heroElementProfile.affinities).concat(Object.keys(heroElementProfile.levels)))zeroRoots[key]=0;
+    const demonElementProfile={affinities:Object.assign({},heroElementProfile.affinities),levels:zeroRoots};
+    const attrs=cpApplyEquipment(demonAttributes,cpEquipped(cpArray(inv&&inv.value.items),catalog.items),
+        catalog.progression.combat_power,catalog.progression.element_combat);
+    if(!(attrs.hp>0)||!(attrs.atk>0)||Object.keys(attrs).some(k=>!Number.isFinite(attrs[k])))return fail('CONFIG_INVALID','Chỉ số nhân vật không hợp lệ.');
+    const prep=config.preparation;
+    if(!prep||prep.combat_level!==20||prep.upgrade_count!==19||prep.countdown_sec!==5||!Array.isArray(prep.supports)||prep.supports.length!==5)
+        return fail('CONFIG_INVALID','Chưa cấu hình chuẩn bị tháp.');
+    const skillRows=nk.sqlQuery('SELECT id,display_name,criteria_unlock,hero_level_unlock,levels FROM game_skills WHERE id IN (SELECT jsonb_array_elements_text(skill_pool) FROM game_heroes WHERE id=$1) ORDER BY id',[req.hero_id]);
+    const draftCatalog:any[]=skillRows.filter((s:any)=>cpArray(s.levels).length>0&&Number(s.hero_level_unlock||1)<=level&&Number(cpObject(s.criteria_unlock).level||1)<=20).map((s:any)=>({
+        id:s.id,skill_id:s.id,title:s.display_name,priority:0,max_level:cpArray(s.levels).length,
+        required_skill:cpObject(s.criteria_unlock).required_skill||'',icon_id:s.id
+    })).concat(prep.supports);
+    const skills:any={};
+    const starting=cpArray(hero.starting_skills).map((s:any)=>typeof s==='string'?s:s.skill_id||s.id).find((id:any)=>draftCatalog.some(c=>c.skill_id===id));
+    if(starting)skills[starting]=1;
+    if(!Object.keys(skills).length)return fail('CONFIG_INVALID','Chưa cấu hình kỹ năng.');
+    const issued=talismanCreateStageRun(nk,ctx.userId,'stage_trial_tower','floor_'+req.floor);
+    const run:any=Object.assign(issued.run,{request_id:req.request_id,floor:req.floor,hero_id:req.hero_id,skill_levels:skills,
+        attributes:attrs,stat_multiplier:status.snapshot.floors[req.floor-1].stat_multiplier,speed_multiplier:status.snapshot.floors[req.floor-1].speed_multiplier,combat_rules:rules,
+        demon_attributes:demonAttributes,hero_element_profile:heroElementProfile,demon_element_profile:demonElementProfile,
+        phase:'preparing',combat_level:20,upgrade_count:19,countdown_sec:5,draft_catalog:draftCatalog,skill_unlock_version:4,arena});
+    profile.activity={type:'combat',activity_id:run.run_id};
+    try{nk.storageWrite([{...refs[0],value:profile,version:p.version,permissionRead:0,permissionWrite:0},
+        {...refs[4],value:Object.assign({},towerRow.value,{tickets:towerRow.value.tickets-1}),version:towerRow.version,permissionRead:0,permissionWrite:0},
+        {...refs[2],value:run,version:issued.version,permissionRead:0,permissionWrite:0}]);}
+    catch(_e){return fail('CONFLICT','Có thao tác khác. Hãy thử lại.');}
+    return JSON.stringify({success:true,run});
+}
+
+function towerDraftLegal(c:any,levels:any):boolean {
+    return !c.skill_id || ((levels[c.skill_id]||0)<c.max_level&&(!c.required_skill||levels[c.required_skill]>0));
+}
+
+function towerDraftApply(c:any,levels:any):void {
+    if(c.skill_id)levels[c.skill_id]=(levels[c.skill_id]||0)+1;
+}
+
+function prepareTrialTower(ctx:nkruntime.Context,_logger:nkruntime.Logger,nk:nkruntime.Nakama,payload:string):string {
+    const fail=(code:string,message:string)=>JSON.stringify({success:false,code,message});
+    if(!ctx.userId)return fail('AUTH_REQUIRED','Authentication required');
+    let req:any;try{req=JSON.parse(payload||'{}');}catch(_e){return fail('INVALID_REQUEST','Invalid JSON');}
+    if(!req||typeof req.run_id!=='string'||!Array.isArray(req.picks)||req.picks.length!==19||req.picks.some((p:any)=>typeof p!=='string'))
+        return fail('INVALID_BUILD','Cần chọn đủ 19 nâng cấp.');
+    const ref={collection:'player_stage_runs',key:'active',userId:ctx.userId},rows=nk.storageRead([ref]);
+    const row=rows[0],run=row&&cpObject(row.value);
+    if(!run||run.run_id!==req.run_id||run.stage_id!=='stage_trial_tower'||run.status!=='active')return fail('RUN_MISMATCH','Trận không hợp lệ.');
+    if(Date.now()>run.expires_at_ms)return fail('RUN_EXPIRED','Trận đã hết hạn.');
+    if(run.skill_unlock_version!==4)return fail('RUN_RULES_CHANGED','Luật kỹ năng đã thay đổi. Hãy về tháp để tạo trận mới.');
+    if(run.phase==='countdown')return JSON.stringify(run.player_picks&&JSON.stringify(run.player_picks)===JSON.stringify(req.picks)?{success:true,run}:{success:false,code:'BUILD_LOCKED',message:'Build đã xác nhận.'});
+    if(run.phase!=='preparing'||!Array.isArray(run.draft_catalog))return fail('RUN_MISMATCH','Hãy vào lại tháp.');
+    const levels=Object.assign({},run.skill_levels);
+    for(const id of req.picks){const c=run.draft_catalog.find((v:any)=>v.id===id);
+        if(!c||!towerDraftLegal(c,levels))return fail('INVALID_BUILD','Nâng cấp không hợp lệ.');
+        towerDraftApply(c,levels);
+    }
+    const aiLevels=Object.assign({},run.skill_levels),aiPicks:string[]=[];
+    for(let i=0;i<19;i++){
+        const pool=run.draft_catalog.filter((c:any)=>towerDraftLegal(c,aiLevels)),offer:any[]=[];
+        while(pool.length&&offer.length<3)offer.push(pool.splice(Math.floor(Math.random()*pool.length),1)[0]);
+        if(!offer.length)return fail('CONFIG_INVALID','Không đủ nâng cấp cho Tâm Ma.');
+        const priority=Math.min(...offer.map(c=>c.priority)),best=offer.filter(c=>c.priority===priority),chosen=best[Math.floor(Math.random()*best.length)];
+        aiPicks.push(chosen.id);towerDraftApply(chosen,aiLevels);
+    }
+    run.player_picks=req.picks;run.demon_picks=aiPicks;run.phase='countdown';run.combat_started_at_ms=Date.now()+5000;
+    try{nk.storageWrite([{...ref,value:run,version:row.version,permissionRead:0,permissionWrite:0}]);}
+    catch(_e){return fail('CONFLICT','Chưa xác nhận được build. Hãy thử lại.');}
+    return JSON.stringify({success:true,run});
+}
+
+function finishTrialTower(ctx:nkruntime.Context,_logger:nkruntime.Logger,nk:nkruntime.Nakama,payload:string):string {
+    const fail=(code:string,message:string)=>JSON.stringify({success:false,code,message});
+    if(!ctx.userId)return fail('AUTH_REQUIRED','Authentication required');
+    let req:any;try{req=JSON.parse(payload||'{}');}catch(_e){return fail('INVALID_REQUEST','Invalid JSON');}
+    if(!req||typeof req.run_id!=='string'||['win','loss','abandon'].indexOf(req.result)<0)return fail('INVALID_REQUEST','Kết quả không hợp lệ.');
+    const refs=[{collection:'player_stage_runs',key:'active',userId:ctx.userId},
+        {collection:'player_trial_tower',key:'main',userId:ctx.userId},{collection:'player_profiles',key:'main',userId:ctx.userId}];
+    const rows=nk.storageRead(refs),r=rows.find(v=>v.collection==='player_stage_runs'),t=rows.find(v=>v.collection==='player_trial_tower'),p=rows.find(v=>v.collection==='player_profiles');
+    if(!r||!t||!p)return fail('RUN_MISSING','Không tìm thấy trận.');
+    const run=cpObject(r.value),tower=cpObject(t.value),profile=cpObject(p.value);
+    if(run.run_id!==req.run_id||run.stage_id!=='stage_trial_tower')return fail('RUN_MISMATCH','Trận không hợp lệ.');
+    if(run.status==='settled')return run.result===req.result?JSON.stringify({success:true,duplicate:true,result:run.result,highest_cleared:tower.highest_cleared,rewards:run.tower_rewards||[],rewards_granted:run.tower_rewards!==undefined}):fail('RESULT_CONFLICT','Trận đã kết thúc.');
+    if(run.status!=='active')return fail('RUN_CLOSED','Trận đã kết thúc.');
+    if(req.result!=='abandon') {
+        if(run.phase!=='countdown'||!Number.isFinite(run.combat_started_at_ms)||Date.now()<run.combat_started_at_ms)return fail('NOT_STARTED','Trận chưa bắt đầu.');
+        if(Date.now()>run.expires_at_ms)return fail('RUN_EXPIRED','Trận đã hết hạn.');
+        if(!Number.isFinite(req.player_hp)||!Number.isFinite(req.demon_hp)||req.player_hp<0||req.demon_hp<0
+            ||(req.result==='win'?(req.player_hp<=0||req.demon_hp!==0):(req.player_hp!==0)))return fail('INVALID_RESULT','Sinh lực kết thúc không hợp lệ.');
+        if(req.result==='win'&&Date.now()-run.combat_started_at_ms<run.min_win_duration_ms)return fail('TOO_EARLY','Chưa thể xác nhận kết quả. Hãy thử lại.');
+    }
+    if(!Number.isInteger(tower.highest_cleared)||run.floor>tower.highest_cleared+1)return fail('PROGRESS_CONFLICT','Tiến độ không hợp lệ.');
+    const rewardWrites:any[]=[],rewardState:any={};
+    if(req.result==='win'){
+        const rewardRows=nk.storageRead([{collection:'player_inventory',key:'items',userId:ctx.userId},{collection:'player_heroes',key:'states',userId:ctx.userId}]);
+        const inv=rewardRows.find(r=>r.collection==='player_inventory'),heroRow=rewardRows.find(r=>r.collection==='player_heroes');
+        if(!inv||!heroRow)return fail('PROFILE_INCOMPLETE','Thiếu dữ liệu phần thưởng.');
+        const inventory=cpObject(inv.value),heroes=cpObject(heroRow.value),hero=cpArray(heroes.heroes).find((h:any)=>h.hero_id===run.hero_id&&h.owned===true);
+        if(!hero)return fail('HERO_NOT_OWNED','Không tìm thấy tướng.');
+        const floorDefinition=readContentConfig(nk,'trial_tower').floors[run.floor-1];
+        let rewards:any[];
+        try{rewards=towerRewardEntries(nk,run.floor>tower.highest_cleared?floorDefinition.first_rewards:floorDefinition.repeat_rewards,profile,run.floor);}
+        catch(_e){return fail('REWARD_CONFIG_INVALID','Cấu hình thưởng không hợp lệ.');}
+        let exp=0;inventory.items=cpArray(inventory.items);profile.resources=cpObject(profile.resources);
+        for(const reward of rewards){
+            if(reward.kind==='exp'){reward.amount=Math.floor(reward.amount*progressionGameplayBoostMultiplier(profile,'exp'));exp+=reward.amount;}
+            else if(reward.kind==='item'){if(!serverGrantInventoryItem(nk,inventory.items,reward.item_id,reward.amount))return fail('REWARD_ITEM_INVALID','Vật phẩm thưởng không hợp lệ.');}
+            else{if(reward.kind==='gold')reward.amount=Math.floor(reward.amount*progressionGameplayBoostMultiplier(profile,'gold'));const balance=Number(profile.resources[reward.kind]||0)+reward.amount;if(!Number.isSafeInteger(balance))return fail('RESOURCE_OVERFLOW','Số dư vượt giới hạn.');profile.resources[reward.kind]=balance;}
+        }
+        progressionApplyUser(nk,profile,exp);progressionReconcileLevelUnlocks(nk,profile);
+        let level=Number(hero.level||1),xp=Number(hero.exp||0)+exp,next=progressionNextHeroExp(nk,level);
+        while(level<Math.min(PROGRESSION_MAX_LEVEL,profile.level)&&next>0&&xp>=next){xp-=next;level++;next=progressionNextHeroExp(nk,level);}
+        hero.level=level;hero.exp=level>=PROGRESSION_MAX_LEVEL?0:xp;hero.next_level_exp=level>=PROGRESSION_MAX_LEVEL?0:next;hero.current_attribute=progressionHeroAttributes(nk,run.hero_id,level);
+        run.tower_rewards=rewards;
+        rewardState.inventory=inventory;rewardState.heroes=heroes.heroes;
+        rewardWrites.push({collection:'player_inventory',key:'items',userId:ctx.userId,value:inventory,version:inv.version,permissionRead:1,permissionWrite:0},{collection:'player_heroes',key:'states',userId:ctx.userId,value:heroes,version:heroRow.version,permissionRead:1,permissionWrite:0});
+        tower.highest_cleared=Math.max(tower.highest_cleared,run.floor);
+    }
+    run.status='settled';run.result=req.result;run.settled_at_ms=Date.now();
+    if((profile.activity||{}).activity_id===run.run_id)delete profile.activity;
+    try{nk.storageWrite([{...refs[0],value:run,version:r.version,permissionRead:0,permissionWrite:0},
+        {...refs[1],value:tower,version:t.version,permissionRead:0,permissionWrite:0},
+        {...refs[2],value:profile,version:p.version,permissionRead:0,permissionWrite:0}].concat(rewardWrites));}
+    catch(_e){return fail('CONFLICT','Chưa lưu được kết quả. Hãy thử lại.');}
+    return JSON.stringify(Object.assign({success:true,result:req.result,highest_cleared:tower.highest_cleared,rewards:run.tower_rewards||[],rewards_granted:run.tower_rewards!==undefined,profile},rewardState));
+}
+
 const PROGRESSION_VERSION = 2;
 const PROGRESSION_MAX_LEVEL = 50;
 const PROGRESSION_HERO_BASE_EXP = 1000;
@@ -283,6 +507,18 @@ function progressionNextUserExp(nk: nkruntime.Nakama, level: number): number {
     return Math.max(1, current - prev);
 }
 
+// Timed reward cards are profile-owned and evaluated only by the server at
+// settlement. Expired entries are inert; inventory use replaces or extends
+// them atomically before this point.
+function progressionGameplayBoostMultiplier(profile: any, resource: string, now: number = Date.now()): number {
+    const boosts = progressionObject(profile && profile.gameplay_boosts);
+    const boost = progressionObject(boosts[resource]);
+    const expiry = Number(boost.expires_at_ms || 0);
+    const multiplier = Number(boost.multiplier || 1);
+    if (expiry <= now || !Number.isFinite(multiplier) || multiplier < 1 || multiplier > 5) return 1;
+    return multiplier;
+}
+
 function progressionApplyUser(nk: nkruntime.Nakama, profile: any, awarded: number): any {
     cultivationEnsureSources(profile);
     let level = Math.max(1, Math.min(PROGRESSION_MAX_LEVEL, Number(profile.level || 1)));
@@ -546,7 +782,9 @@ const awardStageProgression: nkruntime.RpcFunction = (
     const isTrainingStage = stageId === "stage_0_1" || String(stageRows[0].arc_id || "") === "arc_0";
     const ordinaryExp = isTrainingStage ? 0 : Math.max(0, Math.round(requestedBaseExp * multiplier));
     const firstClearBonusExp = firstClear ? ordinaryExp : 0;
-    const awardedExp = ordinaryExp + firstClearBonusExp;
+    const expBoostMultiplier = progressionGameplayBoostMultiplier(profile, "exp");
+    const awardedExp = Math.max(0, Math.round((ordinaryExp + firstClearBonusExp) * expBoostMultiplier));
+    const boostedFirstClearBonusExp = Math.max(0, Math.round(firstClearBonusExp * expBoostMultiplier));
     const userResult = progressionApplyUser(nk, profile, awardedExp);
 	cultivationEnsurePreview(nk, profile);
 	["talent_tier", "talent_score", "main_element", "element_affinities", "affinity_flags",
@@ -591,9 +829,11 @@ const awardStageProgression: nkruntime.RpcFunction = (
 	}
 
 	const loot: any[] = [];
+    const goldBoostMultiplier = progressionGameplayBoostMultiplier(profile, "gold");
     if(won){
         const rewards=sweepRoll(sweepRewardTable(nk,stageId,difficultyId,stageRows[0],difficultyRows[0],grade));
         for(const reward of rewards){
+			if (reward.resource_id === "gold") reward.quantity = Math.max(0, Math.round(Number(reward.quantity || 0) * goldBoostMultiplier));
             if(reward.item_id){
                 if(!serverGrantInventoryItem(nk,inventoryItems,reward.item_id,reward.quantity))throw new Error('REWARD_ITEM_INVALID');
             }else if(reward.resource_id){
@@ -608,11 +848,15 @@ const awardStageProgression: nkruntime.RpcFunction = (
 	run.settled_at_ms = Date.now();
 	run.won = won;
 	run.stage_reward = { eligible: won && !isTrainingStage && (awardedExp > 0 || loot.length > 0),
-        hero_id: heroId, base_exp: awardedExp, first_clear_bonus_exp: firstClearBonusExp,
+        hero_id: heroId, base_exp: awardedExp, first_clear_bonus_exp: boostedFirstClearBonusExp,
         base_loot: loot.slice(), claimed: false };
     if(won&&!isTrainingStage){
         const quantity=stageTicketQuantity(nk);
         if(quantity>0){if(!serverGrantInventoryItem(nk,inventoryItems,SWEEP_TICKET,quantity))throw new Error('SWEEP_TICKET_CONFIG_MISSING');loot.push({item_id:SWEEP_TICKET,quantity});}
+        if(stageRows[0].is_boss===true&&/^stage_[1-5]_10$/.test(stageId)&&Math.random()<Number(towerSweepConfig(nk).boss_ticket_rates[difficultyId]||0)){
+            if(!serverGrantInventoryItem(nk,inventoryItems,TOWER_SWEEP_TICKET,1))throw Error('TOWER_TICKET_CONFIG_MISSING');
+            loot.push({item_id:TOWER_SWEEP_TICKET,quantity:1});
+        }
     }
 
     nk.storageWrite([
@@ -642,7 +886,7 @@ const awardStageProgression: nkruntime.RpcFunction = (
     userResult.completed_stage_levels = profile.completed_stage_levels;
     userResult.stage_grades=profile.stage_grades;
 	return JSON.stringify({ success: true, grade, best_grade:(profile.stage_grades||{})[stageId+':'+difficultyId]||'', stage_reward: stageRewardSummary(run), exp_awarded: awardedExp, first_clear: firstClear,
-        first_clear_bonus_exp: firstClearBonusExp, profile: userResult,
+		first_clear_bonus_exp: boostedFirstClearBonusExp, gameplay_boosts: {exp:expBoostMultiplier,gold:goldBoostMultiplier}, profile: userResult,
 		inventory: inventoryValue, resources: profile.resources, loot, talisman_durability: talismanDurability, hero: {
 
         hero_id: heroId, level: heroLevel, exp: heroExp, next_level_exp: heroNext, levels_gained: heroLevelsGained,

@@ -510,7 +510,7 @@
           "item_id": "energy_elixir",
           "category": "elixirs",
           "currency": "gems",
-          "price": 100,
+          "price": 40,
           "quantity": 1,
           "enabled": true
         },
@@ -518,7 +518,7 @@
           "item_id": "energy_elixir",
           "category": "elixirs",
           "currency": "gold",
-          "price": 25000,
+          "price": 10000,
           "quantity": 1,
           "enabled": true
         },

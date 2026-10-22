@@ -7,7 +7,7 @@
     "rarity": "rare",
     "icon_id": "dismantle",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 50,
     "expires_after_hours": 0,
     "tags": [
@@ -24,7 +24,7 @@
     "rarity": "common",
     "icon_id": "rune_earth_low",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 110,
     "expires_after_hours": 0,
     "tags": [
@@ -42,7 +42,7 @@
     "rarity": "common",
     "icon_id": "rune_fire_low",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 120,
     "expires_after_hours": 0,
     "tags": [
@@ -60,7 +60,7 @@
     "rarity": "common",
     "icon_id": "rune_metal_low",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 130,
     "expires_after_hours": 0,
     "tags": [
@@ -78,7 +78,7 @@
     "rarity": "common",
     "icon_id": "rune_water_low",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 140,
     "expires_after_hours": 0,
     "tags": [
@@ -96,7 +96,7 @@
     "rarity": "common",
     "icon_id": "rune_wood_low",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 150,
     "expires_after_hours": 0,
     "tags": [
@@ -114,7 +114,7 @@
     "rarity": "rare",
     "icon_id": "rune_earth_medium",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 210,
     "expires_after_hours": 720,
     "tags": [
@@ -132,7 +132,7 @@
     "rarity": "rare",
     "icon_id": "rune_fire_medium",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 220,
     "expires_after_hours": 720,
     "tags": [
@@ -150,7 +150,7 @@
     "rarity": "rare",
     "icon_id": "rune_metal_medium",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 230,
     "expires_after_hours": 0,
     "tags": [
@@ -168,7 +168,7 @@
     "rarity": "rare",
     "icon_id": "rune_water_medium",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 240,
     "expires_after_hours": 0,
     "tags": [
@@ -186,7 +186,7 @@
     "rarity": "rare",
     "icon_id": "rune_wood_medium",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 250,
     "expires_after_hours": 0,
     "tags": [
@@ -199,12 +199,12 @@
   {
     "id": "rune_earth_high",
     "display_name": "Phù Văn Thổ Linh",
-    "description": "Phù văn tuyệt tác chứa linh lực Thổ dồi dào, độc bản không thể cộng dồn.",
+    "description": "Phù văn tuyệt tác chứa linh lực Thổ dồi dào, có thể cộng dồn.",
     "category": "rune",
     "rarity": "epic",
     "icon_id": "rune_earth_high",
-    "stackable": false,
-    "max_stack": 1,
+    "stackable": true,
+    "max_stack": 999999,
     "order": 310,
     "expires_after_hours": 0,
     "tags": [
@@ -218,12 +218,12 @@
   {
     "id": "rune_fire_high",
     "display_name": "Phù Văn Hỏa Linh",
-    "description": "Phù văn tuyệt tác chứa linh lực Hỏa dồi dào, độc bản không thể cộng dồn.",
+    "description": "Phù văn tuyệt tác chứa linh lực Hỏa dồi dào, có thể cộng dồn.",
     "category": "rune",
     "rarity": "epic",
     "icon_id": "rune_fire_high",
-    "stackable": false,
-    "max_stack": 1,
+    "stackable": true,
+    "max_stack": 999999,
     "order": 320,
     "expires_after_hours": 168,
     "tags": [
@@ -237,12 +237,12 @@
   {
     "id": "rune_metal_high",
     "display_name": "Phù Văn Kim Linh",
-    "description": "Phù văn tuyệt tác chứa linh lực Kim dồi dào, độc bản không thể cộng dồn.",
+    "description": "Phù văn tuyệt tác chứa linh lực Kim dồi dào, có thể cộng dồn.",
     "category": "rune",
     "rarity": "epic",
     "icon_id": "rune_metal_high",
-    "stackable": false,
-    "max_stack": 1,
+    "stackable": true,
+    "max_stack": 999999,
     "order": 330,
     "expires_after_hours": 0,
     "tags": [
@@ -256,12 +256,12 @@
   {
     "id": "rune_water_high",
     "display_name": "Phù Văn Thủy Linh",
-    "description": "Phù văn tuyệt tác chứa linh lực Thủy dồi dào, độc bản không thể cộng dồn.",
+    "description": "Phù văn tuyệt tác chứa linh lực Thủy dồi dào, có thể cộng dồn.",
     "category": "rune",
     "rarity": "epic",
     "icon_id": "rune_water_high",
-    "stackable": false,
-    "max_stack": 1,
+    "stackable": true,
+    "max_stack": 999999,
     "order": 340,
     "expires_after_hours": 0,
     "tags": [
@@ -275,12 +275,12 @@
   {
     "id": "rune_wood_high",
     "display_name": "Phù Văn Mộc Linh",
-    "description": "Phù văn tuyệt tác chứa linh lực Mộc dồi dào, độc bản không thể cộng dồn.",
+    "description": "Phù văn tuyệt tác chứa linh lực Mộc dồi dào, có thể cộng dồn.",
     "category": "rune",
     "rarity": "epic",
     "icon_id": "rune_wood_high",
-    "stackable": false,
-    "max_stack": 1,
+    "stackable": true,
+    "max_stack": 999999,
     "order": 350,
     "expires_after_hours": 0,
     "tags": [
@@ -358,7 +358,7 @@
     "order": 62,
     "category": "consumable",
     "stackable": true,
-    "max_stack": 9999,
+    "max_stack": 999999,
     "expires_after_hours": 0,
     "tags": [
       "element",
@@ -379,7 +379,7 @@
     "order": 63,
     "category": "consumable",
     "stackable": true,
-    "max_stack": 9999,
+    "max_stack": 999999,
     "expires_after_hours": 0,
     "tags": [
       "talisman",
@@ -2644,7 +2644,7 @@
     "rarity": "common",
     "icon_id": "huyen_thiet_ha",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 160,
     "expires_after_hours": 0,
     "tags": [
@@ -2662,7 +2662,7 @@
     "rarity": "rare",
     "icon_id": "huyen_thiet_trung",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 260,
     "expires_after_hours": 0,
     "tags": [
@@ -2680,7 +2680,7 @@
     "rarity": "epic",
     "icon_id": "huyen_thiet_thuong",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 360,
     "expires_after_hours": 0,
     "tags": [
@@ -2698,7 +2698,7 @@
     "rarity": "epic",
     "icon_id": "consumable_rename_talisman",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 500,
     "expires_after_hours": 0,
     "tags": [
@@ -2720,7 +2720,7 @@
     "rarity": "mythic",
     "icon_id": "consumable_spirit_root_reset",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 501,
     "expires_after_hours": 0,
     "tags": [
@@ -2742,7 +2742,7 @@
     "rarity": "legendary",
     "icon_id": "consumable_metal_aptitude_fruit",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 502,
     "expires_after_hours": 0,
     "tags": [
@@ -2771,7 +2771,7 @@
     "rarity": "legendary",
     "icon_id": "consumable_wood_aptitude_fruit",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 503,
     "expires_after_hours": 0,
     "tags": [
@@ -2800,7 +2800,7 @@
     "rarity": "legendary",
     "icon_id": "consumable_water_aptitude_fruit",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 504,
     "expires_after_hours": 0,
     "tags": [
@@ -2829,7 +2829,7 @@
     "rarity": "legendary",
     "icon_id": "consumable_fire_aptitude_fruit",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 505,
     "expires_after_hours": 0,
     "tags": [
@@ -2858,7 +2858,7 @@
     "rarity": "legendary",
     "icon_id": "consumable_earth_aptitude_fruit",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 506,
     "expires_after_hours": 0,
     "tags": [
@@ -2887,7 +2887,7 @@
     "rarity": "legendary",
     "icon_id": "consumable_wind_aptitude_fruit",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 507,
     "expires_after_hours": 0,
     "tags": [
@@ -2909,7 +2909,7 @@
     "rarity": "legendary",
     "icon_id": "consumable_thunder_aptitude_fruit",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 508,
     "expires_after_hours": 0,
     "tags": [
@@ -2931,7 +2931,7 @@
     "rarity": "legendary",
     "icon_id": "consumable_space_aptitude_fruit",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 509,
     "expires_after_hours": 0,
     "tags": [
@@ -2953,7 +2953,7 @@
     "rarity": "epic",
     "icon_id": "consumable_exp_talisman",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 510,
     "expires_after_hours": 0,
     "tags": [
@@ -2980,7 +2980,7 @@
     "rarity": "rare",
     "icon_id": "consumable_gold_talisman",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 511,
     "expires_after_hours": 0,
     "tags": [
@@ -3007,7 +3007,7 @@
     "rarity": "rare",
     "icon_id": "consumable_attack_talisman",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 512,
     "expires_after_hours": 0,
     "tags": [
@@ -3036,7 +3036,7 @@
     "rarity": "rare",
     "icon_id": "consumable_defense_talisman",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 513,
     "expires_after_hours": 0,
     "tags": [
@@ -3065,7 +3065,7 @@
     "rarity": "rare",
     "icon_id": "consumable_cooldown_talisman",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 514,
     "expires_after_hours": 0,
     "tags": [
@@ -3094,7 +3094,7 @@
     "rarity": "rare",
     "icon_id": "consumable_resistance_talisman",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 515,
     "expires_after_hours": 0,
     "tags": [
@@ -3123,7 +3123,7 @@
     "rarity": "rare",
     "icon_id": "consumable_critical_talisman",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 516,
     "expires_after_hours": 0,
     "tags": [
@@ -3152,7 +3152,7 @@
     "rarity": "rare",
     "icon_id": "consumable_attack_speed_talisman",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 517,
     "expires_after_hours": 0,
     "tags": [
@@ -3181,7 +3181,7 @@
     "rarity": "epic",
     "icon_id": "consumable_revive_talisman",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 518,
     "expires_after_hours": 0,
     "tags": [
@@ -3210,7 +3210,7 @@
     "rarity": "rare",
     "icon_id": "consumable_healing_elixir",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 519,
     "expires_after_hours": 0,
     "tags": [
@@ -3239,7 +3239,7 @@
     "rarity": "rare",
     "icon_id": "consumable_shield_elixir",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 520,
     "expires_after_hours": 0,
     "tags": [
@@ -3268,7 +3268,7 @@
     "rarity": "rare",
     "icon_id": "consumable_energy_elixir",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 521,
     "expires_after_hours": 0,
     "tags": [
@@ -3295,7 +3295,7 @@
     "rarity": "rare",
     "icon_id": "consumable_slow_talisman",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 522,
     "expires_after_hours": 0,
     "tags": [
@@ -3325,7 +3325,7 @@
     "rarity": "rare",
     "icon_id": "consumable_0",
     "stackable": true,
-    "max_stack": 99999,
+    "max_stack": 999999,
     "order": 49,
     "expires_after_hours": 0,
     "tags": [
@@ -3337,5 +3337,117 @@
       "sweep_type": "campaign",
       "atlas_index": 0
     }
+  },
+  {
+    "id": "tower_sweep_ticket",
+    "display_name": "Vé càn quét ma tháp",
+    "description": "Càn quét một tầng ma tháp đã đủ điều kiện.",
+    "category": "consumable", "rarity": "rare", "icon_id": "consumable_2", "stackable": true, "max_stack": 999999, "order": 48, "expires_after_hours": 0,
+    "tags": ["sweep", "ticket", "consumable"],
+    "attributes": {"sweep_type": "tower", "atlas_index": 2}
+  },
+  {
+    "id": "law_fragment_low",
+    "display_name": "Mảnh vỡ pháp tắc hạ phẩm",
+    "description": "Nguyên liệu pháp tắc cấp hạ dùng để bồi dưỡng pháp tắc.",
+    "category": "material", "rarity": "common", "icon_id": "consumable_10", "stackable": true, "max_stack": 999999, "order": 490, "expires_after_hours": 0,
+    "tags": ["material", "law_fragment", "trial_tower"],
+    "attributes": {"atlas_slot": 10, "material_family": "law_fragment", "tier": "low"}
+  },
+  {
+    "id": "law_fragment_medium",
+    "display_name": "Mảnh vỡ pháp tắc trung phẩm",
+    "description": "Nguyên liệu pháp tắc cấp trung dùng để bồi dưỡng pháp tắc.",
+    "category": "material", "rarity": "rare", "icon_id": "consumable_11", "stackable": true, "max_stack": 999999, "order": 491, "expires_after_hours": 0,
+    "tags": ["material", "law_fragment", "trial_tower"],
+    "attributes": {"atlas_slot": 11, "material_family": "law_fragment", "tier": "medium"}
+  },
+  {
+    "id": "law_fragment_high",
+    "display_name": "Mảnh vỡ pháp tắc thượng phẩm",
+    "description": "Nguyên liệu pháp tắc cấp thượng dùng để bồi dưỡng pháp tắc.",
+    "category": "material", "rarity": "epic", "icon_id": "consumable_12", "stackable": true, "max_stack": 999999, "order": 492, "expires_after_hours": 0,
+    "tags": ["material", "law_fragment", "trial_tower"],
+    "attributes": {"atlas_slot": 12, "material_family": "law_fragment", "tier": "high"}
+  },
+  {
+    "id": "exp_boost_card_10",
+    "display_name": "Thẻ EXP +10%",
+    "description": "Tăng 10% EXP nhận được từ gameplay trong 24 giờ. Dùng cùng mức để cộng dồn thời gian.",
+    "category": "consumable", "rarity": "common", "icon_id": "consumable_13", "stackable": true, "max_stack": 999999, "order": 523, "expires_after_hours": 0,
+    "tags": ["consumable", "boost_card", "exp_boost"],
+    "attributes": {"atlas_slot": 13, "consumable_family": "boost_cards", "use_action": "use_consumable", "enabled": true, "effect": {"context": "inventory", "kind": "gameplay_boost", "resource": "exp", "multiplier": 1.1, "duration": 86400}}
+  },
+  {
+    "id": "exp_boost_card_25",
+    "display_name": "Thẻ EXP +25%",
+    "description": "Tăng 25% EXP nhận được từ gameplay trong 24 giờ. Thẻ mạnh hơn thay thế buff thấp hơn sau khi xác nhận.",
+    "category": "consumable", "rarity": "rare", "icon_id": "consumable_14", "stackable": true, "max_stack": 999999, "order": 524, "expires_after_hours": 0,
+    "tags": ["consumable", "boost_card", "exp_boost"],
+    "attributes": {"atlas_slot": 14, "consumable_family": "boost_cards", "use_action": "use_consumable", "enabled": true, "effect": {"context": "inventory", "kind": "gameplay_boost", "resource": "exp", "multiplier": 1.25, "duration": 86400}}
+  },
+  {
+    "id": "exp_boost_card_50",
+    "display_name": "Thẻ EXP +50%",
+    "description": "Tăng 50% EXP nhận được từ gameplay trong 24 giờ.",
+    "category": "consumable", "rarity": "epic", "icon_id": "consumable_15", "stackable": true, "max_stack": 999999, "order": 525, "expires_after_hours": 0,
+    "tags": ["consumable", "boost_card", "exp_boost"],
+    "attributes": {"atlas_slot": 15, "consumable_family": "boost_cards", "use_action": "use_consumable", "enabled": true, "effect": {"context": "inventory", "kind": "gameplay_boost", "resource": "exp", "multiplier": 1.5, "duration": 86400}}
+  },
+  {
+    "id": "exp_boost_card_x2",
+    "display_name": "Thẻ EXP x2",
+    "description": "Nhân đôi EXP nhận được từ gameplay trong 24 giờ.",
+    "category": "consumable", "rarity": "legendary", "icon_id": "consumable_16", "stackable": true, "max_stack": 999999, "order": 526, "expires_after_hours": 0,
+    "tags": ["consumable", "boost_card", "exp_boost"],
+    "attributes": {"atlas_slot": 16, "consumable_family": "boost_cards", "use_action": "use_consumable", "enabled": true, "effect": {"context": "inventory", "kind": "gameplay_boost", "resource": "exp", "multiplier": 2.0, "duration": 86400}}
+  },
+  {
+    "id": "exp_boost_card_x5",
+    "display_name": "Thẻ EXP x5",
+    "description": "Nhân năm EXP nhận được từ gameplay trong 24 giờ.",
+    "category": "consumable", "rarity": "mythic", "icon_id": "consumable_17", "stackable": true, "max_stack": 999999, "order": 527, "expires_after_hours": 0,
+    "tags": ["consumable", "boost_card", "exp_boost"],
+    "attributes": {"atlas_slot": 17, "consumable_family": "boost_cards", "use_action": "use_consumable", "enabled": true, "effect": {"context": "inventory", "kind": "gameplay_boost", "resource": "exp", "multiplier": 5.0, "duration": 86400}}
+  },
+  {
+    "id": "gold_boost_card_10",
+    "display_name": "Thẻ Gold +10%",
+    "description": "Tăng 10% Gold nhận được từ gameplay trong 24 giờ.",
+    "category": "consumable", "rarity": "common", "icon_id": "consumable_18", "stackable": true, "max_stack": 999999, "order": 528, "expires_after_hours": 0,
+    "tags": ["consumable", "boost_card", "gold_boost"],
+    "attributes": {"atlas_slot": 18, "consumable_family": "boost_cards", "use_action": "use_consumable", "enabled": true, "effect": {"context": "inventory", "kind": "gameplay_boost", "resource": "gold", "multiplier": 1.1, "duration": 86400}}
+  },
+  {
+    "id": "gold_boost_card_25",
+    "display_name": "Thẻ Gold +25%",
+    "description": "Tăng 25% Gold nhận được từ gameplay trong 24 giờ.",
+    "category": "consumable", "rarity": "rare", "icon_id": "consumable_19", "stackable": true, "max_stack": 999999, "order": 529, "expires_after_hours": 0,
+    "tags": ["consumable", "boost_card", "gold_boost"],
+    "attributes": {"atlas_slot": 19, "consumable_family": "boost_cards", "use_action": "use_consumable", "enabled": true, "effect": {"context": "inventory", "kind": "gameplay_boost", "resource": "gold", "multiplier": 1.25, "duration": 86400}}
+  },
+  {
+    "id": "gold_boost_card_50",
+    "display_name": "Thẻ Gold +50%",
+    "description": "Tăng 50% Gold nhận được từ gameplay trong 24 giờ.",
+    "category": "consumable", "rarity": "epic", "icon_id": "consumable_20", "stackable": true, "max_stack": 999999, "order": 530, "expires_after_hours": 0,
+    "tags": ["consumable", "boost_card", "gold_boost"],
+    "attributes": {"atlas_slot": 20, "consumable_family": "boost_cards", "use_action": "use_consumable", "enabled": true, "effect": {"context": "inventory", "kind": "gameplay_boost", "resource": "gold", "multiplier": 1.5, "duration": 86400}}
+  },
+  {
+    "id": "gold_boost_card_x2",
+    "display_name": "Thẻ Gold x2",
+    "description": "Nhân đôi Gold nhận được từ gameplay trong 24 giờ.",
+    "category": "consumable", "rarity": "legendary", "icon_id": "consumable_21", "stackable": true, "max_stack": 999999, "order": 531, "expires_after_hours": 0,
+    "tags": ["consumable", "boost_card", "gold_boost"],
+    "attributes": {"atlas_slot": 21, "consumable_family": "boost_cards", "use_action": "use_consumable", "enabled": true, "effect": {"context": "inventory", "kind": "gameplay_boost", "resource": "gold", "multiplier": 2.0, "duration": 86400}}
+  },
+  {
+    "id": "gold_boost_card_x5",
+    "display_name": "Thẻ Gold x5",
+    "description": "Nhân năm Gold nhận được từ gameplay trong 24 giờ.",
+    "category": "consumable", "rarity": "mythic", "icon_id": "consumable_22", "stackable": true, "max_stack": 999999, "order": 532, "expires_after_hours": 0,
+    "tags": ["consumable", "boost_card", "gold_boost"],
+    "attributes": {"atlas_slot": 22, "consumable_family": "boost_cards", "use_action": "use_consumable", "enabled": true, "effect": {"context": "inventory", "kind": "gameplay_boost", "resource": "gold", "multiplier": 5.0, "duration": 86400}}
   }
 ]
