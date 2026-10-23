@@ -79,6 +79,7 @@ def main(seed=False, compose_file="docker-compose.yml", env_file=None, output="r
         if seed:
             process_env = os.environ.copy()
             process_env["NAKAMA_HTTP_KEY"] = env["NAKAMA_HTTP_KEY"]
+            process_env["NAKAMA_SERVER_KEY"] = env["NAKAMA_SERVER_KEY"]
             if env_file:
                 process_env.pop("NAKAMA_SEED_URL", None)
             ports = services["nakama"].get("ports", [])

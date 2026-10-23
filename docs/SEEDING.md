@@ -3,20 +3,18 @@
 For rewarded-ad amounts and limits, see [System Settings](SYSTEM_SETTINGS.md). C134 reads published `system.rewarded_ads`; updating the legacy content row alone does not change rewarded settings.
 
 For catalog-only changes with the current server runtime already deployed, run
-from the server repository root; this seeds and publishes without a restart:
+from the server repository root; this seeds without a restart or publication:
 
 ```bash
-export NAKAMA_CONFIG_ADMIN_TOKEN='<admin session JWT>'
-bash deploy.sh seed --publish --app-version 1.0.0
+bash deploy.sh seed
 ```
 
-Use the app version accepted by the current release. The wrapper resolves the
-HTTP key and endpoint from Compose as before. Publication reuses the existing
-active draft settings. Optionally add `--settings ./my-settings.json` to stage a
-reviewed settings file; paths are relative to `nakama/`. No example settings are
-selected automatically. Seed arguments also work after `deploy`/`start`, which
-still build and start services before seeding. `seed` alone never builds or
-restarts services. Refresh the client configuration and start a new battle.
+The wrapper resolves the HTTP key and endpoint from Compose as before. Catalogs
+are read directly from their DB tables by get_game_config; publishing a remote
+settings release is not required for catalog updates. Seed arguments also work
+after `deploy`/`start`, which still build and start services before seeding.
+`seed` alone never builds or restarts services. Refresh the client configuration
+and start a new battle.
 
 Build and restart the server before using the new seed payloads. Startup adds
 nullable columns without removing existing data. Seed fills them from data/.
@@ -57,6 +55,17 @@ user configured by CONFIG_ADMIN_USER_ID and supply its session JWT:
 export NAKAMA_CONFIG_ADMIN_TOKEN='<admin session JWT>'
 python3 seed_all.py --settings-only --settings ./my-settings.json --publish --app-version 1.0.0
 ```
+
+Alternatively, on an interactive terminal, let the script log in using the
+configured admin account. It prompts for the password without echoing it:
+
+```bash
+bash deploy.sh publish --u lkvu92@gmail.com --app-version 1.0.0
+```
+
+This command also seeds catalogs. Email login works only if that account has an
+email password. The server still checks the session user ID against
+`CONFIG_ADMIN_USER_ID`. Do not put a password on the command line.
 
 Publication includes all active draft settings, not just the supplied file. Use
 an app version accepted by the active server release. Add `--store-url` when

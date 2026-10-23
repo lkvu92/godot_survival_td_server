@@ -1,5 +1,7 @@
 """Seed CLI: preflight all inputs, then commit one atomic shared-catalog bundle."""
 import argparse
+import base64
+import getpass
 import json
 import os
 import sys
@@ -51,6 +53,28 @@ def invoke_rpc(name, payload, bearer=None):
     if not isinstance(result, dict) or result.get("error") or result.get("status") in ("error", "force_update"):
         raise SeedError(f"{name}: server rejected request")
     return result
+
+
+def admin_login(email, password):
+    base = os.environ.get("NAKAMA_URL") or "http://{}:{}".format(os.environ.get("NAKAMA_HOST", "localhost"), os.environ.get("NAKAMA_PORT", "7350"))
+    server_key = os.environ.get("NAKAMA_SERVER_KEY")
+    if not server_key:
+        raise SeedError("Email login requires NAKAMA_SERVER_KEY")
+    url = base.rstrip("/") + "/v2/account/authenticate/email?create=false"
+    basic = base64.b64encode((server_key + ":").encode("utf-8")).decode("ascii")
+    request = urllib.request.Request(url, data=json.dumps({"email": email, "password": password}).encode("utf-8"),
+                                     headers={"Content-Type": "application/json", "Authorization": "Basic " + basic})
+    try:
+        with urllib.request.urlopen(request, timeout=float(os.environ.get("NAKAMA_SEED_TIMEOUT", "60"))) as response:
+            session = json.loads(response.read().decode("utf-8"))
+    except urllib.error.HTTPError as error:
+        raise SeedError(f"Admin login: HTTP {error.code}") from error
+    except (urllib.error.URLError, ValueError, TypeError, OSError) as error:
+        raise SeedError(f"Admin login failed ({type(error).__name__})") from error
+    token = session.get("token") if isinstance(session, dict) else None
+    if not isinstance(token, str) or not token:
+        raise SeedError("Admin login returned no session token")
+    return token
 
 
 def invoke_seed(table, payload):
@@ -110,6 +134,7 @@ def main(argv=None):
     parser.add_argument("--content-only", action="store_true", help="Seed only the eight supplemental content configs")
     parser.add_argument("--settings-only", action="store_true", help="Skip content seed; requires --settings")
     parser.add_argument("--publish", action="store_true", help="Publish using NAKAMA_CONFIG_ADMIN_TOKEN after successful seed")
+    parser.add_argument("--u", "--user", dest="admin_email", help="Admin email for publish; prompts for password")
     parser.add_argument("--app-version", default="1.0.0")
     parser.add_argument("--store-url", default="")
     args = parser.parse_args(argv)
@@ -119,8 +144,14 @@ def main(argv=None):
         if args.settings_only and not args.settings:
             raise SeedError("--settings-only requires --settings")
         admin = os.environ.get("NAKAMA_CONFIG_ADMIN_TOKEN")
-        if args.publish and not admin:
-            raise SeedError("--publish requires NAKAMA_CONFIG_ADMIN_TOKEN")
+        if args.admin_email and not args.publish:
+            raise SeedError("--u requires --publish")
+        if args.publish and not admin and not args.admin_email:
+            raise SeedError("--publish requires NAKAMA_CONFIG_ADMIN_TOKEN or --u EMAIL")
+        if args.publish and not admin and args.admin_email:
+            if not sys.stdin.isatty():
+                raise SeedError("Admin password prompt requires a terminal")
+            admin = admin_login(args.admin_email, getpass.getpass("Admin password: "))
         settings = None
         if args.settings:
             settings = json.loads(args.settings.read_text(encoding="utf-8-sig"))

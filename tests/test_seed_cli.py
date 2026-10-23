@@ -87,6 +87,35 @@ class SeedCliTests(unittest.TestCase):
         with patch.dict(os.environ, {"NAKAMA_URL": "https://example.test", "NAKAMA_HTTP_KEY": "a&b"}, clear=True):
             self.assertEqual(cli.rpc_url("seed_game_data"), "https://example.test/v2/rpc/seed_game_data?http_key=a%26b")
 
+    def test_admin_email_login_uses_noncreating_auth_and_hides_password(self):
+        class Response:
+            def __enter__(self): return self
+            def __exit__(self, *args): pass
+            def read(self): return b'{"token":"session-test"}'
+        with patch.dict(os.environ, {"NAKAMA_URL": "https://example.test", "NAKAMA_SERVER_KEY": "server-secret"}, clear=True), patch.object(cli.urllib.request, "urlopen", return_value=Response()) as http:
+            self.assertEqual(cli.admin_login("admin@example.test", "private-password"), "session-test")
+            request = http.call_args.args[0]
+            self.assertEqual(request.full_url, "https://example.test/v2/account/authenticate/email?create=false")
+            self.assertEqual(json.loads(request.data), {"email": "admin@example.test", "password": "private-password"})
+            self.assertTrue(request.get_header("Authorization").startswith("Basic "))
+
+    def test_admin_email_requires_interactive_terminal(self):
+        with patch.dict(os.environ, {"NAKAMA_SERVER_KEY": "test"}, clear=True), patch.object(cli.sys.stdin, "isatty", return_value=False), patch.object(cli, "invoke_rpc") as rpc:
+            self.assertEqual(self.run_main(["--publish", "--u", "admin@example.test"]), 1)
+            rpc.assert_not_called()
+
+    def test_admin_email_session_is_used_for_publish(self):
+        def respond(name, body, bearer=None):
+            if name == "seed_game_data":
+                return {"success": True, "atomic": True, "table": "bundle", "results": [{"success": True, "table": request["table"], "inserted": len(request["rows"])} for request in body["requests"]]}
+            return {"status": "ok", "config_version": 3}
+        with patch.dict(os.environ, {}, clear=True), patch.object(cli.sys.stdin, "isatty", return_value=True), patch.object(cli.getpass, "getpass", return_value="private-password") as prompt, patch.object(cli, "admin_login", return_value="session-test") as login, patch.object(cli, "invoke_rpc", side_effect=respond) as rpc:
+            self.assertEqual(self.run_main(["--settings-only", "--settings", str(Path(__file__).resolve().parents[1] / "nakama/remote_settings.production.example.json"), "--publish", "--u", "admin@example.test"]), 0)
+            prompt.assert_called_once()
+            login.assert_called_once_with("admin@example.test", "private-password")
+            self.assertEqual(rpc.call_args.args[0], "publish_config_release")
+            self.assertEqual(rpc.call_args.args[2], "session-test")
+
     def test_publish_without_settings_commits_bundle_before_authenticated_publish(self):
         calls = []
         secret = "synthetic-admin-no-log"

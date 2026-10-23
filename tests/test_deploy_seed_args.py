@@ -65,6 +65,11 @@ exit 0
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(calls, [["python3", "configure_runtime.py", "--seed", "--"]])
 
+    def test_publish_seeds_and_forwards_options_without_restart(self):
+        result, calls = self.execute(["publish", "--app-version", "1.2.3"])
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(calls, [["python3", "configure_runtime.py", "--seed", "--", "--publish", "--app-version", "1.2.3"]])
+
     def test_deploy_forwards_seed_options_after_start(self):
         result, calls = self.execute(["deploy", "--publish"])
         self.assertEqual(result.returncode, 0, result.stderr)

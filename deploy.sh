@@ -122,6 +122,9 @@ case "${ACTION}" in
     seed)
         cmd_seed "$@"
         ;;
+    publish)
+        cmd_seed --publish "$@"
+        ;;
     build)
         cmd_build
         ;;
@@ -132,8 +135,8 @@ case "${ACTION}" in
         cmd_health
         ;;
     *)
-        echo "Usage: $0 {deploy|start|stop|restart|seed|build|logs|status} [seed options]"
-        echo "Example: $0 seed --publish --app-version 1.0.0 [--settings FILE]"
+        echo "Usage: $0 {deploy|start|stop|restart|seed|publish|build|logs|status} [seed options]"
+        echo "Example: $0 publish --u admin@example.com --app-version 1.0.0 [--settings FILE]"
         exit 1
         ;;
 esac

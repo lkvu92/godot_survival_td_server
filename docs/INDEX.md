@@ -99,7 +99,7 @@
 
 - [C149: Campaign wave role unlocks](contracts/C149_CAMPAIGN_WAVE_ROLE_UNLOCKS.md): wave1?3 no rushers/tankers;4?6 no tankers; all existing per-wave counts preserved.
 
-- [C150: Deploy seed/publish forwarding](contracts/C150_DEPLOY_SEED_PUBLISH.md): seed --publish without restarting; optional reviewed settings.
+- [C150: Deploy seed/publish forwarding](contracts/C150_DEPLOY_SEED_PUBLISH.md): `publish` shortcut seeds and publishes without restarting; optional reviewed settings.
 
 - [C151: Progressive spawn cadence](contracts/C151_PROGRESSIVE_SPAWN_CADENCE.md): slower early batches, unchanged creep counts and EXP.
 

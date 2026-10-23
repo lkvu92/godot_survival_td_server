@@ -7,7 +7,7 @@
     "rarity": "rare",
     "icon_id": "dismantle",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 50,
     "expires_after_hours": 0,
     "tags": [
@@ -24,7 +24,7 @@
     "rarity": "common",
     "icon_id": "rune_earth_low",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 110,
     "expires_after_hours": 0,
     "tags": [
@@ -42,7 +42,7 @@
     "rarity": "common",
     "icon_id": "rune_fire_low",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 120,
     "expires_after_hours": 0,
     "tags": [
@@ -60,7 +60,7 @@
     "rarity": "common",
     "icon_id": "rune_metal_low",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 130,
     "expires_after_hours": 0,
     "tags": [
@@ -78,7 +78,7 @@
     "rarity": "common",
     "icon_id": "rune_water_low",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 140,
     "expires_after_hours": 0,
     "tags": [
@@ -96,7 +96,7 @@
     "rarity": "common",
     "icon_id": "rune_wood_low",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 150,
     "expires_after_hours": 0,
     "tags": [
@@ -114,7 +114,7 @@
     "rarity": "rare",
     "icon_id": "rune_earth_medium",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 210,
     "expires_after_hours": 720,
     "tags": [
@@ -132,7 +132,7 @@
     "rarity": "rare",
     "icon_id": "rune_fire_medium",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 220,
     "expires_after_hours": 720,
     "tags": [
@@ -150,7 +150,7 @@
     "rarity": "rare",
     "icon_id": "rune_metal_medium",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 230,
     "expires_after_hours": 0,
     "tags": [
@@ -168,7 +168,7 @@
     "rarity": "rare",
     "icon_id": "rune_water_medium",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 240,
     "expires_after_hours": 0,
     "tags": [
@@ -186,7 +186,7 @@
     "rarity": "rare",
     "icon_id": "rune_wood_medium",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 250,
     "expires_after_hours": 0,
     "tags": [
@@ -199,12 +199,12 @@
   {
     "id": "rune_earth_high",
     "display_name": "Phù Văn Thổ Linh",
-    "description": "Phù văn tuyệt tác chứa linh lực Thổ dồi dào, độc bản không thể cộng dồn.",
+    "description": "Phù văn tuyệt tác chứa linh lực Thổ dồi dào, có thể cộng dồn.",
     "category": "rune",
     "rarity": "epic",
     "icon_id": "rune_earth_high",
-    "stackable": false,
-    "max_stack": 1,
+    "stackable": true,
+    "max_stack": 999999,
     "order": 310,
     "expires_after_hours": 0,
     "tags": [
@@ -218,12 +218,12 @@
   {
     "id": "rune_fire_high",
     "display_name": "Phù Văn Hỏa Linh",
-    "description": "Phù văn tuyệt tác chứa linh lực Hỏa dồi dào, độc bản không thể cộng dồn.",
+    "description": "Phù văn tuyệt tác chứa linh lực Hỏa dồi dào, có thể cộng dồn.",
     "category": "rune",
     "rarity": "epic",
     "icon_id": "rune_fire_high",
-    "stackable": false,
-    "max_stack": 1,
+    "stackable": true,
+    "max_stack": 999999,
     "order": 320,
     "expires_after_hours": 168,
     "tags": [
@@ -237,12 +237,12 @@
   {
     "id": "rune_metal_high",
     "display_name": "Phù Văn Kim Linh",
-    "description": "Phù văn tuyệt tác chứa linh lực Kim dồi dào, độc bản không thể cộng dồn.",
+    "description": "Phù văn tuyệt tác chứa linh lực Kim dồi dào, có thể cộng dồn.",
     "category": "rune",
     "rarity": "epic",
     "icon_id": "rune_metal_high",
-    "stackable": false,
-    "max_stack": 1,
+    "stackable": true,
+    "max_stack": 999999,
     "order": 330,
     "expires_after_hours": 0,
     "tags": [
@@ -256,12 +256,12 @@
   {
     "id": "rune_water_high",
     "display_name": "Phù Văn Thủy Linh",
-    "description": "Phù văn tuyệt tác chứa linh lực Thủy dồi dào, độc bản không thể cộng dồn.",
+    "description": "Phù văn tuyệt tác chứa linh lực Thủy dồi dào, có thể cộng dồn.",
     "category": "rune",
     "rarity": "epic",
     "icon_id": "rune_water_high",
-    "stackable": false,
-    "max_stack": 1,
+    "stackable": true,
+    "max_stack": 999999,
     "order": 340,
     "expires_after_hours": 0,
     "tags": [
@@ -275,12 +275,12 @@
   {
     "id": "rune_wood_high",
     "display_name": "Phù Văn Mộc Linh",
-    "description": "Phù văn tuyệt tác chứa linh lực Mộc dồi dào, độc bản không thể cộng dồn.",
+    "description": "Phù văn tuyệt tác chứa linh lực Mộc dồi dào, có thể cộng dồn.",
     "category": "rune",
     "rarity": "epic",
     "icon_id": "rune_wood_high",
-    "stackable": false,
-    "max_stack": 1,
+    "stackable": true,
+    "max_stack": 999999,
     "order": 350,
     "expires_after_hours": 0,
     "tags": [
@@ -358,7 +358,7 @@
     "order": 62,
     "category": "consumable",
     "stackable": true,
-    "max_stack": 9999,
+    "max_stack": 999999,
     "expires_after_hours": 0,
     "tags": [
       "element",
@@ -379,7 +379,7 @@
     "order": 63,
     "category": "consumable",
     "stackable": true,
-    "max_stack": 9999,
+    "max_stack": 999999,
     "expires_after_hours": 0,
     "tags": [
       "talisman",
@@ -2644,7 +2644,7 @@
     "rarity": "common",
     "icon_id": "huyen_thiet_ha",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 160,
     "expires_after_hours": 0,
     "tags": [
@@ -2662,7 +2662,7 @@
     "rarity": "rare",
     "icon_id": "huyen_thiet_trung",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 260,
     "expires_after_hours": 0,
     "tags": [
@@ -2680,7 +2680,7 @@
     "rarity": "epic",
     "icon_id": "huyen_thiet_thuong",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 360,
     "expires_after_hours": 0,
     "tags": [
@@ -2698,7 +2698,7 @@
     "rarity": "epic",
     "icon_id": "consumable_rename_talisman",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 500,
     "expires_after_hours": 0,
     "tags": [
@@ -2720,7 +2720,7 @@
     "rarity": "mythic",
     "icon_id": "consumable_spirit_root_reset",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 501,
     "expires_after_hours": 0,
     "tags": [
@@ -2742,7 +2742,7 @@
     "rarity": "legendary",
     "icon_id": "consumable_metal_aptitude_fruit",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 502,
     "expires_after_hours": 0,
     "tags": [
@@ -2771,7 +2771,7 @@
     "rarity": "legendary",
     "icon_id": "consumable_wood_aptitude_fruit",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 503,
     "expires_after_hours": 0,
     "tags": [
@@ -2800,7 +2800,7 @@
     "rarity": "legendary",
     "icon_id": "consumable_water_aptitude_fruit",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 504,
     "expires_after_hours": 0,
     "tags": [
@@ -2829,7 +2829,7 @@
     "rarity": "legendary",
     "icon_id": "consumable_fire_aptitude_fruit",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 505,
     "expires_after_hours": 0,
     "tags": [
@@ -2858,7 +2858,7 @@
     "rarity": "legendary",
     "icon_id": "consumable_earth_aptitude_fruit",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 506,
     "expires_after_hours": 0,
     "tags": [
@@ -2887,7 +2887,7 @@
     "rarity": "legendary",
     "icon_id": "consumable_wind_aptitude_fruit",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 507,
     "expires_after_hours": 0,
     "tags": [
@@ -2909,7 +2909,7 @@
     "rarity": "legendary",
     "icon_id": "consumable_thunder_aptitude_fruit",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 508,
     "expires_after_hours": 0,
     "tags": [
@@ -2931,7 +2931,7 @@
     "rarity": "legendary",
     "icon_id": "consumable_space_aptitude_fruit",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 509,
     "expires_after_hours": 0,
     "tags": [
@@ -2953,7 +2953,7 @@
     "rarity": "epic",
     "icon_id": "consumable_exp_talisman",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 510,
     "expires_after_hours": 0,
     "tags": [
@@ -2980,7 +2980,7 @@
     "rarity": "rare",
     "icon_id": "consumable_gold_talisman",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 511,
     "expires_after_hours": 0,
     "tags": [
@@ -3007,7 +3007,7 @@
     "rarity": "rare",
     "icon_id": "consumable_attack_talisman",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 512,
     "expires_after_hours": 0,
     "tags": [
@@ -3036,7 +3036,7 @@
     "rarity": "rare",
     "icon_id": "consumable_defense_talisman",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 513,
     "expires_after_hours": 0,
     "tags": [
@@ -3065,7 +3065,7 @@
     "rarity": "rare",
     "icon_id": "consumable_cooldown_talisman",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 514,
     "expires_after_hours": 0,
     "tags": [
@@ -3094,7 +3094,7 @@
     "rarity": "rare",
     "icon_id": "consumable_resistance_talisman",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 515,
     "expires_after_hours": 0,
     "tags": [
@@ -3123,7 +3123,7 @@
     "rarity": "rare",
     "icon_id": "consumable_critical_talisman",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 516,
     "expires_after_hours": 0,
     "tags": [
@@ -3152,7 +3152,7 @@
     "rarity": "rare",
     "icon_id": "consumable_attack_speed_talisman",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 517,
     "expires_after_hours": 0,
     "tags": [
@@ -3181,7 +3181,7 @@
     "rarity": "epic",
     "icon_id": "consumable_revive_talisman",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 518,
     "expires_after_hours": 0,
     "tags": [
@@ -3210,7 +3210,7 @@
     "rarity": "rare",
     "icon_id": "consumable_healing_elixir",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 519,
     "expires_after_hours": 0,
     "tags": [
@@ -3239,7 +3239,7 @@
     "rarity": "rare",
     "icon_id": "consumable_shield_elixir",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 520,
     "expires_after_hours": 0,
     "tags": [
@@ -3268,7 +3268,7 @@
     "rarity": "rare",
     "icon_id": "consumable_energy_elixir",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 521,
     "expires_after_hours": 0,
     "tags": [
@@ -3295,7 +3295,7 @@
     "rarity": "rare",
     "icon_id": "consumable_slow_talisman",
     "stackable": true,
-    "max_stack": 999,
+    "max_stack": 999999,
     "order": 522,
     "expires_after_hours": 0,
     "tags": [
@@ -3325,7 +3325,7 @@
     "rarity": "rare",
     "icon_id": "consumable_0",
     "stackable": true,
-    "max_stack": 99999,
+    "max_stack": 999999,
     "order": 49,
     "expires_after_hours": 0,
     "tags": [
