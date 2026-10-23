@@ -1445,7 +1445,10 @@
       "hero_3_skill_1_frame_2",
       "hero_3_skill_1_frame_3",
       "hero_3_skill_1_frame_4",
-      "hero_3_skill_1_frame_5"
+      "hero_3_skill_1_frame_5",
+      "hero_3_skill_1_frame_6",
+      "hero_3_skill_1_frame_7",
+      "hero_3_skill_1_frame_8"
     ],
     "levels": [
       {
@@ -1614,21 +1617,23 @@
     "skill_class": "active",
     "activation": "auto",
     "skill_type": "two_phase_aoe",
-    "phase_b_aoe_type": "expanding_ring_aoe",
     "positioning": {
       "type": "enemy_ground"
     },
     "deployment": {
       "type": "area"
     },
-    "description": "A blade seal drops from above, stuns and deals small AOE damage, then releases a weaker larger shockwave.",
+    "description": "Giant sword strikes one target; eight swords burst in wide AOE; three propagating sound waves 0.3s apart each have 30% chance to stun for 0.2s.",
     "vfx_frames": [
       "hero_3_skill_2a_frame_0",
       "hero_3_skill_2a_frame_1",
       "hero_3_skill_2a_frame_2",
       "hero_3_skill_2a_frame_3",
       "hero_3_skill_2a_frame_4",
-      "hero_3_skill_2a_frame_5"
+      "hero_3_skill_2a_frame_5",
+      "hero_3_skill_2a_frame_6",
+      "hero_3_skill_2a_frame_7",
+      "hero_3_skill_2a_frame_8"
     ],
     "phase_b_vfx_frames": [
       "hero_3_skill_2b_frame_0",
@@ -1636,7 +1641,10 @@
       "hero_3_skill_2b_frame_2",
       "hero_3_skill_2b_frame_3",
       "hero_3_skill_2b_frame_4",
-      "hero_3_skill_2b_frame_5"
+      "hero_3_skill_2b_frame_5",
+      "hero_3_skill_2b_frame_6",
+      "hero_3_skill_2b_frame_7",
+      "hero_3_skill_2b_frame_8"
     ],
     "levels": [
       {
@@ -1651,26 +1659,40 @@
           "impact_delay": 0.32,
           "above_height": 330,
           "phase_a_vfx_scale": 0.441,
-          "phase_b_vfx_scale": 0.714,
-          "phase_b_duration": 0.48,
+          "phase_b_vfx_scale": 0.75,
+          "phase_b_duration": 0.24,
           "phase_b_ring_width": 24,
           "phase_b_collision_padding": 16,
-          "phase_b_ring_tick_count": 12
+          "phase_b_ring_tick_count": 12,
+          "wave_count": 3,
+          "wave_interval": 0.3,
+          "wave_stun_chance": 0.3,
+          "wave_stun_duration": 0.2,
+          "wave_damage_pct": 26.0,
+          "wave_radius": 135,
+          "wave_duration": 0.54,
+          "wave_ring_width": 12,
+          "wave_collision_padding": 8,
+          "wave_radius_progress": [
+            0.17,
+            0.41,
+            0.6,
+            0.77,
+            0.87,
+            1,
+            1,
+            1,
+            1
+          ]
         },
         "description_rows": [
-          "Two phase AOE",
-          "Hit 143% ATK",
-          "Wave 78% ATK",
-          "Stun 0.5s",
-          "Area 70/135",
-          "CD 7s"
+          "Single target 143% ATK",
+          "8-sword AOE 78% ATK",
+          "3 waves: 26.0% ATK each",
+          "Waves 0.3s apart; 30% stun 0.2s",
+          "Radius 135; CD 7s"
         ],
-        "effects": [
-          {
-            "id": "stun",
-            "duration": 0.5
-          }
-        ]
+        "effects": []
       },
       {
         "level": 2,
@@ -1684,26 +1706,40 @@
           "impact_delay": 0.32,
           "above_height": 340,
           "phase_a_vfx_scale": 0.504,
-          "phase_b_vfx_scale": 0.7854,
-          "phase_b_duration": 0.5,
+          "phase_b_vfx_scale": 0.8277777777777777,
+          "phase_b_duration": 0.25,
           "phase_b_ring_width": 24,
           "phase_b_collision_padding": 16,
-          "phase_b_ring_tick_count": 12
+          "phase_b_ring_tick_count": 12,
+          "wave_count": 3,
+          "wave_interval": 0.3,
+          "wave_stun_chance": 0.3,
+          "wave_stun_duration": 0.2,
+          "wave_damage_pct": 27.5,
+          "wave_radius": 149,
+          "wave_duration": 0.54,
+          "wave_ring_width": 12,
+          "wave_collision_padding": 8,
+          "wave_radius_progress": [
+            0.17,
+            0.41,
+            0.6,
+            0.77,
+            0.87,
+            1,
+            1,
+            1,
+            1
+          ]
         },
         "description_rows": [
-          "Two phase AOE",
-          "Hit 153.5% ATK",
-          "Wave 82.5% ATK",
-          "Stun 0.5s",
-          "Area 82/149",
-          "CD 6.5s"
+          "Single target 153.5% ATK",
+          "8-sword AOE 82.5% ATK",
+          "3 waves: 27.5% ATK each",
+          "Waves 0.3s apart; 30% stun 0.2s",
+          "Radius 149; CD 6.5s"
         ],
-        "effects": [
-          {
-            "id": "stun",
-            "duration": 0.5
-          }
-        ]
+        "effects": []
       },
       {
         "level": 3,
@@ -1717,26 +1753,40 @@
           "impact_delay": 0.3,
           "above_height": 350,
           "phase_a_vfx_scale": 0.588,
-          "phase_b_vfx_scale": 0.8568,
-          "phase_b_duration": 0.52,
+          "phase_b_vfx_scale": 0.9,
+          "phase_b_duration": 0.26,
           "phase_b_ring_width": 24,
           "phase_b_collision_padding": 16,
-          "phase_b_ring_tick_count": 12
+          "phase_b_ring_tick_count": 12,
+          "wave_count": 3,
+          "wave_interval": 0.3,
+          "wave_stun_chance": 0.3,
+          "wave_stun_duration": 0.2,
+          "wave_damage_pct": 29.5,
+          "wave_radius": 162,
+          "wave_duration": 0.54,
+          "wave_ring_width": 12,
+          "wave_collision_padding": 8,
+          "wave_radius_progress": [
+            0.17,
+            0.41,
+            0.6,
+            0.77,
+            0.87,
+            1,
+            1,
+            1,
+            1
+          ]
         },
         "description_rows": [
-          "Two phase AOE",
-          "Hit 165.5% ATK",
-          "Wave 88.5% ATK",
-          "Stun 0.5s",
-          "Area 96/162",
-          "CD 6s"
+          "Single target 165.5% ATK",
+          "8-sword AOE 88.5% ATK",
+          "3 waves: 29.5% ATK each",
+          "Waves 0.3s apart; 30% stun 0.2s",
+          "Radius 162; CD 6s"
         ],
-        "effects": [
-          {
-            "id": "stun",
-            "duration": 0.5
-          }
-        ]
+        "effects": []
       },
       {
         "level": 4,
@@ -1750,26 +1800,40 @@
           "impact_delay": 0.28,
           "above_height": 360,
           "phase_a_vfx_scale": 0.672,
-          "phase_b_vfx_scale": 0.9282,
-          "phase_b_duration": 0.54,
+          "phase_b_vfx_scale": 0.9777777777777777,
+          "phase_b_duration": 0.27,
           "phase_b_ring_width": 24,
           "phase_b_collision_padding": 16,
-          "phase_b_ring_tick_count": 12
+          "phase_b_ring_tick_count": 12,
+          "wave_count": 3,
+          "wave_interval": 0.3,
+          "wave_stun_chance": 0.3,
+          "wave_stun_duration": 0.2,
+          "wave_damage_pct": 32.0,
+          "wave_radius": 176,
+          "wave_duration": 0.54,
+          "wave_ring_width": 12,
+          "wave_collision_padding": 8,
+          "wave_radius_progress": [
+            0.17,
+            0.41,
+            0.6,
+            0.77,
+            0.87,
+            1,
+            1,
+            1,
+            1
+          ]
         },
         "description_rows": [
-          "Two phase AOE",
-          "Hit 180.5% ATK",
-          "Wave 96% ATK",
-          "Stun 0.5s",
-          "Area 112/176",
-          "CD 5.5s"
+          "Single target 180.5% ATK",
+          "8-sword AOE 96% ATK",
+          "3 waves: 32.0% ATK each",
+          "Waves 0.3s apart; 30% stun 0.2s",
+          "Radius 176; CD 5.5s"
         ],
-        "effects": [
-          {
-            "id": "stun",
-            "duration": 0.5
-          }
-        ]
+        "effects": []
       },
       {
         "level": 5,
@@ -1783,26 +1847,40 @@
           "impact_delay": 0.26,
           "above_height": 370,
           "phase_a_vfx_scale": 0.777,
-          "phase_b_vfx_scale": 0.9996,
-          "phase_b_duration": 0.56,
+          "phase_b_vfx_scale": 1.05,
+          "phase_b_duration": 0.28,
           "phase_b_ring_width": 24,
           "phase_b_collision_padding": 16,
-          "phase_b_ring_tick_count": 12
+          "phase_b_ring_tick_count": 12,
+          "wave_count": 3,
+          "wave_interval": 0.3,
+          "wave_stun_chance": 0.3,
+          "wave_stun_duration": 0.2,
+          "wave_damage_pct": 35.0,
+          "wave_radius": 189,
+          "wave_duration": 0.54,
+          "wave_ring_width": 12,
+          "wave_collision_padding": 8,
+          "wave_radius_progress": [
+            0.17,
+            0.41,
+            0.6,
+            0.77,
+            0.87,
+            1,
+            1,
+            1,
+            1
+          ]
         },
         "description_rows": [
-          "Two phase AOE",
-          "Hit 200% ATK",
-          "Wave 105% ATK",
-          "Stun 0.5s",
-          "Area 130/189",
-          "CD 4.9s"
+          "Single target 200% ATK",
+          "8-sword AOE 105% ATK",
+          "3 waves: 35.0% ATK each",
+          "Waves 0.3s apart; 30% stun 0.2s",
+          "Radius 189; CD 4.9s"
         ],
-        "effects": [
-          {
-            "id": "stun",
-            "duration": 0.5
-          }
-        ]
+        "effects": []
       }
     ],
     "sfx_events": [
@@ -1814,6 +1892,17 @@
         "sfx_id": "hero3-skill2-b",
         "timing": "impact"
       }
+    ],
+    "wave_vfx_frames": [
+      "hero_3_skill_2c_frame_0",
+      "hero_3_skill_2c_frame_1",
+      "hero_3_skill_2c_frame_2",
+      "hero_3_skill_2c_frame_3",
+      "hero_3_skill_2c_frame_4",
+      "hero_3_skill_2c_frame_5",
+      "hero_3_skill_2c_frame_6",
+      "hero_3_skill_2c_frame_7",
+      "hero_3_skill_2c_frame_8"
     ]
   },
   {
@@ -1843,7 +1932,10 @@
       "hero_3_skill_3a_frame_2",
       "hero_3_skill_3a_frame_3",
       "hero_3_skill_3a_frame_4",
-      "hero_3_skill_3a_frame_5"
+      "hero_3_skill_3a_frame_5",
+      "hero_3_skill_3a_frame_6",
+      "hero_3_skill_3a_frame_7",
+      "hero_3_skill_3a_frame_8"
     ],
     "final_vfx_frames": [
       "hero_3_skill_3b_frame_0",
@@ -1851,7 +1943,10 @@
       "hero_3_skill_3b_frame_2",
       "hero_3_skill_3b_frame_3",
       "hero_3_skill_3b_frame_4",
-      "hero_3_skill_3b_frame_5"
+      "hero_3_skill_3b_frame_5",
+      "hero_3_skill_3b_frame_6",
+      "hero_3_skill_3b_frame_7",
+      "hero_3_skill_3b_frame_8"
     ],
     "levels": [
       {
@@ -2350,14 +2445,14 @@
         "level": 1,
         "stats": {
           "damage_pct": 39,
-          "speed_pct": 180,
+          "speed_pct": 240,
           "range": 1024,
           "cooldown": 7.5,
           "radius": 144,
           "pierce": 999,
-          "knockback_distance": 32,
-          "vfx_scale": 1,
-          "vfx_alpha": 0.8
+          "knockback_distance": 24,
+          "knockback_duration": 0.15,
+          "vfx_scale": 1
         },
         "description_rows": [
           "Phạm vi 80%",
@@ -2370,14 +2465,14 @@
         "level": 2,
         "stats": {
           "damage_pct": 42,
-          "speed_pct": 185,
+          "speed_pct": 250,
           "range": 1024,
           "cooldown": 7,
           "radius": 158,
           "pierce": 999,
-          "knockback_distance": 36,
-          "vfx_scale": 1.1,
-          "vfx_alpha": 0.8
+          "knockback_distance": 27,
+          "knockback_duration": 0.15,
+          "vfx_scale": 1.1
         },
         "description_rows": [
           "Phạm vi 80%",
@@ -2390,14 +2485,14 @@
         "level": 3,
         "stats": {
           "damage_pct": 45.375,
-          "speed_pct": 190,
+          "speed_pct": 260,
           "range": 1024,
           "cooldown": 6.5,
           "radius": 173,
           "pierce": 999,
-          "knockback_distance": 40,
-          "vfx_scale": 1.2,
-          "vfx_alpha": 0.8
+          "knockback_distance": 30,
+          "knockback_duration": 0.15,
+          "vfx_scale": 1.2
         },
         "description_rows": [
           "Phạm vi 80%",
@@ -2410,14 +2505,14 @@
         "level": 4,
         "stats": {
           "damage_pct": 49.125,
-          "speed_pct": 195,
+          "speed_pct": 270,
           "range": 1024,
           "cooldown": 6,
           "radius": 187,
           "pierce": 999,
-          "knockback_distance": 44,
-          "vfx_scale": 1.3,
-          "vfx_alpha": 0.8
+          "knockback_distance": 33,
+          "knockback_duration": 0.15,
+          "vfx_scale": 1.3
         },
         "description_rows": [
           "Phạm vi 80%",
@@ -2430,14 +2525,14 @@
         "level": 5,
         "stats": {
           "damage_pct": 54,
-          "speed_pct": 200,
+          "speed_pct": 280,
           "range": 1024,
           "cooldown": 5.5,
           "radius": 202,
           "pierce": 999,
-          "knockback_distance": 48,
-          "vfx_scale": 1.4,
-          "vfx_alpha": 0.8
+          "knockback_distance": 36,
+          "knockback_duration": 0.15,
+          "vfx_scale": 1.4
         },
         "description_rows": [
           "Phạm vi 80%",
@@ -2599,6 +2694,17 @@
       "hero_2_skill4_frame_7",
       "hero_2_skill4_frame_8"
     ],
+    "telegraph_vfx_frames": [
+      "creep_fire_rune_0",
+      "creep_fire_rune_1",
+      "creep_fire_rune_2",
+      "creep_fire_rune_3",
+      "creep_fire_rune_4",
+      "creep_fire_rune_5",
+      "creep_fire_rune_6",
+      "creep_fire_rune_7",
+      "creep_fire_rune_8"
+    ],
     "levels": [
       {
         "level": 1,
@@ -2609,15 +2715,20 @@
           "cooldown": 17,
           "radius": 108,
           "pierce": 999,
-          "charge_time": 1.5,
+          "charge_time": 2,
           "side_delay": 0.12,
           "side_spacing": 95,
           "vfx_scale": 1.44,
-          "vfx_alpha": 0.8
+          "vfx_alpha": 0.8,
+          "telegraph_radius": 96,
+          "telegraph_max_hp_pct": 0.005,
+          "telegraph_tick_interval": 0.5,
+          "telegraph_tick_count": 4,
+          "telegraph_vfx_scale": 0.56
         },
         "description_rows": [
           "Phạm vi 70%",
-          "Tụ lực 1.5s",
+          "Tụ lực 2s: pháp trận gây 0.5% HP tối đa/0.5s ×4",
           "Tiễn chính 130%, mỗi tiễn phụ 65% ATK",
           "Đủ 3 hit: +5% HP tối đa",
           "CD 17s"
@@ -2632,15 +2743,20 @@
           "cooldown": 16,
           "radius": 118.5,
           "pierce": 999,
-          "charge_time": 1.5,
+          "charge_time": 2,
           "side_delay": 0.12,
           "side_spacing": 98,
           "vfx_scale": 1.584,
-          "vfx_alpha": 0.8
+          "vfx_alpha": 0.8,
+          "telegraph_radius": 96,
+          "telegraph_max_hp_pct": 0.005,
+          "telegraph_tick_interval": 0.5,
+          "telegraph_tick_count": 4,
+          "telegraph_vfx_scale": 0.56
         },
         "description_rows": [
           "Phạm vi 70%",
-          "Tụ lực 1.5s",
+          "Tụ lực 2s: pháp trận gây 0.5% HP tối đa/0.5s ×4",
           "Tiễn chính 140.5%, mỗi tiễn phụ 70.25% ATK",
           "Đủ 3 hit: +5% HP tối đa",
           "CD 16s"
@@ -2655,15 +2771,20 @@
           "cooldown": 15,
           "radius": 129,
           "pierce": 999,
-          "charge_time": 1.5,
+          "charge_time": 2,
           "side_delay": 0.11,
           "side_spacing": 101,
           "vfx_scale": 1.728,
-          "vfx_alpha": 0.8
+          "vfx_alpha": 0.8,
+          "telegraph_radius": 96,
+          "telegraph_max_hp_pct": 0.005,
+          "telegraph_tick_interval": 0.5,
+          "telegraph_tick_count": 4,
+          "telegraph_vfx_scale": 0.56
         },
         "description_rows": [
           "Phạm vi 70%",
-          "Tụ lực 1.5s",
+          "Tụ lực 2s: pháp trận gây 0.5% HP tối đa/0.5s ×4",
           "Tiễn chính 152.5%, mỗi tiễn phụ 76.25% ATK",
           "Đủ 3 hit: +5% HP tối đa",
           "CD 15s"
@@ -2678,15 +2799,20 @@
           "cooldown": 14,
           "radius": 141,
           "pierce": 999,
-          "charge_time": 1.5,
+          "charge_time": 2,
           "side_delay": 0.1,
           "side_spacing": 104,
           "vfx_scale": 1.872,
-          "vfx_alpha": 0.8
+          "vfx_alpha": 0.8,
+          "telegraph_radius": 96,
+          "telegraph_max_hp_pct": 0.005,
+          "telegraph_tick_interval": 0.5,
+          "telegraph_tick_count": 4,
+          "telegraph_vfx_scale": 0.56
         },
         "description_rows": [
           "Phạm vi 70%",
-          "Tụ lực 1.5s",
+          "Tụ lực 2s: pháp trận gây 0.5% HP tối đa/0.5s ×4",
           "Tiễn chính 163%, mỗi tiễn phụ 81.5% ATK",
           "Đủ 3 hit: +5% HP tối đa",
           "CD 14s"
@@ -2701,15 +2827,20 @@
           "cooldown": 13,
           "radius": 151.5,
           "pierce": 999,
-          "charge_time": 1.5,
+          "charge_time": 2,
           "side_delay": 0.1,
           "side_spacing": 107,
           "vfx_scale": 2.016,
-          "vfx_alpha": 0.8
+          "vfx_alpha": 0.8,
+          "telegraph_radius": 96,
+          "telegraph_max_hp_pct": 0.005,
+          "telegraph_tick_interval": 0.5,
+          "telegraph_tick_count": 4,
+          "telegraph_vfx_scale": 0.56
         },
         "description_rows": [
           "Phạm vi 70%",
-          "Tụ lực 1.5s",
+          "Tụ lực 2s: pháp trận gây 0.5% HP tối đa/0.5s ×4",
           "Tiễn chính 175%, mỗi tiễn phụ 87.5% ATK",
           "Đủ 3 hit: +5% HP tối đa",
           "CD 13s"
@@ -3338,7 +3469,7 @@
     "deployment": {
       "type": "area"
     },
-    "description": "Summons a venom vortex under a distant enemy, then fires poison needles outward. Each needle adds a stacking max-HP poison that resets if not refreshed within 3 seconds.",
+    "description": "Venom vortex loops at double animation speed for 2s. Starting 0.5s after cast, fires 3/4/5/6/8 needles at random independent angles, 0.1s apart. Each hit adds 0.2% max HP/s poison, capped at 1.2%/s and refreshed within 3s.",
     "vfx_frames": [
       "hero_4_skill_4a_frame_0",
       "hero_4_skill_4a_frame_1",
@@ -3373,15 +3504,19 @@
           "vfx_scale": 0.255,
           "needle_vfx_scale": 0.105,
           "vortex_duration": 2,
-          "vortex_tick_interval": 0.5
+          "vortex_tick_interval": 0.5,
+          "needle_interval": 0.1,
+          "vortex_animation_duration": 1
         },
         "description_rows": [
           "Venom vortex",
           "Hit 117% ATK",
           "Needles 3x 78% ATK",
-          "Stack 2% HP/s each",
+          "Stack 0.2% max HP/s each (cap 1.2%)",
           "Stun 0.1s + Slow 10%",
-          "CD 13.5s"
+          "CD 13.5s",
+          "First needle at 0.5s; random angles, 0.1s apart",
+          "Vortex loops 2s, animation speed x2"
         ],
         "effects": [
           {
@@ -3403,7 +3538,7 @@
           "range": 730,
           "cooldown": 12.6,
           "radius": 100,
-          "needle_count": 3,
+          "needle_count": 4,
           "needle_range": 260,
           "needle_speed_pct": 168,
           "needle_radius": 27,
@@ -3414,15 +3549,19 @@
           "vfx_scale": 0.285,
           "needle_vfx_scale": 0.11,
           "vortex_duration": 2,
-          "vortex_tick_interval": 0.5
+          "vortex_tick_interval": 0.5,
+          "needle_interval": 0.1,
+          "vortex_animation_duration": 1
         },
         "description_rows": [
           "Venom vortex",
           "Hit 126% ATK",
-          "Needles 3x 84% ATK",
-          "Stack 2% HP/s each",
+          "Needles 4x 84% ATK",
+          "Stack 0.2% max HP/s each (cap 1.2%)",
           "Stun 0.1s + Slow 15%",
-          "CD 12.6s"
+          "CD 12.6s",
+          "First needle at 0.5s; random angles, 0.1s apart",
+          "Vortex loops 2s, animation speed x2"
         ],
         "effects": [
           {
@@ -3444,7 +3583,7 @@
           "range": 765,
           "cooldown": 11.7,
           "radius": 110,
-          "needle_count": 4,
+          "needle_count": 5,
           "needle_range": 285,
           "needle_speed_pct": 176,
           "needle_radius": 28,
@@ -3455,15 +3594,19 @@
           "vfx_scale": 0.315,
           "needle_vfx_scale": 0.11,
           "vortex_duration": 2,
-          "vortex_tick_interval": 0.5
+          "vortex_tick_interval": 0.5,
+          "needle_interval": 0.1,
+          "vortex_animation_duration": 1
         },
         "description_rows": [
           "Venom vortex",
           "Hit 136.5% ATK",
-          "Needles 4x 91.5% ATK",
-          "Stack 2% HP/s each",
+          "Needles 5x 91.5% ATK",
+          "Stack 0.2% max HP/s each (cap 1.2%)",
           "Stun 0.1s + Slow 20%",
-          "CD 11.7s"
+          "CD 11.7s",
+          "First needle at 0.5s; random angles, 0.1s apart",
+          "Vortex loops 2s, animation speed x2"
         ],
         "effects": [
           {
@@ -3485,7 +3628,7 @@
           "range": 805,
           "cooldown": 10.8,
           "radius": 120,
-          "needle_count": 4,
+          "needle_count": 6,
           "needle_range": 310,
           "needle_speed_pct": 184,
           "needle_radius": 29,
@@ -3496,15 +3639,19 @@
           "vfx_scale": 0.345,
           "needle_vfx_scale": 0.115,
           "vortex_duration": 2,
-          "vortex_tick_interval": 0.5
+          "vortex_tick_interval": 0.5,
+          "needle_interval": 0.1,
+          "vortex_animation_duration": 1
         },
         "description_rows": [
           "Venom vortex",
           "Hit 150% ATK",
-          "Needles 4x 101.4% ATK",
-          "Stack 2% HP/s each",
+          "Needles 6x 101.4% ATK",
+          "Stack 0.2% max HP/s each (cap 1.2%)",
           "Stun 0.1s + Slow 25%",
-          "CD 10.8s"
+          "CD 10.8s",
+          "First needle at 0.5s; random angles, 0.1s apart",
+          "Vortex loops 2s, animation speed x2"
         ],
         "effects": [
           {
@@ -3526,7 +3673,7 @@
           "range": 860,
           "cooldown": 9.6,
           "radius": 130,
-          "needle_count": 6,
+          "needle_count": 8,
           "needle_range": 340,
           "needle_speed_pct": 195,
           "needle_radius": 30,
@@ -3537,15 +3684,19 @@
           "vfx_scale": 0.37,
           "needle_vfx_scale": 0.12,
           "vortex_duration": 2,
-          "vortex_tick_interval": 0.5
+          "vortex_tick_interval": 0.5,
+          "needle_interval": 0.1,
+          "vortex_animation_duration": 1
         },
         "description_rows": [
           "Venom vortex",
           "Hit 165% ATK",
-          "Needles 6x 114% ATK",
-          "Stack 2% HP/s each",
+          "Needles 8x 114% ATK",
+          "Stack 0.2% max HP/s each (cap 1.2%)",
           "Stun 0.1s + Slow 30%",
-          "CD 9.6s"
+          "CD 9.6s",
+          "First needle at 0.5s; random angles, 0.1s apart",
+          "Vortex loops 2s, animation speed x2"
         ],
         "effects": [
           {
@@ -3867,7 +4018,7 @@
     ],
     "flank_bolt_config": {
       "damage_multiplier": 0.6,
-      "speed": 360,
+      "speed": 540,
       "vfx_scale": 0.32,
       "slow_percent": 0.3,
       "slow_duration": 2,
@@ -4168,23 +4319,31 @@
       "wave": 1
     },
     "vfx_frames": [
-      "hero_1_skill4_sprite"
+      "hero_1_skill4_beam",
+      "hero_1_skill4_trail",
+      "hero_1_skill4_seal",
+      "hero_1_skill4_domain"
     ],
     "levels": [
       {
         "level": 1,
         "stats": {
-          "cooldown": 1,
+          "cooldown": 15,
           "damage_pct": 20,
-          "domain_coverage": 0.7,
+          "domain_duration": 10,
+          "domain_radius": 260,
+          "domain_cast_range": 768,
           "domain_slow_edge": 0.1,
           "domain_slow_center": 0.5,
+          "impact_stun_chance": 0.5,
+          "impact_stun_duration": 0.1,
           "attack_speed_slow": 0.3,
           "def_reduction": 0.2
         },
         "description_rows": [
-          "Lãnh địa băng phủ 70% dưới sân",
-          "Làm chậm 10% ở biên → 50% gần hero",
+          "Băng quang giáng xuống trước mặt mục tiêu: 50% Choáng 0.1s",
+          "Băng vệt + băng ấn + băng giới tồn tại 10s (CD 15s)",
+          "Làm chậm 10% ở biên → 50% tại tâm băng ấn",
           "Giảm 30% tốc độ đánh của quái",
           "Giảm 20% giáp của quái"
         ]
@@ -4192,17 +4351,22 @@
       {
         "level": 2,
         "stats": {
-          "cooldown": 1,
+          "cooldown": 15,
           "damage_pct": 20,
-          "domain_coverage": 0.7,
+          "domain_duration": 10,
+          "domain_radius": 260,
+          "domain_cast_range": 768,
           "domain_slow_edge": 0.1,
           "domain_slow_center": 0.5,
+          "impact_stun_chance": 0.5,
+          "impact_stun_duration": 0.1,
           "attack_speed_slow": 0.3,
           "def_reduction": 0.2
         },
         "description_rows": [
-          "Lãnh địa băng phủ 70% dưới sân",
-          "Làm chậm 10% ở biên → 50% gần hero",
+          "Băng quang giáng xuống trước mặt mục tiêu: 50% Choáng 0.1s",
+          "Băng vệt + băng ấn + băng giới tồn tại 10s (CD 15s)",
+          "Làm chậm 10% ở biên → 50% tại tâm băng ấn",
           "Giảm 30% tốc độ đánh của quái",
           "Giảm 20% giáp của quái"
         ]
@@ -4210,17 +4374,22 @@
       {
         "level": 3,
         "stats": {
-          "cooldown": 1,
+          "cooldown": 15,
           "damage_pct": 20,
-          "domain_coverage": 0.7,
+          "domain_duration": 10,
+          "domain_radius": 260,
+          "domain_cast_range": 768,
           "domain_slow_edge": 0.1,
           "domain_slow_center": 0.5,
+          "impact_stun_chance": 0.5,
+          "impact_stun_duration": 0.1,
           "attack_speed_slow": 0.3,
           "def_reduction": 0.2
         },
         "description_rows": [
-          "Lãnh địa băng phủ 70% dưới sân",
-          "Làm chậm 10% ở biên → 50% gần hero",
+          "Băng quang giáng xuống trước mặt mục tiêu: 50% Choáng 0.1s",
+          "Băng vệt + băng ấn + băng giới tồn tại 10s (CD 15s)",
+          "Làm chậm 10% ở biên → 50% tại tâm băng ấn",
           "Giảm 30% tốc độ đánh của quái",
           "Giảm 20% giáp của quái"
         ]
@@ -4228,17 +4397,22 @@
       {
         "level": 4,
         "stats": {
-          "cooldown": 1,
+          "cooldown": 15,
           "damage_pct": 20,
-          "domain_coverage": 0.7,
+          "domain_duration": 10,
+          "domain_radius": 260,
+          "domain_cast_range": 768,
           "domain_slow_edge": 0.1,
           "domain_slow_center": 0.5,
+          "impact_stun_chance": 0.5,
+          "impact_stun_duration": 0.1,
           "attack_speed_slow": 0.3,
           "def_reduction": 0.2
         },
         "description_rows": [
-          "Lãnh địa băng phủ 70% dưới sân",
-          "Làm chậm 10% ở biên → 50% gần hero",
+          "Băng quang giáng xuống trước mặt mục tiêu: 50% Choáng 0.1s",
+          "Băng vệt + băng ấn + băng giới tồn tại 10s (CD 15s)",
+          "Làm chậm 10% ở biên → 50% tại tâm băng ấn",
           "Giảm 30% tốc độ đánh của quái",
           "Giảm 20% giáp của quái"
         ]
@@ -4246,17 +4420,22 @@
       {
         "level": 5,
         "stats": {
-          "cooldown": 1,
+          "cooldown": 15,
           "damage_pct": 20,
-          "domain_coverage": 0.7,
+          "domain_duration": 10,
+          "domain_radius": 260,
+          "domain_cast_range": 768,
           "domain_slow_edge": 0.1,
           "domain_slow_center": 0.5,
+          "impact_stun_chance": 0.5,
+          "impact_stun_duration": 0.1,
           "attack_speed_slow": 0.3,
           "def_reduction": 0.2
         },
         "description_rows": [
-          "Lãnh địa băng phủ 70% dưới sân",
-          "Làm chậm 10% ở biên → 50% gần hero",
+          "Băng quang giáng xuống trước mặt mục tiêu: 50% Choáng 0.1s",
+          "Băng vệt + băng ấn + băng giới tồn tại 10s (CD 15s)",
+          "Làm chậm 10% ở biên → 50% tại tâm băng ấn",
           "Giảm 30% tốc độ đánh của quái",
           "Giảm 20% giáp của quái"
         ]

@@ -168,8 +168,14 @@ function calculateCombatPower(profile: any, states: any[], inventory: any[], her
         const innate = cpEvaluate(hero,level,affinities,{},[],skills,progression);
         const root = cpEvaluate(hero,level,affinities,roots,[],skills,progression);
         const full = cpEvaluate(hero,level,affinities,roots,equipped,skills,progression);
+        const equippedScore=full.score;
+        const auraLevel=Number(profile.level||1)>=35?cpNumber(cpObject(profile.than_luan).level):0;
+        const auraRow=cpArray(cpObject(progression.than_luan).levels).find(r=>r.level===auraLevel);
+        const reduction=cpClamp(cpNumber(cpObject(auraRow&&auraRow.stats).persistent_damage_reduction),0,.95);
+        full.survival/=1-reduction;
+        full.score=cpRound(full.offense+full.survival+full.utility);
         full.hero_id = hero.id;
-        full.breakdown = {hero:base.score,talent:innate.score-base.score,roots:root.score-innate.score,talisman:full.score-root.score};
+        full.breakdown = {hero:base.score,talent:innate.score-base.score,roots:root.score-innate.score,talisman:equippedScore-root.score,than_luan:full.score-equippedScore};
         result.heroes.push(full);
         if (!result.hero_id || full.score>result.score) {result.score=full.score;result.hero_id=hero.id;}
     }

@@ -1,5 +1,5 @@
 {
-  "floor_count": 20,
+  "floor_count": 30,
   "base_stat_multiplier": 0.7,
   "stat_increase_per_floor": 0.1,
   "speed_increase_per_floor": 0.05,
@@ -93,7 +93,13 @@
         {
           "kind": "gold",
           "amount": 30000,
-          "label": "30.0K Vàng"
+          "label": "30K Vàng"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_low",
+          "amount": 7,
+          "label": "7 Mảnh pháp tắc hạ phẩm"
         },
         {
           "kind": "item",
@@ -111,13 +117,13 @@
         {
           "kind": "gold",
           "amount": 6000,
-          "label": "6.0K Vàng"
+          "label": "6K Vàng"
         },
         {
           "kind": "item",
           "item_id": "law_fragment_low",
-          "amount": 8,
-          "label": "8 Mảnh pháp tắc hạ phẩm"
+          "amount": 7,
+          "label": "7 Mảnh pháp tắc hạ phẩm"
         }
       ]
     },
@@ -133,6 +139,12 @@
           "kind": "gems",
           "amount": 20,
           "label": "20 Ngọc"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_low",
+          "amount": 8,
+          "label": "8 Mảnh pháp tắc hạ phẩm"
         }
       ],
       "repeat_rewards": [
@@ -143,14 +155,14 @@
         },
         {
           "kind": "gold",
-          "amount": 7000,
-          "label": "7.0K Vàng"
+          "amount": 8000,
+          "label": "8K Vàng"
         },
         {
           "kind": "item",
           "item_id": "law_fragment_low",
-          "amount": 9,
-          "label": "9 Mảnh pháp tắc hạ phẩm"
+          "amount": 8,
+          "label": "8 Mảnh pháp tắc hạ phẩm"
         }
       ]
     },
@@ -164,8 +176,14 @@
         },
         {
           "kind": "gold",
-          "amount": 40000,
-          "label": "40.0K Vàng"
+          "amount": 50000,
+          "label": "50K Vàng"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_low",
+          "amount": 9,
+          "label": "9 Mảnh pháp tắc hạ phẩm"
         }
       ],
       "repeat_rewards": [
@@ -176,14 +194,14 @@
         },
         {
           "kind": "gold",
-          "amount": 8000,
-          "label": "8.0K Vàng"
+          "amount": 10000,
+          "label": "10K Vàng"
         },
         {
           "kind": "item",
           "item_id": "law_fragment_low",
-          "amount": 10,
-          "label": "10 Mảnh pháp tắc hạ phẩm"
+          "amount": 9,
+          "label": "9 Mảnh pháp tắc hạ phẩm"
         }
       ]
     },
@@ -197,8 +215,14 @@
         },
         {
           "kind": "gems",
-          "amount": 25,
-          "label": "25 Ngọc"
+          "amount": 30,
+          "label": "30 Ngọc"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_low",
+          "amount": 10,
+          "label": "10 Mảnh pháp tắc hạ phẩm"
         }
       ],
       "repeat_rewards": [
@@ -209,14 +233,14 @@
         },
         {
           "kind": "gold",
-          "amount": 9000,
-          "label": "9.0K Vàng"
+          "amount": 12000,
+          "label": "12K Vàng"
         },
         {
           "kind": "item",
           "item_id": "law_fragment_low",
-          "amount": 11,
-          "label": "11 Mảnh pháp tắc hạ phẩm"
+          "amount": 10,
+          "label": "10 Mảnh pháp tắc hạ phẩm"
         }
       ]
     },
@@ -230,14 +254,20 @@
         },
         {
           "kind": "gold",
-          "amount": 50000,
-          "label": "50.0K Vàng"
+          "amount": 70000,
+          "label": "70K Vàng"
         },
         {
           "kind": "item",
-          "item_id": "gold_boost_card_10",
+          "item_id": "law_fragment_low",
+          "amount": 11,
+          "label": "11 Mảnh pháp tắc hạ phẩm"
+        },
+        {
+          "kind": "item",
+          "item_id": "exp_boost_card_10",
           "amount": 1,
-          "label": "Thẻ Gold +10%"
+          "label": "Thẻ EXP +10%"
         }
       ],
       "repeat_rewards": [
@@ -248,14 +278,14 @@
         },
         {
           "kind": "gold",
-          "amount": 10000,
-          "label": "10.0K Vàng"
+          "amount": 14000,
+          "label": "14K Vàng"
         },
         {
           "kind": "item",
           "item_id": "law_fragment_low",
-          "amount": 12,
-          "label": "12 Mảnh pháp tắc hạ phẩm"
+          "amount": 11,
+          "label": "11 Mảnh pháp tắc hạ phẩm"
         }
       ]
     },
@@ -269,8 +299,14 @@
         },
         {
           "kind": "gems",
-          "amount": 30,
-          "label": "30 Ngọc"
+          "amount": 40,
+          "label": "40 Ngọc"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_low",
+          "amount": 12,
+          "label": "12 Mảnh pháp tắc hạ phẩm"
         }
       ],
       "repeat_rewards": [
@@ -281,14 +317,14 @@
         },
         {
           "kind": "gold",
-          "amount": 12000,
-          "label": "12.0K Vàng"
+          "amount": 16000,
+          "label": "16K Vàng"
         },
         {
           "kind": "item",
-          "item_id": "law_fragment_medium",
-          "amount": 4,
-          "label": "4 Mảnh pháp tắc trung phẩm"
+          "item_id": "law_fragment_low",
+          "amount": 12,
+          "label": "12 Mảnh pháp tắc hạ phẩm"
         }
       ]
     },
@@ -302,8 +338,14 @@
         },
         {
           "kind": "gold",
-          "amount": 60000,
-          "label": "60.0K Vàng"
+          "amount": 90000,
+          "label": "90K Vàng"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_low",
+          "amount": 13,
+          "label": "13 Mảnh pháp tắc hạ phẩm"
         }
       ],
       "repeat_rewards": [
@@ -314,14 +356,14 @@
         },
         {
           "kind": "gold",
-          "amount": 14000,
-          "label": "14.0K Vàng"
+          "amount": 18000,
+          "label": "18K Vàng"
         },
         {
           "kind": "item",
-          "item_id": "law_fragment_medium",
-          "amount": 5,
-          "label": "5 Mảnh pháp tắc trung phẩm"
+          "item_id": "law_fragment_low",
+          "amount": 13,
+          "label": "13 Mảnh pháp tắc hạ phẩm"
         }
       ]
     },
@@ -335,8 +377,299 @@
         },
         {
           "kind": "gems",
-          "amount": 35,
-          "label": "35 Ngọc"
+          "amount": 50,
+          "label": "50 Ngọc"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_low",
+          "amount": 14,
+          "label": "14 Mảnh pháp tắc hạ phẩm"
+        }
+      ],
+      "repeat_rewards": [
+        {
+          "kind": "exp",
+          "label": "EXP theo cấp và tầng",
+          "formula": "current_level_floor_percent"
+        },
+        {
+          "kind": "gold",
+          "amount": 20000,
+          "label": "20K Vàng"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_low",
+          "amount": 14,
+          "label": "14 Mảnh pháp tắc hạ phẩm"
+        }
+      ]
+    },
+    {
+      "floor": 9,
+      "first_rewards": [
+        {
+          "kind": "exp",
+          "label": "EXP theo cấp và tầng",
+          "formula": "current_level_floor_percent"
+        },
+        {
+          "kind": "gold",
+          "amount": 110000,
+          "label": "110K Vàng"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_low",
+          "amount": 15,
+          "label": "15 Mảnh pháp tắc hạ phẩm"
+        }
+      ],
+      "repeat_rewards": [
+        {
+          "kind": "exp",
+          "label": "EXP theo cấp và tầng",
+          "formula": "current_level_floor_percent"
+        },
+        {
+          "kind": "gold",
+          "amount": 22000,
+          "label": "22K Vàng"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_low",
+          "amount": 15,
+          "label": "15 Mảnh pháp tắc hạ phẩm"
+        }
+      ]
+    },
+    {
+      "floor": 10,
+      "first_rewards": [
+        {
+          "kind": "exp",
+          "label": "EXP theo cấp và tầng",
+          "formula": "current_level_floor_percent"
+        },
+        {
+          "kind": "gems",
+          "amount": 60,
+          "label": "60 Ngọc"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_low",
+          "amount": 16,
+          "label": "16 Mảnh pháp tắc hạ phẩm"
+        },
+        {
+          "kind": "item",
+          "item_id": "gold_boost_card_10",
+          "amount": 1,
+          "label": "Thẻ Gold +10%"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_low",
+          "amount": 30,
+          "label": "30 Mảnh pháp tắc hạ phẩm (mốc chương)"
+        }
+      ],
+      "repeat_rewards": [
+        {
+          "kind": "exp",
+          "label": "EXP theo cấp và tầng",
+          "formula": "current_level_floor_percent"
+        },
+        {
+          "kind": "gold",
+          "amount": 24000,
+          "label": "24K Vàng"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_low",
+          "amount": 16,
+          "label": "16 Mảnh pháp tắc hạ phẩm"
+        }
+      ]
+    },
+    {
+      "floor": 11,
+      "first_rewards": [
+        {
+          "kind": "exp",
+          "label": "EXP theo cấp và tầng",
+          "formula": "current_level_floor_percent"
+        },
+        {
+          "kind": "gold",
+          "amount": 130000,
+          "label": "130K Vàng"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_medium",
+          "amount": 3,
+          "label": "3 Mảnh pháp tắc trung phẩm"
+        }
+      ],
+      "repeat_rewards": [
+        {
+          "kind": "exp",
+          "label": "EXP theo cấp và tầng",
+          "formula": "current_level_floor_percent"
+        },
+        {
+          "kind": "gold",
+          "amount": 26000,
+          "label": "26K Vàng"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_medium",
+          "amount": 3,
+          "label": "3 Mảnh pháp tắc trung phẩm"
+        }
+      ]
+    },
+    {
+      "floor": 12,
+      "first_rewards": [
+        {
+          "kind": "exp",
+          "label": "EXP theo cấp và tầng",
+          "formula": "current_level_floor_percent"
+        },
+        {
+          "kind": "gems",
+          "amount": 70,
+          "label": "70 Ngọc"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_medium",
+          "amount": 4,
+          "label": "4 Mảnh pháp tắc trung phẩm"
+        }
+      ],
+      "repeat_rewards": [
+        {
+          "kind": "exp",
+          "label": "EXP theo cấp và tầng",
+          "formula": "current_level_floor_percent"
+        },
+        {
+          "kind": "gold",
+          "amount": 28000,
+          "label": "28K Vàng"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_medium",
+          "amount": 4,
+          "label": "4 Mảnh pháp tắc trung phẩm"
+        }
+      ]
+    },
+    {
+      "floor": 13,
+      "first_rewards": [
+        {
+          "kind": "exp",
+          "label": "EXP theo cấp và tầng",
+          "formula": "current_level_floor_percent"
+        },
+        {
+          "kind": "gold",
+          "amount": 150000,
+          "label": "150K Vàng"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_medium",
+          "amount": 5,
+          "label": "5 Mảnh pháp tắc trung phẩm"
+        }
+      ],
+      "repeat_rewards": [
+        {
+          "kind": "exp",
+          "label": "EXP theo cấp và tầng",
+          "formula": "current_level_floor_percent"
+        },
+        {
+          "kind": "gold",
+          "amount": 30000,
+          "label": "30K Vàng"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_medium",
+          "amount": 5,
+          "label": "5 Mảnh pháp tắc trung phẩm"
+        }
+      ]
+    },
+    {
+      "floor": 14,
+      "first_rewards": [
+        {
+          "kind": "exp",
+          "label": "EXP theo cấp và tầng",
+          "formula": "current_level_floor_percent"
+        },
+        {
+          "kind": "gems",
+          "amount": 80,
+          "label": "80 Ngọc"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_medium",
+          "amount": 6,
+          "label": "6 Mảnh pháp tắc trung phẩm"
+        }
+      ],
+      "repeat_rewards": [
+        {
+          "kind": "exp",
+          "label": "EXP theo cấp và tầng",
+          "formula": "current_level_floor_percent"
+        },
+        {
+          "kind": "gold",
+          "amount": 32000,
+          "label": "32K Vàng"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_medium",
+          "amount": 6,
+          "label": "6 Mảnh pháp tắc trung phẩm"
+        }
+      ]
+    },
+    {
+      "floor": 15,
+      "first_rewards": [
+        {
+          "kind": "exp",
+          "label": "EXP theo cấp và tầng",
+          "formula": "current_level_floor_percent"
+        },
+        {
+          "kind": "gold",
+          "amount": 170000,
+          "label": "170K Vàng"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_medium",
+          "amount": 7,
+          "label": "7 Mảnh pháp tắc trung phẩm"
         },
         {
           "kind": "item",
@@ -353,269 +686,14 @@
         },
         {
           "kind": "gold",
-          "amount": 16000,
-          "label": "16.0K Vàng"
-        },
-        {
-          "kind": "item",
-          "item_id": "law_fragment_medium",
-          "amount": 6,
-          "label": "6 Mảnh pháp tắc trung phẩm"
-        }
-      ]
-    },
-    {
-      "floor": 9,
-      "first_rewards": [
-        {
-          "kind": "exp",
-          "label": "EXP theo cấp và tầng",
-          "formula": "current_level_floor_percent"
-        },
-        {
-          "kind": "gold",
-          "amount": 70000,
-          "label": "70.0K Vàng"
-        }
-      ],
-      "repeat_rewards": [
-        {
-          "kind": "exp",
-          "label": "EXP theo cấp và tầng",
-          "formula": "current_level_floor_percent"
-        },
-        {
-          "kind": "gold",
-          "amount": 18000,
-          "label": "18.0K Vàng"
+          "amount": 34000,
+          "label": "34K Vàng"
         },
         {
           "kind": "item",
           "item_id": "law_fragment_medium",
           "amount": 7,
           "label": "7 Mảnh pháp tắc trung phẩm"
-        }
-      ]
-    },
-    {
-      "floor": 10,
-      "first_rewards": [
-        {
-          "kind": "exp",
-          "label": "EXP theo cấp và tầng",
-          "formula": "current_level_floor_percent"
-        },
-        {
-          "kind": "gems",
-          "amount": 40,
-          "label": "40 Ngọc"
-        },
-        {
-          "kind": "item",
-          "item_id": "gold_boost_card_25",
-          "amount": 1,
-          "label": "Thẻ Gold +25%"
-        }
-      ],
-      "repeat_rewards": [
-        {
-          "kind": "exp",
-          "label": "EXP theo cấp và tầng",
-          "formula": "current_level_floor_percent"
-        },
-        {
-          "kind": "gold",
-          "amount": 20000,
-          "label": "20.0K Vàng"
-        },
-        {
-          "kind": "item",
-          "item_id": "law_fragment_medium",
-          "amount": 8,
-          "label": "8 Mảnh pháp tắc trung phẩm"
-        }
-      ]
-    },
-    {
-      "floor": 11,
-      "first_rewards": [
-        {
-          "kind": "exp",
-          "label": "EXP theo cấp và tầng",
-          "formula": "current_level_floor_percent"
-        },
-        {
-          "kind": "gold",
-          "amount": 80000,
-          "label": "80.0K Vàng"
-        }
-      ],
-      "repeat_rewards": [
-        {
-          "kind": "exp",
-          "label": "EXP theo cấp và tầng",
-          "formula": "current_level_floor_percent"
-        },
-        {
-          "kind": "gold",
-          "amount": 22000,
-          "label": "22.0K Vàng"
-        },
-        {
-          "kind": "item",
-          "item_id": "law_fragment_medium",
-          "amount": 9,
-          "label": "9 Mảnh pháp tắc trung phẩm"
-        }
-      ]
-    },
-    {
-      "floor": 12,
-      "first_rewards": [
-        {
-          "kind": "exp",
-          "label": "EXP theo cấp và tầng",
-          "formula": "current_level_floor_percent"
-        },
-        {
-          "kind": "gems",
-          "amount": 45,
-          "label": "45 Ngọc"
-        },
-        {
-          "kind": "item",
-          "item_id": "exp_boost_card_50",
-          "amount": 1,
-          "label": "Thẻ EXP +50%"
-        }
-      ],
-      "repeat_rewards": [
-        {
-          "kind": "exp",
-          "label": "EXP theo cấp và tầng",
-          "formula": "current_level_floor_percent"
-        },
-        {
-          "kind": "gold",
-          "amount": 24000,
-          "label": "24.0K Vàng"
-        },
-        {
-          "kind": "item",
-          "item_id": "law_fragment_high",
-          "amount": 2,
-          "label": "2 Mảnh pháp tắc thượng phẩm"
-        }
-      ]
-    },
-    {
-      "floor": 13,
-      "first_rewards": [
-        {
-          "kind": "exp",
-          "label": "EXP theo cấp và tầng",
-          "formula": "current_level_floor_percent"
-        },
-        {
-          "kind": "gold",
-          "amount": 90000,
-          "label": "90.0K Vàng"
-        }
-      ],
-      "repeat_rewards": [
-        {
-          "kind": "exp",
-          "label": "EXP theo cấp và tầng",
-          "formula": "current_level_floor_percent"
-        },
-        {
-          "kind": "gold",
-          "amount": 26000,
-          "label": "26.0K Vàng"
-        },
-        {
-          "kind": "item",
-          "item_id": "law_fragment_high",
-          "amount": 3,
-          "label": "3 Mảnh pháp tắc thượng phẩm"
-        }
-      ]
-    },
-    {
-      "floor": 14,
-      "first_rewards": [
-        {
-          "kind": "exp",
-          "label": "EXP theo cấp và tầng",
-          "formula": "current_level_floor_percent"
-        },
-        {
-          "kind": "gems",
-          "amount": 50,
-          "label": "50 Ngọc"
-        },
-        {
-          "kind": "item",
-          "item_id": "gold_boost_card_50",
-          "amount": 1,
-          "label": "Thẻ Gold +50%"
-        }
-      ],
-      "repeat_rewards": [
-        {
-          "kind": "exp",
-          "label": "EXP theo cấp và tầng",
-          "formula": "current_level_floor_percent"
-        },
-        {
-          "kind": "gold",
-          "amount": 28000,
-          "label": "28.0K Vàng"
-        },
-        {
-          "kind": "item",
-          "item_id": "law_fragment_high",
-          "amount": 4,
-          "label": "4 Mảnh pháp tắc thượng phẩm"
-        }
-      ]
-    },
-    {
-      "floor": 15,
-      "first_rewards": [
-        {
-          "kind": "exp",
-          "label": "EXP theo cấp và tầng",
-          "formula": "current_level_floor_percent"
-        },
-        {
-          "kind": "gold",
-          "amount": 100000,
-          "label": "100K Vàng"
-        },
-        {
-          "kind": "item",
-          "item_id": "exp_boost_card_x2",
-          "amount": 1,
-          "label": "Thẻ EXP x2"
-        }
-      ],
-      "repeat_rewards": [
-        {
-          "kind": "exp",
-          "label": "EXP theo cấp và tầng",
-          "formula": "current_level_floor_percent"
-        },
-        {
-          "kind": "gold",
-          "amount": 30000,
-          "label": "30.0K Vàng"
-        },
-        {
-          "kind": "item",
-          "item_id": "law_fragment_high",
-          "amount": 5,
-          "label": "5 Mảnh pháp tắc thượng phẩm"
         }
       ]
     },
@@ -629,8 +707,14 @@
         },
         {
           "kind": "gems",
-          "amount": 60,
-          "label": "60 Ngọc"
+          "amount": 90,
+          "label": "90 Ngọc"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_medium",
+          "amount": 8,
+          "label": "8 Mảnh pháp tắc trung phẩm"
         }
       ],
       "repeat_rewards": [
@@ -641,14 +725,14 @@
         },
         {
           "kind": "gold",
-          "amount": 32000,
-          "label": "32.0K Vàng"
+          "amount": 36000,
+          "label": "36K Vàng"
         },
         {
           "kind": "item",
-          "item_id": "law_fragment_high",
-          "amount": 6,
-          "label": "6 Mảnh pháp tắc thượng phẩm"
+          "item_id": "law_fragment_medium",
+          "amount": 8,
+          "label": "8 Mảnh pháp tắc trung phẩm"
         }
       ]
     },
@@ -662,14 +746,14 @@
         },
         {
           "kind": "gold",
-          "amount": 120000,
-          "label": "120K Vàng"
+          "amount": 190000,
+          "label": "190K Vàng"
         },
         {
           "kind": "item",
-          "item_id": "gold_boost_card_x2",
-          "amount": 1,
-          "label": "Thẻ Gold x2"
+          "item_id": "law_fragment_medium",
+          "amount": 9,
+          "label": "9 Mảnh pháp tắc trung phẩm"
         }
       ],
       "repeat_rewards": [
@@ -680,14 +764,14 @@
         },
         {
           "kind": "gold",
-          "amount": 34000,
-          "label": "34.0K Vàng"
+          "amount": 38000,
+          "label": "38K Vàng"
         },
         {
           "kind": "item",
-          "item_id": "law_fragment_high",
-          "amount": 7,
-          "label": "7 Mảnh pháp tắc thượng phẩm"
+          "item_id": "law_fragment_medium",
+          "amount": 9,
+          "label": "9 Mảnh pháp tắc trung phẩm"
         }
       ]
     },
@@ -701,8 +785,14 @@
         },
         {
           "kind": "gems",
-          "amount": 70,
-          "label": "70 Ngọc"
+          "amount": 100,
+          "label": "100 Ngọc"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_medium",
+          "amount": 10,
+          "label": "10 Mảnh pháp tắc trung phẩm"
         }
       ],
       "repeat_rewards": [
@@ -713,14 +803,14 @@
         },
         {
           "kind": "gold",
-          "amount": 36000,
-          "label": "36.0K Vàng"
+          "amount": 40000,
+          "label": "40K Vàng"
         },
         {
           "kind": "item",
-          "item_id": "law_fragment_high",
-          "amount": 8,
-          "label": "8 Mảnh pháp tắc thượng phẩm"
+          "item_id": "law_fragment_medium",
+          "amount": 10,
+          "label": "10 Mảnh pháp tắc trung phẩm"
         }
       ]
     },
@@ -734,14 +824,14 @@
         },
         {
           "kind": "gold",
-          "amount": 150000,
-          "label": "150K Vàng"
+          "amount": 210000,
+          "label": "210K Vàng"
         },
         {
           "kind": "item",
-          "item_id": "exp_boost_card_x5",
-          "amount": 1,
-          "label": "Thẻ EXP x5"
+          "item_id": "law_fragment_medium",
+          "amount": 11,
+          "label": "11 Mảnh pháp tắc trung phẩm"
         }
       ],
       "repeat_rewards": [
@@ -752,14 +842,14 @@
         },
         {
           "kind": "gold",
-          "amount": 38000,
-          "label": "38.0K Vàng"
+          "amount": 42000,
+          "label": "42K Vàng"
         },
         {
           "kind": "item",
-          "item_id": "law_fragment_high",
-          "amount": 9,
-          "label": "9 Mảnh pháp tắc thượng phẩm"
+          "item_id": "law_fragment_medium",
+          "amount": 11,
+          "label": "11 Mảnh pháp tắc trung phẩm"
         }
       ]
     },
@@ -772,20 +862,27 @@
           "formula": "current_level_floor_percent"
         },
         {
-          "kind": "gold",
-          "amount": 200000,
-          "label": "200K Vàng"
-        },
-        {
           "kind": "gems",
-          "amount": 100,
-          "label": "100 Ngọc"
+          "amount": 110,
+          "label": "110 Ngọc"
         },
         {
           "kind": "item",
-          "item_id": "gold_boost_card_x5",
+          "item_id": "law_fragment_medium",
+          "amount": 12,
+          "label": "12 Mảnh pháp tắc trung phẩm"
+        },
+        {
+          "kind": "item",
+          "item_id": "gold_boost_card_25",
           "amount": 1,
-          "label": "Thẻ Gold x5"
+          "label": "Thẻ Gold +25%"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_medium",
+          "amount": 15,
+          "label": "15 Mảnh pháp tắc trung phẩm (mốc chương)"
         }
       ],
       "repeat_rewards": [
@@ -796,8 +893,416 @@
         },
         {
           "kind": "gold",
-          "amount": 40000,
-          "label": "40.0K Vàng"
+          "amount": 44000,
+          "label": "44K Vàng"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_medium",
+          "amount": 12,
+          "label": "12 Mảnh pháp tắc trung phẩm"
+        }
+      ]
+    },
+    {
+      "floor": 21,
+      "first_rewards": [
+        {
+          "kind": "exp",
+          "label": "EXP theo cấp và tầng",
+          "formula": "current_level_floor_percent"
+        },
+        {
+          "kind": "gold",
+          "amount": 230000,
+          "label": "230K Vàng"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_high",
+          "amount": 1,
+          "label": "1 Mảnh pháp tắc thượng phẩm"
+        }
+      ],
+      "repeat_rewards": [
+        {
+          "kind": "exp",
+          "label": "EXP theo cấp và tầng",
+          "formula": "current_level_floor_percent"
+        },
+        {
+          "kind": "gold",
+          "amount": 46000,
+          "label": "46K Vàng"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_high",
+          "amount": 1,
+          "label": "1 Mảnh pháp tắc thượng phẩm"
+        }
+      ]
+    },
+    {
+      "floor": 22,
+      "first_rewards": [
+        {
+          "kind": "exp",
+          "label": "EXP theo cấp và tầng",
+          "formula": "current_level_floor_percent"
+        },
+        {
+          "kind": "gems",
+          "amount": 120,
+          "label": "120 Ngọc"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_high",
+          "amount": 2,
+          "label": "2 Mảnh pháp tắc thượng phẩm"
+        }
+      ],
+      "repeat_rewards": [
+        {
+          "kind": "exp",
+          "label": "EXP theo cấp và tầng",
+          "formula": "current_level_floor_percent"
+        },
+        {
+          "kind": "gold",
+          "amount": 48000,
+          "label": "48K Vàng"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_high",
+          "amount": 2,
+          "label": "2 Mảnh pháp tắc thượng phẩm"
+        }
+      ]
+    },
+    {
+      "floor": 23,
+      "first_rewards": [
+        {
+          "kind": "exp",
+          "label": "EXP theo cấp và tầng",
+          "formula": "current_level_floor_percent"
+        },
+        {
+          "kind": "gold",
+          "amount": 250000,
+          "label": "250K Vàng"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_high",
+          "amount": 3,
+          "label": "3 Mảnh pháp tắc thượng phẩm"
+        }
+      ],
+      "repeat_rewards": [
+        {
+          "kind": "exp",
+          "label": "EXP theo cấp và tầng",
+          "formula": "current_level_floor_percent"
+        },
+        {
+          "kind": "gold",
+          "amount": 50000,
+          "label": "50K Vàng"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_high",
+          "amount": 3,
+          "label": "3 Mảnh pháp tắc thượng phẩm"
+        }
+      ]
+    },
+    {
+      "floor": 24,
+      "first_rewards": [
+        {
+          "kind": "exp",
+          "label": "EXP theo cấp và tầng",
+          "formula": "current_level_floor_percent"
+        },
+        {
+          "kind": "gems",
+          "amount": 130,
+          "label": "130 Ngọc"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_high",
+          "amount": 4,
+          "label": "4 Mảnh pháp tắc thượng phẩm"
+        }
+      ],
+      "repeat_rewards": [
+        {
+          "kind": "exp",
+          "label": "EXP theo cấp và tầng",
+          "formula": "current_level_floor_percent"
+        },
+        {
+          "kind": "gold",
+          "amount": 52000,
+          "label": "52K Vàng"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_high",
+          "amount": 4,
+          "label": "4 Mảnh pháp tắc thượng phẩm"
+        }
+      ]
+    },
+    {
+      "floor": 25,
+      "first_rewards": [
+        {
+          "kind": "exp",
+          "label": "EXP theo cấp và tầng",
+          "formula": "current_level_floor_percent"
+        },
+        {
+          "kind": "gold",
+          "amount": 270000,
+          "label": "270K Vàng"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_high",
+          "amount": 5,
+          "label": "5 Mảnh pháp tắc thượng phẩm"
+        },
+        {
+          "kind": "item",
+          "item_id": "exp_boost_card_25",
+          "amount": 1,
+          "label": "Thẻ EXP +25%"
+        }
+      ],
+      "repeat_rewards": [
+        {
+          "kind": "exp",
+          "label": "EXP theo cấp và tầng",
+          "formula": "current_level_floor_percent"
+        },
+        {
+          "kind": "gold",
+          "amount": 54000,
+          "label": "54K Vàng"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_high",
+          "amount": 5,
+          "label": "5 Mảnh pháp tắc thượng phẩm"
+        }
+      ]
+    },
+    {
+      "floor": 26,
+      "first_rewards": [
+        {
+          "kind": "exp",
+          "label": "EXP theo cấp và tầng",
+          "formula": "current_level_floor_percent"
+        },
+        {
+          "kind": "gems",
+          "amount": 140,
+          "label": "140 Ngọc"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_high",
+          "amount": 6,
+          "label": "6 Mảnh pháp tắc thượng phẩm"
+        }
+      ],
+      "repeat_rewards": [
+        {
+          "kind": "exp",
+          "label": "EXP theo cấp và tầng",
+          "formula": "current_level_floor_percent"
+        },
+        {
+          "kind": "gold",
+          "amount": 56000,
+          "label": "56K Vàng"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_high",
+          "amount": 6,
+          "label": "6 Mảnh pháp tắc thượng phẩm"
+        }
+      ]
+    },
+    {
+      "floor": 27,
+      "first_rewards": [
+        {
+          "kind": "exp",
+          "label": "EXP theo cấp và tầng",
+          "formula": "current_level_floor_percent"
+        },
+        {
+          "kind": "gold",
+          "amount": 290000,
+          "label": "290K Vàng"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_high",
+          "amount": 7,
+          "label": "7 Mảnh pháp tắc thượng phẩm"
+        }
+      ],
+      "repeat_rewards": [
+        {
+          "kind": "exp",
+          "label": "EXP theo cấp và tầng",
+          "formula": "current_level_floor_percent"
+        },
+        {
+          "kind": "gold",
+          "amount": 58000,
+          "label": "58K Vàng"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_high",
+          "amount": 7,
+          "label": "7 Mảnh pháp tắc thượng phẩm"
+        }
+      ]
+    },
+    {
+      "floor": 28,
+      "first_rewards": [
+        {
+          "kind": "exp",
+          "label": "EXP theo cấp và tầng",
+          "formula": "current_level_floor_percent"
+        },
+        {
+          "kind": "gems",
+          "amount": 150,
+          "label": "150 Ngọc"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_high",
+          "amount": 8,
+          "label": "8 Mảnh pháp tắc thượng phẩm"
+        }
+      ],
+      "repeat_rewards": [
+        {
+          "kind": "exp",
+          "label": "EXP theo cấp và tầng",
+          "formula": "current_level_floor_percent"
+        },
+        {
+          "kind": "gold",
+          "amount": 60000,
+          "label": "60K Vàng"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_high",
+          "amount": 8,
+          "label": "8 Mảnh pháp tắc thượng phẩm"
+        }
+      ]
+    },
+    {
+      "floor": 29,
+      "first_rewards": [
+        {
+          "kind": "exp",
+          "label": "EXP theo cấp và tầng",
+          "formula": "current_level_floor_percent"
+        },
+        {
+          "kind": "gold",
+          "amount": 310000,
+          "label": "310K Vàng"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_high",
+          "amount": 9,
+          "label": "9 Mảnh pháp tắc thượng phẩm"
+        }
+      ],
+      "repeat_rewards": [
+        {
+          "kind": "exp",
+          "label": "EXP theo cấp và tầng",
+          "formula": "current_level_floor_percent"
+        },
+        {
+          "kind": "gold",
+          "amount": 62000,
+          "label": "62K Vàng"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_high",
+          "amount": 9,
+          "label": "9 Mảnh pháp tắc thượng phẩm"
+        }
+      ]
+    },
+    {
+      "floor": 30,
+      "first_rewards": [
+        {
+          "kind": "exp",
+          "label": "EXP theo cấp và tầng",
+          "formula": "current_level_floor_percent"
+        },
+        {
+          "kind": "gems",
+          "amount": 160,
+          "label": "160 Ngọc"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_high",
+          "amount": 10,
+          "label": "10 Mảnh pháp tắc thượng phẩm"
+        },
+        {
+          "kind": "item",
+          "item_id": "gold_boost_card_25",
+          "amount": 1,
+          "label": "Thẻ Gold +25%"
+        },
+        {
+          "kind": "item",
+          "item_id": "law_fragment_high",
+          "amount": 8,
+          "label": "8 Mảnh pháp tắc thượng phẩm (đỉnh tháp)"
+        }
+      ],
+      "repeat_rewards": [
+        {
+          "kind": "exp",
+          "label": "EXP theo cấp và tầng",
+          "formula": "current_level_floor_percent"
+        },
+        {
+          "kind": "gold",
+          "amount": 64000,
+          "label": "64K Vàng"
         },
         {
           "kind": "item",

@@ -14,6 +14,19 @@ const expectedRoles = {
 };
 assert.deepEqual(ROLES, expectedRoles, 'authored role mapping for all five arcs');
 
+// C179: tank HP is constrained against its own arc's standard grunt. Account
+// for a spawn-time max-HP buff so the player-facing value stays in range too.
+const enemyById = new Map(read('enemies').map(enemy => [enemy.id, enemy]));
+for (const [arcId, roles] of Object.entries(expectedRoles)) {
+  const gruntHp = enemyById.get(roles.grunt).attributes.hp;
+  const tanker = enemyById.get(roles.tanker);
+  const rawRatio = tanker.attributes.hp / gruntHp;
+  const maxHpBuff = (tanker.generic_skills || []).find(skill => skill.id === 'max_hp_buff');
+  const effectiveRatio = rawRatio * (maxHpBuff ? maxHpBuff.params.max_hp_multiplier : 1);
+  assert.equal(rawRatio, 1.5, `${arcId}: tanker base HP is 1.5x its grunt`);
+  assert.ok(effectiveRatio >= 1.25 && effectiveRatio <= 1.75, `${arcId}: tanker effective HP stays within 1.25x–1.75x`);
+}
+
 // Deliberately scramble wave IDs: campaign unlocks use array ordinal.
 const synthetic = Object.entries(expectedRoles).map(([arc_id, roles]) => ({
   id: `test_${arc_id}`, arc_id, exp_weight: 1.25, extra: {preserve: ['stage', 42]},

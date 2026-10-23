@@ -68,3 +68,6 @@ Validation 1.4.0: backend build/packaging and both static runners PASS. Atomic r
 Completion-loot projection must reuse read-only SQL results within the single stage-level catalog request, rather than re-query the published config for every reward quantity. Cache scope is the current projection only, never cross-request or writable gameplay data. Preserve identical probability/quantity output and online-only admission. Verify actual saved-session bootstrap and get_game_config before accepting.
 
 Validation 1.4.1: reproduced saved-session Godot get_game_config timeout before fix; now actual LoadingScreen reaches MainMenu successfully. Live catalog HTTP latency 0.672s, identical decoded catalog before/after fix. Regression with150 stage levels asserts one rules decode and no repeated SQL; backend build, both static suites and sweep runtime tests PASS. Rebuilt local runtime active. Separate existing missing Home texture assets/ui/ui.png warning does not block loading.
+
+## Client lifecycle patch 1.4.3 (2026-10-23)
+Home and StageSelect disconnect sweep callbacks on exit and guard late callbacks before accessing SceneTree. No backend API, balance or persistence change. Canonical client contract: ../client/docs/contracts/C144_STAGE_SWEEP.md.

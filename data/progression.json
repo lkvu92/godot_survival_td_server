@@ -259,6 +259,70 @@
           "enabled": true
         },
         {
+          "item_id": "exp_boost_card_10_1h",
+          "category": "boost_cards",
+          "currency": "gems",
+          "price": 100,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
+          "item_id": "exp_boost_card_10_1h",
+          "category": "boost_cards",
+          "currency": "gold",
+          "price": 50000,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
+          "item_id": "exp_boost_card_25_1h",
+          "category": "boost_cards",
+          "currency": "gems",
+          "price": 250,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
+          "item_id": "exp_boost_card_25_1h",
+          "category": "boost_cards",
+          "currency": "gold",
+          "price": 125000,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
+          "item_id": "gold_boost_card_10_1h",
+          "category": "boost_cards",
+          "currency": "gems",
+          "price": 100,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
+          "item_id": "gold_boost_card_10_1h",
+          "category": "boost_cards",
+          "currency": "gold",
+          "price": 50000,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
+          "item_id": "gold_boost_card_25_1h",
+          "category": "boost_cards",
+          "currency": "gems",
+          "price": 250,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
+          "item_id": "gold_boost_card_25_1h",
+          "category": "boost_cards",
+          "currency": "gold",
+          "price": 125000,
+          "quantity": 1,
+          "enabled": true
+        },
+        {
           "item_id": "rename_talisman",
           "category": "charms",
           "currency": "gems",
@@ -629,5 +693,764 @@
       "main_growth": 3,
       "secondary_growth": 2
     }
+  },
+  "than_luan": {
+    "schema_version": 2,
+    "unlock_level": 35,
+    "max_level": 50,
+    "levels": [
+      {
+        "level": 1,
+        "aura_id": "tl_1",
+        "stats": {
+          "persistent_damage_reduction": 0.003,
+          "dot_damage_reduction": 0.006,
+          "control_duration_reduction": 0.008
+        },
+        "cost": {
+          "item_id": "",
+          "quantity": 0,
+          "gold": 0
+        },
+        "success_rate": 100
+      },
+      {
+        "level": 2,
+        "aura_id": "tl_1",
+        "stats": {
+          "persistent_damage_reduction": 0.006,
+          "dot_damage_reduction": 0.012,
+          "control_duration_reduction": 0.016
+        },
+        "cost": {
+          "item_id": "law_fragment_low",
+          "quantity": 30,
+          "gold": 14
+        },
+        "success_rate": 100
+      },
+      {
+        "level": 3,
+        "aura_id": "tl_1",
+        "stats": {
+          "persistent_damage_reduction": 0.009,
+          "dot_damage_reduction": 0.018,
+          "control_duration_reduction": 0.024
+        },
+        "cost": {
+          "item_id": "law_fragment_low",
+          "quantity": 38,
+          "gold": 18
+        },
+        "success_rate": 100
+      },
+      {
+        "level": 4,
+        "aura_id": "tl_1",
+        "stats": {
+          "persistent_damage_reduction": 0.012,
+          "dot_damage_reduction": 0.024,
+          "control_duration_reduction": 0.032
+        },
+        "cost": {
+          "item_id": "law_fragment_low",
+          "quantity": 46,
+          "gold": 22
+        },
+        "success_rate": 100
+      },
+      {
+        "level": 5,
+        "aura_id": "tl_1",
+        "stats": {
+          "persistent_damage_reduction": 0.015,
+          "dot_damage_reduction": 0.03,
+          "control_duration_reduction": 0.04
+        },
+        "cost": {
+          "item_id": "law_fragment_low",
+          "quantity": 54,
+          "gold": 26
+        },
+        "success_rate": 100
+      },
+      {
+        "level": 6,
+        "aura_id": "tl_1",
+        "stats": {
+          "persistent_damage_reduction": 0.018,
+          "dot_damage_reduction": 0.036,
+          "control_duration_reduction": 0.048
+        },
+        "cost": {
+          "item_id": "law_fragment_low",
+          "quantity": 62,
+          "gold": 30
+        },
+        "success_rate": 100
+      },
+      {
+        "level": 7,
+        "aura_id": "tl_1",
+        "stats": {
+          "persistent_damage_reduction": 0.021,
+          "dot_damage_reduction": 0.042,
+          "control_duration_reduction": 0.056
+        },
+        "cost": {
+          "item_id": "law_fragment_low",
+          "quantity": 70,
+          "gold": 34
+        },
+        "success_rate": 100
+      },
+      {
+        "level": 8,
+        "aura_id": "tl_1",
+        "stats": {
+          "persistent_damage_reduction": 0.024,
+          "dot_damage_reduction": 0.048,
+          "control_duration_reduction": 0.064
+        },
+        "cost": {
+          "item_id": "law_fragment_low",
+          "quantity": 78,
+          "gold": 38
+        },
+        "success_rate": 100
+      },
+      {
+        "level": 9,
+        "aura_id": "tl_1",
+        "stats": {
+          "persistent_damage_reduction": 0.027,
+          "dot_damage_reduction": 0.054,
+          "control_duration_reduction": 0.072
+        },
+        "cost": {
+          "item_id": "law_fragment_low",
+          "quantity": 86,
+          "gold": 42
+        },
+        "success_rate": 100
+      },
+      {
+        "level": 10,
+        "aura_id": "tl_1",
+        "stats": {
+          "persistent_damage_reduction": 0.03,
+          "dot_damage_reduction": 0.06,
+          "control_duration_reduction": 0.08
+        },
+        "cost": {
+          "item_id": "law_fragment_low",
+          "quantity": 94,
+          "gold": 46
+        },
+        "success_rate": 100
+      },
+      {
+        "level": 11,
+        "aura_id": "tl_2",
+        "stats": {
+          "persistent_damage_reduction": 0.033,
+          "dot_damage_reduction": 0.066,
+          "control_duration_reduction": 0.088
+        },
+        "cost": {
+          "item_id": "law_fragment_medium",
+          "quantity": 50,
+          "gold": 50
+        },
+        "success_rate": 80
+      },
+      {
+        "level": 12,
+        "aura_id": "tl_2",
+        "stats": {
+          "persistent_damage_reduction": 0.036,
+          "dot_damage_reduction": 0.072,
+          "control_duration_reduction": 0.096
+        },
+        "cost": {
+          "item_id": "law_fragment_medium",
+          "quantity": 60,
+          "gold": 60
+        },
+        "success_rate": 75
+      },
+      {
+        "level": 13,
+        "aura_id": "tl_2",
+        "stats": {
+          "persistent_damage_reduction": 0.039,
+          "dot_damage_reduction": 0.078,
+          "control_duration_reduction": 0.104
+        },
+        "cost": {
+          "item_id": "law_fragment_medium",
+          "quantity": 70,
+          "gold": 70
+        },
+        "success_rate": 75
+      },
+      {
+        "level": 14,
+        "aura_id": "tl_2",
+        "stats": {
+          "persistent_damage_reduction": 0.042,
+          "dot_damage_reduction": 0.084,
+          "control_duration_reduction": 0.112
+        },
+        "cost": {
+          "item_id": "law_fragment_medium",
+          "quantity": 80,
+          "gold": 80
+        },
+        "success_rate": 70
+      },
+      {
+        "level": 15,
+        "aura_id": "tl_2",
+        "stats": {
+          "persistent_damage_reduction": 0.045,
+          "dot_damage_reduction": 0.09,
+          "control_duration_reduction": 0.12
+        },
+        "cost": {
+          "item_id": "law_fragment_medium",
+          "quantity": 90,
+          "gold": 90
+        },
+        "success_rate": 70
+      },
+      {
+        "level": 16,
+        "aura_id": "tl_2",
+        "stats": {
+          "persistent_damage_reduction": 0.048,
+          "dot_damage_reduction": 0.096,
+          "control_duration_reduction": 0.128
+        },
+        "cost": {
+          "item_id": "law_fragment_medium",
+          "quantity": 100,
+          "gold": 100
+        },
+        "success_rate": 65
+      },
+      {
+        "level": 17,
+        "aura_id": "tl_2",
+        "stats": {
+          "persistent_damage_reduction": 0.051,
+          "dot_damage_reduction": 0.102,
+          "control_duration_reduction": 0.136
+        },
+        "cost": {
+          "item_id": "law_fragment_medium",
+          "quantity": 110,
+          "gold": 110
+        },
+        "success_rate": 60
+      },
+      {
+        "level": 18,
+        "aura_id": "tl_2",
+        "stats": {
+          "persistent_damage_reduction": 0.054,
+          "dot_damage_reduction": 0.108,
+          "control_duration_reduction": 0.144
+        },
+        "cost": {
+          "item_id": "law_fragment_medium",
+          "quantity": 120,
+          "gold": 120
+        },
+        "success_rate": 60
+      },
+      {
+        "level": 19,
+        "aura_id": "tl_2",
+        "stats": {
+          "persistent_damage_reduction": 0.057,
+          "dot_damage_reduction": 0.114,
+          "control_duration_reduction": 0.152
+        },
+        "cost": {
+          "item_id": "law_fragment_medium",
+          "quantity": 130,
+          "gold": 130
+        },
+        "success_rate": 50
+      },
+      {
+        "level": 20,
+        "aura_id": "tl_2",
+        "stats": {
+          "persistent_damage_reduction": 0.06,
+          "dot_damage_reduction": 0.12,
+          "control_duration_reduction": 0.16
+        },
+        "cost": {
+          "item_id": "law_fragment_medium",
+          "quantity": 140,
+          "gold": 140
+        },
+        "success_rate": 50
+      },
+      {
+        "level": 21,
+        "aura_id": "tl_3",
+        "stats": {
+          "persistent_damage_reduction": 0.063,
+          "dot_damage_reduction": 0.126,
+          "control_duration_reduction": 0.168
+        },
+        "cost": {
+          "item_id": "law_fragment_high",
+          "quantity": 20,
+          "gold": 200
+        },
+        "success_rate": 48
+      },
+      {
+        "level": 22,
+        "aura_id": "tl_3",
+        "stats": {
+          "persistent_damage_reduction": 0.066,
+          "dot_damage_reduction": 0.132,
+          "control_duration_reduction": 0.176
+        },
+        "cost": {
+          "item_id": "law_fragment_high",
+          "quantity": 24,
+          "gold": 220
+        },
+        "success_rate": 46
+      },
+      {
+        "level": 23,
+        "aura_id": "tl_3",
+        "stats": {
+          "persistent_damage_reduction": 0.069,
+          "dot_damage_reduction": 0.138,
+          "control_duration_reduction": 0.184
+        },
+        "cost": {
+          "item_id": "law_fragment_high",
+          "quantity": 28,
+          "gold": 240
+        },
+        "success_rate": 46
+      },
+      {
+        "level": 24,
+        "aura_id": "tl_3",
+        "stats": {
+          "persistent_damage_reduction": 0.072,
+          "dot_damage_reduction": 0.144,
+          "control_duration_reduction": 0.192
+        },
+        "cost": {
+          "item_id": "law_fragment_high",
+          "quantity": 32,
+          "gold": 260
+        },
+        "success_rate": 44
+      },
+      {
+        "level": 25,
+        "aura_id": "tl_3",
+        "stats": {
+          "persistent_damage_reduction": 0.075,
+          "dot_damage_reduction": 0.15,
+          "control_duration_reduction": 0.2
+        },
+        "cost": {
+          "item_id": "law_fragment_high",
+          "quantity": 36,
+          "gold": 280
+        },
+        "success_rate": 44
+      },
+      {
+        "level": 26,
+        "aura_id": "tl_3",
+        "stats": {
+          "persistent_damage_reduction": 0.078,
+          "dot_damage_reduction": 0.156,
+          "control_duration_reduction": 0.208
+        },
+        "cost": {
+          "item_id": "law_fragment_high",
+          "quantity": 40,
+          "gold": 300
+        },
+        "success_rate": 42
+      },
+      {
+        "level": 27,
+        "aura_id": "tl_3",
+        "stats": {
+          "persistent_damage_reduction": 0.081,
+          "dot_damage_reduction": 0.162,
+          "control_duration_reduction": 0.216
+        },
+        "cost": {
+          "item_id": "law_fragment_high",
+          "quantity": 44,
+          "gold": 320
+        },
+        "success_rate": 40
+      },
+      {
+        "level": 28,
+        "aura_id": "tl_3",
+        "stats": {
+          "persistent_damage_reduction": 0.084,
+          "dot_damage_reduction": 0.168,
+          "control_duration_reduction": 0.224
+        },
+        "cost": {
+          "item_id": "law_fragment_high",
+          "quantity": 48,
+          "gold": 340
+        },
+        "success_rate": 40
+      },
+      {
+        "level": 29,
+        "aura_id": "tl_3",
+        "stats": {
+          "persistent_damage_reduction": 0.087,
+          "dot_damage_reduction": 0.174,
+          "control_duration_reduction": 0.232
+        },
+        "cost": {
+          "item_id": "law_fragment_high",
+          "quantity": 52,
+          "gold": 360
+        },
+        "success_rate": 38
+      },
+      {
+        "level": 30,
+        "aura_id": "tl_3",
+        "stats": {
+          "persistent_damage_reduction": 0.09,
+          "dot_damage_reduction": 0.18,
+          "control_duration_reduction": 0.24
+        },
+        "cost": {
+          "item_id": "law_fragment_high",
+          "quantity": 56,
+          "gold": 380
+        },
+        "success_rate": 38
+      },
+      {
+        "level": 31,
+        "aura_id": "tl_4",
+        "stats": {
+          "persistent_damage_reduction": 0.093,
+          "dot_damage_reduction": 0.186,
+          "control_duration_reduction": 0.248
+        },
+        "cost": {
+          "item_id": "law_fragment_high",
+          "quantity": 45,
+          "gold": 400
+        },
+        "success_rate": 36
+      },
+      {
+        "level": 32,
+        "aura_id": "tl_4",
+        "stats": {
+          "persistent_damage_reduction": 0.096,
+          "dot_damage_reduction": 0.192,
+          "control_duration_reduction": 0.256
+        },
+        "cost": {
+          "item_id": "law_fragment_high",
+          "quantity": 50,
+          "gold": 420
+        },
+        "success_rate": 34
+      },
+      {
+        "level": 33,
+        "aura_id": "tl_4",
+        "stats": {
+          "persistent_damage_reduction": 0.099,
+          "dot_damage_reduction": 0.198,
+          "control_duration_reduction": 0.264
+        },
+        "cost": {
+          "item_id": "law_fragment_high",
+          "quantity": 55,
+          "gold": 440
+        },
+        "success_rate": 34
+      },
+      {
+        "level": 34,
+        "aura_id": "tl_4",
+        "stats": {
+          "persistent_damage_reduction": 0.102,
+          "dot_damage_reduction": 0.204,
+          "control_duration_reduction": 0.272
+        },
+        "cost": {
+          "item_id": "law_fragment_high",
+          "quantity": 60,
+          "gold": 460
+        },
+        "success_rate": 32
+      },
+      {
+        "level": 35,
+        "aura_id": "tl_4",
+        "stats": {
+          "persistent_damage_reduction": 0.105,
+          "dot_damage_reduction": 0.21,
+          "control_duration_reduction": 0.28
+        },
+        "cost": {
+          "item_id": "law_fragment_high",
+          "quantity": 65,
+          "gold": 480
+        },
+        "success_rate": 32
+      },
+      {
+        "level": 36,
+        "aura_id": "tl_4",
+        "stats": {
+          "persistent_damage_reduction": 0.108,
+          "dot_damage_reduction": 0.216,
+          "control_duration_reduction": 0.288
+        },
+        "cost": {
+          "item_id": "law_fragment_high",
+          "quantity": 70,
+          "gold": 500
+        },
+        "success_rate": 25
+      },
+      {
+        "level": 37,
+        "aura_id": "tl_4",
+        "stats": {
+          "persistent_damage_reduction": 0.111,
+          "dot_damage_reduction": 0.222,
+          "control_duration_reduction": 0.296
+        },
+        "cost": {
+          "item_id": "law_fragment_high",
+          "quantity": 75,
+          "gold": 520
+        },
+        "success_rate": 23
+      },
+      {
+        "level": 38,
+        "aura_id": "tl_4",
+        "stats": {
+          "persistent_damage_reduction": 0.114,
+          "dot_damage_reduction": 0.228,
+          "control_duration_reduction": 0.304
+        },
+        "cost": {
+          "item_id": "law_fragment_high",
+          "quantity": 80,
+          "gold": 540
+        },
+        "success_rate": 23
+      },
+      {
+        "level": 39,
+        "aura_id": "tl_4",
+        "stats": {
+          "persistent_damage_reduction": 0.117,
+          "dot_damage_reduction": 0.234,
+          "control_duration_reduction": 0.312
+        },
+        "cost": {
+          "item_id": "law_fragment_high",
+          "quantity": 85,
+          "gold": 560
+        },
+        "success_rate": 21
+      },
+      {
+        "level": 40,
+        "aura_id": "tl_4",
+        "stats": {
+          "persistent_damage_reduction": 0.12,
+          "dot_damage_reduction": 0.24,
+          "control_duration_reduction": 0.32
+        },
+        "cost": {
+          "item_id": "law_fragment_high",
+          "quantity": 90,
+          "gold": 580
+        },
+        "success_rate": 21
+      },
+      {
+        "level": 41,
+        "aura_id": "tl_5",
+        "stats": {
+          "persistent_damage_reduction": 0.123,
+          "dot_damage_reduction": 0.246,
+          "control_duration_reduction": 0.328
+        },
+        "cost": {
+          "item_id": "law_fragment_high",
+          "quantity": 80,
+          "gold": 600
+        },
+        "success_rate": 19
+      },
+      {
+        "level": 42,
+        "aura_id": "tl_5",
+        "stats": {
+          "persistent_damage_reduction": 0.126,
+          "dot_damage_reduction": 0.252,
+          "control_duration_reduction": 0.336
+        },
+        "cost": {
+          "item_id": "law_fragment_high",
+          "quantity": 88,
+          "gold": 620
+        },
+        "success_rate": 17
+      },
+      {
+        "level": 43,
+        "aura_id": "tl_5",
+        "stats": {
+          "persistent_damage_reduction": 0.129,
+          "dot_damage_reduction": 0.258,
+          "control_duration_reduction": 0.344
+        },
+        "cost": {
+          "item_id": "law_fragment_high",
+          "quantity": 96,
+          "gold": 640
+        },
+        "success_rate": 17
+      },
+      {
+        "level": 44,
+        "aura_id": "tl_5",
+        "stats": {
+          "persistent_damage_reduction": 0.132,
+          "dot_damage_reduction": 0.264,
+          "control_duration_reduction": 0.352
+        },
+        "cost": {
+          "item_id": "law_fragment_high",
+          "quantity": 104,
+          "gold": 660
+        },
+        "success_rate": 15
+      },
+      {
+        "level": 45,
+        "aura_id": "tl_5",
+        "stats": {
+          "persistent_damage_reduction": 0.135,
+          "dot_damage_reduction": 0.27,
+          "control_duration_reduction": 0.36
+        },
+        "cost": {
+          "item_id": "law_fragment_high",
+          "quantity": 112,
+          "gold": 680
+        },
+        "success_rate": 15
+      },
+      {
+        "level": 46,
+        "aura_id": "tl_5",
+        "stats": {
+          "persistent_damage_reduction": 0.138,
+          "dot_damage_reduction": 0.276,
+          "control_duration_reduction": 0.368
+        },
+        "cost": {
+          "item_id": "law_fragment_high",
+          "quantity": 120,
+          "gold": 700
+        },
+        "success_rate": 12
+      },
+      {
+        "level": 47,
+        "aura_id": "tl_5",
+        "stats": {
+          "persistent_damage_reduction": 0.141,
+          "dot_damage_reduction": 0.282,
+          "control_duration_reduction": 0.376
+        },
+        "cost": {
+          "item_id": "law_fragment_high",
+          "quantity": 128,
+          "gold": 720
+        },
+        "success_rate": 9
+      },
+      {
+        "level": 48,
+        "aura_id": "tl_5",
+        "stats": {
+          "persistent_damage_reduction": 0.144,
+          "dot_damage_reduction": 0.288,
+          "control_duration_reduction": 0.384
+        },
+        "cost": {
+          "item_id": "law_fragment_high",
+          "quantity": 136,
+          "gold": 740
+        },
+        "success_rate": 9
+      },
+      {
+        "level": 49,
+        "aura_id": "tl_5",
+        "stats": {
+          "persistent_damage_reduction": 0.147,
+          "dot_damage_reduction": 0.294,
+          "control_duration_reduction": 0.392
+        },
+        "cost": {
+          "item_id": "law_fragment_high",
+          "quantity": 144,
+          "gold": 760
+        },
+        "success_rate": 6
+      },
+      {
+        "level": 50,
+        "aura_id": "tl_5",
+        "stats": {
+          "persistent_damage_reduction": 0.15,
+          "dot_damage_reduction": 0.3,
+          "control_duration_reduction": 0.4
+        },
+        "cost": {
+          "item_id": "law_fragment_high",
+          "quantity": 152,
+          "gold": 780
+        },
+        "success_rate": 3
+      }
+    ],
+    "charm_item_id": "than_luan_boost_charm",
+    "charm_multiplier": 1.5
   }
 }

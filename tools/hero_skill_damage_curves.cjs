@@ -21,6 +21,11 @@ const curves = {
   hero_5_skill_4:{damage_pct:[30,40,50,60,70]}
 };
 const poison = {hero_4_skill_1:[36,50,68,92,124],hero_4_skill_3:[30,42,58,80,110]};
+const presentationTuning = {
+  hero_1_skill_4:['cooldown','domain_duration','domain_radius','domain_cast_range','domain_slow_edge','domain_slow_center','impact_stun_chance','impact_stun_duration'],
+  hero_2_skill_2:['speed_pct','knockback_distance','knockback_duration','vfx_alpha'],
+  hero_2_skill_4:['charge_time','telegraph_radius','telegraph_max_hp_pct','telegraph_tick_interval','telegraph_tick_count','telegraph_vfx_scale']
+};
 const value = (base,old) => Math.round((base * 1.3 + (old-base) * 0.3) * 10000) / 10000;
 const number = n => String(n);
 function descriptions(skill,level) {
@@ -52,6 +57,18 @@ function maskedHash(catalog) {
     delete level.description_rows;
     if(poison[skill.id])for(const effect of level.effects||[])if(effect.id==='poison')delete effect.dps_pct;
   }
+	for(const skill of masked)if(presentationTuning[skill.id]){
+		if(skill.id==='hero_1_skill_4') {
+			delete skill.vfx_frames;
+			for(const level of skill.levels) {
+				delete level.stats.domain_coverage;
+				delete level.description_rows;
+			}
+		}
+		if(skill.id==='hero_2_skill_4')delete skill.telegraph_vfx_frames;
+		for(const level of skill.levels)for(const key of presentationTuning[skill.id])delete level.stats[key];
+	}
+	for(const skill of masked)if(skill.id==='hero_1_skill_2'&&skill.flank_bolt_config)delete skill.flank_bolt_config.speed;
   return crypto.createHash('sha256').update(JSON.stringify(masked)).digest('hex');
 }
 function patch(source) {
@@ -80,7 +97,7 @@ function patch(source) {
   }
   return '*** Begin Patch\n*** Update File: server/data/skills.json\n'+chunks.join('\n')+'\n*** End Patch';
 }
-module.exports={curves,poison,value,maskedHash,descriptions};
+module.exports={curves,poison,presentationTuning,value,maskedHash,descriptions};
 if(require.main===module){
   const source=fs.readFileSync(path.join(__dirname,'../data/skills.json'),'utf8');
   if(process.argv.includes('--patch'))process.stdout.write(JSON.stringify(patch(source)));

@@ -42,7 +42,7 @@
     "visual_scale": 0.4095,
     "exp": 3,
     "attributes": {
-      "hp": 480,
+      "hp": 285,
       "atk": 44,
       "def": 20,
       "move_speed": 36,
@@ -630,7 +630,7 @@
     "visual_scale": 0.16,
     "exp": 22,
     "attributes": {
-      "hp": 420,
+      "hp": 240,
       "atk": 38,
       "def": 18,
       "move_speed": 34,
@@ -841,7 +841,7 @@
     "visual_scale": 0.155,
     "exp": 42,
     "attributes": {
-      "hp": 580,
+      "hp": 345,
       "atk": 52,
       "def": 25,
       "move_speed": 34,
@@ -1057,7 +1057,7 @@
     "visual_scale": 0.155,
     "exp": 74,
     "attributes": {
-      "hp": 700,
+      "hp": 420,
       "atk": 64,
       "def": 38,
       "move_speed": 32,
@@ -1109,7 +1109,7 @@
     "visual_scale": 0.155,
     "exp": 95,
     "attributes": {
-      "hp": 1050,
+      "hp": 600,
       "atk": 85,
       "def": 58,
       "move_speed": 30,

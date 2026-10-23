@@ -24,9 +24,10 @@ function towerRewardEntries(nk:nkruntime.Nakama,rewards:any[],profile:any,floor:
 function towerSweepPreview(nk:nkruntime.Nakama,s:any,req:any):any {
     const c=towerSweepConfig(nk),floor=Number(req.floor);
     if(!c.enabled)throw Error('SWEEP_DISABLED');
-    if(!Number.isInteger(floor)||floor<1||floor>20||!s.t||floor>Number(s.tower.highest_cleared))throw Error('FLOOR_NOT_CLEARED');
+    const tower=readContentConfig(nk,'trial_tower');
+    if(!Number.isInteger(floor)||floor<1||floor>Number(tower.floor_count)||!s.t||floor>Number(s.tower.highest_cleared))throw Error('FLOOR_NOT_CLEARED');
     if(!(s.heroes.heroes||[]).some((h:any)=>h.hero_id===req.hero_id&&h.owned===true))throw Error('HERO_NOT_OWNED');
-    const definition=readContentConfig(nk,'trial_tower').floors[floor-1];
+    const definition=tower.floors[floor-1];
     const entries=towerRewardEntries(nk,definition.repeat_rewards,s.profile,floor);
     const items=entries.filter(r=>r.kind!=='exp').map(r=>({item_id:r.kind==='item'?r.item_id:undefined,resource_id:r.kind==='item'?undefined:r.kind,quantity:r.amount,drop_rate:1}));
     const held=sweepActive(s.profile)?s.profile.sweep:null;

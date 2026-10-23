@@ -12,15 +12,15 @@ const FEATURE_DEFAULTS: any = {schema_version:1, features:{}};
     ['stage_legend',22,'Stage Legend','Chinh phục độ khó Huyền Thoại tại những ải đã đủ điều kiện.'],
     ['talisman',25,'Pháp bảo','Quản lý và bồi dưỡng pháp bảo trợ chiến.'],
     ['trial_tower',30,'Thí luyện','Bước vào Tháp Thí Luyện để tôi luyện bản lĩnh.'],
-    ['laws',35,'Pháp tắc','Sắp ra mắt.'],
+    ['laws',35,'Thần Luân','Bồi dưỡng Thần Luân bằng Mảnh pháp tắc từ Tâm Ma Tháp để tăng khả năng sinh tồn.'],
     ['guild_war',null,'Tông môn chi chiến','Đại chiến bảo vệ tông môn — sắp ra mắt.'],
     ['ancient_battlefield',null,'Chiến trường thượng cổ','Nhân – yêu – ma chi chiến — sắp ra mắt.'],
     ['multiverse',null,'Vạn giới chư thiên','Phá bỏ thiên đạo gông cùm — sắp ra mắt.']
 ].forEach((row:any[])=>{
     // TODO: enable planned entries only when their actual screens and RPCs ship.
-    const planned=['daily_quests','laws','guild_war','ancient_battlefield','multiverse'].indexOf(row[0])>=0;
+    const planned=['daily_quests','guild_war','ancient_battlefield','multiverse'].indexOf(row[0])>=0;
     FEATURE_DEFAULTS.features[row[0]]={required_user_level:row[1],enabled:!planned,release_status:planned?'planned':'released',
-        display_name:row[2],description:row[3],tour_id:planned?'':row[0]+'_v1',tour_mode:'dismiss_any',
+        display_name:row[2],description:row[3],tour_id:planned?'':row[0]==='laws'?'than_luan_v1':row[0]+'_v1',tour_mode:'dismiss_any',
         mail_title:'Đã khai mở: '+row[2],mail_body:'Chúc mừng đạo hữu đạt cấp {level}! '+row[2]+' đã khai mở.\n\n'+row[3]+'\n\nTrở về Trang chủ để khám phá chức năng mới.'};
 });
 const REALM_MILESTONE_DEFAULTS:any={schema_version:1,milestones:{
@@ -109,7 +109,7 @@ function featureRuntime(base:nkruntime.Nakama,userId:string):nkruntime.Nakama {
     return runtime;
 }
 function featureForRpc(id:string,req:any):string[] {
-    const map:any={daily_checkin_status:'checkin',daily_checkin_claim:'checkin',store_purchase:'shop',purchase_hero:'shop',upgrade_element:'elements',
+    const map:any={get_than_luan_state:'laws',upgrade_than_luan:'laws',daily_checkin_status:'checkin',daily_checkin_claim:'checkin',store_purchase:'shop',purchase_hero:'shop',upgrade_element:'elements',
         talisman_action:'talisman',get_trial_tower_status:'trial_tower',start_trial_tower:'trial_tower',
         get_weekly_leaderboard_rewards:'leaderboard',claim_weekly_leaderboard_reward:'leaderboard',get_leaderboard_records:'leaderboard'};
     if(id==='talisman_action')return ['buy_material','buy_fragment'].indexOf(req.action)>=0?['shop']:req.action==='reroll_talent'?[]:['talisman'];

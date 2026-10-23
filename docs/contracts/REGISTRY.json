@@ -1,18 +1,152 @@
 {
   "contracts": [
-    {"id":"C176_FEATURE_UNLOCKS","version":"1.0.0","status":"ACTIVE","updated_at":"2026-10-23","contract_file":"docs/contracts/C176_FEATURE_UNLOCKS.md"},
-    {"id":"C173_CURRENCY_PRICING","version":"1.0.0","status":"ACTIVE","updated_at":"2026-10-22","contract_file":"docs/contracts/C173_CURRENCY_PRICING.md"},
-    {"id":"C172_PRIMORDIAL_WRAITH_SKILLS","version":"1.0.0","status":"ACTIVE","updated_at":"2026-10-22","contract_file":"docs/contracts/C172_PRIMORDIAL_WRAITH_SKILLS.md"},
-    {"id":"C171_ARC5_BOSS_SKILLS","version":"1.0.1","status":"ACTIVE","updated_at":"2026-10-23","contract_file":"docs/contracts/C171_ARC5_BOSS_SKILLS.md"},
-    {"id":"C169_CREEP_EARTH_SKILLS","version":"1.0.0","status":"IN_PROGRESS","updated_at":"2026-10-22","contract_file":"docs/contracts/C169_CREEP_EARTH_SKILLS.md"},
-    {"id":"C168_CREEP_METAL_SKILLS","version":"1.0.0","status":"ACTIVE","updated_at":"2026-10-22","contract_file":"docs/contracts/C168_CREEP_METAL_SKILLS.md"},
-    {"id":"C167_TOWER_SWEEP","version":"1.0.0","status":"IN_PROGRESS","updated_at":"2026-10-22","contract_file":"docs/contracts/C167_TOWER_SWEEP.md"},
-    {"id":"C166_TRIAL_TOWER_FEATURE","version":"1.0.0","status":"ACTIVE","updated_at":"2026-10-22","contract_file":"docs/contracts/C166_TRIAL_TOWER_FEATURE.md"},
-    {"id":"C165_TOWER_FLOOR_BALANCE","version":"1.1.0","status":"ACTIVE","updated_at":"2026-10-22","contract_file":"docs/contracts/C165_TOWER_FLOOR_BALANCE.md"},
-    {"id":"C164_TOWER_MIRROR_AND_MANUAL_CONTROLS","version":"1.0.0","status":"ACTIVE","updated_at":"2026-10-22","contract_file":"docs/contracts/C164_TOWER_MIRROR_AND_MANUAL_CONTROLS.md"},
-    {"id":"C163_ADDITIVE_COMBAT_BONUSES","version":"1.0.0","status":"ACTIVE","updated_at":"2026-10-22","contract_file":"docs/contracts/C163_ADDITIVE_COMBAT_BONUSES.md"},
-    {"id":"C162_HERO_SKILL_DAMAGE_CURVES","version":"1.0.0","status":"ACTIVE","updated_at":"2026-10-22","contract_file":"docs/contracts/C162_HERO_SKILL_DAMAGE_CURVES.md"},
-    {"id":"C161_TRIAL_TOWER_CHALLENGE","version":"1.2.0","status":"ACTIVE","updated_at":"2026-10-22","contract_file":"docs/contracts/C161_TRIAL_TOWER_CHALLENGE.md"},
+    {
+      "id": "C184_HERO_4_VENOM_VORTEX",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-23",
+      "contract_file": "docs/contracts/C184_HERO_4_VENOM_VORTEX.md"
+    },
+    {
+      "id": "C183_HERO_3_FALLING_SEAL",
+      "version": "1.0.1",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-23",
+      "contract_file": "docs/contracts/C183_HERO_3_FALLING_SEAL.md"
+    },
+    {
+      "id": "C182_REWARD_BOOST_CARD_SHOP",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-23",
+      "contract_file": "docs/contracts/C182_REWARD_BOOST_CARD_SHOP.md"
+    },
+    {
+      "id": "C181_TRIAL_TOWER_30_FLOORS",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-23",
+      "contract_file": "docs/contracts/C181_TRIAL_TOWER_30_FLOORS.md"
+    },
+    {
+      "id": "C180_HERO_1_ICE_DOMAIN_LAYERS",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-23",
+      "contract_file": "docs/contracts/C180_HERO_1_ICE_DOMAIN_LAYERS.md"
+    },
+    {
+      "id": "C179_CAMPAIGN_TANK_HP",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-23",
+      "contract_file": "docs/contracts/C179_CAMPAIGN_TANK_HP.md"
+    },
+    {
+      "id": "C178_THAN_LUAN",
+      "version": "2.2.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-23",
+      "contract_file": "docs/contracts/C178_THAN_LUAN.md"
+    },
+    {
+      "id": "C177_TOWER_TEST_ENTRIES",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-23",
+      "contract_file": "docs/contracts/C177_TOWER_TEST_ENTRIES.md"
+    },
+    {
+      "id": "C176_FEATURE_UNLOCKS",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-23",
+      "contract_file": "docs/contracts/C176_FEATURE_UNLOCKS.md"
+    },
+    {
+      "id": "C173_CURRENCY_PRICING",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-22",
+      "contract_file": "docs/contracts/C173_CURRENCY_PRICING.md"
+    },
+    {
+      "id": "C172_PRIMORDIAL_WRAITH_SKILLS",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-22",
+      "contract_file": "docs/contracts/C172_PRIMORDIAL_WRAITH_SKILLS.md"
+    },
+    {
+      "id": "C171_ARC5_BOSS_SKILLS",
+      "version": "1.0.1",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-23",
+      "contract_file": "docs/contracts/C171_ARC5_BOSS_SKILLS.md"
+    },
+    {
+      "id": "C169_CREEP_EARTH_SKILLS",
+      "version": "1.0.0",
+      "status": "IN_PROGRESS",
+      "updated_at": "2026-10-22",
+      "contract_file": "docs/contracts/C169_CREEP_EARTH_SKILLS.md"
+    },
+    {
+      "id": "C168_CREEP_METAL_SKILLS",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-22",
+      "contract_file": "docs/contracts/C168_CREEP_METAL_SKILLS.md"
+    },
+    {
+      "id": "C167_TOWER_SWEEP",
+      "version": "1.0.0",
+      "status": "IN_PROGRESS",
+      "updated_at": "2026-10-22",
+      "contract_file": "docs/contracts/C167_TOWER_SWEEP.md"
+    },
+    {
+      "id": "C166_TRIAL_TOWER_FEATURE",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-22",
+      "contract_file": "docs/contracts/C166_TRIAL_TOWER_FEATURE.md"
+    },
+    {
+      "id": "C165_TOWER_FLOOR_BALANCE",
+      "version": "1.1.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-22",
+      "contract_file": "docs/contracts/C165_TOWER_FLOOR_BALANCE.md"
+    },
+    {
+      "id": "C164_TOWER_MIRROR_AND_MANUAL_CONTROLS",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-22",
+      "contract_file": "docs/contracts/C164_TOWER_MIRROR_AND_MANUAL_CONTROLS.md"
+    },
+    {
+      "id": "C163_ADDITIVE_COMBAT_BONUSES",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-22",
+      "contract_file": "docs/contracts/C163_ADDITIVE_COMBAT_BONUSES.md"
+    },
+    {
+      "id": "C162_HERO_SKILL_DAMAGE_CURVES",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-22",
+      "contract_file": "docs/contracts/C162_HERO_SKILL_DAMAGE_CURVES.md"
+    },
+    {
+      "id": "C161_TRIAL_TOWER_CHALLENGE",
+      "version": "1.2.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-22",
+      "contract_file": "docs/contracts/C161_TRIAL_TOWER_CHALLENGE.md"
+    },
     {
       "id": "C160_TRIAL_TOWER_STATUS",
       "version": "1.1.0",
@@ -27,7 +161,13 @@
       "updated_at": "2026-10-21",
       "contract_file": "docs/contracts/C159_INVENTORY_STACK_CONSOLIDATION.md"
     },
-    {"id": "C158_CREEP_WOOD_SKILLS", "version": "1.1.2", "status": "ACTIVE", "updated_at": "2026-10-23", "contract_file": "docs/contracts/C158_CREEP_WOOD_SKILLS.md"},
+    {
+      "id": "C158_CREEP_WOOD_SKILLS",
+      "version": "1.1.2",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-23",
+      "contract_file": "docs/contracts/C158_CREEP_WOOD_SKILLS.md"
+    },
     {
       "id": "C157_CREEP_ICE_SKILLS",
       "version": "1.0.0",
@@ -116,14 +256,14 @@
     },
     {
       "id": "C144_STAGE_SWEEP",
-      "version": "1.4.1",
+      "version": "1.4.3",
       "status": "ACTIVE",
-      "updated_at": "2026-10-22",
+      "updated_at": "2026-10-23",
       "contract_file": "docs/contracts/C144_STAGE_SWEEP.md"
     },
     {
       "id": "C143_MULTI_SERVER",
-      "version": "1.5.2",
+      "version": "1.5.3",
       "status": "IN_PROGRESS",
       "updated_at": "2026-10-19",
       "contract_file": "docs/contracts/C143_MULTI_SERVER.md"
@@ -268,5 +408,5 @@
       "contract_file": "docs/contracts/C119_CONFIG_SEED_INTEGRITY.md"
     }
   ],
-  "updated_at": "2026-10-16"
+  "updated_at": "2026-10-23"
 }

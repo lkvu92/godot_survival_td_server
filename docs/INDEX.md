@@ -3,6 +3,14 @@
 - [C176 Feature unlocks](contracts/C176_FEATURE_UNLOCKS.md): published level gates, atomic mail and generic tours.
 # Server documentation
 
+- [C181 Trial Tower 30 floors](contracts/C181_TRIAL_TOWER_30_FLOORS.md): three ten-floor fragment bands, 3.60× final scaling and server-authoritative 1–30 challenge/sweep.
+- [C182 Reward boost-card shop](contracts/C182_REWARD_BOOST_CARD_SHOP.md): 1-hour 10%/25% EXP and Gold cards, Gem-to-Gold ratio 1:500, direct-shop whitelist and event-pack-only high cards.
+
+- [C180 Hero 1 Ice Domain layers](contracts/C180_HERO_1_ICE_DOMAIN_LAYERS.md): four-stage impact, 10s field / 15s cooldown, centred slow gradient and authored VFX parsing.
+
+- [C177 Tower test entries](contracts/C177_TOWER_TEST_ENTRIES.md): protected admin grant capacity, standard daily recovery unchanged.
+- [C179 Campaign tank HP](contracts/C179_CAMPAIGN_TANK_HP.md): tank base HP is 1.5x its arc grunt, including a 1.75x effective cap after spawn buffs.
+
 - C171 v1.0.1: Sa Thạch Toái Kích flight speed 420 → 630 for both earth bosses.
 
 - C158 v1.1.2: Eight skulls at distinct positions; sequential launches at 0.15s intervals.
@@ -23,7 +31,7 @@
 
 - [C154 Unified defense curve](contracts/C154_UNIFIED_DEFENSE_CURVE.md) v1.0.0: live damage, tribulation, and combat power use `100 / (100 + DEF)`; talisman DEF is synchronized.
 
-- [C143 Multi-server](contracts/C143_MULTI_SERVER.md): v1.5.2 IN_PROGRESS — scoped item-request dedupe included; operator-authorized VPS S1 cutover recorded in [migration runbook](S1_MIGRATION_RUNBOOK.md).
+- [C143 Multi-server](contracts/C143_MULTI_SERVER.md): v1.5.3 IN_PROGRESS — realm naming catalog and authoritative selection names; scoped item-request dedupe included; operator-authorized VPS S1 cutover recorded in [migration runbook](S1_MIGRATION_RUNBOOK.md).
 
 - [Kế hoạch triển khai nhiều server logic](MULTI_SERVER_IMPLEMENTATION_PLAN.md): DRAFT — định danh account/server, tích hợp backend/client, migration S1; mục 15 đặc tả API create/disable/reset/delete/cleanup, generation, dry-run và integration test.
 
@@ -141,3 +149,7 @@
 - [C173 Currency pricing](contracts/C173_CURRENCY_PRICING.md)
 
 - [C158 wood skills v1.1.0](contracts/C158_CREEP_WOOD_SKILLS.md): compact target-centered thorn ellipse and authoritative presentation dimensions.
+
+- [C178 — Thần Luân](contracts/C178_THAN_LUAN.md): shared level-35 survival progression, five-tier aura, shared combat HUD and dedicated Pháp Tắc Phù.
+- [C183 Hero 3 falling seal](contracts/C183_HERO_3_FALLING_SEAL.md) v1.0.0: single-target sword, eight-sword AOE, three sound waves at 0.3s intervals; 30% stun for 0.2s.
+- C183 v1.0.1: halve Hero 3 Skill 2 sword-burst duration at all five levels.

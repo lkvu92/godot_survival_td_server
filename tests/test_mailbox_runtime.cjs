@@ -83,7 +83,8 @@ for(const product of packCatalog){
  assert(granted.mail&&granted.mail.id,'instant bonus goes to purchase mail');
  const entitlement=read('player_profiles','main').value.daily_packs[product.id];
  assert(entitlement.rewards.every(r=>product.rewards.some(p=>p.metadata?.daily_pack_days===30&&p.reward_id===r.reward_id&&p.quantity===r.quantity)));
- assert.equal(read('player_mail',granted.mail.id).value.attachments.length,product.id==='daily_deal'?1:2);
+ // Flash-sale now includes six boost cards in addition to the two upgrade charms (C182).
+ assert.equal(read('player_mail',granted.mail.id).value.attachments.length,product.id==='daily_deal'?1:8);
  const activated=new Map([...store].map(([k,v])=>[k,copy(v)]));
  assert(fn('applyPurchaseMailRewards')(nk,userId,grantId,product.id,'consumable',product.rewards).idempotent);
  assert.deepEqual(store,activated,'purchase replay cannot duplicate mail or change expiry');

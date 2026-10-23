@@ -104,6 +104,12 @@ function linkedRpc_award_stage_progression(ctx: nkruntime.Context, logger: nkrun
 function linkedRpc_tribulation_action(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
     return accountGuardedRpc("tribulation_action", (c,l,n,p)=>gatedTribulationAction(c,l,mailCombatRuntime(n,c.userId),p))(ctx, logger, nk, payload);
 }
+function linkedRpc_get_than_luan_state(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string {
+    return accountGuardedRpc('get_than_luan_state',(cc,ll,nn,pp)=>invokeWithVersionGate(cc,ll,nn,pp,getThanLuanState))(c,l,n,p);
+}
+function linkedRpc_upgrade_than_luan(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string {
+    return accountGuardedRpc('upgrade_than_luan',(cc,ll,nn,pp)=>invokeWithVersionGate(cc,ll,nn,pp,upgradeThanLuan))(c,l,n,p);
+}
 function linkedRpc_get_trial_tower_status(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
     return accountGuardedRpc("get_trial_tower_status", (c,l,n,p) => invokeWithVersionGate(c,l,n,p,trialTowerStatus))(ctx,logger,nk,payload);
 }
@@ -287,6 +293,8 @@ function InitModule(
     initializer.registerRpc("complete_feature_tour", linkedRpc_complete_feature_tour);
     initializer.registerRpc("award_stage_progression", linkedRpc_award_stage_progression);
     initializer.registerRpc("tribulation_action", linkedRpc_tribulation_action);
+    initializer.registerRpc("get_than_luan_state", linkedRpc_get_than_luan_state);
+    initializer.registerRpc("upgrade_than_luan", linkedRpc_upgrade_than_luan);
     initializer.registerRpc("get_trial_tower_status", linkedRpc_get_trial_tower_status);
     initializer.registerRpc("start_trial_tower", linkedRpc_start_trial_tower);
     initializer.registerRpc("prepare_trial_tower", linkedRpc_prepare_trial_tower);

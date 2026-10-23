@@ -339,7 +339,7 @@ const startStage: nkruntime.RpcFunction = (ctx, _logger, nk, payload): string =>
         const state=talismanCreateStageRun(nk,ctx.userId,stageId,levelId);
         profile.activity={type:'combat',activity_id:state.run.run_id};
         nk.storageWrite([{collection:'player_profiles',key:'main',userId:ctx.userId,value:profile,version:stored[0].version,permissionRead:1,permissionWrite:0},{collection:'player_stage_runs',key:'active',userId:ctx.userId,value:state.run,version:state.version,permissionRead:1,permissionWrite:0}]);
-        return JSON.stringify({success:true,run_id:state.run.run_id,stamina_cost:0,stamina_remaining:profile.stamina});
+        return JSON.stringify({success:true,run_id:state.run.run_id,than_luan_snapshot:state.run.than_luan_snapshot,stamina_cost:0,stamina_remaining:profile.stamina});
     }
     // A run must never charge stamina if its mandatory grading/reward rules
     // cannot also be used at settlement on this release.
@@ -369,5 +369,5 @@ const startStage: nkruntime.RpcFunction = (ctx, _logger, nk, payload): string =>
 	if (cost > 0) eventRecord(nk, ctx.userId, "stamina_spent", cost,
 		{ stage_id: stageId, difficulty_id: levelId }, String(runState.run.run_id));
 	return JSON.stringify({ success: true, stamina_cost: cost, stamina_remaining: profile.stamina,
-		run_id: runState.run.run_id, talisman: runState.run.talisman });
+		run_id: runState.run.run_id, than_luan_snapshot:runState.run.than_luan_snapshot, talisman: runState.run.talisman });
 };

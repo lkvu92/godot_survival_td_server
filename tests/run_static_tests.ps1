@@ -9,6 +9,8 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Runtime syntax failed' }
     & node tests/test_feature_unlocks.cjs
     if ($LASTEXITCODE -ne 0) { throw 'Feature unlock regression failed' }
+    & node tests/test_than_luan.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Than Luan regression failed' }
     & node tests/test_server_admission.cjs
     if ($LASTEXITCODE -ne 0) { throw 'Server admission regression failed' }
     & node tests/test_character_repository.cjs

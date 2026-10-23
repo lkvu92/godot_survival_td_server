@@ -1,6 +1,6 @@
 const fs = require('fs'), path = require('path'), vm = require('vm'), assert = require('assert');
 const c = vm.createContext({});
-for (const name of ['progression_rpc', 'player_rpc', 'sweep_rpc']) vm.runInContext(fs.readFileSync(path.join(__dirname, '../nakama/data/modules/build', name + '.js'), 'utf8'), c);
+for (const name of ['combat_power', 'progression_rpc', 'player_rpc', 'sweep_rpc']) vm.runInContext(fs.readFileSync(path.join(__dirname, '../nakama/data/modules/build', name + '.js'), 'utf8'), c);
 const fn = name => vm.runInContext(name, c), clone = x => JSON.parse(JSON.stringify(x));
 // Keep actual cultivation recovery/penalties; isolate unrelated name, VIP and catalog code.
 c.getRemoteConfigValue = (_nk, _section, _key, fallback) => fallback;
@@ -19,7 +19,7 @@ const nk = {
     for (const w of writes) row(w.collection, w.key, w.value);
     return writes.map(w => ({collection: w.collection, key: w.key, version: db[key(w)].version}));
   },
-  sqlQuery(sql) { if (sql.includes('AS now')) return [{now: Math.floor(Date.now()/1000)}]; return []; }
+  sqlQuery(sql) { if (sql.includes("key='progression'")) return [{value:JSON.parse(fs.readFileSync(path.join(__dirname,'../data/progression.json'),'utf8'))}]; if (sql.includes('AS now')) return [{now: Math.floor(Date.now()/1000)}]; return []; }
 };
 function reset() {
   db = {}; conflict = false;

@@ -2,7 +2,7 @@ const fs=require('fs'),path=require('path'),vm=require('vm'),assert=require('ass
 const read=p=>JSON.parse(fs.readFileSync(path.join(__dirname,'..',p),'utf8'));
 const catalog=read('data/items.json'), progression=read('data/progression.json');
 const context=vm.createContext({});
-for(const f of ['config_rpc','progression_rpc','inventory_rpc','sweep_rpc']) vm.runInContext(fs.readFileSync(path.join(__dirname,'../nakama/data/modules/build/'+f+'.js'),'utf8'),context);
+for(const f of ['combat_power','config_rpc','progression_rpc','inventory_rpc','sweep_rpc']) vm.runInContext(fs.readFileSync(path.join(__dirname,'../nakama/data/modules/build/'+f+'.js'),'utf8'),context);
 const use=vm.runInContext('useConsumable',context),reroll=vm.runInContext('cultivationApplyReroll',context), reward=vm.runInContext('cultivationReward',context);
 const clone=x=>JSON.parse(JSON.stringify(x));
 let db,revision=0,conflict=false;
@@ -23,6 +23,10 @@ reset();assert(request('gold_talisman').success);assert.equal(profile().resource
 assert(request('gold_talisman').duplicate);assert.equal(profile().resources.gold,75010);assert(!request('energy_elixir').success);
 assert(request('energy_elixir','energy',{quantity:2}).success);assert.equal(profile().stamina,30);assert(!request('energy_elixir','full').success);assert.equal(qty('energy_elixir'),8);
 reset();assert(request('exp_talisman').success);assert(profile().exp>0);assert(!request('wind_aptitude_fruit','wind').success);
+reset();
+assert(request('exp_boost_card_10_1h','boost-exp-1h').success);
+assert.equal(qty('exp_boost_card_10_1h'),9);
+assert(profile().gameplay_boosts.exp.expires_at_ms >= Date.now()+3599000,'one-hour card grants a one-hour server timer');
 reset();
 assert(request('exp_boost_card_10','boost-exp').success);
 assert.equal(qty('exp_boost_card_10'),9);
@@ -68,4 +72,4 @@ assert(request('revive_talisman','revive',{...combat,alive:false}).duplicate);
 assert(!request('revive_talisman','revive2',{...combat,alive:false}).success);
 assert.equal(qty('revive_talisman'),9);
 assert(!request('healing_elixir','bulk',{...combat,quantity:2}).success);
-console.log('PASS C130: grants, 24-hour EXP/Gold boost stacking/replacement, caps, replay, CAS, source-safe reroll 25->40, legacy preservation, run/state/cooldown/revive guards');
+console.log('PASS C130: 1-hour shop and 24-hour reward EXP/Gold boosts, stacking/replacement, caps, replay, CAS and combat-use guards');

@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "servers": [
+    {
+      "server_id": "s001",
+      "display_name": "Thanh Vân Giới"
+    },
+    {
+      "server_id": "s002",
+      "display_name": "Thiên Nam Vực"
+    },
+    {
+      "server_id": "s003",
+      "display_name": "Vân Hải Giới"
+    },
+    {
+      "server_id": "s004",
+      "display_name": "Côn Luân Tiên Vực"
+    },
+    {
+      "server_id": "s005",
+      "display_name": "Bồng Lai Tiên Cảnh"
+    },
+    {
+      "server_id": "s006",
+      "display_name": "Tử Tiêu Thiên Vực"
+    },
+    {
+      "server_id": "s007",
+      "display_name": "Thương Lan Giới"
+    },
+    {
+      "server_id": "s008",
+      "display_name": "Huyền Thiên Vực"
+    },
+    {
+      "server_id": "s009",
+      "display_name": "Cửu U Minh Vực"
+    },
+    {
+      "server_id": "s010",
+      "display_name": "Bắc Minh Giới"
+    },
+    {
+      "server_id": "s011",
+      "display_name": "Đông Hoang Vực"
+    },
+    {
+      "server_id": "s012",
+      "display_name": "Tây Mạc Vực"
+    },
+    {
+      "server_id": "s013",
+      "display_name": "Nam Lĩnh Giới"
+    },
+    {
+      "server_id": "s014",
+      "display_name": "Trung Châu Đại Vực"
+    },
+    {
+      "server_id": "s015",
+      "display_name": "Thanh Khâu Tiên Cảnh"
+    },
+    {
+      "server_id": "s016",
+      "display_name": "Dao Trì Tiên Cảnh"
+    },
+    {
+      "server_id": "s017",
+      "display_name": "Xích Viêm Giới"
+    },
+    {
+      "server_id": "s018",
+      "display_name": "Hàn Uyên Vực"
+    },
+    {
+      "server_id": "s019",
+      "display_name": "Tinh Hà Thiên Vực"
+    },
+    {
+      "server_id": "s020",
+      "display_name": "Thái Hư Tiên Vực"
+    }
+  ]
+}

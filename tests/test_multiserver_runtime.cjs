@@ -85,13 +85,13 @@ const keepAlive=setInterval(()=>{},1000);
   assert.equal((await call('get_trial_tower_status',{})).reason,'SERVER_REQUIRED');
   const tower=await call('get_trial_tower_status',{server_id:'s001',generation:1});
   assert.equal(tower.success,true,JSON.stringify(tower));
-  assert.equal(tower.snapshot.floors.length,20);assert.equal(tower.snapshot.tickets,5);
+  assert.equal(tower.snapshot.floors.length,30);assert.equal(tower.snapshot.tickets,5);
   assert.equal(tower.snapshot.highest_cleared,0);
   const towerAgain=await call('get_trial_tower_status',{server_id:'s001',generation:1});
   assert.equal(towerAgain.snapshot.tickets,5);
   assert.equal((await call('get_trial_tower_status',{server_id:'s002',generation:1})).snapshot.tickets,5);
   assert.equal(sql(`SELECT count(*) FROM storage WHERE collection='player_trial_tower' AND user_id='${uid}' AND key IN ('s001:g1:main','s002:g1:main') AND read=0 AND write=0`),'2');
-  console.log('PASS native trial tower: registered authenticated RPC, seeded 20 floors, daily tickets and S1/S2 private isolation');
+  console.log('PASS native trial tower: registered authenticated RPC, seeded 30 floors, daily tickets and S1/S2 private isolation');
   if(process.argv.includes('--trial-tower-only')) {
     const towerContext={server_id:'s001',generation:1};
     sql(`INSERT INTO storage(collection,key,user_id,value,version,read,write) VALUES('player_heroes','s001:g1:states','${uid}','{"heroes":[{"hero_id":"hero_1","owned":true,"level":10}]}','tower-test',0,0)`);

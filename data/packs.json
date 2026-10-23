@@ -278,7 +278,7 @@
         "id": "flash_sale",
         "pricing_version": 250001,
         "duration_days": 30,
-        "name": "Gói Đột Phá Thần Tốc",
+        "name": "Gói Sự Kiện Đột Phá",
         "price": "$2.99",
         "product_id": "flash_sale",
         "active": true,
@@ -298,6 +298,60 @@
             "quantity": 1,
             "metadata": {
               "pricing_version": 250001
+            }
+          },
+          {
+            "reward_type": "item",
+            "reward_id": "exp_boost_card_50",
+            "quantity": 1,
+            "metadata": {
+              "pricing_version": 250001,
+              "event_pack": "boost"
+            }
+          },
+          {
+            "reward_type": "item",
+            "reward_id": "gold_boost_card_x2",
+            "quantity": 1,
+            "metadata": {
+              "pricing_version": 250001,
+              "event_pack": "boost"
+            }
+          },
+          {
+            "reward_type": "item",
+            "reward_id": "exp_boost_card_x5",
+            "quantity": 1,
+            "metadata": {
+              "pricing_version": 250001,
+              "event_pack": "boost"
+            }
+          },
+          {
+            "reward_type": "item",
+            "reward_id": "gold_boost_card_50",
+            "quantity": 1,
+            "metadata": {
+              "pricing_version": 250001,
+              "event_pack": "boost"
+            }
+          },
+          {
+            "reward_type": "item",
+            "reward_id": "exp_boost_card_x2",
+            "quantity": 1,
+            "metadata": {
+              "pricing_version": 250001,
+              "event_pack": "boost"
+            }
+          },
+          {
+            "reward_type": "item",
+            "reward_id": "gold_boost_card_x5",
+            "quantity": 1,
+            "metadata": {
+              "pricing_version": 250001,
+              "event_pack": "boost"
             }
           },
           {
@@ -339,9 +393,9 @@
         ],
         "icon_type": "pack",
         "icon_key": "flash_sale",
-        "badge": "30 NGÀY",
-        "desc": "Nhận ngay 1 Cường Hóa Phù + 1 Ngộ Đạo Phù qua thư. Mỗi ngày: 30 Gem + 5.000 Vàng + 10 Thể Lực + 1 Vé Càn Quét trong 30 ngày; không cộng dồn ngày bỏ lỡ.",
-        "reward_summary": "Ngay: 2 Phù qua thư. Mỗi ngày: 30 Gem + 5.000 Vàng + 10 TL + 1 Vé (30 ngày)"
+        "badge": "SỰ KIỆN",
+        "desc": "Nhận ngay 1 Cường Hóa Phù, 1 Ngộ Đạo Phù và 6 Thẻ tăng thưởng cao cấp qua thư. Mỗi ngày: 30 Gem + 5.000 Vàng + 10 Thể Lực + 1 Vé Càn Quét trong 30 ngày; không cộng dồn ngày bỏ lỡ.",
+        "reward_summary": "Ngay: 2 Phù + 6 Thẻ tăng thưởng. Mỗi ngày: 30 Gem + 5.000 Vàng + 10 TL + 1 Vé (30 ngày)"
       }
     ],
     "resources": [

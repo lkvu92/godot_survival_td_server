@@ -1,8 +1,12 @@
 # C143 — Multi-server progression and lifecycle
 
-Version: 1.5.2
+Version: 1.5.3
 Status: IN_PROGRESS  
 Updated: 2026-10-19
+
+## Realm names
+
+`server/data/server_realms.json` reserves geographically themed xianxia display names for S1..S20. Registry `game_servers.display_name` is authoritative; store only the realm name, render `S<number> - <name>` in the client. Local sync changes existing generic/blank names only, preserves custom names and all server IDs/generations/status/admission and characters, bumps registry revision and records an audit. It never creates or opens servers. New server operators use the reserved display name in the existing create/update RPC. No client-local realm mapping or gameplay fallback.
 
 ## Scope
 
@@ -58,6 +62,7 @@ Build runtime, Godot parse, repository static suites, cross-server isolation, ca
 
 | Version | Date | Change |
 |---|---|---|
+| 1.5.3 | 2026-10-23 | Reserve 20 realm names, name local S1 Thanh Vân Giới, and normalize blank/prefixed selection headings without duplicating server numbers. |
 | 1.5.2 | 2026-10-19 | Include player_item_requests character-scoped idempotency records in repository, S1 migration and Google transfer; preserve original markers. |
 | 1.5.1 | 2026-10-19 | Server list has_character is non-null boolean; client accepts only literal true and safely handles legacy null flags. |
 | 1.5.0 | 2026-10-19 | Atomic full-run seed bundle, input preflight, reference-preserving prune guard and post-S1 reseed isolation tests. |

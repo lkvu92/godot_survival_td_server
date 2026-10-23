@@ -4406,7 +4406,7 @@ const useConsumable = (ctx, _logger, nk, payload) => {
   const kind = String(effect.kind || ""), value = Number(effect.value);
   const isGameplayBoost = kind === "gameplay_boost";
   const boostMultiplier = Number(effect.multiplier), boostDuration = Number(effect.duration);
-  if (attrs.enabled === false || attrs.use_action !== "use_consumable" || (isGameplayBoost ? !["exp", "gold"].includes(String(effect.resource || "")) || !Number.isFinite(boostMultiplier) || boostMultiplier <= 1 || !Number.isSafeInteger(boostDuration) || boostDuration !== 86400 : !Number.isFinite(value) || value <= 0)) return fail("Item effect is unavailable");
+  if (attrs.enabled === false || attrs.use_action !== "use_consumable" || (isGameplayBoost ? !["exp", "gold"].includes(String(effect.resource || "")) || !Number.isFinite(boostMultiplier) || boostMultiplier <= 1 || !Number.isSafeInteger(boostDuration) || ![3600, 86400].includes(boostDuration) : !Number.isFinite(value) || value <= 0)) return fail("Item effect is unavailable");
   if (talismanItemQuantity(items, itemId) < quantity) return fail("Not enough items");
   const run = runObject ? talismanJsonObject(runObject.value) : {};
   const now = Date.now(), combat = effect.context === "combat";
@@ -4707,6 +4707,9 @@ function talismanServerNowMs() {
   return Date.now();
 }
 function talismanCreateStageRun(nk, userId, stageId, difficultyId) {
+  const auraProfile = nk.storageRead([{ collection: "player_profiles", key: "main", userId }])[0];
+  const auraConfig = thanLuanConfig(nk);
+  const thanLuanSnapshot = auraProfile ? thanLuanBattleSnapshot(auraProfile.value, auraConfig) : {};
   const objects = nk.storageRead([
     { collection: "player_inventory", key: "items", userId },
     { collection: "player_stage_runs", key: "active", userId }
@@ -4751,6 +4754,7 @@ function talismanCreateStageRun(nk, userId, stageId, difficultyId) {
     talisman_uses: 0,
     last_talisman_cast_at_ms: 0,
     ad_card_rerolls_used: 0,
+    than_luan_snapshot: thanLuanSnapshot,
     talisman
   };
   return { run, version: previousRun ? previousRun.version : "*" };
@@ -5500,7 +5504,7 @@ const startStage = (ctx, _logger, nk, payload) => {
     const state = talismanCreateStageRun(nk, ctx.userId, stageId, levelId);
     profile.activity = { type: "combat", activity_id: state.run.run_id };
     nk.storageWrite([{ collection: "player_profiles", key: "main", userId: ctx.userId, value: profile, version: stored[0].version, permissionRead: 1, permissionWrite: 0 }, { collection: "player_stage_runs", key: "active", userId: ctx.userId, value: state.run, version: state.version, permissionRead: 1, permissionWrite: 0 }]);
-    return JSON.stringify({ success: true, run_id: state.run.run_id, stamina_cost: 0, stamina_remaining: profile.stamina });
+    return JSON.stringify({ success: true, run_id: state.run.run_id, than_luan_snapshot: state.run.than_luan_snapshot, stamina_cost: 0, stamina_remaining: profile.stamina });
   }
   try {
     sweepConfig(nk);
@@ -5552,6 +5556,7 @@ const startStage = (ctx, _logger, nk, payload) => {
     stamina_cost: cost,
     stamina_remaining: profile.stamina,
     run_id: runState.run.run_id,
+    than_luan_snapshot: runState.run.than_luan_snapshot,
     talisman: runState.run.talisman
   });
 };
@@ -5579,7 +5584,7 @@ function trialTowerStatus(ctx, logger, nk, _payload) {
   const fail = (code, message) => JSON.stringify({ success: false, code, message });
   if (!ctx.userId) return fail(401, "Authentication required");
   const config = readContentConfig(nk, "trial_tower");
-  if (config.floor_count !== 20 || config.daily_tickets !== 5 || config.ticket_cap !== 20 || config.base_stat_multiplier !== 0.7 || config.stat_increase_per_floor !== 0.1 || config.speed_increase_per_floor !== 0.05 || !Array.isArray(config.floors) || config.floors.length !== 20)
+  if (config.floor_count !== 30 || config.daily_tickets !== 5 || config.ticket_cap !== 20 || config.base_stat_multiplier !== 0.7 || config.stat_increase_per_floor !== 0.1 || config.speed_increase_per_floor !== 0.05 || !Array.isArray(config.floors) || config.floors.length !== 30)
     return fail(503, "Th\xE1p ch\u01B0a \u0111\u01B0\u1EE3c c\u1EA5u h\xECnh.");
   const validRewards = (rewards) => Array.isArray(rewards) && rewards.every((r) => r && typeof r.label === "string" && r.label.trim().length > 0);
   for (let i = 0; i < config.floors.length; i++) {
@@ -5595,12 +5600,13 @@ function trialTowerStatus(ctx, logger, nk, _payload) {
   for (let attempt = 0; attempt < 3; attempt++) {
     const rows = nk.storageRead([ref]);
     const previous = rows.length ? rows[0].value : null;
-    if (previous && (!Number.isInteger(previous.highest_cleared) || previous.highest_cleared < 0 || previous.highest_cleared > 20 || !Number.isInteger(previous.tickets) || previous.tickets < 0 || previous.tickets > 20 || !Number.isSafeInteger(previous.last_ticket_day) || previous.last_ticket_day < 0))
+    const ticketCap = previous && previous.admin_test_ticket_cap === 100 ? 100 : 20;
+    if (previous && (!Number.isInteger(previous.highest_cleared) || previous.highest_cleared < 0 || previous.highest_cleared > 30 || !Number.isInteger(previous.tickets) || previous.tickets < 0 || previous.tickets > ticketCap || !Number.isSafeInteger(previous.last_ticket_day) || previous.last_ticket_day < 0))
       return fail(503, "Ti\u1EBFn \u0111\u1ED9 th\xE1p kh\xF4ng h\u1EE3p l\u1EC7.");
     if (rows.length && !previous) return fail(503, "Ti\u1EBFn \u0111\u1ED9 th\xE1p kh\xF4ng h\u1EE3p l\u1EC7.");
     const state = previous ? Object.assign({}, previous) : { highest_cleared: 0, tickets: 5, last_ticket_day: day };
     if (previous && day > previous.last_ticket_day) {
-      state.tickets = Math.min(20, previous.tickets + Math.min(4, day - previous.last_ticket_day) * 5);
+      state.tickets = Math.max(previous.tickets, Math.min(20, previous.tickets + Math.min(4, day - previous.last_ticket_day) * 5));
       state.last_ticket_day = day;
     }
     if (!previous || state.last_ticket_day !== previous.last_ticket_day) {
@@ -5627,7 +5633,7 @@ function trialTowerStatus(ctx, logger, nk, _payload) {
       highest_cleared: state.highest_cleared,
       tickets: state.tickets,
       daily_tickets: 5,
-      ticket_cap: 20,
+      ticket_cap: ticketCap,
       server_time: Math.floor(now / 1e3),
       next_ticket_at: Math.floor(((Math.max(day, state.last_ticket_day) + 1) * 864e5 - 7 * 36e5) / 1e3)
     } });
@@ -5643,7 +5649,7 @@ function startTrialTower(ctx, logger, nk, payload) {
   } catch (_e) {
     return fail("INVALID_REQUEST", "Invalid JSON");
   }
-  if (!req || typeof req !== "object" || Array.isArray(req) || !Number.isInteger(req.floor) || req.floor < 1 || req.floor > 20 || typeof req.hero_id !== "string" || typeof req.request_id !== "string" || !/^[a-zA-Z0-9_-]{8,128}$/.test(req.request_id)) return fail("INVALID_REQUEST", "Y\xEAu c\u1EA7u kh\xF4ng h\u1EE3p l\u1EC7.");
+  if (!req || typeof req !== "object" || Array.isArray(req) || !Number.isInteger(req.floor) || req.floor < 1 || req.floor > 30 || typeof req.hero_id !== "string" || typeof req.request_id !== "string" || !/^[a-zA-Z0-9_-]{8,128}$/.test(req.request_id)) return fail("INVALID_REQUEST", "Y\xEAu c\u1EA7u kh\xF4ng h\u1EE3p l\u1EC7.");
   const status = JSON.parse(trialTowerStatus(ctx, logger, nk, "{}"));
   if (!status.success) return JSON.stringify(status);
   if (req.floor > status.snapshot.highest_cleared + 1) return fail("FLOOR_LOCKED", "Ch\u01B0a m\u1EDF t\u1EA7ng n\xE0y.");
@@ -5690,6 +5696,7 @@ function startTrialTower(ctx, logger, nk, payload) {
     catalog.progression.combat_power,
     catalog.progression.element_combat
   );
+  Object.assign(attrs, thanLuanStats(profile, thanLuanConfig(nk)));
   if (!(attrs.hp > 0) || !(attrs.atk > 0) || Object.keys(attrs).some((k) => !Number.isFinite(attrs[k]))) return fail("CONFIG_INVALID", "Ch\u1EC9 s\u1ED1 nh\xE2n v\u1EADt kh\xF4ng h\u1EE3p l\u1EC7.");
   const prep = config.preparation;
   if (!prep || prep.combat_level !== 20 || prep.upgrade_count !== 19 || prep.countdown_sec !== 5 || !Array.isArray(prep.supports) || prep.supports.length !== 5)
@@ -5715,6 +5722,7 @@ function startTrialTower(ctx, logger, nk, payload) {
     hero_id: req.hero_id,
     skill_levels: skills,
     attributes: attrs,
+    than_luan: Object.assign({}, profile.than_luan),
     stat_multiplier: status.snapshot.floors[req.floor - 1].stat_multiplier,
     speed_multiplier: status.snapshot.floors[req.floor - 1].speed_multiplier,
     combat_rules: rules,
@@ -6058,7 +6066,7 @@ function cultivationPhase2Encounter(state) {
   state.started_at = Date.now();
 }
 function cultivationEnsureProfile(nk, profile, recoverInterrupted) {
-  let changed = false;
+  let changed = thanLuanReconcile(profile, thanLuanConfig(nk));
   const required = ["talent_tier", "talent_score", "main_element", "element_affinities"];
   if (required.some((key) => profile[key] === void 0 || profile[key] === null)) {
     const rolled = cultivationRollProfile();
@@ -6243,6 +6251,7 @@ function progressionApplyUser(nk, profile, awarded) {
   return { level, exp, next_level_exp: next, levels_gained: gained };
 }
 function progressionReconcileLevelUnlocks(nk, profile) {
+  thanLuanReconcile(profile, thanLuanConfig(nk));
   const level = Number(profile.level || 1);
   const arcs = nk.sqlQuery("SELECT id FROM game_arcs WHERE level_min <= $1 ORDER BY sort_order", [level]);
   const unlockedArcs = Array.isArray(profile.unlocked_arcs) ? profile.unlocked_arcs : [];
@@ -6258,6 +6267,164 @@ function progressionReconcileLevelUnlocks(nk, profile) {
   }
   profile.unlocked_arcs = unlockedArcs;
   profile.unlocked_stages = unlockedStages;
+}
+function thanLuanConfig(nk) {
+  const rows = nk.sqlQuery("SELECT value FROM game_config WHERE key='progression'", []);
+  const config = rows.length ? cpObject(rows[0].value).than_luan : null;
+  if (!config || config.schema_version !== 2 || config.unlock_level !== 35 || config.max_level !== 50 || config.charm_item_id !== "than_luan_boost_charm" || config.charm_multiplier !== 1.5 || !Array.isArray(config.levels) || config.levels.length !== 50) throw Error("THAN_LUAN_CONFIG_INVALID");
+  for (let i = 0; i < 50; i++) {
+    const row = config.levels[i], cost = row && row.cost, stats = row && row.stats;
+    if (!row || row.level !== i + 1 || row.aura_id !== "tl_" + (Math.floor(i / 10) + 1) || !cost || !stats || !Number.isSafeInteger(cost.quantity) || cost.quantity < 0 || !Number.isSafeInteger(cost.gold) || cost.gold < 0 || !Number.isInteger(row.success_rate) || row.success_rate < 1 || row.success_rate > 100 || (i === 0 ? cost.quantity !== 0 || cost.item_id !== "" : cost.quantity === 0 || ["law_fragment_low", "law_fragment_medium", "law_fragment_high"].indexOf(cost.item_id) < 0) || ["persistent_damage_reduction", "dot_damage_reduction", "control_duration_reduction"].some((k) => !Number.isFinite(stats[k]) || stats[k] < 0 || stats[k] > 0.95)) throw Error("THAN_LUAN_CONFIG_INVALID");
+  }
+  return config;
+}
+function thanLuanReconcile(profile, config) {
+  if (profile.than_luan === void 0) {
+    profile.than_luan = { level: Number(profile.level || 1) >= config.unlock_level ? 1 : 0, revision: 0 };
+    return true;
+  }
+  const state = profile.than_luan;
+  if (!state || !Number.isSafeInteger(state.level) || state.level < 0 || state.level > config.max_level || !Number.isSafeInteger(state.revision) || state.revision < 0) throw Error("THAN_LUAN_STATE_INVALID");
+  if (!state.level && Number(profile.level || 1) >= config.unlock_level) {
+    state.level = 1;
+    state.revision++;
+    return true;
+  }
+  return false;
+}
+function thanLuanBattleSnapshot(profile, config) {
+  const level = Number(profile.level || 1) >= config.unlock_level ? Number(cpObject(profile.than_luan).level || 0) : 0;
+  return level > 0 && Number.isInteger(level) && level <= config.max_level ? JSON.parse(JSON.stringify(config.levels[level - 1])) : {};
+}
+function thanLuanStats(profile, config) {
+  const level = Number(profile.level || 1) >= config.unlock_level ? Number(cpObject(profile.than_luan).level || 0) : 0;
+  return level > 0 && Number.isInteger(level) && level <= config.max_level ? Object.assign({}, config.levels[level - 1].stats) : {};
+}
+function thanLuanResponse(profile, inventory, config) {
+  const level = profile.than_luan.level, materials = {};
+  for (const item of cpArray(inventory.items)) if (item && ["law_fragment_low", "law_fragment_medium", "law_fragment_high", config.charm_item_id].indexOf(item.item_id) >= 0) {
+    if (!Number.isSafeInteger(item.quantity) || item.quantity < 0) throw Error("THAN_LUAN_INVENTORY_INVALID");
+    materials[item.item_id] = (materials[item.item_id] || 0) + item.quantity;
+    if (!Number.isSafeInteger(materials[item.item_id])) throw Error("THAN_LUAN_INVENTORY_INVALID");
+  }
+  return {
+    success: true,
+    state: {
+      level,
+      revision: profile.than_luan.revision,
+      stats: thanLuanStats(profile, config),
+      aura_id: level ? config.levels[level - 1].aura_id : "",
+      next: level < config.max_level ? config.levels[level] : null,
+      materials,
+      gold_owned: Number(cpObject(profile.resources).gold || 0),
+      charm_item_id: config.charm_item_id,
+      charm_multiplier: config.charm_multiplier
+    },
+    profile,
+    inventory: cpArray(inventory.items)
+  };
+}
+function getThanLuanState(ctx, _logger, nk, _payload) {
+  if (!ctx.userId) return JSON.stringify({ success: false, code: "AUTH_REQUIRED", message: "C\u1EA7n \u0111\u0103ng nh\u1EADp." });
+  try {
+    const config = thanLuanConfig(nk), rows = nk.storageRead([{ collection: "player_profiles", key: "main", userId: ctx.userId }, { collection: "player_inventory", key: "items", userId: ctx.userId }]);
+    const p = rows.find((r) => r.collection === "player_profiles"), inv = rows.find((r) => r.collection === "player_inventory");
+    if (!p || !inv) return JSON.stringify({ success: false, code: "PROFILE_INCOMPLETE", message: "Ch\u01B0a t\u1EA3i \u0111\u1EE7 nh\xE2n v\u1EADt." });
+    const profile = cpObject(p.value);
+    if (thanLuanReconcile(profile, config)) nk.storageWrite([{ collection: "player_profiles", key: "main", userId: ctx.userId, value: profile, version: p.version, permissionRead: 1, permissionWrite: 0 }]);
+    return JSON.stringify(thanLuanResponse(profile, cpObject(inv.value), config));
+  } catch (_e) {
+    return JSON.stringify({ success: false, code: "STATE_UNAVAILABLE", message: "Ch\u01B0a t\u1EA3i \u0111\u01B0\u1EE3c Th\u1EA7n Lu\xE2n. H\xE3y th\u1EED l\u1EA1i." });
+  }
+}
+function upgradeThanLuan(ctx, _logger, nk, payload) {
+  const fail = (code, message) => JSON.stringify({ success: false, code, message });
+  if (!ctx.userId) return fail("AUTH_REQUIRED", "C\u1EA7n \u0111\u0103ng nh\u1EADp.");
+  let req;
+  try {
+    req = JSON.parse(payload || "{}");
+  } catch (_e) {
+    return fail("INVALID_REQUEST", "Y\xEAu c\u1EA7u kh\xF4ng h\u1EE3p l\u1EC7.");
+  }
+  if (!req || typeof req.request_id !== "string" || !/^[a-zA-Z0-9_-]{8,128}$/.test(req.request_id) || !Number.isSafeInteger(req.expected_level) || req.expected_level < 1 || req.expected_level > 50 || !Number.isSafeInteger(req.expected_revision) || req.expected_revision < 0 || typeof req.use_charm !== "boolean") return fail("INVALID_REQUEST", "Y\xEAu c\u1EA7u kh\xF4ng h\u1EE3p l\u1EC7.");
+  let config;
+  try {
+    config = thanLuanConfig(nk);
+  } catch (_e) {
+    return fail("CONFIG_INVALID", "C\u1EA5u h\xECnh Th\u1EA7n Lu\xE2n ch\u01B0a s\u1EB5n s\xE0ng.");
+  }
+  const receiptRef = { collection: "player_item_requests", key: "than_luan_" + req.request_id, userId: ctx.userId };
+  const rows = nk.storageRead([{ collection: "player_profiles", key: "main", userId: ctx.userId }, { collection: "player_inventory", key: "items", userId: ctx.userId }, receiptRef]);
+  const p = rows.find((r) => r.collection === "player_profiles"), inv = rows.find((r) => r.collection === "player_inventory"), receipt = rows.find((r) => r.collection === "player_item_requests");
+  if (!p || !inv) return fail("PROFILE_INCOMPLETE", "Ch\u01B0a t\u1EA3i \u0111\u1EE7 nh\xE2n v\u1EADt.");
+  const profile = cpObject(p.value), inventory = cpObject(inv.value);
+  try {
+    thanLuanReconcile(profile, config);
+  } catch (_e) {
+    return fail("STATE_INVALID", "Ti\u1EBFn \u0111\u1ED9 Th\u1EA7n Lu\xE2n kh\xF4ng h\u1EE3p l\u1EC7.");
+  }
+  if (Number(profile.level || 1) < config.unlock_level) return fail("FEATURE_LOCKED", "Th\u1EA7n Lu\xE2n m\u1EDF \u1EDF Lv.35.");
+  if (receipt) {
+    if (receipt.value.expected_level !== req.expected_level || receipt.value.expected_revision !== req.expected_revision || receipt.value.use_charm !== req.use_charm) return fail("REQUEST_CONFLICT", "M\xE3 y\xEAu c\u1EA7u \u0111\xE3 \u0111\u01B0\u1EE3c d\xF9ng.");
+    return JSON.stringify(Object.assign(thanLuanResponse(profile, inventory, config), receipt.value.outcome, { duplicate: true }));
+  }
+  if (profile.than_luan.level !== req.expected_level) return fail("LEVEL_CONFLICT", "Ti\u1EBFn \u0111\u1ED9 \u0111\xE3 thay \u0111\u1ED5i. H\xE3y t\u1EA3i l\u1EA1i.");
+  if (profile.than_luan.revision !== req.expected_revision) return fail("REVISION_CONFLICT", "L\u1EA7n n\xE2ng c\u1EA5p \u0111\xE3 thay \u0111\u1ED5i. H\xE3y t\u1EA3i l\u1EA1i.");
+  if (profile.than_luan.level >= config.max_level) return fail("MAX_LEVEL", "\u0110\xE3 \u0111\u1EA1t c\u1EA5p t\u1ED1i \u0111a.");
+  const cost = config.levels[profile.than_luan.level].cost;
+  let response;
+  try {
+    response = thanLuanResponse(profile, inventory, config);
+  } catch (_e) {
+    return fail("INVENTORY_INVALID", "Nguy\xEAn li\u1EC7u kh\xF4ng h\u1EE3p l\u1EC7.");
+  }
+  if ((response.state.materials[cost.item_id] || 0) < cost.quantity) return fail("INSUFFICIENT_MATERIALS", "Kh\xF4ng \u0111\u1EE7 M\u1EA3nh ph\xE1p t\u1EAFc.");
+  const resources = cpObject(profile.resources), gold = Number(resources.gold || 0);
+  if (!Number.isSafeInteger(gold) || gold < cost.gold) return fail("INSUFFICIENT_GOLD", "Kh\xF4ng \u0111\u1EE7 v\xE0ng.");
+  if (req.use_charm && (response.state.materials[config.charm_item_id] || 0) < 1) return fail("INSUFFICIENT_CHARM", "Kh\xF4ng \u0111\u1EE7 Ph\xE1p T\u1EAFc Ph\xF9.");
+  let remaining = cost.quantity;
+  for (const item of inventory.items) if (item.item_id === cost.item_id) {
+    const spend = Math.min(item.quantity, remaining);
+    item.quantity -= spend;
+    remaining -= spend;
+  }
+  inventory.items = inventory.items.filter((i) => i.item_id !== cost.item_id || i.quantity > 0);
+  if (req.use_charm) {
+    const charm = inventory.items.find((i) => i.item_id === config.charm_item_id && i.quantity > 0);
+    charm.quantity--;
+    inventory.items = inventory.items.filter((i) => i.item_id !== config.charm_item_id || i.quantity > 0);
+  }
+  resources.gold = gold - cost.gold;
+  profile.resources = resources;
+  const successRate = Math.min(100, Math.round(config.levels[profile.than_luan.level].success_rate * (req.use_charm ? config.charm_multiplier : 1)));
+  const upgraded = Math.random() < successRate / 100;
+  const outcome = {
+    attempted: true,
+    consumed: true,
+    upgraded,
+    charm_consumed: req.use_charm,
+    success_rate: successRate,
+    previous_level: profile.than_luan.level,
+    new_level: profile.than_luan.level + (upgraded ? 1 : 0)
+  };
+  profile.than_luan = { level: profile.than_luan.level + (upgraded ? 1 : 0), revision: profile.than_luan.revision + 1 };
+  try {
+    nk.storageWrite([
+      { collection: "player_profiles", key: "main", userId: ctx.userId, value: profile, version: p.version, permissionRead: 1, permissionWrite: 0 },
+      { collection: "player_inventory", key: "items", userId: ctx.userId, value: inventory, version: inv.version, permissionRead: 1, permissionWrite: 0 },
+      __spreadProps(__spreadValues({}, receiptRef), { value: { expected_level: req.expected_level, expected_revision: req.expected_revision, use_charm: req.use_charm, outcome }, version: "*", permissionRead: 0, permissionWrite: 0 })
+    ]);
+  } catch (_e) {
+    return fail("CONFLICT", "C\xF3 thao t\xE1c kh\xE1c. H\xE3y t\u1EA3i l\u1EA1i v\xE0 th\u1EED l\u1EA1i.");
+  }
+  if (typeof writePlayerLeaderboardRecords === "function") {
+    try {
+      writePlayerLeaderboardRecords(nk, ctx.userId, profile, profile.display_name);
+    } catch (_e) {
+      _logger.warn("Than Luan committed; leaderboard refresh deferred until profile sync.");
+    }
+  }
+  return JSON.stringify(Object.assign(thanLuanResponse(profile, inventory, config), outcome));
 }
 function progressionCompleteStage(nk, profile, stageId, levelId) {
   const completed = Array.isArray(profile.completed_stage_levels) ? profile.completed_stage_levels : [];
@@ -6578,6 +6745,7 @@ const awardStageProgression = (ctx, _logger, nk, payload) => {
     } catch (_lbErr) {
     }
   }
+  userResult.than_luan = profile.than_luan;
   userResult.unlocked_arcs = profile.unlocked_arcs;
   userResult.unlocked_stages = profile.unlocked_stages;
   userResult.completed_stage_levels = profile.completed_stage_levels;
@@ -6730,6 +6898,8 @@ const tribulationAction = (ctx, _logger, nk, payload) => {
     }
     if (Number(state.attempts_left || 0) <= 0) return JSON.stringify({ ok: false, message: "No attempts remaining" });
     cultivationPhase2Encounter(state);
+    const auraConfig = thanLuanConfig(nk);
+    state.than_luan_snapshot = thanLuanBattleSnapshot(profile, auraConfig);
     state.in_tribulation = true;
     state.penalty_applied = false;
     profile.breakthrough = state;
@@ -6748,6 +6918,7 @@ const tribulationAction = (ctx, _logger, nk, payload) => {
       outcome_success: false,
       attempts_left: state.attempts_left,
       tribulation_count: state.tribulation_count,
+      than_luan_snapshot: state.than_luan_snapshot,
       encounter: { id: state.encounter_id, seed: state.encounter_seed, ruleset_version: state.ruleset_version, skill_set: state.skill_set, server_started_at: state.started_at },
       profile
     });
@@ -8758,8 +8929,14 @@ function calculateCombatPower(profile, states, inventory, heroes, skills, progre
     const innate = cpEvaluate(hero, level, affinities, {}, [], skills, progression);
     const root = cpEvaluate(hero, level, affinities, roots, [], skills, progression);
     const full = cpEvaluate(hero, level, affinities, roots, equipped, skills, progression);
+    const equippedScore = full.score;
+    const auraLevel = Number(profile.level || 1) >= 35 ? cpNumber(cpObject(profile.than_luan).level) : 0;
+    const auraRow = cpArray(cpObject(progression.than_luan).levels).find((r) => r.level === auraLevel);
+    const reduction = cpClamp(cpNumber(cpObject(auraRow && auraRow.stats).persistent_damage_reduction), 0, 0.95);
+    full.survival /= 1 - reduction;
+    full.score = cpRound(full.offense + full.survival + full.utility);
     full.hero_id = hero.id;
-    full.breakdown = { hero: base.score, talent: innate.score - base.score, roots: root.score - innate.score, talisman: full.score - root.score };
+    full.breakdown = { hero: base.score, talent: innate.score - base.score, roots: root.score - innate.score, talisman: equippedScore - root.score, than_luan: full.score - equippedScore };
     result.heroes.push(full);
     if (!result.hero_id || full.score > result.score) {
       result.score = full.score;
@@ -9341,9 +9518,10 @@ function towerRewardEntries(nk, rewards, profile, floor) {
 function towerSweepPreview(nk, s, req) {
   const c = towerSweepConfig(nk), floor = Number(req.floor);
   if (!c.enabled) throw Error("SWEEP_DISABLED");
-  if (!Number.isInteger(floor) || floor < 1 || floor > 20 || !s.t || floor > Number(s.tower.highest_cleared)) throw Error("FLOOR_NOT_CLEARED");
+  const tower = readContentConfig(nk, "trial_tower");
+  if (!Number.isInteger(floor) || floor < 1 || floor > Number(tower.floor_count) || !s.t || floor > Number(s.tower.highest_cleared)) throw Error("FLOOR_NOT_CLEARED");
   if (!(s.heroes.heroes || []).some((h) => h.hero_id === req.hero_id && h.owned === true)) throw Error("HERO_NOT_OWNED");
-  const definition = readContentConfig(nk, "trial_tower").floors[floor - 1];
+  const definition = tower.floors[floor - 1];
   const entries = towerRewardEntries(nk, definition.repeat_rewards, s.profile, floor);
   const items = entries.filter((r) => r.kind !== "exp").map((r) => ({ item_id: r.kind === "item" ? r.item_id : void 0, resource_id: r.kind === "item" ? void 0 : r.kind, quantity: r.amount, drop_rate: 1 }));
   const held = sweepActive(s.profile) ? s.profile.sweep : null;
@@ -9949,19 +10127,19 @@ const FEATURE_DEFAULTS = { schema_version: 1, features: {} };
   ["stage_legend", 22, "Stage Legend", "Chinh ph\u1EE5c \u0111\u1ED9 kh\xF3 Huy\u1EC1n Tho\u1EA1i t\u1EA1i nh\u1EEFng \u1EA3i \u0111\xE3 \u0111\u1EE7 \u0111i\u1EC1u ki\u1EC7n."],
   ["talisman", 25, "Ph\xE1p b\u1EA3o", "Qu\u1EA3n l\xFD v\xE0 b\u1ED3i d\u01B0\u1EE1ng ph\xE1p b\u1EA3o tr\u1EE3 chi\u1EBFn."],
   ["trial_tower", 30, "Th\xED luy\u1EC7n", "B\u01B0\u1EDBc v\xE0o Th\xE1p Th\xED Luy\u1EC7n \u0111\u1EC3 t\xF4i luy\u1EC7n b\u1EA3n l\u0129nh."],
-  ["laws", 35, "Ph\xE1p t\u1EAFc", "S\u1EAFp ra m\u1EAFt."],
+  ["laws", 35, "Th\u1EA7n Lu\xE2n", "B\u1ED3i d\u01B0\u1EE1ng Th\u1EA7n Lu\xE2n b\u1EB1ng M\u1EA3nh ph\xE1p t\u1EAFc t\u1EEB T\xE2m Ma Th\xE1p \u0111\u1EC3 t\u0103ng kh\u1EA3 n\u0103ng sinh t\u1ED3n."],
   ["guild_war", null, "T\xF4ng m\xF4n chi chi\u1EBFn", "\u0110\u1EA1i chi\u1EBFn b\u1EA3o v\u1EC7 t\xF4ng m\xF4n \u2014 s\u1EAFp ra m\u1EAFt."],
   ["ancient_battlefield", null, "Chi\u1EBFn tr\u01B0\u1EDDng th\u01B0\u1EE3ng c\u1ED5", "Nh\xE2n \u2013 y\xEAu \u2013 ma chi chi\u1EBFn \u2014 s\u1EAFp ra m\u1EAFt."],
   ["multiverse", null, "V\u1EA1n gi\u1EDBi ch\u01B0 thi\xEAn", "Ph\xE1 b\u1ECF thi\xEAn \u0111\u1EA1o g\xF4ng c\xF9m \u2014 s\u1EAFp ra m\u1EAFt."]
 ].forEach((row) => {
-  const planned = ["daily_quests", "laws", "guild_war", "ancient_battlefield", "multiverse"].indexOf(row[0]) >= 0;
+  const planned = ["daily_quests", "guild_war", "ancient_battlefield", "multiverse"].indexOf(row[0]) >= 0;
   FEATURE_DEFAULTS.features[row[0]] = {
     required_user_level: row[1],
     enabled: !planned,
     release_status: planned ? "planned" : "released",
     display_name: row[2],
     description: row[3],
-    tour_id: planned ? "" : row[0] + "_v1",
+    tour_id: planned ? "" : row[0] === "laws" ? "than_luan_v1" : row[0] + "_v1",
     tour_mode: "dismiss_any",
     mail_title: "\u0110\xE3 khai m\u1EDF: " + row[2],
     mail_body: "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu \u0111\u1EA1t c\u1EA5p {level}! " + row[2] + " \u0111\xE3 khai m\u1EDF.\n\n" + row[3] + "\n\nTr\u1EDF v\u1EC1 Trang ch\u1EE7 \u0111\u1EC3 kh\xE1m ph\xE1 ch\u1EE9c n\u0103ng m\u1EDBi."
@@ -10052,6 +10230,8 @@ function featureRuntime(base, userId) {
 }
 function featureForRpc(id, req) {
   const map = {
+    get_than_luan_state: "laws",
+    upgrade_than_luan: "laws",
     daily_checkin_status: "checkin",
     daily_checkin_claim: "checkin",
     store_purchase: "shop",
@@ -10688,6 +10868,12 @@ function linkedRpc_award_stage_progression(ctx, logger, nk, payload) {
 function linkedRpc_tribulation_action(ctx, logger, nk, payload) {
   return accountGuardedRpc("tribulation_action", (c, l, n, p) => gatedTribulationAction(c, l, mailCombatRuntime(n, c.userId), p))(ctx, logger, nk, payload);
 }
+function linkedRpc_get_than_luan_state(c, l, n, p) {
+  return accountGuardedRpc("get_than_luan_state", (cc, ll, nn, pp) => invokeWithVersionGate(cc, ll, nn, pp, getThanLuanState))(c, l, n, p);
+}
+function linkedRpc_upgrade_than_luan(c, l, n, p) {
+  return accountGuardedRpc("upgrade_than_luan", (cc, ll, nn, pp) => invokeWithVersionGate(cc, ll, nn, pp, upgradeThanLuan))(c, l, n, p);
+}
 function linkedRpc_get_trial_tower_status(ctx, logger, nk, payload) {
   return accountGuardedRpc("get_trial_tower_status", (c, l, n, p) => invokeWithVersionGate(c, l, n, p, trialTowerStatus))(ctx, logger, nk, payload);
 }
@@ -10868,6 +11054,8 @@ function InitModule(ctx, logger, nk, initializer) {
   initializer.registerRpc("complete_feature_tour", linkedRpc_complete_feature_tour);
   initializer.registerRpc("award_stage_progression", linkedRpc_award_stage_progression);
   initializer.registerRpc("tribulation_action", linkedRpc_tribulation_action);
+  initializer.registerRpc("get_than_luan_state", linkedRpc_get_than_luan_state);
+  initializer.registerRpc("upgrade_than_luan", linkedRpc_upgrade_than_luan);
   initializer.registerRpc("get_trial_tower_status", linkedRpc_get_trial_tower_status);
   initializer.registerRpc("start_trial_tower", linkedRpc_start_trial_tower);
   initializer.registerRpc("prepare_trial_tower", linkedRpc_prepare_trial_tower);

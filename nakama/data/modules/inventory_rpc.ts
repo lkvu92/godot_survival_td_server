@@ -34,7 +34,7 @@ const useConsumable: nkruntime.RpcFunction = (ctx, _logger, nk, payload): string
     const boostMultiplier = Number(effect.multiplier), boostDuration = Number(effect.duration);
     if (attrs.enabled === false || attrs.use_action !== "use_consumable"
         || (isGameplayBoost
-            ? (!['exp','gold'].includes(String(effect.resource || '')) || !Number.isFinite(boostMultiplier) || boostMultiplier <= 1 || !Number.isSafeInteger(boostDuration) || boostDuration !== 86400)
+            ? (!['exp','gold'].includes(String(effect.resource || '')) || !Number.isFinite(boostMultiplier) || boostMultiplier <= 1 || !Number.isSafeInteger(boostDuration) || ![3600, 86400].includes(boostDuration))
             : (!Number.isFinite(value) || value <= 0))) return fail("Item effect is unavailable");
     if (talismanItemQuantity(items, itemId) < quantity) return fail("Not enough items");
     const run = runObject ? talismanJsonObject(runObject.value) : {};
@@ -349,6 +349,9 @@ function talismanUpgradeQuote(nk: nkruntime.Nakama, level: number, items: any[],
 function talismanServerNowMs(): number { return Date.now(); }
 
 function talismanCreateStageRun(nk: nkruntime.Nakama, userId: string, stageId: string, difficultyId: string): any {
+    const auraProfile=nk.storageRead([{collection:'player_profiles',key:'main',userId}])[0];
+    const auraConfig=thanLuanConfig(nk);
+    const thanLuanSnapshot=auraProfile?thanLuanBattleSnapshot(auraProfile.value,auraConfig):{};
     const objects = nk.storageRead([
         { collection: "player_inventory", key: "items", userId },
         { collection: "player_stage_runs", key: "active", userId }
@@ -386,7 +389,7 @@ function talismanCreateStageRun(nk: nkruntime.Nakama, userId: string, stageId: s
         // rejects impossible instant-win reports using server-owned stage data.
         min_win_duration_ms: Math.min(120000, Math.max(3000, waveCount * 1500)),
         cast_seq: 0, talisman_uses: 0, last_talisman_cast_at_ms: 0,
-        ad_card_rerolls_used: 0, talisman
+        ad_card_rerolls_used: 0, than_luan_snapshot:thanLuanSnapshot, talisman
     };
 	return { run, version: previousRun ? previousRun.version : "*" };
 }

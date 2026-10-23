@@ -6,7 +6,7 @@ const config=JSON.parse(fs.readFileSync(path.join(root,'data/feature_unlocks.jso
 const realms=JSON.parse(fs.readFileSync(path.join(root,'data/realm_milestones.json'),'utf8'));
 assert.deepEqual(copy(fn('FEATURE_DEFAULTS')),config);assert.deepEqual(copy(fn('REALM_MILESTONE_DEFAULTS')),realms);
 fn('featureValidateConfig')(config,realms);
-for(const mutate of [x=>delete x.features.checkin,x=>x.features.elements.required_user_level='20',x=>x.features.laws.enabled=true,x=>x.features.shop.tour_id=x.features.checkin.tour_id]){
+for(const mutate of [x=>delete x.features.checkin,x=>x.features.elements.required_user_level='20',x=>x.features.guild_war.enabled=true,x=>x.features.shop.tour_id=x.features.checkin.tour_id]){
     const bad=copy(config);mutate(bad);assert.throws(()=>fn('featureValidateConfig')(bad,realms));
 }
 let configMissing=false,serial=0,fail=false,pushes=0;
@@ -41,7 +41,7 @@ for(const [id,f] of Object.entries(config.features)){
     assert.equal(fn('featureAccess')({level:f.required_user_level-1},id,{features:config.features}).code,'FEATURE_LOCKED');
     assert.equal(fn('featureAccess')({level:f.required_user_level},id,{features:config.features}).success,true);
 }
-assert.equal(fn('featureAccess')({level:50},'laws',{features:config.features}).code,'FEATURE_UNAVAILABLE');
+assert.equal(fn('featureAccess')({level:50},'guild_war',{features:config.features}).code,'FEATURE_UNAVAILABLE');
 const handler=()=>JSON.stringify({success:true,called:true});
 const guard=fn('featureGuardedRpc')('upgrade_element',handler);
 const ctx={userId};
@@ -66,16 +66,16 @@ legacyScoped.storageWrite([{collection:'player_profiles',key:'main',userId,value
 const legacy=fn('featureRuntime')(legacyScoped,userId),old=legacy.storageRead([{collection:'player_profiles',key:'main',userId}])[0];
 legacy.storageWrite([{collection:'player_profiles',key:'main',userId,value:old.value,version:old.version}]);
 const migrated=legacy.storageRead([{collection:'player_profiles',key:'main',userId}])[0].value.feature_unlocks;
-assert.equal(migrated.completed_tours.length,9);assert.equal(pushes,22);
+assert.equal(migrated.completed_tours.length,10);assert.equal(pushes,23);
 // Deleting a mail preserves immutable source ledger; reconcile never recreates it.
 const mail=[...store.values()].find(r=>r.collection==='player_mail');store.delete(key(mail));
-row=read();write(row.value,row.version);assert.equal(pushes,22);
+row=read();write(row.value,row.version);assert.equal(pushes,23);
 row=read();row.value.level=50;row.value.breakthrough.history.push({level:40},{level:50});write(row.value,row.version);
-assert.equal(pushes,24,'All five successful realm milestones send their own congratulations');
+assert.equal(pushes,26,'All five successful realm milestones and newly eligible Than Luan send congratulations');
 const held=copy(config.features.daily_quests);
 Object.assign(config.features.daily_quests,{enabled:true,release_status:'released',tour_id:'daily_quests_v1'});
 row=read();write(row.value,row.version);
-assert.equal(pushes,25,'A later release opens for already eligible characters');
+assert.equal(pushes,27,'A later release opens for already eligible characters');
 assert(!read().value.feature_unlocks.completed_tours.includes('daily_quests_v1'));
 config.features.daily_quests=held;
 assert.equal(fn('featureAccess')(read().value,'daily_quests',{features:config.features}).code,'FEATURE_UNAVAILABLE','Disabling a release blocks access without deleting rights');
