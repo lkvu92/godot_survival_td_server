@@ -104,6 +104,18 @@ function linkedRpc_award_stage_progression(ctx: nkruntime.Context, logger: nkrun
 function linkedRpc_tribulation_action(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
     return accountGuardedRpc("tribulation_action", (c,l,n,p)=>gatedTribulationAction(c,l,mailCombatRuntime(n,c.userId),p))(ctx, logger, nk, payload);
 }
+function linkedRpc_get_trial_tower_status(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("get_trial_tower_status", (c,l,n,p) => invokeWithVersionGate(c,l,n,p,trialTowerStatus))(ctx,logger,nk,payload);
+}
+function linkedRpc_start_trial_tower(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string {
+    return accountGuardedRpc('start_trial_tower',(cc,ll,nn,pp)=>invokeWithVersionGate(cc,ll,nn,pp,startTrialTower))(c,l,n,p);
+}
+function linkedRpc_finish_trial_tower(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string {
+    return accountGuardedRpc('finish_trial_tower',(cc,ll,nn,pp)=>invokeWithVersionGate(cc,ll,nn,pp,finishTrialTower))(c,l,n,p);
+}
+function linkedRpc_prepare_trial_tower(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string {
+    return accountGuardedRpc('prepare_trial_tower',(cc,ll,nn,pp)=>invokeWithVersionGate(cc,ll,nn,pp,prepareTrialTower))(c,l,n,p);
+}
 function linkedRpc_get_monetization_status(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
     return accountGuardedRpc("get_monetization_status", gatedGetMonetizationStatus)(ctx, logger, nk, payload);
 }
@@ -273,6 +285,10 @@ function InitModule(
     initializer.registerRpc("upgrade_element", linkedRpc_upgrade_element);
     initializer.registerRpc("award_stage_progression", linkedRpc_award_stage_progression);
     initializer.registerRpc("tribulation_action", linkedRpc_tribulation_action);
+    initializer.registerRpc("get_trial_tower_status", linkedRpc_get_trial_tower_status);
+    initializer.registerRpc("start_trial_tower", linkedRpc_start_trial_tower);
+    initializer.registerRpc("prepare_trial_tower", linkedRpc_prepare_trial_tower);
+    initializer.registerRpc("finish_trial_tower", linkedRpc_finish_trial_tower);
     initializer.registerRpc("get_monetization_status", linkedRpc_get_monetization_status);
     initializer.registerRpc("get_daily_pack_status", linkedRpc_get_daily_pack_status);
     initializer.registerRpc("claim_daily_pack", linkedRpc_claim_daily_pack);

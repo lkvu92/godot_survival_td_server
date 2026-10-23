@@ -19,6 +19,8 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Run lifecycle regression failed' }
     & node tests/test_stage_sweep.cjs
     if ($LASTEXITCODE -ne 0) { throw 'Stage sweep acceptance failed' }
+    node tests/test_tower_sweep.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Tower sweep acceptance failed' }
     & node tests/test_sweep_config.cjs
     if ($LASTEXITCODE -ne 0) { throw 'Stage sweep config publication failed' }
     & node tests/test_layered_talisman_config.cjs
@@ -31,6 +33,8 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Arc visual scale regression failed' }
     & node tests/test_daily_pack_entitlements.cjs
     if ($LASTEXITCODE -ne 0) { throw 'Daily pack entitlement regression failed' }
+    & node tests/test_currency_pricing.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Currency pricing regression failed' }
     & node tests/test_daily_pack_rewards.cjs
     if ($LASTEXITCODE -ne 0) { throw 'Legacy pack reward regression failed' }
     & node tests/test_new_profile_inventory.cjs

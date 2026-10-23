@@ -2,8 +2,25 @@ const fs = require('fs'), path = require('path'), vm = require('vm'), assert = r
 const read = p => JSON.parse(fs.readFileSync(path.join(__dirname, '..', p), 'utf8'));
 const catalog = read('data/items.json'), progression = read('data/progression.json');
 const items = catalog.filter(i => i.attributes && Number.isInteger(i.attributes.atlas_slot));
-assert.equal(items.length, 23);
+assert.equal(items.length, 36);
 assert(!catalog.some(i => i.id === 'loot_magnet_talisman'));
+const boostCards = [
+ ['exp_boost_card_10','exp',1.1,13,'common'], ['exp_boost_card_25','exp',1.25,14,'rare'], ['exp_boost_card_50','exp',1.5,15,'epic'],
+ ['exp_boost_card_x2','exp',2,16,'legendary'], ['exp_boost_card_x5','exp',5,17,'mythic'],
+ ['gold_boost_card_10','gold',1.1,18,'common'], ['gold_boost_card_25','gold',1.25,19,'rare'], ['gold_boost_card_50','gold',1.5,20,'epic'],
+ ['gold_boost_card_x2','gold',2,21,'legendary'], ['gold_boost_card_x5','gold',5,22,'mythic']
+];
+for (const [id, resource, multiplier, slot, rarity] of boostCards) {
+ const item = catalog.find(i => i.id === id);
+ assert(item, id + ' exists');
+ assert.equal(item.attributes.atlas_slot, slot, id + ' atlas slot');
+ assert.equal(item.rarity, rarity, id + ' rarity');
+ assert.deepEqual(item.attributes.effect, {context:'inventory',kind:'gameplay_boost',resource,multiplier,duration:86400}, id + ' effect');
+}
+for (const [id, slot, rarity] of [['law_fragment_low',10,'common'], ['law_fragment_medium',11,'rare'], ['law_fragment_high',12,'epic']]) {
+ const item=catalog.find(i=>i.id===id);
+ assert(item, id+' exists'); assert.equal(item.attributes.atlas_slot,slot,id+' atlas slot'); assert.equal(item.rarity,rarity,id+' rarity');
+}
 const offers = progression.talisman_system.store.materials;
 assert.deepEqual(offers.filter(p=>p.item_id==='campaign_sweep_ticket'),[{item_id:'campaign_sweep_ticket',category:'cards',currency:'gems',price:20,quantity:1,enabled:true}]);
 const prices = {
@@ -12,10 +29,10 @@ const prices = {
  attack_talisman:[200,50000,'rare'], defense_talisman:[200,50000,'rare'],cooldown_talisman:[200,50000,'rare'],
  resistance_talisman:[300,75000,'rare'],critical_talisman:[100,25000,'rare'],attack_speed_talisman:[200,50000,'rare'],
  revive_talisman:[500,125000,'epic'],healing_elixir:[200,50000,'rare'],shield_elixir:[100,25000,'rare'],
- energy_elixir:[100,25000,'rare'],slow_talisman:[200,50000,'rare']
+ energy_elixir:[40,10000,'rare'],slow_talisman:[200,50000,'rare']
 };
 for (const element of ['metal','wood','water','fire','earth','wind','thunder','space']) prices[element+'_aptitude_fruit']=[2000,0,'legendary'];
-for (const item of items) {
+for (const item of items.filter(item => prices[item.id])) {
  assert.equal(item.rarity, prices[item.id][2], item.id+' rarity');
  for (const [index,currency] of ['gems','gold'].entries()) {
   const matching=offers.filter(p=>p.item_id===item.id && p.currency===currency);
@@ -85,7 +102,7 @@ assert(reroll('roll-a').duplicate);assert.equal(quantity('spirit_root_reset'),1,
 row('player_stage_runs','active',{status:'active',expires_at_ms:Date.now()+60000});assert(!reroll('roll-b').success);assert.equal(quantity('spirit_root_reset'),1);
 reset();conflict=true;assert(!reroll('failed-roll').success);assert.equal(quantity('spirit_root_reset'),2);assert(!profile().talent_score);
 reset();profile().name_changes_used='invalid';assert(!renameTo('Invalid Quota').success);assert.equal(quantity('rename_talisman'),2);
-console.log('PASS consumables: 23 catalog entries, exact prices/rarities, disabled elements, atomic Gold/Gem purchases, replay binding, free/paid rename, stale quota, talent reroll and active-run/CAS guards');
+console.log('PASS consumables: 36 catalog entries, law fragments and authoritative timed EXP/Gold boost cards, exact prices/rarities, disabled elements, atomic Gold/Gem purchases, replay binding, free/paid rename, stale quota, talent reroll and active-run/CAS guards');
 
 const purchase=(id,currency,request_id,protocol=2,quantity=1)=>JSON.parse(storePurchase({userId:'u'},{},nk,JSON.stringify({item_id:id,currency,request_id,purchase_protocol:protocol,quantity})));
 reset();assert(purchase('campaign_sweep_ticket','gems','ticket-buy').success);

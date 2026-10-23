@@ -154,7 +154,7 @@ class SeedCliTests(unittest.TestCase):
             self.assertEqual(seed.call_count, 1)
             table, payload = seed.call_args.args
             self.assertEqual(table, "content_configs")
-            self.assertEqual({row["id"] for row in payload["rows"]}, {"daily_checkin", "events", "stamina", "vip", "rewarded_ads", "enemy_skills", "boss_skills", "tribulation"})
+            self.assertEqual({row["id"] for row in payload["rows"]}, {"trial_tower", "daily_checkin", "events", "stamina", "vip", "rewarded_ads", "enemy_skills", "boss_skills", "tribulation"})
 
     def test_bearer_does_not_send_http_key(self):
         class Response:

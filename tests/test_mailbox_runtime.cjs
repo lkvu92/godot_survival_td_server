@@ -66,4 +66,31 @@ combat.storageWrite([unlock]);assert.equal(read('player_mail',arcId).value.sourc
 const mailCount=[...store.values()].filter(r=>r.collection==='player_mail').length;
 const pAgain=read('player_profiles','main');combat.storageWrite([{...pAgain,value:{...pAgain.value,exp:99}}]);
 assert.equal([...store.values()].filter(r=>r.collection==='player_mail').length,mailCount,'replaying progression with same arcs cannot send another notice');
-console.log('PASS C147: atomic claims, expiry, scoped ownership, durable delivery; no stage mail, only new-arc notice, atomic rollback and repeat suppression');
+// C173 mixed packs: one-time purchase mail + immutable daily entitlement
+// must commit together, and retry must not extend or duplicate either side.
+const packCatalog=JSON.parse(fs.readFileSync(path.join(__dirname,'../data/packs.json'),'utf8')).packs_by_tab.daily;
+const itemCatalog=JSON.parse(fs.readFileSync(path.join(__dirname,'../data/items.json'),'utf8'));
+const oldQuery=base.sqlQuery;
+base.sqlQuery=(sql,args)=>sql.includes('FROM game_items')&&args[0]!=='ticket'
+ ? itemCatalog.filter(i=>i.id===args[0]) : oldQuery(sql,args);
+for(const product of packCatalog){
+ const before=new Map([...store].map(([k,v])=>[k,copy(v)]));
+ const grantId='mixed-'+product.id;
+ fail=true;
+ assert.throws(()=>fn('applyPurchaseMailRewards')(nk,userId,grantId,product.id,'consumable',product.rewards),/pre-commit/);
+ assert.deepEqual(store,before,'failed transaction cannot activate daily pack or leak bonus mail');
+ const granted=fn('applyPurchaseMailRewards')(nk,userId,grantId,product.id,'consumable',product.rewards);
+ assert(granted.mail&&granted.mail.id,'instant bonus goes to purchase mail');
+ const entitlement=read('player_profiles','main').value.daily_packs[product.id];
+ assert(entitlement.rewards.every(r=>product.rewards.some(p=>p.metadata?.daily_pack_days===30&&p.reward_id===r.reward_id&&p.quantity===r.quantity)));
+ assert.equal(read('player_mail',granted.mail.id).value.attachments.length,product.id==='daily_deal'?1:2);
+ const activated=new Map([...store].map(([k,v])=>[k,copy(v)]));
+ assert(fn('applyPurchaseMailRewards')(nk,userId,grantId,product.id,'consumable',product.rewards).idempotent);
+ assert.deepEqual(store,activated,'purchase replay cannot duplicate mail or change expiry');
+ assert.equal(claim(granted.mail.id).success,true);
+ assert.equal(claim(granted.mail.id).already_claimed,true);
+ const inv=read('player_inventory','items').value.items;
+ if(product.id==='daily_deal')assert.equal(inv.find(i=>i.item_id==='campaign_sweep_ticket').quantity,5);
+ else for(const id of ['talisman_enhance_charm','element_enlightenment_charm'])assert.equal(inv.find(i=>i.item_id===id).quantity,1);
+}
+console.log('PASS C147/C173: atomic claims, expiry, scoped ownership, mixed-pack activation/bonus mail rollback, immutable daily snapshots and durable replay suppression');

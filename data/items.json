@@ -3337,5 +3337,117 @@
       "sweep_type": "campaign",
       "atlas_index": 0
     }
+  },
+  {
+    "id": "tower_sweep_ticket",
+    "display_name": "Vé càn quét ma tháp",
+    "description": "Càn quét một tầng ma tháp đã đủ điều kiện.",
+    "category": "consumable", "rarity": "rare", "icon_id": "consumable_2", "stackable": true, "max_stack": 999999, "order": 48, "expires_after_hours": 0,
+    "tags": ["sweep", "ticket", "consumable"],
+    "attributes": {"sweep_type": "tower", "atlas_index": 2}
+  },
+  {
+    "id": "law_fragment_low",
+    "display_name": "Mảnh vỡ pháp tắc hạ phẩm",
+    "description": "Nguyên liệu pháp tắc cấp hạ dùng để bồi dưỡng pháp tắc.",
+    "category": "material", "rarity": "common", "icon_id": "consumable_10", "stackable": true, "max_stack": 999999, "order": 490, "expires_after_hours": 0,
+    "tags": ["material", "law_fragment", "trial_tower"],
+    "attributes": {"atlas_slot": 10, "material_family": "law_fragment", "tier": "low"}
+  },
+  {
+    "id": "law_fragment_medium",
+    "display_name": "Mảnh vỡ pháp tắc trung phẩm",
+    "description": "Nguyên liệu pháp tắc cấp trung dùng để bồi dưỡng pháp tắc.",
+    "category": "material", "rarity": "rare", "icon_id": "consumable_11", "stackable": true, "max_stack": 999999, "order": 491, "expires_after_hours": 0,
+    "tags": ["material", "law_fragment", "trial_tower"],
+    "attributes": {"atlas_slot": 11, "material_family": "law_fragment", "tier": "medium"}
+  },
+  {
+    "id": "law_fragment_high",
+    "display_name": "Mảnh vỡ pháp tắc thượng phẩm",
+    "description": "Nguyên liệu pháp tắc cấp thượng dùng để bồi dưỡng pháp tắc.",
+    "category": "material", "rarity": "epic", "icon_id": "consumable_12", "stackable": true, "max_stack": 999999, "order": 492, "expires_after_hours": 0,
+    "tags": ["material", "law_fragment", "trial_tower"],
+    "attributes": {"atlas_slot": 12, "material_family": "law_fragment", "tier": "high"}
+  },
+  {
+    "id": "exp_boost_card_10",
+    "display_name": "Thẻ EXP +10%",
+    "description": "Tăng 10% EXP nhận được từ gameplay trong 24 giờ. Dùng cùng mức để cộng dồn thời gian.",
+    "category": "consumable", "rarity": "common", "icon_id": "consumable_13", "stackable": true, "max_stack": 999999, "order": 523, "expires_after_hours": 0,
+    "tags": ["consumable", "boost_card", "exp_boost"],
+    "attributes": {"atlas_slot": 13, "consumable_family": "boost_cards", "use_action": "use_consumable", "enabled": true, "effect": {"context": "inventory", "kind": "gameplay_boost", "resource": "exp", "multiplier": 1.1, "duration": 86400}}
+  },
+  {
+    "id": "exp_boost_card_25",
+    "display_name": "Thẻ EXP +25%",
+    "description": "Tăng 25% EXP nhận được từ gameplay trong 24 giờ. Thẻ mạnh hơn thay thế buff thấp hơn sau khi xác nhận.",
+    "category": "consumable", "rarity": "rare", "icon_id": "consumable_14", "stackable": true, "max_stack": 999999, "order": 524, "expires_after_hours": 0,
+    "tags": ["consumable", "boost_card", "exp_boost"],
+    "attributes": {"atlas_slot": 14, "consumable_family": "boost_cards", "use_action": "use_consumable", "enabled": true, "effect": {"context": "inventory", "kind": "gameplay_boost", "resource": "exp", "multiplier": 1.25, "duration": 86400}}
+  },
+  {
+    "id": "exp_boost_card_50",
+    "display_name": "Thẻ EXP +50%",
+    "description": "Tăng 50% EXP nhận được từ gameplay trong 24 giờ.",
+    "category": "consumable", "rarity": "epic", "icon_id": "consumable_15", "stackable": true, "max_stack": 999999, "order": 525, "expires_after_hours": 0,
+    "tags": ["consumable", "boost_card", "exp_boost"],
+    "attributes": {"atlas_slot": 15, "consumable_family": "boost_cards", "use_action": "use_consumable", "enabled": true, "effect": {"context": "inventory", "kind": "gameplay_boost", "resource": "exp", "multiplier": 1.5, "duration": 86400}}
+  },
+  {
+    "id": "exp_boost_card_x2",
+    "display_name": "Thẻ EXP x2",
+    "description": "Nhân đôi EXP nhận được từ gameplay trong 24 giờ.",
+    "category": "consumable", "rarity": "legendary", "icon_id": "consumable_16", "stackable": true, "max_stack": 999999, "order": 526, "expires_after_hours": 0,
+    "tags": ["consumable", "boost_card", "exp_boost"],
+    "attributes": {"atlas_slot": 16, "consumable_family": "boost_cards", "use_action": "use_consumable", "enabled": true, "effect": {"context": "inventory", "kind": "gameplay_boost", "resource": "exp", "multiplier": 2.0, "duration": 86400}}
+  },
+  {
+    "id": "exp_boost_card_x5",
+    "display_name": "Thẻ EXP x5",
+    "description": "Nhân năm EXP nhận được từ gameplay trong 24 giờ.",
+    "category": "consumable", "rarity": "mythic", "icon_id": "consumable_17", "stackable": true, "max_stack": 999999, "order": 527, "expires_after_hours": 0,
+    "tags": ["consumable", "boost_card", "exp_boost"],
+    "attributes": {"atlas_slot": 17, "consumable_family": "boost_cards", "use_action": "use_consumable", "enabled": true, "effect": {"context": "inventory", "kind": "gameplay_boost", "resource": "exp", "multiplier": 5.0, "duration": 86400}}
+  },
+  {
+    "id": "gold_boost_card_10",
+    "display_name": "Thẻ Gold +10%",
+    "description": "Tăng 10% Gold nhận được từ gameplay trong 24 giờ.",
+    "category": "consumable", "rarity": "common", "icon_id": "consumable_18", "stackable": true, "max_stack": 999999, "order": 528, "expires_after_hours": 0,
+    "tags": ["consumable", "boost_card", "gold_boost"],
+    "attributes": {"atlas_slot": 18, "consumable_family": "boost_cards", "use_action": "use_consumable", "enabled": true, "effect": {"context": "inventory", "kind": "gameplay_boost", "resource": "gold", "multiplier": 1.1, "duration": 86400}}
+  },
+  {
+    "id": "gold_boost_card_25",
+    "display_name": "Thẻ Gold +25%",
+    "description": "Tăng 25% Gold nhận được từ gameplay trong 24 giờ.",
+    "category": "consumable", "rarity": "rare", "icon_id": "consumable_19", "stackable": true, "max_stack": 999999, "order": 529, "expires_after_hours": 0,
+    "tags": ["consumable", "boost_card", "gold_boost"],
+    "attributes": {"atlas_slot": 19, "consumable_family": "boost_cards", "use_action": "use_consumable", "enabled": true, "effect": {"context": "inventory", "kind": "gameplay_boost", "resource": "gold", "multiplier": 1.25, "duration": 86400}}
+  },
+  {
+    "id": "gold_boost_card_50",
+    "display_name": "Thẻ Gold +50%",
+    "description": "Tăng 50% Gold nhận được từ gameplay trong 24 giờ.",
+    "category": "consumable", "rarity": "epic", "icon_id": "consumable_20", "stackable": true, "max_stack": 999999, "order": 530, "expires_after_hours": 0,
+    "tags": ["consumable", "boost_card", "gold_boost"],
+    "attributes": {"atlas_slot": 20, "consumable_family": "boost_cards", "use_action": "use_consumable", "enabled": true, "effect": {"context": "inventory", "kind": "gameplay_boost", "resource": "gold", "multiplier": 1.5, "duration": 86400}}
+  },
+  {
+    "id": "gold_boost_card_x2",
+    "display_name": "Thẻ Gold x2",
+    "description": "Nhân đôi Gold nhận được từ gameplay trong 24 giờ.",
+    "category": "consumable", "rarity": "legendary", "icon_id": "consumable_21", "stackable": true, "max_stack": 999999, "order": 531, "expires_after_hours": 0,
+    "tags": ["consumable", "boost_card", "gold_boost"],
+    "attributes": {"atlas_slot": 21, "consumable_family": "boost_cards", "use_action": "use_consumable", "enabled": true, "effect": {"context": "inventory", "kind": "gameplay_boost", "resource": "gold", "multiplier": 2.0, "duration": 86400}}
+  },
+  {
+    "id": "gold_boost_card_x5",
+    "display_name": "Thẻ Gold x5",
+    "description": "Nhân năm Gold nhận được từ gameplay trong 24 giờ.",
+    "category": "consumable", "rarity": "mythic", "icon_id": "consumable_22", "stackable": true, "max_stack": 999999, "order": 532, "expires_after_hours": 0,
+    "tags": ["consumable", "boost_card", "gold_boost"],
+    "attributes": {"atlas_slot": 22, "consumable_family": "boost_cards", "use_action": "use_consumable", "enabled": true, "effect": {"context": "inventory", "kind": "gameplay_boost", "resource": "gold", "multiplier": 5.0, "duration": 86400}}
   }
 ]

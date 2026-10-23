@@ -1451,7 +1451,7 @@
       {
         "level": 1,
         "stats": {
-          "damage_pct": 85,
+          "damage_pct": 110.5,
           "speed_pct": 285,
           "range": 768,
           "projectile_count": 1,
@@ -1464,7 +1464,7 @@
         },
         "description_rows": [
           "Fan projectile",
-          "Damage 85% ATK",
+          "Damage 110.5% ATK",
           "Blades 1",
           "Knockback 28",
           "CD 2.4s"
@@ -1480,7 +1480,7 @@
       {
         "level": 2,
         "stats": {
-          "damage_pct": 110,
+          "damage_pct": 118,
           "speed_pct": 300,
           "range": 782,
           "projectile_count": 2,
@@ -1493,7 +1493,7 @@
         },
         "description_rows": [
           "Fan projectile",
-          "Damage 110% ATK",
+          "Damage 118% ATK",
           "Blades 2",
           "Knockback 30",
           "CD 2.25s"
@@ -1509,7 +1509,7 @@
       {
         "level": 3,
         "stats": {
-          "damage_pct": 140,
+          "damage_pct": 127,
           "speed_pct": 315,
           "range": 822.25,
           "projectile_count": 3,
@@ -1522,7 +1522,7 @@
         },
         "description_rows": [
           "Fan projectile",
-          "Damage 140% ATK",
+          "Damage 127% ATK",
           "Blades 3",
           "Knockback 33",
           "CD 2.05s"
@@ -1538,7 +1538,7 @@
       {
         "level": 4,
         "stats": {
-          "damage_pct": 175,
+          "damage_pct": 137.5,
           "speed_pct": 335,
           "range": 868.25,
           "projectile_count": 4,
@@ -1551,7 +1551,7 @@
         },
         "description_rows": [
           "Fan projectile",
-          "Damage 175% ATK",
+          "Damage 137.5% ATK",
           "Blades 4",
           "Knockback 35",
           "CD 1.85s"
@@ -1567,7 +1567,7 @@
       {
         "level": 5,
         "stats": {
-          "damage_pct": 215,
+          "damage_pct": 149.5,
           "speed_pct": 360,
           "range": 896,
           "projectile_count": 5,
@@ -1580,7 +1580,7 @@
         },
         "description_rows": [
           "Fan projectile",
-          "Damage 215% ATK",
+          "Damage 149.5% ATK",
           "Blades 5",
           "Knockback 40",
           "CD 1.6s"
@@ -1642,8 +1642,8 @@
       {
         "level": 1,
         "stats": {
-          "damage_pct": 110,
-          "second_damage_pct": 60,
+          "damage_pct": 143,
+          "second_damage_pct": 78,
           "range": 620,
           "cooldown": 7,
           "radius": 70,
@@ -1659,8 +1659,8 @@
         },
         "description_rows": [
           "Two phase AOE",
-          "Hit 190% ATK",
-          "Wave 90% ATK",
+          "Hit 143% ATK",
+          "Wave 78% ATK",
           "Stun 0.5s",
           "Area 70/135",
           "CD 7s"
@@ -1675,8 +1675,8 @@
       {
         "level": 2,
         "stats": {
-          "damage_pct": 145,
-          "second_damage_pct": 75,
+          "damage_pct": 153.5,
+          "second_damage_pct": 82.5,
           "range": 650,
           "cooldown": 6.5,
           "radius": 82,
@@ -1692,8 +1692,8 @@
         },
         "description_rows": [
           "Two phase AOE",
-          "Hit 245% ATK",
-          "Wave 115% ATK",
+          "Hit 153.5% ATK",
+          "Wave 82.5% ATK",
           "Stun 0.5s",
           "Area 82/149",
           "CD 6.5s"
@@ -1708,8 +1708,8 @@
       {
         "level": 3,
         "stats": {
-          "damage_pct": 185,
-          "second_damage_pct": 95,
+          "damage_pct": 165.5,
+          "second_damage_pct": 88.5,
           "range": 690,
           "cooldown": 6,
           "radius": 96,
@@ -1725,8 +1725,8 @@
         },
         "description_rows": [
           "Two phase AOE",
-          "Hit 315% ATK",
-          "Wave 145% ATK",
+          "Hit 165.5% ATK",
+          "Wave 88.5% ATK",
           "Stun 0.5s",
           "Area 96/162",
           "CD 6s"
@@ -1741,8 +1741,8 @@
       {
         "level": 4,
         "stats": {
-          "damage_pct": 235,
-          "second_damage_pct": 120,
+          "damage_pct": 180.5,
+          "second_damage_pct": 96,
           "range": 735,
           "cooldown": 5.5,
           "radius": 112,
@@ -1758,8 +1758,8 @@
         },
         "description_rows": [
           "Two phase AOE",
-          "Hit 400% ATK",
-          "Wave 185% ATK",
+          "Hit 180.5% ATK",
+          "Wave 96% ATK",
           "Stun 0.5s",
           "Area 112/176",
           "CD 5.5s"
@@ -1774,8 +1774,8 @@
       {
         "level": 5,
         "stats": {
-          "damage_pct": 300,
-          "second_damage_pct": 150,
+          "damage_pct": 200,
+          "second_damage_pct": 105,
           "range": 795,
           "cooldown": 4.9,
           "radius": 130,
@@ -1791,8 +1791,8 @@
         },
         "description_rows": [
           "Two phase AOE",
-          "Hit 520% ATK",
-          "Wave 240% ATK",
+          "Hit 200% ATK",
+          "Wave 105% ATK",
           "Stun 0.5s",
           "Area 130/189",
           "CD 4.9s"
@@ -1857,8 +1857,8 @@
       {
         "level": 1,
         "stats": {
-          "damage_pct": 30,
-          "final_damage_pct": 95,
+          "damage_pct": 39,
+          "final_damage_pct": 123.5,
           "speed_pct": 260,
           "range": 700,
           "cooldown": 10.5,
@@ -1873,8 +1873,8 @@
         },
         "description_rows": [
           "Piercing arcs",
-          "6x 70% ATK",
-          "Stronger final 95% ATK",
+          "7x 39% ATK",
+          "Stronger final 123.5% ATK",
           "Heavy knockback",
           "CD 10.5s"
         ],
@@ -1889,8 +1889,8 @@
       {
         "level": 2,
         "stats": {
-          "damage_pct": 38,
-          "final_damage_pct": 125,
+          "damage_pct": 41.4,
+          "final_damage_pct": 132.5,
           "speed_pct": 275,
           "range": 735,
           "cooldown": 9.8,
@@ -1905,8 +1905,8 @@
         },
         "description_rows": [
           "Piercing arcs",
-          "7x 88% ATK",
-          "Stronger final 125% ATK",
+          "9x 41.4% ATK",
+          "Stronger final 132.5% ATK",
           "Heavy knockback",
           "CD 9.8s"
         ],
@@ -1921,8 +1921,8 @@
       {
         "level": 3,
         "stats": {
-          "damage_pct": 48,
-          "final_damage_pct": 160,
+          "damage_pct": 44.4,
+          "final_damage_pct": 143,
           "speed_pct": 290,
           "range": 775,
           "cooldown": 9.1,
@@ -1937,8 +1937,8 @@
         },
         "description_rows": [
           "Piercing arcs",
-          "8x 110% ATK",
-          "Stronger final 160% ATK",
+          "11x 44.4% ATK",
+          "Stronger final 143% ATK",
           "Heavy knockback",
           "CD 9.1s"
         ],
@@ -1953,8 +1953,8 @@
       {
         "level": 4,
         "stats": {
-          "damage_pct": 60,
-          "final_damage_pct": 205,
+          "damage_pct": 48,
+          "final_damage_pct": 156.5,
           "speed_pct": 310,
           "range": 825,
           "cooldown": 8.4,
@@ -1969,8 +1969,8 @@
         },
         "description_rows": [
           "Piercing arcs",
-          "9x 138% ATK",
-          "Stronger final 205% ATK",
+          "13x 48% ATK",
+          "Stronger final 156.5% ATK",
           "Heavy knockback",
           "CD 8.4s"
         ],
@@ -1985,8 +1985,8 @@
       {
         "level": 5,
         "stats": {
-          "damage_pct": 75,
-          "final_damage_pct": 260,
+          "damage_pct": 52.5,
+          "final_damage_pct": 173,
           "speed_pct": 335,
           "range": 890,
           "cooldown": 7.5,
@@ -2001,8 +2001,8 @@
         },
         "description_rows": [
           "Piercing arcs",
-          "10x 175% ATK",
-          "Stronger final 260% ATK",
+          "15x 52.5% ATK",
+          "Stronger final 173% ATK",
           "Heavy knockback",
           "CD 7.5s"
         ],
@@ -2218,7 +2218,7 @@
       {
         "level": 1,
         "stats": {
-          "damage_pct": 70,
+          "damage_pct": 91,
           "speed_pct": 260,
           "range": 896,
           "projectile_count": 1,
@@ -2229,14 +2229,14 @@
         "description_rows": [
           "Phạm vi 90%",
           "1 hỏa tiễn",
-          "Sát thương 70% ATK",
+          "Sát thương 91% ATK",
           "CD 2.4s"
         ]
       },
       {
         "level": 2,
         "stats": {
-          "damage_pct": 90,
+          "damage_pct": 97,
           "speed_pct": 270,
           "range": 896,
           "projectile_count": 1,
@@ -2247,14 +2247,14 @@
         "description_rows": [
           "Phạm vi 90%",
           "1 hỏa tiễn",
-          "Sát thương 90% ATK",
+          "Sát thương 97% ATK",
           "CD 2.25s"
         ]
       },
       {
         "level": 3,
         "stats": {
-          "damage_pct": 115,
+          "damage_pct": 104.5,
           "speed_pct": 280,
           "range": 896,
           "projectile_count": 2,
@@ -2265,14 +2265,14 @@
         "description_rows": [
           "Phạm vi 90%",
           "2 hỏa tiễn: 1 tia giữa, 1 tia lệch 15°",
-          "Sát thương 115% ATK/tiễn",
+          "Sát thương 104.5% ATK/tiễn",
           "CD 2.1s"
         ]
       },
       {
         "level": 4,
         "stats": {
-          "damage_pct": 145,
+          "damage_pct": 113.5,
           "speed_pct": 290,
           "range": 896,
           "projectile_count": 2,
@@ -2283,14 +2283,14 @@
         "description_rows": [
           "Phạm vi 90%",
           "2 hỏa tiễn: 1 tia giữa, 1 tia lệch 15°",
-          "Sát thương 145% ATK/tiễn",
+          "Sát thương 113.5% ATK/tiễn",
           "CD 1.95s"
         ]
       },
       {
         "level": 5,
         "stats": {
-          "damage_pct": 180,
+          "damage_pct": 124,
           "speed_pct": 300,
           "range": 896,
           "projectile_count": 3,
@@ -2301,7 +2301,7 @@
         "description_rows": [
           "Phạm vi 90%",
           "3 hỏa tiễn, lệch 15°",
-          "Sát thương 180% ATK/tiễn",
+          "Sát thương 124% ATK/tiễn",
           "CD 1.8s"
         ]
       }
@@ -2349,7 +2349,7 @@
       {
         "level": 1,
         "stats": {
-          "damage_pct": 30,
+          "damage_pct": 39,
           "speed_pct": 180,
           "range": 1024,
           "cooldown": 7.5,
@@ -2361,7 +2361,7 @@
         },
         "description_rows": [
           "Phạm vi 80%",
-          "Sát thương 30% ATK",
+          "Sát thương 39% ATK",
           "Thiêu đốt 10% sát thương/giây × 3",
           "CD 7.5s"
         ]
@@ -2369,7 +2369,7 @@
       {
         "level": 2,
         "stats": {
-          "damage_pct": 40,
+          "damage_pct": 42,
           "speed_pct": 185,
           "range": 1024,
           "cooldown": 7,
@@ -2381,7 +2381,7 @@
         },
         "description_rows": [
           "Phạm vi 80%",
-          "Sát thương 40% ATK",
+          "Sát thương 42% ATK",
           "Thiêu đốt 10% sát thương/giây × 3",
           "CD 7s"
         ]
@@ -2389,7 +2389,7 @@
       {
         "level": 3,
         "stats": {
-          "damage_pct": 51.25,
+          "damage_pct": 45.375,
           "speed_pct": 190,
           "range": 1024,
           "cooldown": 6.5,
@@ -2401,7 +2401,7 @@
         },
         "description_rows": [
           "Phạm vi 80%",
-          "Sát thương 51.25% ATK",
+          "Sát thương 45.375% ATK",
           "Thiêu đốt 10% sát thương/giây × 3",
           "CD 6.5s"
         ]
@@ -2409,7 +2409,7 @@
       {
         "level": 4,
         "stats": {
-          "damage_pct": 63.75,
+          "damage_pct": 49.125,
           "speed_pct": 195,
           "range": 1024,
           "cooldown": 6,
@@ -2421,7 +2421,7 @@
         },
         "description_rows": [
           "Phạm vi 80%",
-          "Sát thương 63.75% ATK",
+          "Sát thương 49.125% ATK",
           "Thiêu đốt 10% sát thương/giây × 3",
           "CD 6s"
         ]
@@ -2429,7 +2429,7 @@
       {
         "level": 5,
         "stats": {
-          "damage_pct": 80,
+          "damage_pct": 54,
           "speed_pct": 200,
           "range": 1024,
           "cooldown": 5.5,
@@ -2441,7 +2441,7 @@
         },
         "description_rows": [
           "Phạm vi 80%",
-          "Sát thương 80% ATK",
+          "Sát thương 54% ATK",
           "Thiêu đốt 10% sát thương/giây × 3",
           "CD 5.5s"
         ]
@@ -2483,7 +2483,7 @@
         "level": 1,
         "stats": {
           "skill_1_cooldown_reduction": 0.1,
-          "burn_total_damage_pct": 5,
+          "burn_total_damage_pct": 6.5,
           "split_arrow_count": 1,
           "split_damage_multiplier": 0.35,
           "split_range": 360,
@@ -2491,7 +2491,7 @@
         },
         "description_rows": [
           "Skill 1 giảm 10% CD",
-          "Thiêu đốt tổng 5% ATK/3s",
+          "Thiêu đốt tổng 6.5% ATK/3s",
           "Tách 1 tiễn nhỏ, mỗi tiễn gây 35% sát thương"
         ]
       },
@@ -2499,7 +2499,7 @@
         "level": 2,
         "stats": {
           "skill_1_cooldown_reduction": 0.15,
-          "burn_total_damage_pct": 10,
+          "burn_total_damage_pct": 8,
           "split_arrow_count": 1,
           "split_damage_multiplier": 0.35,
           "split_range": 360,
@@ -2507,7 +2507,7 @@
         },
         "description_rows": [
           "Skill 1 giảm 15% CD",
-          "Thiêu đốt tổng 10% ATK/3s",
+          "Thiêu đốt tổng 8% ATK/3s",
           "Tách 1 tiễn nhỏ, mỗi tiễn gây 35% sát thương"
         ]
       },
@@ -2515,7 +2515,7 @@
         "level": 3,
         "stats": {
           "skill_1_cooldown_reduction": 0.2,
-          "burn_total_damage_pct": 15,
+          "burn_total_damage_pct": 9.5,
           "split_arrow_count": 2,
           "split_damage_multiplier": 0.35,
           "split_range": 360,
@@ -2523,7 +2523,7 @@
         },
         "description_rows": [
           "Skill 1 giảm 20% CD",
-          "Thiêu đốt tổng 15% ATK/3s",
+          "Thiêu đốt tổng 9.5% ATK/3s",
           "Tách 2 tiễn nhỏ, mỗi tiễn gây 35% sát thương"
         ]
       },
@@ -2531,7 +2531,7 @@
         "level": 4,
         "stats": {
           "skill_1_cooldown_reduction": 0.25,
-          "burn_total_damage_pct": 20,
+          "burn_total_damage_pct": 11,
           "split_arrow_count": 2,
           "split_damage_multiplier": 0.35,
           "split_range": 360,
@@ -2539,7 +2539,7 @@
         },
         "description_rows": [
           "Skill 1 giảm 25% CD",
-          "Thiêu đốt tổng 20% ATK/3s",
+          "Thiêu đốt tổng 11% ATK/3s",
           "Tách 2 tiễn nhỏ, mỗi tiễn gây 35% sát thương"
         ]
       },
@@ -2547,7 +2547,7 @@
         "level": 5,
         "stats": {
           "skill_1_cooldown_reduction": 0.3,
-          "burn_total_damage_pct": 25,
+          "burn_total_damage_pct": 12.5,
           "split_arrow_count": 3,
           "split_damage_multiplier": 0.35,
           "split_range": 360,
@@ -2555,7 +2555,7 @@
         },
         "description_rows": [
           "Skill 1 giảm 30% CD",
-          "Thiêu đốt tổng 25% ATK/3s",
+          "Thiêu đốt tổng 12.5% ATK/3s",
           "Tách 3 tiễn nhỏ, mỗi tiễn gây 35% sát thương"
         ]
       }
@@ -2603,7 +2603,7 @@
       {
         "level": 1,
         "stats": {
-          "damage_pct": 100,
+          "damage_pct": 130,
           "speed_pct": 190,
           "range": 896,
           "cooldown": 17,
@@ -2618,7 +2618,7 @@
         "description_rows": [
           "Phạm vi 70%",
           "Tụ lực 1.5s",
-          "Tiễn chính 100%, mỗi tiễn phụ 50% ATK",
+          "Tiễn chính 130%, mỗi tiễn phụ 65% ATK",
           "Đủ 3 hit: +5% HP tối đa",
           "CD 17s"
         ]
@@ -2626,7 +2626,7 @@
       {
         "level": 2,
         "stats": {
-          "damage_pct": 135,
+          "damage_pct": 140.5,
           "speed_pct": 195,
           "range": 896,
           "cooldown": 16,
@@ -2641,7 +2641,7 @@
         "description_rows": [
           "Phạm vi 70%",
           "Tụ lực 1.5s",
-          "Tiễn chính 135%, mỗi tiễn phụ 67.5% ATK",
+          "Tiễn chính 140.5%, mỗi tiễn phụ 70.25% ATK",
           "Đủ 3 hit: +5% HP tối đa",
           "CD 16s"
         ]
@@ -2649,7 +2649,7 @@
       {
         "level": 3,
         "stats": {
-          "damage_pct": 175,
+          "damage_pct": 152.5,
           "speed_pct": 200,
           "range": 896,
           "cooldown": 15,
@@ -2664,7 +2664,7 @@
         "description_rows": [
           "Phạm vi 70%",
           "Tụ lực 1.5s",
-          "Tiễn chính 175%, mỗi tiễn phụ 87.5% ATK",
+          "Tiễn chính 152.5%, mỗi tiễn phụ 76.25% ATK",
           "Đủ 3 hit: +5% HP tối đa",
           "CD 15s"
         ]
@@ -2672,7 +2672,7 @@
       {
         "level": 4,
         "stats": {
-          "damage_pct": 210,
+          "damage_pct": 163,
           "speed_pct": 205,
           "range": 896,
           "cooldown": 14,
@@ -2687,7 +2687,7 @@
         "description_rows": [
           "Phạm vi 70%",
           "Tụ lực 1.5s",
-          "Tiễn chính 210%, mỗi tiễn phụ 105% ATK",
+          "Tiễn chính 163%, mỗi tiễn phụ 81.5% ATK",
           "Đủ 3 hit: +5% HP tối đa",
           "CD 14s"
         ]
@@ -2695,7 +2695,7 @@
       {
         "level": 5,
         "stats": {
-          "damage_pct": 250,
+          "damage_pct": 175,
           "speed_pct": 210,
           "range": 896,
           "cooldown": 13,
@@ -2710,7 +2710,7 @@
         "description_rows": [
           "Phạm vi 70%",
           "Tụ lực 1.5s",
-          "Tổng 3 tiễn: 500% ATK",
+          "Tiễn chính 175%, mỗi tiễn phụ 87.5% ATK",
           "Đủ 3 hit: +5% HP tối đa",
           "CD 13s"
         ]
@@ -2763,7 +2763,7 @@
       {
         "level": 1,
         "stats": {
-          "damage_pct": 35,
+          "damage_pct": 45.5,
           "speed_pct": 230,
           "range": 768,
           "projectile_count": 1,
@@ -2774,8 +2774,8 @@
         },
         "description_rows": [
           "Single target",
-          "Damage 35% ATK",
-          "Poison 36% ATK/s",
+          "Damage 45.5% ATK",
+          "Poison 46.8% ATK/s",
           "Darts 1",
           "CD 2s"
         ],
@@ -2783,14 +2783,14 @@
           {
             "id": "poison",
             "duration": 3,
-            "dps_pct": 36
+            "dps_pct": 46.8
           }
         ]
       },
       {
         "level": 2,
         "stats": {
-          "damage_pct": 46,
+          "damage_pct": 48.8,
           "speed_pct": 244,
           "range": 768,
           "projectile_count": 1,
@@ -2801,8 +2801,8 @@
         },
         "description_rows": [
           "Single target",
-          "Damage 46% ATK",
-          "Poison 50% ATK/s",
+          "Damage 48.8% ATK",
+          "Poison 51% ATK/s",
           "Darts 1",
           "CD 1.9s"
         ],
@@ -2810,14 +2810,14 @@
           {
             "id": "poison",
             "duration": 3.2,
-            "dps_pct": 50
+            "dps_pct": 51
           }
         ]
       },
       {
         "level": 3,
         "stats": {
-          "damage_pct": 58,
+          "damage_pct": 52.4,
           "speed_pct": 258,
           "range": 805,
           "projectile_count": 2,
@@ -2828,8 +2828,8 @@
         },
         "description_rows": [
           "Single target",
-          "Damage 58% ATK",
-          "Poison 68% ATK/s",
+          "Damage 52.4% ATK",
+          "Poison 56.4% ATK/s",
           "Darts 2",
           "CD 1.8s"
         ],
@@ -2837,14 +2837,14 @@
           {
             "id": "poison",
             "duration": 3.5,
-            "dps_pct": 68
+            "dps_pct": 56.4
           }
         ]
       },
       {
         "level": 4,
         "stats": {
-          "damage_pct": 72,
+          "damage_pct": 56.6,
           "speed_pct": 274,
           "range": 885.5,
           "projectile_count": 2,
@@ -2855,8 +2855,8 @@
         },
         "description_rows": [
           "Single target",
-          "Damage 72% ATK",
-          "Poison 92% ATK/s",
+          "Damage 56.6% ATK",
+          "Poison 63.6% ATK/s",
           "Darts 2",
           "CD 1.7s"
         ],
@@ -2864,14 +2864,14 @@
           {
             "id": "poison",
             "duration": 3.8,
-            "dps_pct": 92
+            "dps_pct": 63.6
           }
         ]
       },
       {
         "level": 5,
         "stats": {
-          "damage_pct": 90,
+          "damage_pct": 62,
           "speed_pct": 292,
           "range": 896,
           "projectile_count": 3,
@@ -2882,8 +2882,8 @@
         },
         "description_rows": [
           "Single target",
-          "Damage 90% ATK",
-          "Poison 124% ATK/s",
+          "Damage 62% ATK",
+          "Poison 73.2% ATK/s",
           "Darts 3",
           "CD 1.5s"
         ],
@@ -2891,7 +2891,7 @@
           {
             "id": "poison",
             "duration": 4.2,
-            "dps_pct": 124
+            "dps_pct": 73.2
           }
         ]
       }
@@ -2939,7 +2939,7 @@
       {
         "level": 1,
         "stats": {
-          "damage_pct": 60,
+          "damage_pct": 78,
           "speed_pct": 248,
           "range": 820,
           "projectile_count": 1,
@@ -2952,7 +2952,7 @@
         },
         "description_rows": [
           "Piercing return",
-          "Damage 60% ATK",
+          "Damage 78% ATK",
           "Slow 10%",
           "Glaives 1",
           "CD 5.5s"
@@ -2968,7 +2968,7 @@
       {
         "level": 2,
         "stats": {
-          "damage_pct": 78,
+          "damage_pct": 83.4,
           "speed_pct": 261,
           "range": 830,
           "projectile_count": 2,
@@ -2981,7 +2981,7 @@
         },
         "description_rows": [
           "Piercing return",
-          "Damage 78% ATK",
+          "Damage 83.4% ATK",
           "Slow 15%",
           "Glaives 2",
           "CD 5.1s"
@@ -2997,7 +2997,7 @@
       {
         "level": 3,
         "stats": {
-          "damage_pct": 100,
+          "damage_pct": 90,
           "speed_pct": 275,
           "range": 840,
           "projectile_count": 3,
@@ -3010,7 +3010,7 @@
         },
         "description_rows": [
           "Piercing return",
-          "Damage 100% ATK",
+          "Damage 90% ATK",
           "Slow 20%",
           "Glaives 3",
           "CD 4.7s"
@@ -3026,7 +3026,7 @@
       {
         "level": 4,
         "stats": {
-          "damage_pct": 125,
+          "damage_pct": 97.5,
           "speed_pct": 291,
           "range": 850,
           "projectile_count": 4,
@@ -3039,7 +3039,7 @@
         },
         "description_rows": [
           "Piercing return",
-          "Damage 125% ATK",
+          "Damage 97.5% ATK",
           "Slow 25%",
           "Glaives 4",
           "CD 4.3s"
@@ -3055,7 +3055,7 @@
       {
         "level": 5,
         "stats": {
-          "damage_pct": 155,
+          "damage_pct": 106.5,
           "speed_pct": 310,
           "range": 880,
           "projectile_count": 5,
@@ -3068,7 +3068,7 @@
         },
         "description_rows": [
           "Piercing return",
-          "Damage 155% ATK",
+          "Damage 106.5% ATK",
           "Slow 30%",
           "Glaives 5",
           "CD 3.8s"
@@ -3135,7 +3135,7 @@
       {
         "level": 1,
         "stats": {
-          "damage_pct": 77,
+          "damage_pct": 100.1,
           "range": 760,
           "cooldown": 8.8,
           "radius": 80.5,
@@ -3148,8 +3148,8 @@
         },
         "description_rows": [
           "Trap burst",
-          "Damage 110% ATK",
-          "Poison 30% ATK/s",
+          "Damage 100.1% ATK",
+          "Poison 39% ATK/s",
           "Slow 10%",
           "Area 115",
           "CD 8.8s"
@@ -3158,7 +3158,7 @@
           {
             "id": "poison",
             "duration": 4,
-            "dps_pct": 30
+            "dps_pct": 39
           },
           {
             "id": "slow",
@@ -3170,7 +3170,7 @@
       {
         "level": 2,
         "stats": {
-          "damage_pct": 102,
+          "damage_pct": 107.6,
           "range": 805,
           "cooldown": 8.2,
           "radius": 91,
@@ -3183,8 +3183,8 @@
         },
         "description_rows": [
           "Trap burst",
-          "Damage 145% ATK",
-          "Poison 42% ATK/s",
+          "Damage 107.6% ATK",
+          "Poison 42.6% ATK/s",
           "Slow 20%",
           "Area 30",
           "CD 8.2s"
@@ -3193,7 +3193,7 @@
           {
             "id": "poison",
             "duration": 4.2,
-            "dps_pct": 42
+            "dps_pct": 42.6
           },
           {
             "id": "slow",
@@ -3205,7 +3205,7 @@
       {
         "level": 3,
         "stats": {
-          "damage_pct": 130,
+          "damage_pct": 116,
           "range": 850,
           "cooldown": 7.6,
           "radius": 101.5,
@@ -3218,8 +3218,8 @@
         },
         "description_rows": [
           "Trap burst",
-          "Damage 185% ATK",
-          "Poison 58% ATK/s",
+          "Damage 116% ATK",
+          "Poison 47.4% ATK/s",
           "Slow 30%",
           "Area 145",
           "CD 7.6s"
@@ -3228,7 +3228,7 @@
           {
             "id": "poison",
             "duration": 4.5,
-            "dps_pct": 58
+            "dps_pct": 47.4
           },
           {
             "id": "slow",
@@ -3240,7 +3240,7 @@
       {
         "level": 4,
         "stats": {
-          "damage_pct": 165,
+          "damage_pct": 126.5,
           "range": 910,
           "cooldown": 7,
           "radius": 112,
@@ -3253,8 +3253,8 @@
         },
         "description_rows": [
           "Trap burst",
-          "Damage 235% ATK",
-          "Poison 80% ATK/s",
+          "Damage 126.5% ATK",
+          "Poison 54% ATK/s",
           "Slow 40%",
           "Area 160",
           "CD 7s"
@@ -3263,7 +3263,7 @@
           {
             "id": "poison",
             "duration": 4.8,
-            "dps_pct": 80
+            "dps_pct": 54
           },
           {
             "id": "slow",
@@ -3275,7 +3275,7 @@
       {
         "level": 5,
         "stats": {
-          "damage_pct": 210,
+          "damage_pct": 140,
           "range": 980,
           "cooldown": 6.2,
           "radius": 126,
@@ -3288,8 +3288,8 @@
         },
         "description_rows": [
           "Trap burst",
-          "Damage 300% ATK",
-          "Poison 110% ATK/s",
+          "Damage 140% ATK",
+          "Poison 63% ATK/s",
           "Slow 50%",
           "Area 180",
           "CD 6.2s"
@@ -3298,7 +3298,7 @@
           {
             "id": "poison",
             "duration": 5.2,
-            "dps_pct": 110
+            "dps_pct": 63
           },
           {
             "id": "slow",
@@ -3357,8 +3357,8 @@
       {
         "level": 1,
         "stats": {
-          "damage_pct": 90,
-          "needle_damage_pct": 60,
+          "damage_pct": 117,
+          "needle_damage_pct": 78,
           "range": 700,
           "cooldown": 13.5,
           "radius": 90,
@@ -3377,8 +3377,8 @@
         },
         "description_rows": [
           "Venom vortex",
-          "Hit 120% ATK",
-          "Needles 3x 60% ATK",
+          "Hit 117% ATK",
+          "Needles 3x 78% ATK",
           "Stack 2% HP/s each",
           "Stun 0.1s + Slow 10%",
           "CD 13.5s"
@@ -3398,8 +3398,8 @@
       {
         "level": 2,
         "stats": {
-          "damage_pct": 120,
-          "needle_damage_pct": 80,
+          "damage_pct": 126,
+          "needle_damage_pct": 84,
           "range": 730,
           "cooldown": 12.6,
           "radius": 100,
@@ -3418,8 +3418,8 @@
         },
         "description_rows": [
           "Venom vortex",
-          "Hit 160% ATK",
-          "Needles 3x 80% ATK",
+          "Hit 126% ATK",
+          "Needles 3x 84% ATK",
           "Stack 2% HP/s each",
           "Stun 0.1s + Slow 15%",
           "CD 12.6s"
@@ -3439,8 +3439,8 @@
       {
         "level": 3,
         "stats": {
-          "damage_pct": 155,
-          "needle_damage_pct": 105,
+          "damage_pct": 136.5,
+          "needle_damage_pct": 91.5,
           "range": 765,
           "cooldown": 11.7,
           "radius": 110,
@@ -3459,8 +3459,8 @@
         },
         "description_rows": [
           "Venom vortex",
-          "Hit 210% ATK",
-          "Needles 4x 105% ATK",
+          "Hit 136.5% ATK",
+          "Needles 4x 91.5% ATK",
           "Stack 2% HP/s each",
           "Stun 0.1s + Slow 20%",
           "CD 11.7s"
@@ -3480,8 +3480,8 @@
       {
         "level": 4,
         "stats": {
-          "damage_pct": 200,
-          "needle_damage_pct": 138,
+          "damage_pct": 150,
+          "needle_damage_pct": 101.4,
           "range": 805,
           "cooldown": 10.8,
           "radius": 120,
@@ -3500,8 +3500,8 @@
         },
         "description_rows": [
           "Venom vortex",
-          "Hit 275% ATK",
-          "Needles 4x 138% ATK",
+          "Hit 150% ATK",
+          "Needles 4x 101.4% ATK",
           "Stack 2% HP/s each",
           "Stun 0.1s + Slow 25%",
           "CD 10.8s"
@@ -3521,8 +3521,8 @@
       {
         "level": 5,
         "stats": {
-          "damage_pct": 250,
-          "needle_damage_pct": 180,
+          "damage_pct": 165,
+          "needle_damage_pct": 114,
           "range": 860,
           "cooldown": 9.6,
           "radius": 130,
@@ -3541,8 +3541,8 @@
         },
         "description_rows": [
           "Venom vortex",
-          "Hit 360% ATK",
-          "Needles 6x 180% ATK",
+          "Hit 165% ATK",
+          "Needles 6x 114% ATK",
           "Stack 2% HP/s each",
           "Stun 0.1s + Slow 30%",
           "CD 9.6s"
@@ -3695,7 +3695,7 @@
       {
         "level": 1,
         "stats": {
-          "damage_pct": 75,
+          "damage_pct": 97.5,
           "speed_pct": 200,
           "range": 768,
           "strike_count": 1,
@@ -3707,7 +3707,7 @@
         },
         "description_rows": [
           "Bắn 1 tia song song",
-          "Sát thương 75% ATK",
+          "Sát thương 97.5% ATK",
           "Làm chậm 10% trong 2s",
           "CD 2.0s"
         ],
@@ -3722,7 +3722,7 @@
       {
         "level": 2,
         "stats": {
-          "damage_pct": 95,
+          "damage_pct": 103.5,
           "speed_pct": 220,
           "range": 768,
           "strike_count": 1,
@@ -3734,7 +3734,7 @@
         },
         "description_rows": [
           "Bắn 1 tia song song",
-          "Sát thương 95% ATK",
+          "Sát thương 103.5% ATK",
           "Làm chậm 15% trong 2s",
           "CD 1.9s"
         ],
@@ -3749,7 +3749,7 @@
       {
         "level": 3,
         "stats": {
-          "damage_pct": 120,
+          "damage_pct": 111,
           "speed_pct": 240,
           "range": 768,
           "strike_count": 2,
@@ -3761,7 +3761,7 @@
         },
         "description_rows": [
           "Bắn 2 tia song song",
-          "Sát thương 120% ATK",
+          "Sát thương 111% ATK",
           "Làm chậm 20% trong 2s",
           "CD 1.8s"
         ],
@@ -3776,7 +3776,7 @@
       {
         "level": 4,
         "stats": {
-          "damage_pct": 150,
+          "damage_pct": 120,
           "speed_pct": 260,
           "range": 768,
           "strike_count": 2,
@@ -3789,7 +3789,7 @@
         },
         "description_rows": [
           "Bắn 2 tia song song",
-          "Sát thương 150% ATK",
+          "Sát thương 120% ATK",
           "Làm chậm 25% trong 2s",
           "Xoáy băng 2s slow 20% AOE",
           "CD 1.7s"
@@ -3805,7 +3805,7 @@
       {
         "level": 5,
         "stats": {
-          "damage_pct": 185,
+          "damage_pct": 130.5,
           "speed_pct": 280,
           "range": 768,
           "strike_count": 3,
@@ -3818,7 +3818,7 @@
         },
         "description_rows": [
           "Bắn 3 tia song song",
-          "Sát thương 185% ATK",
+          "Sát thương 130.5% ATK",
           "Làm chậm 30% trong 2s",
           "Xoáy băng 2s slow 20% AOE",
           "CD 1.6s"
@@ -3901,7 +3901,7 @@
       {
         "level": 1,
         "stats": {
-          "damage_pct": 50,
+          "damage_pct": 65,
           "radius": 80,
           "vfx_scale": 0.38,
           "phase_a_vfx_scale": 0.38,
@@ -3913,7 +3913,7 @@
         },
         "description_rows": [
           "Băng thạch rơi từ trên trời",
-          "Sát thương AOE 60% ATK",
+          "Sát thương AOE 65% ATK",
           "Bán kính nổ 45px",
           "CD 6s"
         ]
@@ -3921,7 +3921,7 @@
       {
         "level": 2,
         "stats": {
-          "damage_pct": 65,
+          "damage_pct": 69.5,
           "radius": 104,
           "vfx_scale": 0.494,
           "phase_a_vfx_scale": 0.494,
@@ -3933,7 +3933,7 @@
         },
         "description_rows": [
           "Băng thạch rơi từ trên trời",
-          "Sát thương AOE 75% ATK",
+          "Sát thương AOE 69.5% ATK",
           "Bán kính nổ 52px",
           "CD 5.6s"
         ]
@@ -3941,7 +3941,7 @@
       {
         "level": 3,
         "stats": {
-          "damage_pct": 85,
+          "damage_pct": 75.5,
           "radius": 135.2,
           "vfx_scale": 0.6422,
           "phase_a_vfx_scale": 0.6422,
@@ -3954,7 +3954,7 @@
         },
         "description_rows": [
           "Băng thạch rơi từ trên trời",
-          "Sát thương AOE 90% ATK",
+          "Sát thương AOE 75.5% ATK",
           "Bán kính nổ 60px",
           "CD 5.2s"
         ]
@@ -3962,7 +3962,7 @@
       {
         "level": 4,
         "stats": {
-          "damage_pct": 110,
+          "damage_pct": 83,
           "radius": 175.8,
           "vfx_scale": 0.8349,
           "phase_a_vfx_scale": 0.8349,
@@ -3975,7 +3975,7 @@
         },
         "description_rows": [
           "Băng thạch rơi từ trên trời",
-          "Sát thương AOE 110% ATK",
+          "Sát thương AOE 83% ATK",
           "Bán kính nổ 68px",
           "CD 4.8s"
         ]
@@ -3983,7 +3983,7 @@
       {
         "level": 5,
         "stats": {
-          "damage_pct": 140,
+          "damage_pct": 92,
           "radius": 228.5,
           "vfx_scale": 1.0854,
           "phase_a_vfx_scale": 1.0854,
@@ -3997,7 +3997,7 @@
         },
         "description_rows": [
           "Băng thạch rơi từ trên trời",
-          "Sát thương AOE 130% ATK",
+          "Sát thương AOE 92% ATK",
           "Bán kính nổ 78px",
           "3 tia băng hông slow 30%",
           "CD 4.2s"
@@ -4051,7 +4051,7 @@
         "level": 1,
         "stats": {
           "cooldown": 1,
-          "damage_pct": 10,
+          "damage_pct": 13,
           "speed_pct": 10,
           "pierce": 999,
           "freeze_duration": 0.3,
@@ -4060,7 +4060,7 @@
         },
         "description_rows": [
           "Cường hóa Băng Luân Song Hành",
-          "Tăng 4% DMG, +6% SPD",
+          "Tăng 13% DMG, +10% SPD",
           "Thêm hiệu ứng xuyên mục tiêu",
           "Đóng băng quái 0.3s khi trúng"
         ]
@@ -4069,7 +4069,7 @@
         "level": 2,
         "stats": {
           "cooldown": 1,
-          "damage_pct": 15,
+          "damage_pct": 14.5,
           "speed_pct": 20,
           "pierce": 999,
           "freeze_duration": 0.3,
@@ -4078,7 +4078,7 @@
         },
         "description_rows": [
           "Cường hóa Băng Luân Song Hành",
-          "Tăng 8% DMG, +12% SPD",
+          "Tăng 14.5% DMG, +20% SPD",
           "Thêm hiệu ứng xuyên mục tiêu",
           "Đóng băng quái 0.3s khi trúng"
         ]
@@ -4087,7 +4087,7 @@
         "level": 3,
         "stats": {
           "cooldown": 1,
-          "damage_pct": 20,
+          "damage_pct": 16,
           "speed_pct": 30,
           "pierce": 999,
           "freeze_duration": 0.3,
@@ -4097,7 +4097,7 @@
         },
         "description_rows": [
           "Cường hóa Băng Luân Song Hành",
-          "Tăng 12% DMG, +18% SPD",
+          "Tăng 16% DMG, +30% SPD",
           "Thêm +1 tia cho Skill 1",
           "Đóng băng quái 0.3s khi trúng"
         ]
@@ -4106,7 +4106,7 @@
         "level": 4,
         "stats": {
           "cooldown": 1,
-          "damage_pct": 25,
+          "damage_pct": 17.5,
           "speed_pct": 40,
           "pierce": 999,
           "freeze_duration": 0.3,
@@ -4116,7 +4116,7 @@
         },
         "description_rows": [
           "Cường hóa Băng Luân Song Hành",
-          "Tăng 16% DMG, +24% SPD",
+          "Tăng 17.5% DMG, +40% SPD",
           "Thêm +1 tia cho Skill 1",
           "Đóng băng quái 0.3s khi trúng"
         ]
@@ -4125,7 +4125,7 @@
         "level": 5,
         "stats": {
           "cooldown": 1,
-          "damage_pct": 30,
+          "damage_pct": 19,
           "speed_pct": 50,
           "pierce": 999,
           "freeze_duration": 0.3,
@@ -4135,7 +4135,7 @@
         },
         "description_rows": [
           "Cường hóa Băng Luân Song Hành",
-          "Tăng 20% DMG, +30% SPD",
+          "Tăng 19% DMG, +50% SPD",
           "Thêm +2 tia cho Skill 1",
           "Đóng băng quái 0.3s khi trúng"
         ]
@@ -4307,7 +4307,7 @@
       {
         "level": 1,
         "stats": {
-          "damage_pct": 65,
+          "damage_pct": 84.5,
           "cooldown": 2,
           "range": 896,
           "speed_pct": 240,
@@ -4322,7 +4322,7 @@
         },
         "description_rows": [
           "Quyền khí đẩy lùi nhẹ 40px",
-          "Sát thương 65% ATK tổng mỗi tia",
+          "Sát thương 84.5% ATK tổng mỗi tia",
           "Nổ chữ thập 50% AOE",
           "CD 2.0s"
         ],
@@ -4337,7 +4337,7 @@
       {
         "level": 2,
         "stats": {
-          "damage_pct": 82,
+          "damage_pct": 89.6,
           "cooldown": 1.9,
           "range": 896,
           "speed_pct": 250,
@@ -4352,7 +4352,7 @@
         },
         "description_rows": [
           "Quyền khí đẩy lùi 50px",
-          "Sát thương 82% ATK tổng mỗi tia",
+          "Sát thương 89.6% ATK tổng mỗi tia",
           "Nổ chữ thập 50% AOE",
           "CD 1.9s"
         ],
@@ -4367,7 +4367,7 @@
       {
         "level": 3,
         "stats": {
-          "damage_pct": 98,
+          "damage_pct": 94.4,
           "cooldown": 1.8,
           "range": 896,
           "speed_pct": 260,
@@ -4383,7 +4383,7 @@
         },
         "description_rows": [
           "Bắn 2 tia quạt 15 độ",
-          "Sát thương 98% ATK tổng mỗi tia",
+          "Sát thương 94.4% ATK tổng mỗi tia",
           "Đẩy lùi 60px, nổ 50% AOE",
           "CD 1.8s"
         ],
@@ -4398,7 +4398,7 @@
       {
         "level": 4,
         "stats": {
-          "damage_pct": 114,
+          "damage_pct": 99.2,
           "cooldown": 1.7,
           "range": 896,
           "speed_pct": 270,
@@ -4414,7 +4414,7 @@
         },
         "description_rows": [
           "Bắn 2 tia quạt 15 độ",
-          "Sát thương 114% ATK tổng mỗi tia",
+          "Sát thương 99.2% ATK tổng mỗi tia",
           "Đẩy lùi 70px, nổ 50% AOE",
           "CD 1.7s"
         ],
@@ -4429,7 +4429,7 @@
       {
         "level": 5,
         "stats": {
-          "damage_pct": 130,
+          "damage_pct": 104,
           "cooldown": 1.6,
           "range": 896,
           "speed_pct": 280,
@@ -4445,7 +4445,7 @@
         },
         "description_rows": [
           "Bắn 3 tia quạt 15 độ",
-          "Sát thương 130% ATK tổng mỗi tia",
+          "Sát thương 104% ATK tổng mỗi tia",
           "Đẩy lùi 80px, nổ 50% AOE",
           "CD 1.6s"
         ],
@@ -4511,7 +4511,7 @@
       {
         "level": 1,
         "stats": {
-          "damage_pct": 42,
+          "damage_pct": 54.6,
           "cooldown": 6,
           "range": 853.3333,
           "radius": 70,
@@ -4522,7 +4522,7 @@
         },
         "description_rows": [
           "Đại trận xoay dưới chân địch",
-          "Sát thương AOE 60% ATK",
+          "Sát thương AOE 54.6% ATK",
           "Choáng 0.1s, thiêu đốt 0.5% HP mỗi tick",
           "CD 6s"
         ],
@@ -4541,7 +4541,7 @@
       {
         "level": 2,
         "stats": {
-          "damage_pct": 56,
+          "damage_pct": 58.8,
           "cooldown": 5.6,
           "range": 853.3333,
           "radius": 91,
@@ -4552,7 +4552,7 @@
         },
         "description_rows": [
           "Đại trận xoay dưới chân địch",
-          "Sát thương AOE 80% ATK",
+          "Sát thương AOE 58.8% ATK",
           "Choáng 0.2s, thiêu đốt 0.5% HP mỗi tick",
           "CD 5.6s"
         ],
@@ -4571,7 +4571,7 @@
       {
         "level": 3,
         "stats": {
-          "damage_pct": 70,
+          "damage_pct": 63,
           "cooldown": 5.2,
           "range": 853.3333,
           "radius": 118.3,
@@ -4582,7 +4582,7 @@
         },
         "description_rows": [
           "Đại trận xoay dưới chân địch",
-          "Sát thương AOE 100% ATK",
+          "Sát thương AOE 63% ATK",
           "Choáng 0.3s, thiêu đốt 0.5% HP mỗi tick",
           "CD 5.2s"
         ],
@@ -4601,7 +4601,7 @@
       {
         "level": 4,
         "stats": {
-          "damage_pct": 84,
+          "damage_pct": 67.2,
           "cooldown": 4.8,
           "range": 853.3333,
           "radius": 153.8,
@@ -4612,7 +4612,7 @@
         },
         "description_rows": [
           "Đại trận xoay dưới chân địch",
-          "Sát thương AOE 120% ATK",
+          "Sát thương AOE 67.2% ATK",
           "Choáng 0.4s, thiêu đốt 0.5% HP mỗi tick",
           "CD 4.8s"
         ],
@@ -4631,7 +4631,7 @@
       {
         "level": 5,
         "stats": {
-          "damage_pct": 98,
+          "damage_pct": 71.4,
           "cooldown": 4.2,
           "range": 853.3333,
           "radius": 199.9,
@@ -4642,7 +4642,7 @@
         },
         "description_rows": [
           "Đại trận xoay dưới chân địch",
-          "Sát thương AOE 140% ATK",
+          "Sát thương AOE 71.4% ATK",
           "Choáng 0.5s, thiêu đốt 0.5% HP mỗi tick",
           "CD 4.2s"
         ],
@@ -4728,7 +4728,7 @@
       {
         "level": 1,
         "stats": {
-          "damage_pct": 100,
+          "damage_pct": 130,
           "cooldown": 9.5,
           "range": 960,
           "radius": 100,
@@ -4747,7 +4747,7 @@
         },
         "description_rows": [
           "Như Lai giáng chưởng từ trời",
-          "Sát thương 100% ATK",
+          "Sát thương 130% ATK",
           "Đất nứt choáng 0.1s",
           "1 sóng xung kích 0.5% HP",
           "CD 9.5s"
@@ -4762,7 +4762,7 @@
       {
         "level": 2,
         "stats": {
-          "damage_pct": 125,
+          "damage_pct": 137.5,
           "cooldown": 8.8,
           "range": 960,
           "radius": 130,
@@ -4781,7 +4781,7 @@
         },
         "description_rows": [
           "Như Lai giáng chưởng từ trời",
-          "Sát thương 125% ATK",
+          "Sát thương 137.5% ATK",
           "Đất nứt choáng 0.2s",
           "1 sóng xung kích 0.6% HP",
           "CD 8.8s"
@@ -4796,7 +4796,7 @@
       {
         "level": 3,
         "stats": {
-          "damage_pct": 155,
+          "damage_pct": 146.5,
           "cooldown": 8.1,
           "range": 960,
           "radius": 169,
@@ -4815,7 +4815,7 @@
         },
         "description_rows": [
           "Như Lai giáng chưởng từ trời",
-          "Sát thương 155% ATK",
+          "Sát thương 146.5% ATK",
           "Đất nứt choáng 0.3s",
           "2 sóng xung kích 0.7% HP",
           "CD 8.1s"
@@ -4830,7 +4830,7 @@
       {
         "level": 4,
         "stats": {
-          "damage_pct": 190,
+          "damage_pct": 157,
           "cooldown": 7.4,
           "range": 960,
           "radius": 219.7,
@@ -4849,7 +4849,7 @@
         },
         "description_rows": [
           "Như Lai giáng chưởng từ trời",
-          "Sát thương 190% ATK",
+          "Sát thương 157% ATK",
           "Đất nứt choáng 0.4s",
           "2 sóng xung kích 0.8% HP",
           "CD 7.4s"
@@ -4864,7 +4864,7 @@
       {
         "level": 5,
         "stats": {
-          "damage_pct": 235,
+          "damage_pct": 170.5,
           "cooldown": 6.5,
           "range": 960,
           "radius": 285.6,
@@ -4883,7 +4883,7 @@
         },
         "description_rows": [
           "Như Lai giáng chưởng từ trời",
-          "Sát thương 235% ATK",
+          "Sát thương 170.5% ATK",
           "Đất nứt choáng 0.5s",
           "3 sóng xung kích 1.0% HP",
           "CD 6.5s"
@@ -4967,7 +4967,7 @@
       {
         "level": 1,
         "stats": {
-          "damage_pct": 30,
+          "damage_pct": 39,
           "same_target_damage_multiplier": 0.5,
           "cooldown": 14,
           "golden_duration": 2,
@@ -4983,6 +4983,7 @@
         },
         "description_rows": [
           "Kim thân 2s xóa sạch debuff",
+          "Mỗi quyền gây 39% ATK trước hệ số đánh trùng mục tiêu",
           "Tung 12 quyền quét 50% map",
           "Đòn đầu đủ lực, đòn trùng mục tiêu còn 50% sát thương",
           "Trúng 3 ấn gây choáng 1.0s",
@@ -5006,7 +5007,7 @@
       {
         "level": 2,
         "stats": {
-          "damage_pct": 40,
+          "damage_pct": 42,
           "same_target_damage_multiplier": 0.5,
           "cooldown": 13.1,
           "golden_duration": 2,
@@ -5022,6 +5023,7 @@
         },
         "description_rows": [
           "Kim thân 2s xóa sạch debuff",
+          "Mỗi quyền gây 42% ATK trước hệ số đánh trùng mục tiêu",
           "Tung 14 quyền quét 50% map",
           "Đòn đầu đủ lực, đòn trùng mục tiêu còn 50% sát thương",
           "Trúng 3 ấn gây choáng 1.0s",
@@ -5045,7 +5047,7 @@
       {
         "level": 3,
         "stats": {
-          "damage_pct": 50,
+          "damage_pct": 45,
           "same_target_damage_multiplier": 0.5,
           "cooldown": 12.2,
           "golden_duration": 2,
@@ -5061,6 +5063,7 @@
         },
         "description_rows": [
           "Kim thân 2s xóa sạch debuff",
+          "Mỗi quyền gây 45% ATK trước hệ số đánh trùng mục tiêu",
           "Tung 16 quyền quét 50% map",
           "Đòn đầu đủ lực, đòn trùng mục tiêu còn 50% sát thương",
           "Trúng 3 ấn gây choáng 1.0s",
@@ -5084,7 +5087,7 @@
       {
         "level": 4,
         "stats": {
-          "damage_pct": 60,
+          "damage_pct": 48,
           "same_target_damage_multiplier": 0.5,
           "cooldown": 11.3,
           "golden_duration": 2,
@@ -5100,6 +5103,7 @@
         },
         "description_rows": [
           "Kim thân 2s xóa sạch debuff",
+          "Mỗi quyền gây 48% ATK trước hệ số đánh trùng mục tiêu",
           "Tung 18 quyền quét 50% map",
           "Đòn đầu đủ lực, đòn trùng mục tiêu còn 50% sát thương",
           "Trúng 3 ấn gây choáng 1.0s",
@@ -5123,7 +5127,7 @@
       {
         "level": 5,
         "stats": {
-          "damage_pct": 70,
+          "damage_pct": 51,
           "same_target_damage_multiplier": 0.5,
           "cooldown": 10,
           "golden_duration": 2,
@@ -5139,6 +5143,7 @@
         },
         "description_rows": [
           "Kim thân 2s xóa sạch debuff",
+          "Mỗi quyền gây 51% ATK trước hệ số đánh trùng mục tiêu",
           "Tung 20 quyền quét 50% map",
           "Đòn đầu đủ lực, đòn trùng mục tiêu còn 50% sát thương",
           "Trúng 3 ấn gây choáng 1.0s",

@@ -478,6 +478,10 @@ const publishConfigRelease: nkruntime.RpcFunction = (
         if(!mail||!Number.isSafeInteger(mail.warning_hours)||mail.warning_hours<1||mail.warning_hours>720||!Number.isSafeInteger(mail.retention_days)||mail.retention_days<1||mail.retention_days>365)
             return JSON.stringify({status:'error',code:422,message:'Invalid system.mailbox'});
     }
+    if(snapshot.system.tower_sweep!==undefined){
+        try{towerSweepValidateConfig(snapshot.system.tower_sweep);}
+        catch(_error){return JSON.stringify({status:'error',code:422,message:'Invalid system.tower_sweep'});}
+    }
     if(snapshot.system.stage_sweep!==undefined){
         try{sweepValidateConfig(snapshot.system.stage_sweep);}
         catch(_error){return JSON.stringify({status:'error',code:422,message:'Invalid system.stage_sweep'});}

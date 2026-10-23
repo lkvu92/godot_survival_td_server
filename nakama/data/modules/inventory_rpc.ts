@@ -8,7 +8,7 @@ const useConsumable: nkruntime.RpcFunction = (ctx, _logger, nk, payload): string
     const itemId = String(req.item_id || ""), requestId = String(req.request_id || ""), runId = String(req.run_id || "");
     const quantity = req.quantity === undefined ? 1 : req.quantity;
     if (!/^[A-Za-z0-9_-]{1,128}$/.test(requestId) || !Number.isSafeInteger(quantity) || quantity < 1 || quantity > 99) return fail("Invalid request");
-    const fingerprint = JSON.stringify(["use_consumable", itemId, quantity, runId]);
+    const fingerprint = JSON.stringify(["use_consumable", itemId, quantity, runId, req.confirm_replace === true]);
     const stored = nk.storageRead([
         {collection:"player_profiles",key:"main",userId:ctx.userId},
         {collection:"player_inventory",key:"items",userId:ctx.userId},
@@ -30,7 +30,12 @@ const useConsumable: nkruntime.RpcFunction = (ctx, _logger, nk, payload): string
     if (!rows.length) return fail("Unknown item");
     const attrs = talismanJsonObject(rows[0].attributes), effect = talismanJsonObject(attrs.effect);
     const kind = String(effect.kind || ""), value = Number(effect.value);
-    if (attrs.enabled === false || attrs.use_action !== "use_consumable" || !Number.isFinite(value) || value <= 0) return fail("Item effect is unavailable");
+    const isGameplayBoost = kind === "gameplay_boost";
+    const boostMultiplier = Number(effect.multiplier), boostDuration = Number(effect.duration);
+    if (attrs.enabled === false || attrs.use_action !== "use_consumable"
+        || (isGameplayBoost
+            ? (!['exp','gold'].includes(String(effect.resource || '')) || !Number.isFinite(boostMultiplier) || boostMultiplier <= 1 || !Number.isSafeInteger(boostDuration) || boostDuration !== 86400)
+            : (!Number.isFinite(value) || value <= 0))) return fail("Item effect is unavailable");
     if (talismanItemQuantity(items, itemId) < quantity) return fail("Not enough items");
     const run = runObject ? talismanJsonObject(runObject.value) : {};
     const now = Date.now(), combat = effect.context === "combat";
@@ -48,7 +53,23 @@ const useConsumable: nkruntime.RpcFunction = (ctx, _logger, nk, payload): string
         if (kind === "revive") run.item_revives = Number(run.item_revives || 0) + 1;
     } else {
         if (runId || (run.status === "active" && now < Number(run.expires_at_ms || 0)) || (profile.breakthrough || {}).in_tribulation) return fail("Use this item outside combat");
-        if (kind === "gold") {
+        if (kind === "gameplay_boost") {
+            const resource = String(effect.resource);
+            const boosts = talismanJsonObject(profile.gameplay_boosts);
+            const current = talismanJsonObject(boosts[resource]);
+            const currentExpiry = Number(current.expires_at_ms || 0);
+            const activeMultiplier = currentExpiry > now ? Number(current.multiplier || 1) : 1;
+            if (activeMultiplier > boostMultiplier) return fail("A stronger %s boost is already active".replace("%s", resource === "exp" ? "EXP" : "Gold"));
+            if (activeMultiplier > 1 && boostMultiplier > activeMultiplier && req.confirm_replace !== true) {
+                return JSON.stringify({success:false, requires_confirmation:true, code:"BOOST_REPLACEMENT_CONFIRMATION_REQUIRED",
+                    message:"A lower boost is active", active_boost:{resource,multiplier:activeMultiplier,expires_at_ms:currentExpiry},
+                    replacement_boost:{resource,multiplier:boostMultiplier,duration:boostDuration}});
+            }
+            const durationMs = boostDuration * 1000 * quantity;
+            const expiresAt = activeMultiplier === boostMultiplier ? currentExpiry + durationMs : now + durationMs;
+            boosts[resource] = {multiplier:boostMultiplier, expires_at_ms:expiresAt};
+            profile.gameplay_boosts = boosts;
+        } else if (kind === "gold") {
             const resources = talismanJsonObject(profile.resources);
             const total = Number(resources.gold || 0) + value * quantity;
             if (!Number.isSafeInteger(total)) return fail("Resource overflow");

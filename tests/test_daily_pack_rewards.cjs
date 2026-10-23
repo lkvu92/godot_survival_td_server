@@ -1,6 +1,20 @@
 const fs = require('fs'), path = require('path'), vm = require('vm'), assert = require('assert');
 const root = path.join(__dirname, '..');
-const packs = JSON.parse(fs.readFileSync(path.join(root, 'data/packs.json'), 'utf8')).packs_by_tab.daily;
+// Keep legacy purchased order snapshots explicit: today's catalog must not
+// silently change what a player already paid for.
+const packs = [
+ {id:'daily_deal',fulfillment_type:'consumable',rewards:[
+  {reward_type:'currency',reward_id:'gems',quantity:100},
+  {reward_type:'currency',reward_id:'gold',quantity:10000},
+  {reward_type:'stamina',reward_id:'stamina',quantity:20},
+  {reward_type:'item',reward_id:'campaign_sweep_ticket',quantity:5}]},
+ {id:'flash_sale',fulfillment_type:'consumable',rewards:[
+  {reward_type:'currency',reward_id:'gems',quantity:300},
+  {reward_type:'item',reward_id:'talisman_enhance_charm',quantity:1},
+  {reward_type:'item',reward_id:'element_enlightenment_charm',quantity:1},
+  {reward_type:'stamina',reward_id:'stamina',quantity:50},
+  {reward_type:'item',reward_id:'campaign_sweep_ticket',quantity:15}]}
+];
 const items = JSON.parse(fs.readFileSync(path.join(root, 'data/items.json'), 'utf8'));
 const context = vm.createContext({});
 vm.runInContext(fs.readFileSync(path.join(root, 'nakama/data/modules/build/monetization_rpc.js'), 'utf8'), context);

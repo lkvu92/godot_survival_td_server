@@ -1,5 +1,15 @@
 # Server documentation
 
+- C171 v1.0.1: Sa Thạch Toái Kích flight speed 420 → 630 for both earth bosses.
+
+- C158 v1.1.2: Eight skulls at distinct positions; sequential launches at 0.15s intervals.
+
+- C158 v1.1.1: U Hồn Phệ Cốt uses eight skulls, 35% direct ATK and flight speed 540.
+
+- [C162 Hero skill damage curves](contracts/C162_HERO_SKILL_DAMAGE_CURVES.md): stronger level 1 and flatter subsequent ATK damage growth, shared by all combat modes.
+
+- [C159 Inventory stack consolidation](contracts/C159_INVENTORY_STACK_CONSOLIDATION.md) v1.0.0: stack fungible items, consolidate scoped inventory and preserve instance equipment.
+
 - [C158 Arc 3 wood creep skills](contracts/C158_CREEP_WOOD_SKILLS.md) v1.0.0: poison bolts, life-draining vines, poison swamp and homing skulls use server-authoritative skill data.
 
 - [C157 Arc 2 ice creep skills](contracts/C157_CREEP_ICE_SKILLS.md) v1.0.0: ice claws, bolts, pillars, Cực Băng Tam Trọng Thiên and Băng Linh Lung use server-authoritative skill data.
@@ -38,9 +48,9 @@
 
 - [C132 Docker runtime build](contracts/C132_DOCKER_RUNTIME_BUILD.md) v1.0.0: build and verify Nakama runtime in Docker before deploy/start/restart.
 
-- C129 v1.2.0: store_purchase atomically settles 1â€“99 catalog bundles and binds replay to quantity; C130 v1.0.1: left vertical client item rail and original HP position.
+- C129 v1.2.0: store_purchase atomically settles 1â€“99 catalog bundles and binds replay to quantity; C130 v1.3.0: authoritative 24-hour EXP/Gold gameplay reward boosts with replacement confirmation.
 
-- [C130 Consumable use](contracts/C130_CONSUMABLE_USE.md) v1.0.1 — transactional use, permanent cultivation sources and left vertical item rail. [Item guide](items/CONSUMABLES.md).
+- [C130 Consumable use](contracts/C130_CONSUMABLE_USE.md) v1.3.0 — transactional use, permanent cultivation sources, reward boosts and left vertical item rail. [Item guide](items/CONSUMABLES.md).
 
 - [C129 Consumable store](contracts/C129_CONSUMABLE_STORE.md): item rarity/prices, Gold/Gem alternatives, item-paid renames and talent reroll.
 
@@ -106,3 +116,25 @@
 - [C152: Halve opening waves](contracts/C152_HALVE_OPENING_WAVES.md): halve wave1?3 creep totals across all five arcs, per-creep EXP retained.
 
 - [C153: Exact campaign wave EXP](contracts/C153_EXACT_CAMPAIGN_WAVE_EXP.md): maintain reduced counts while restoring one level per fully cleared wave.
+- [C167 Tower sweep](contracts/C167_TOWER_SWEEP.md): campaign/tower mutual exclusion, dynamic EXP, entry reservations and boss ticket drops.
+- [C160 Trial Tower Status](contracts/C160_TRIAL_TOWER_STATUS.md) v1.1.0: scoped progress, 20 floors, reward-display curve and server daily tickets.
+- [C161 Trial Tower Challenge](contracts/C161_TRIAL_TOWER_CHALLENGE.md): authenticated tower runs and atomic progress settlement.
+- C161 v1.1.0: validated 19-pick builds, independent priority AI, five-second pre-combat countdown.
+- C161 v1.2.0: validated large-world arena geometry included in issued tower runs.
+- C161 v1.3.0: both tower builds use only the selected owned hero's persistent skill unlocks.
+- [C163 Additive combat bonuses](contracts/C163_ADDITIVE_COMBAT_BONUSES.md): server-owned sources, shared base-relative client combat modifiers.
+- [C164 Tower mirror and manual controls](contracts/C164_TOWER_MIRROR_AND_MANUAL_CONTROLS.md): authoritative mirror attributes/root snapshots, run rules v2.
+- [C165 Tower floor balance](contracts/C165_TOWER_FLOOR_BALANCE.md) v1.1.0: separate10% stats/5% speed steps, first-floor70%, rules v4.
+- [C166 — Contract tổng thể Tháp Thí Luyện](contracts/C166_TRIAL_TOWER_FEATURE.md): nguồn chuẩn liên client/server cho luật hiện hành và phần còn thiếu.
+
+- [C168 Arc 4 Kim hệ](contracts/C168_CREEP_METAL_SKILLS.md)
+
+- [C169 Arc 5 earth creep skills](contracts/C169_CREEP_EARTH_SKILLS.md)
+
+- [C171 Arc 5 boss skills](contracts/C171_ARC5_BOSS_SKILLS.md)
+
+- [C172 Primordial Wraith skills](contracts/C172_PRIMORDIAL_WRAITH_SKILLS.md)
+
+- [C173 Currency pricing](contracts/C173_CURRENCY_PRICING.md)
+
+- [C158 wood skills v1.1.0](contracts/C158_CREEP_WOOD_SKILLS.md): compact target-centered thorn ellipse and authoritative presentation dimensions.

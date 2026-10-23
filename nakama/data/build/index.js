@@ -528,6 +528,7 @@ function rpcAdminServerFinancialRetry(c, l, n, p) {
 }
 
 const CHARACTER_COLLECTIONS = [
+  "player_trial_tower",
   "player_profiles",
   "player_inventory",
   "player_heroes",
@@ -1144,6 +1145,7 @@ function createGameConfigTables(nk, logger) {
   const defaultSettings = {
     system: {
       stage_sweep: SWEEP_DEFAULTS,
+      tower_sweep: TOWER_SWEEP_DEFAULTS,
       min_app_version: "1.0.0",
       latest_app_version: "1.0.0",
       supported_languages: ["vi", "en"],
@@ -3016,6 +3018,13 @@ const publishConfigRelease = (ctx, _logger, nk, payload) => {
     if (!mail || !Number.isSafeInteger(mail.warning_hours) || mail.warning_hours < 1 || mail.warning_hours > 720 || !Number.isSafeInteger(mail.retention_days) || mail.retention_days < 1 || mail.retention_days > 365)
       return JSON.stringify({ status: "error", code: 422, message: "Invalid system.mailbox" });
   }
+  if (snapshot.system.tower_sweep !== void 0) {
+    try {
+      towerSweepValidateConfig(snapshot.system.tower_sweep);
+    } catch (_error) {
+      return JSON.stringify({ status: "error", code: 422, message: "Invalid system.tower_sweep" });
+    }
+  }
   if (snapshot.system.stage_sweep !== void 0) {
     try {
       sweepValidateConfig(snapshot.system.stage_sweep);
@@ -4134,7 +4143,7 @@ function createMultiAccountLinkFunctions(nk) {
       INSERT INTO storage(collection,key,user_id,value,version,read,write,create_time,update_time)
         SELECT o.collection,o.key,w.id,o.value,o.version,0,0,o.create_time,NOW() FROM storage o JOIN player_characters c
           ON c.account_id=o.user_id AND left(o.key,length(c.server_id||':g'||c.generation||':'))=c.server_id||':g'||c.generation||':'
-        WHERE o.user_id=l.id AND o.collection=ANY('{player_profiles,player_inventory,player_heroes,player_stage_runs,player_identity,player_event_progress,player_daily_checkin,weekly_leaderboard_claims,player_purchase_grants,player_item_requests,player_mail,player_mail_deliveries}'::TEXT[])
+        WHERE o.user_id=l.id AND o.collection=ANY('{player_trial_tower,player_profiles,player_inventory,player_heroes,player_stage_runs,player_identity,player_event_progress,player_daily_checkin,weekly_leaderboard_claims,player_purchase_grants,player_item_requests,player_mail,player_mail_deliveries}'::TEXT[])
           AND NOT EXISTS(SELECT 1 FROM player_characters other WHERE other.account_id=w.id AND other.server_id=c.server_id);
       UPDATE server_weekly_scores s SET user_id=w.id WHERE user_id=l.id AND NOT EXISTS(SELECT 1 FROM player_characters c WHERE c.account_id=w.id AND c.server_id=s.server_id);
       UPDATE server_weekly_awards s SET user_id=w.id WHERE user_id=l.id AND NOT EXISTS(SELECT 1 FROM player_characters c WHERE c.account_id=w.id AND c.server_id=s.server_id);
@@ -4325,7 +4334,7 @@ const useConsumable = (ctx, _logger, nk, payload) => {
   const itemId = String(req.item_id || ""), requestId = String(req.request_id || ""), runId = String(req.run_id || "");
   const quantity = req.quantity === void 0 ? 1 : req.quantity;
   if (!/^[A-Za-z0-9_-]{1,128}$/.test(requestId) || !Number.isSafeInteger(quantity) || quantity < 1 || quantity > 99) return fail("Invalid request");
-  const fingerprint = JSON.stringify(["use_consumable", itemId, quantity, runId]);
+  const fingerprint = JSON.stringify(["use_consumable", itemId, quantity, runId, req.confirm_replace === true]);
   const stored = nk.storageRead([
     { collection: "player_profiles", key: "main", userId: ctx.userId },
     { collection: "player_inventory", key: "items", userId: ctx.userId },
@@ -4347,7 +4356,9 @@ const useConsumable = (ctx, _logger, nk, payload) => {
   if (!rows.length) return fail("Unknown item");
   const attrs = talismanJsonObject(rows[0].attributes), effect = talismanJsonObject(attrs.effect);
   const kind = String(effect.kind || ""), value = Number(effect.value);
-  if (attrs.enabled === false || attrs.use_action !== "use_consumable" || !Number.isFinite(value) || value <= 0) return fail("Item effect is unavailable");
+  const isGameplayBoost = kind === "gameplay_boost";
+  const boostMultiplier = Number(effect.multiplier), boostDuration = Number(effect.duration);
+  if (attrs.enabled === false || attrs.use_action !== "use_consumable" || (isGameplayBoost ? !["exp", "gold"].includes(String(effect.resource || "")) || !Number.isFinite(boostMultiplier) || boostMultiplier <= 1 || !Number.isSafeInteger(boostDuration) || boostDuration !== 86400 : !Number.isFinite(value) || value <= 0)) return fail("Item effect is unavailable");
   if (talismanItemQuantity(items, itemId) < quantity) return fail("Not enough items");
   const run = runObject ? talismanJsonObject(runObject.value) : {};
   const now = Date.now(), combat = effect.context === "combat";
@@ -4365,7 +4376,28 @@ const useConsumable = (ctx, _logger, nk, payload) => {
     if (kind === "revive") run.item_revives = Number(run.item_revives || 0) + 1;
   } else {
     if (runId || run.status === "active" && now < Number(run.expires_at_ms || 0) || (profile.breakthrough || {}).in_tribulation) return fail("Use this item outside combat");
-    if (kind === "gold") {
+    if (kind === "gameplay_boost") {
+      const resource = String(effect.resource);
+      const boosts = talismanJsonObject(profile.gameplay_boosts);
+      const current = talismanJsonObject(boosts[resource]);
+      const currentExpiry = Number(current.expires_at_ms || 0);
+      const activeMultiplier = currentExpiry > now ? Number(current.multiplier || 1) : 1;
+      if (activeMultiplier > boostMultiplier) return fail("A stronger %s boost is already active".replace("%s", resource === "exp" ? "EXP" : "Gold"));
+      if (activeMultiplier > 1 && boostMultiplier > activeMultiplier && req.confirm_replace !== true) {
+        return JSON.stringify({
+          success: false,
+          requires_confirmation: true,
+          code: "BOOST_REPLACEMENT_CONFIRMATION_REQUIRED",
+          message: "A lower boost is active",
+          active_boost: { resource, multiplier: activeMultiplier, expires_at_ms: currentExpiry },
+          replacement_boost: { resource, multiplier: boostMultiplier, duration: boostDuration }
+        });
+      }
+      const durationMs = boostDuration * 1e3 * quantity;
+      const expiresAt = activeMultiplier === boostMultiplier ? currentExpiry + durationMs : now + durationMs;
+      boosts[resource] = { multiplier: boostMultiplier, expires_at_ms: expiresAt };
+      profile.gameplay_boosts = boosts;
+    } else if (kind === "gold") {
       const resources = talismanJsonObject(profile.resources);
       const total = Number(resources.gold || 0) + value * quantity;
       if (!Number.isSafeInteger(total)) return fail("Resource overflow");
@@ -5476,6 +5508,332 @@ const startStage = (ctx, _logger, nk, payload) => {
   });
 };
 
+var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
+function trialTowerStatus(ctx, logger, nk, _payload) {
+  const fail = (code, message) => JSON.stringify({ success: false, code, message });
+  if (!ctx.userId) return fail(401, "Authentication required");
+  const config = readContentConfig(nk, "trial_tower");
+  if (config.floor_count !== 20 || config.daily_tickets !== 5 || config.ticket_cap !== 20 || config.base_stat_multiplier !== 0.7 || config.stat_increase_per_floor !== 0.1 || config.speed_increase_per_floor !== 0.05 || !Array.isArray(config.floors) || config.floors.length !== 20)
+    return fail(503, "Th\xE1p ch\u01B0a \u0111\u01B0\u1EE3c c\u1EA5u h\xECnh.");
+  const validRewards = (rewards) => Array.isArray(rewards) && rewards.every((r) => r && typeof r.label === "string" && r.label.trim().length > 0);
+  for (let i = 0; i < config.floors.length; i++) {
+    const f = config.floors[i];
+    if (!f || f.floor !== i + 1 || !validRewards(f.first_rewards) || !validRewards(f.repeat_rewards))
+      return fail(503, "C\u1EA5u h\xECnh t\u1EA7ng kh\xF4ng h\u1EE3p l\u1EC7.");
+  }
+  const now = Date.now();
+  const rewardProfileRow = nk.storageRead([{ collection: "player_profiles", key: "main", userId: ctx.userId }])[0];
+  const rewardProfile = rewardProfileRow ? rewardProfileRow.value : {};
+  const day = Math.floor((now + 7 * 36e5) / 864e5);
+  const ref = { collection: "player_trial_tower", key: "main", userId: ctx.userId };
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const rows = nk.storageRead([ref]);
+    const previous = rows.length ? rows[0].value : null;
+    if (previous && (!Number.isInteger(previous.highest_cleared) || previous.highest_cleared < 0 || previous.highest_cleared > 20 || !Number.isInteger(previous.tickets) || previous.tickets < 0 || previous.tickets > 20 || !Number.isSafeInteger(previous.last_ticket_day) || previous.last_ticket_day < 0))
+      return fail(503, "Ti\u1EBFn \u0111\u1ED9 th\xE1p kh\xF4ng h\u1EE3p l\u1EC7.");
+    if (rows.length && !previous) return fail(503, "Ti\u1EBFn \u0111\u1ED9 th\xE1p kh\xF4ng h\u1EE3p l\u1EC7.");
+    const state = previous ? Object.assign({}, previous) : { highest_cleared: 0, tickets: 5, last_ticket_day: day };
+    if (previous && day > previous.last_ticket_day) {
+      state.tickets = Math.min(20, previous.tickets + Math.min(4, day - previous.last_ticket_day) * 5);
+      state.last_ticket_day = day;
+    }
+    if (!previous || state.last_ticket_day !== previous.last_ticket_day) {
+      try {
+        nk.storageWrite([Object.assign({}, ref, {
+          value: state,
+          version: rows.length ? rows[0].version : "*",
+          permissionRead: 0,
+          permissionWrite: 0
+        })]);
+      } catch (error) {
+        if (attempt < 2) continue;
+        logger.warn("Trial tower status write could not complete");
+        return fail(409, "Ti\u1EBFn \u0111\u1ED9 \u0111ang \u0111\u01B0\u1EE3c c\u1EADp nh\u1EADt. H\xE3y th\u1EED l\u1EA1i.");
+      }
+    }
+    return JSON.stringify({ success: true, snapshot: {
+      floors: config.floors.map((f) => Object.assign({}, f, {
+        first_rewards: towerRewardEntries(nk, f.first_rewards, rewardProfile, f.floor),
+        repeat_rewards: towerRewardEntries(nk, f.repeat_rewards, rewardProfile, f.floor),
+        stat_multiplier: Math.round((config.base_stat_multiplier + (f.floor - 1) * config.stat_increase_per_floor) * 1e4) / 1e4,
+        speed_multiplier: Math.round((config.base_stat_multiplier + (f.floor - 1) * config.speed_increase_per_floor) * 1e4) / 1e4
+      })),
+      highest_cleared: state.highest_cleared,
+      tickets: state.tickets,
+      daily_tickets: 5,
+      ticket_cap: 20,
+      server_time: Math.floor(now / 1e3),
+      next_ticket_at: Math.floor(((Math.max(day, state.last_ticket_day) + 1) * 864e5 - 7 * 36e5) / 1e3)
+    } });
+  }
+  return fail(409, "H\xE3y th\u1EED l\u1EA1i.");
+}
+function startTrialTower(ctx, logger, nk, payload) {
+  const fail = (code, message, extra = {}) => JSON.stringify(Object.assign({ success: false, code, message }, extra));
+  if (!ctx.userId) return fail("AUTH_REQUIRED", "Authentication required");
+  let req;
+  try {
+    req = JSON.parse(payload || "{}");
+  } catch (_e) {
+    return fail("INVALID_REQUEST", "Invalid JSON");
+  }
+  if (!req || typeof req !== "object" || Array.isArray(req) || !Number.isInteger(req.floor) || req.floor < 1 || req.floor > 20 || typeof req.hero_id !== "string" || typeof req.request_id !== "string" || !/^[a-zA-Z0-9_-]{8,128}$/.test(req.request_id)) return fail("INVALID_REQUEST", "Y\xEAu c\u1EA7u kh\xF4ng h\u1EE3p l\u1EC7.");
+  const status = JSON.parse(trialTowerStatus(ctx, logger, nk, "{}"));
+  if (!status.success) return JSON.stringify(status);
+  if (req.floor > status.snapshot.highest_cleared + 1) return fail("FLOOR_LOCKED", "Ch\u01B0a m\u1EDF t\u1EA7ng n\xE0y.");
+  const config = readContentConfig(nk, "trial_tower"), rules = config.combat_rules, arena = config.arena;
+  if (!arena || !Array.isArray(arena.world_size) || arena.world_size.length !== 2 || arena.world_size.some((v) => !Number.isFinite(v) || v > 1e4) || arena.world_size[0] < 720 || arena.world_size[1] < 1280 || !Number.isFinite(arena.edge_margin) || arena.edge_margin <= 0 || arena.edge_margin >= Math.min(...arena.world_size) / 4 || !Number.isFinite(arena.spawn_gap) || arena.spawn_gap <= 0 || arena.spawn_gap >= arena.world_size[1] - 2 * arena.edge_margin)
+    return fail("CONFIG_INVALID", "Ch\u01B0a c\u1EA5u h\xECnh \u0111\u1EA5u tr\u01B0\u1EDDng th\xE1p.");
+  if (!rules || !Number.isFinite(rules.frenzy_after_sec) || rules.frenzy_after_sec <= 0 || !(rules.frenzy_atk_per_sec > 0) || !(rules.frenzy_resist_per_sec > 0) || !(rules.frenzy_resist_cap >= 0 && rules.frenzy_resist_cap < 100) || !(rules.frenzy_control_resist_per_sec > 0))
+    return fail("CONFIG_INVALID", "Ch\u01B0a c\u1EA5u h\xECnh tr\u1EADn th\xE1p.");
+  const refs = [
+    { collection: "player_profiles", key: "main", userId: ctx.userId },
+    { collection: "player_heroes", key: "states", userId: ctx.userId },
+    { collection: "player_stage_runs", key: "active", userId: ctx.userId },
+    { collection: "player_inventory", key: "items", userId: ctx.userId },
+    { collection: "player_trial_tower", key: "main", userId: ctx.userId }
+  ];
+  const rows = nk.storageRead(refs), p = rows.find((r) => r.collection === "player_profiles"), h = rows.find((r) => r.collection === "player_heroes"), old = rows.find((r) => r.collection === "player_stage_runs"), inv = rows.find((r) => r.collection === "player_inventory");
+  if (!p || !h) return fail("PROFILE_INCOMPLETE", "Ch\u01B0a t\u1EA3i \u0111\u1EE7 nh\xE2n v\u1EADt.");
+  const profile = cpObject(p.value), previous = old ? cpObject(old.value) : {};
+  if (previous.request_id === req.request_id && previous.stage_id === "stage_trial_tower") {
+    if (previous.hero_id !== req.hero_id || previous.floor !== req.floor) return fail("REQUEST_CONFLICT", "Y\xEAu c\u1EA7u \u0111\xE3 d\xF9ng.");
+    if (previous.status === "active" && previous.expires_at_ms > Date.now()) return JSON.stringify({ success: true, run: previous });
+    return fail("REQUEST_COMPLETED", "L\u01B0\u1EE3t th\u1EED n\xE0y \u0111\xE3 k\u1EBFt th\xFAc.");
+  }
+  if (previous.status === "active" && previous.expires_at_ms > Date.now()) return fail(
+    previous.stage_id === "stage_trial_tower" ? "TOWER_RUN_ACTIVE" : "COMBAT_ACTIVE",
+    "B\u1EA1n \u0111ang c\xF3 tr\u1EADn ch\u01B0a k\u1EBFt th\xFAc.",
+    previous.stage_id === "stage_trial_tower" ? { run_id: previous.run_id } : {}
+  );
+  if ((profile.breakthrough || {}).in_tribulation || sweepCombatError(profile)) return fail("COMBAT_ACTIVE", "H\xE3y k\u1EBFt th\xFAc ho\u1EA1t \u0111\u1ED9ng hi\u1EC7n t\u1EA1i.");
+  const towerRow = rows.find((r) => r.collection === "player_trial_tower");
+  if (!towerRow || Number(towerRow.value.tickets || 0) < 1) return fail("NO_TOWER_ENTRIES", "Kh\xF4ng c\xF2n l\u01B0\u1EE3t v\xE0o th\xE1p.");
+  const catalog = readCombatPowerCatalog(nk), hero = catalog.heroes.find((v) => v.id === req.hero_id), state = cpArray(h.value.heroes).find((v) => v.hero_id === req.hero_id);
+  if (!hero || !state || state.owned !== true) return fail("HERO_NOT_OWNED", "B\u1EA1n ch\u01B0a s\u1EDF h\u1EEFu nh\xE2n v\u1EADt n\xE0y.");
+  const level = Math.max(1, Math.min(50, Number(state.level) || 1));
+  const storedAttributes = cpObject(state.current_attribute);
+  const demonAttributes = Object.assign({}, Object.keys(storedAttributes).length ? storedAttributes : progressionHeroAttributes(nk, req.hero_id, level));
+  const heroElementProfile = { affinities: Object.assign({}, cpObject(profile.element_affinities)), levels: Object.assign({}, cpObject(profile.elements)) };
+  const zeroRoots = {};
+  for (const key of Object.keys(heroElementProfile.affinities).concat(Object.keys(heroElementProfile.levels))) zeroRoots[key] = 0;
+  const demonElementProfile = { affinities: Object.assign({}, heroElementProfile.affinities), levels: zeroRoots };
+  const attrs = cpApplyEquipment(
+    demonAttributes,
+    cpEquipped(cpArray(inv && inv.value.items), catalog.items),
+    catalog.progression.combat_power,
+    catalog.progression.element_combat
+  );
+  if (!(attrs.hp > 0) || !(attrs.atk > 0) || Object.keys(attrs).some((k) => !Number.isFinite(attrs[k]))) return fail("CONFIG_INVALID", "Ch\u1EC9 s\u1ED1 nh\xE2n v\u1EADt kh\xF4ng h\u1EE3p l\u1EC7.");
+  const prep = config.preparation;
+  if (!prep || prep.combat_level !== 20 || prep.upgrade_count !== 19 || prep.countdown_sec !== 5 || !Array.isArray(prep.supports) || prep.supports.length !== 5)
+    return fail("CONFIG_INVALID", "Ch\u01B0a c\u1EA5u h\xECnh chu\u1EA9n b\u1ECB th\xE1p.");
+  const skillRows = nk.sqlQuery("SELECT id,display_name,criteria_unlock,hero_level_unlock,levels FROM game_skills WHERE id IN (SELECT jsonb_array_elements_text(skill_pool) FROM game_heroes WHERE id=$1) ORDER BY id", [req.hero_id]);
+  const draftCatalog = skillRows.filter((s) => cpArray(s.levels).length > 0 && Number(s.hero_level_unlock || 1) <= level && Number(cpObject(s.criteria_unlock).level || 1) <= 20).map((s) => ({
+    id: s.id,
+    skill_id: s.id,
+    title: s.display_name,
+    priority: 0,
+    max_level: cpArray(s.levels).length,
+    required_skill: cpObject(s.criteria_unlock).required_skill || "",
+    icon_id: s.id
+  })).concat(prep.supports);
+  const skills = {};
+  const starting = cpArray(hero.starting_skills).map((s) => typeof s === "string" ? s : s.skill_id || s.id).find((id) => draftCatalog.some((c) => c.skill_id === id));
+  if (starting) skills[starting] = 1;
+  if (!Object.keys(skills).length) return fail("CONFIG_INVALID", "Ch\u01B0a c\u1EA5u h\xECnh k\u1EF9 n\u0103ng.");
+  const issued = talismanCreateStageRun(nk, ctx.userId, "stage_trial_tower", "floor_" + req.floor);
+  const run = Object.assign(issued.run, {
+    request_id: req.request_id,
+    floor: req.floor,
+    hero_id: req.hero_id,
+    skill_levels: skills,
+    attributes: attrs,
+    stat_multiplier: status.snapshot.floors[req.floor - 1].stat_multiplier,
+    speed_multiplier: status.snapshot.floors[req.floor - 1].speed_multiplier,
+    combat_rules: rules,
+    demon_attributes: demonAttributes,
+    hero_element_profile: heroElementProfile,
+    demon_element_profile: demonElementProfile,
+    phase: "preparing",
+    combat_level: 20,
+    upgrade_count: 19,
+    countdown_sec: 5,
+    draft_catalog: draftCatalog,
+    skill_unlock_version: 4,
+    arena
+  });
+  profile.activity = { type: "combat", activity_id: run.run_id };
+  try {
+    nk.storageWrite([
+      __spreadProps(__spreadValues({}, refs[0]), { value: profile, version: p.version, permissionRead: 0, permissionWrite: 0 }),
+      __spreadProps(__spreadValues({}, refs[4]), { value: Object.assign({}, towerRow.value, { tickets: towerRow.value.tickets - 1 }), version: towerRow.version, permissionRead: 0, permissionWrite: 0 }),
+      __spreadProps(__spreadValues({}, refs[2]), { value: run, version: issued.version, permissionRead: 0, permissionWrite: 0 })
+    ]);
+  } catch (_e) {
+    return fail("CONFLICT", "C\xF3 thao t\xE1c kh\xE1c. H\xE3y th\u1EED l\u1EA1i.");
+  }
+  return JSON.stringify({ success: true, run });
+}
+function towerDraftLegal(c, levels) {
+  return !c.skill_id || (levels[c.skill_id] || 0) < c.max_level && (!c.required_skill || levels[c.required_skill] > 0);
+}
+function towerDraftApply(c, levels) {
+  if (c.skill_id) levels[c.skill_id] = (levels[c.skill_id] || 0) + 1;
+}
+function prepareTrialTower(ctx, _logger, nk, payload) {
+  const fail = (code, message) => JSON.stringify({ success: false, code, message });
+  if (!ctx.userId) return fail("AUTH_REQUIRED", "Authentication required");
+  let req;
+  try {
+    req = JSON.parse(payload || "{}");
+  } catch (_e) {
+    return fail("INVALID_REQUEST", "Invalid JSON");
+  }
+  if (!req || typeof req.run_id !== "string" || !Array.isArray(req.picks) || req.picks.length !== 19 || req.picks.some((p) => typeof p !== "string"))
+    return fail("INVALID_BUILD", "C\u1EA7n ch\u1ECDn \u0111\u1EE7 19 n\xE2ng c\u1EA5p.");
+  const ref = { collection: "player_stage_runs", key: "active", userId: ctx.userId }, rows = nk.storageRead([ref]);
+  const row = rows[0], run = row && cpObject(row.value);
+  if (!run || run.run_id !== req.run_id || run.stage_id !== "stage_trial_tower" || run.status !== "active") return fail("RUN_MISMATCH", "Tr\u1EADn kh\xF4ng h\u1EE3p l\u1EC7.");
+  if (Date.now() > run.expires_at_ms) return fail("RUN_EXPIRED", "Tr\u1EADn \u0111\xE3 h\u1EBFt h\u1EA1n.");
+  if (run.skill_unlock_version !== 4) return fail("RUN_RULES_CHANGED", "Lu\u1EADt k\u1EF9 n\u0103ng \u0111\xE3 thay \u0111\u1ED5i. H\xE3y v\u1EC1 th\xE1p \u0111\u1EC3 t\u1EA1o tr\u1EADn m\u1EDBi.");
+  if (run.phase === "countdown") return JSON.stringify(run.player_picks && JSON.stringify(run.player_picks) === JSON.stringify(req.picks) ? { success: true, run } : { success: false, code: "BUILD_LOCKED", message: "Build \u0111\xE3 x\xE1c nh\u1EADn." });
+  if (run.phase !== "preparing" || !Array.isArray(run.draft_catalog)) return fail("RUN_MISMATCH", "H\xE3y v\xE0o l\u1EA1i th\xE1p.");
+  const levels = Object.assign({}, run.skill_levels);
+  for (const id of req.picks) {
+    const c = run.draft_catalog.find((v) => v.id === id);
+    if (!c || !towerDraftLegal(c, levels)) return fail("INVALID_BUILD", "N\xE2ng c\u1EA5p kh\xF4ng h\u1EE3p l\u1EC7.");
+    towerDraftApply(c, levels);
+  }
+  const aiLevels = Object.assign({}, run.skill_levels), aiPicks = [];
+  for (let i = 0; i < 19; i++) {
+    const pool = run.draft_catalog.filter((c) => towerDraftLegal(c, aiLevels)), offer = [];
+    while (pool.length && offer.length < 3) offer.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]);
+    if (!offer.length) return fail("CONFIG_INVALID", "Kh\xF4ng \u0111\u1EE7 n\xE2ng c\u1EA5p cho T\xE2m Ma.");
+    const priority = Math.min(...offer.map((c) => c.priority)), best = offer.filter((c) => c.priority === priority), chosen = best[Math.floor(Math.random() * best.length)];
+    aiPicks.push(chosen.id);
+    towerDraftApply(chosen, aiLevels);
+  }
+  run.player_picks = req.picks;
+  run.demon_picks = aiPicks;
+  run.phase = "countdown";
+  run.combat_started_at_ms = Date.now() + 5e3;
+  try {
+    nk.storageWrite([__spreadProps(__spreadValues({}, ref), { value: run, version: row.version, permissionRead: 0, permissionWrite: 0 })]);
+  } catch (_e) {
+    return fail("CONFLICT", "Ch\u01B0a x\xE1c nh\u1EADn \u0111\u01B0\u1EE3c build. H\xE3y th\u1EED l\u1EA1i.");
+  }
+  return JSON.stringify({ success: true, run });
+}
+function finishTrialTower(ctx, _logger, nk, payload) {
+  const fail = (code, message) => JSON.stringify({ success: false, code, message });
+  if (!ctx.userId) return fail("AUTH_REQUIRED", "Authentication required");
+  let req;
+  try {
+    req = JSON.parse(payload || "{}");
+  } catch (_e) {
+    return fail("INVALID_REQUEST", "Invalid JSON");
+  }
+  if (!req || typeof req.run_id !== "string" || ["win", "loss", "abandon"].indexOf(req.result) < 0) return fail("INVALID_REQUEST", "K\u1EBFt qu\u1EA3 kh\xF4ng h\u1EE3p l\u1EC7.");
+  const refs = [
+    { collection: "player_stage_runs", key: "active", userId: ctx.userId },
+    { collection: "player_trial_tower", key: "main", userId: ctx.userId },
+    { collection: "player_profiles", key: "main", userId: ctx.userId }
+  ];
+  const rows = nk.storageRead(refs), r = rows.find((v) => v.collection === "player_stage_runs"), t = rows.find((v) => v.collection === "player_trial_tower"), p = rows.find((v) => v.collection === "player_profiles");
+  if (!r || !t || !p) return fail("RUN_MISSING", "Kh\xF4ng t\xECm th\u1EA5y tr\u1EADn.");
+  const run = cpObject(r.value), tower = cpObject(t.value), profile = cpObject(p.value);
+  if (run.run_id !== req.run_id || run.stage_id !== "stage_trial_tower") return fail("RUN_MISMATCH", "Tr\u1EADn kh\xF4ng h\u1EE3p l\u1EC7.");
+  if (run.status === "settled") return run.result === req.result ? JSON.stringify({ success: true, duplicate: true, result: run.result, highest_cleared: tower.highest_cleared, rewards: run.tower_rewards || [], rewards_granted: run.tower_rewards !== void 0 }) : fail("RESULT_CONFLICT", "Tr\u1EADn \u0111\xE3 k\u1EBFt th\xFAc.");
+  if (run.status !== "active") return fail("RUN_CLOSED", "Tr\u1EADn \u0111\xE3 k\u1EBFt th\xFAc.");
+  if (req.result !== "abandon") {
+    if (run.phase !== "countdown" || !Number.isFinite(run.combat_started_at_ms) || Date.now() < run.combat_started_at_ms) return fail("NOT_STARTED", "Tr\u1EADn ch\u01B0a b\u1EAFt \u0111\u1EA7u.");
+    if (Date.now() > run.expires_at_ms) return fail("RUN_EXPIRED", "Tr\u1EADn \u0111\xE3 h\u1EBFt h\u1EA1n.");
+    if (!Number.isFinite(req.player_hp) || !Number.isFinite(req.demon_hp) || req.player_hp < 0 || req.demon_hp < 0 || (req.result === "win" ? req.player_hp <= 0 || req.demon_hp !== 0 : req.player_hp !== 0)) return fail("INVALID_RESULT", "Sinh l\u1EF1c k\u1EBFt th\xFAc kh\xF4ng h\u1EE3p l\u1EC7.");
+    if (req.result === "win" && Date.now() - run.combat_started_at_ms < run.min_win_duration_ms) return fail("TOO_EARLY", "Ch\u01B0a th\u1EC3 x\xE1c nh\u1EADn k\u1EBFt qu\u1EA3. H\xE3y th\u1EED l\u1EA1i.");
+  }
+  if (!Number.isInteger(tower.highest_cleared) || run.floor > tower.highest_cleared + 1) return fail("PROGRESS_CONFLICT", "Ti\u1EBFn \u0111\u1ED9 kh\xF4ng h\u1EE3p l\u1EC7.");
+  const rewardWrites = [], rewardState = {};
+  if (req.result === "win") {
+    const rewardRows = nk.storageRead([{ collection: "player_inventory", key: "items", userId: ctx.userId }, { collection: "player_heroes", key: "states", userId: ctx.userId }]);
+    const inv = rewardRows.find((r2) => r2.collection === "player_inventory"), heroRow = rewardRows.find((r2) => r2.collection === "player_heroes");
+    if (!inv || !heroRow) return fail("PROFILE_INCOMPLETE", "Thi\u1EBFu d\u1EEF li\u1EC7u ph\u1EA7n th\u01B0\u1EDFng.");
+    const inventory = cpObject(inv.value), heroes = cpObject(heroRow.value), hero = cpArray(heroes.heroes).find((h) => h.hero_id === run.hero_id && h.owned === true);
+    if (!hero) return fail("HERO_NOT_OWNED", "Kh\xF4ng t\xECm th\u1EA5y t\u01B0\u1EDBng.");
+    const floorDefinition = readContentConfig(nk, "trial_tower").floors[run.floor - 1];
+    let rewards;
+    try {
+      rewards = towerRewardEntries(nk, run.floor > tower.highest_cleared ? floorDefinition.first_rewards : floorDefinition.repeat_rewards, profile, run.floor);
+    } catch (_e) {
+      return fail("REWARD_CONFIG_INVALID", "C\u1EA5u h\xECnh th\u01B0\u1EDFng kh\xF4ng h\u1EE3p l\u1EC7.");
+    }
+    let exp = 0;
+    inventory.items = cpArray(inventory.items);
+    profile.resources = cpObject(profile.resources);
+    for (const reward of rewards) {
+      if (reward.kind === "exp") {
+        reward.amount = Math.floor(reward.amount * progressionGameplayBoostMultiplier(profile, "exp"));
+        exp += reward.amount;
+      } else if (reward.kind === "item") {
+        if (!serverGrantInventoryItem(nk, inventory.items, reward.item_id, reward.amount)) return fail("REWARD_ITEM_INVALID", "V\u1EADt ph\u1EA9m th\u01B0\u1EDFng kh\xF4ng h\u1EE3p l\u1EC7.");
+      } else {
+        if (reward.kind === "gold") reward.amount = Math.floor(reward.amount * progressionGameplayBoostMultiplier(profile, "gold"));
+        const balance = Number(profile.resources[reward.kind] || 0) + reward.amount;
+        if (!Number.isSafeInteger(balance)) return fail("RESOURCE_OVERFLOW", "S\u1ED1 d\u01B0 v\u01B0\u1EE3t gi\u1EDBi h\u1EA1n.");
+        profile.resources[reward.kind] = balance;
+      }
+    }
+    progressionApplyUser(nk, profile, exp);
+    progressionReconcileLevelUnlocks(nk, profile);
+    let level = Number(hero.level || 1), xp = Number(hero.exp || 0) + exp, next = progressionNextHeroExp(nk, level);
+    while (level < Math.min(PROGRESSION_MAX_LEVEL, profile.level) && next > 0 && xp >= next) {
+      xp -= next;
+      level++;
+      next = progressionNextHeroExp(nk, level);
+    }
+    hero.level = level;
+    hero.exp = level >= PROGRESSION_MAX_LEVEL ? 0 : xp;
+    hero.next_level_exp = level >= PROGRESSION_MAX_LEVEL ? 0 : next;
+    hero.current_attribute = progressionHeroAttributes(nk, run.hero_id, level);
+    run.tower_rewards = rewards;
+    rewardState.inventory = inventory;
+    rewardState.heroes = heroes.heroes;
+    rewardWrites.push({ collection: "player_inventory", key: "items", userId: ctx.userId, value: inventory, version: inv.version, permissionRead: 1, permissionWrite: 0 }, { collection: "player_heroes", key: "states", userId: ctx.userId, value: heroes, version: heroRow.version, permissionRead: 1, permissionWrite: 0 });
+    tower.highest_cleared = Math.max(tower.highest_cleared, run.floor);
+  }
+  run.status = "settled";
+  run.result = req.result;
+  run.settled_at_ms = Date.now();
+  if ((profile.activity || {}).activity_id === run.run_id) delete profile.activity;
+  try {
+    nk.storageWrite([
+      __spreadProps(__spreadValues({}, refs[0]), { value: run, version: r.version, permissionRead: 0, permissionWrite: 0 }),
+      __spreadProps(__spreadValues({}, refs[1]), { value: tower, version: t.version, permissionRead: 0, permissionWrite: 0 }),
+      __spreadProps(__spreadValues({}, refs[2]), { value: profile, version: p.version, permissionRead: 0, permissionWrite: 0 })
+    ].concat(rewardWrites));
+  } catch (_e) {
+    return fail("CONFLICT", "Ch\u01B0a l\u01B0u \u0111\u01B0\u1EE3c k\u1EBFt qu\u1EA3. H\xE3y th\u1EED l\u1EA1i.");
+  }
+  return JSON.stringify(Object.assign({ success: true, result: req.result, highest_cleared: tower.highest_cleared, rewards: run.tower_rewards || [], rewards_granted: run.tower_rewards !== void 0, profile }, rewardState));
+}
 const PROGRESSION_VERSION = 2;
 const PROGRESSION_MAX_LEVEL = 50;
 const PROGRESSION_HERO_BASE_EXP = 1e3;
@@ -5800,6 +6158,14 @@ function progressionNextUserExp(nk, level) {
   const prev = progressionCumulativeUserExp(level - 1);
   return Math.max(1, current - prev);
 }
+function progressionGameplayBoostMultiplier(profile, resource, now = Date.now()) {
+  const boosts = progressionObject(profile && profile.gameplay_boosts);
+  const boost = progressionObject(boosts[resource]);
+  const expiry = Number(boost.expires_at_ms || 0);
+  const multiplier = Number(boost.multiplier || 1);
+  if (expiry <= now || !Number.isFinite(multiplier) || multiplier < 1 || multiplier > 5) return 1;
+  return multiplier;
+}
 function progressionApplyUser(nk, profile, awarded) {
   cultivationEnsureSources(profile);
   let level = Math.max(1, Math.min(PROGRESSION_MAX_LEVEL, Number(profile.level || 1)));
@@ -6050,7 +6416,9 @@ const awardStageProgression = (ctx, _logger, nk, payload) => {
   const isTrainingStage = stageId === "stage_0_1" || String(stageRows[0].arc_id || "") === "arc_0";
   const ordinaryExp = isTrainingStage ? 0 : Math.max(0, Math.round(requestedBaseExp * multiplier));
   const firstClearBonusExp = firstClear ? ordinaryExp : 0;
-  const awardedExp = ordinaryExp + firstClearBonusExp;
+  const expBoostMultiplier = progressionGameplayBoostMultiplier(profile, "exp");
+  const awardedExp = Math.max(0, Math.round((ordinaryExp + firstClearBonusExp) * expBoostMultiplier));
+  const boostedFirstClearBonusExp = Math.max(0, Math.round(firstClearBonusExp * expBoostMultiplier));
   const userResult = progressionApplyUser(nk, profile, awardedExp);
   cultivationEnsurePreview(nk, profile);
   [
@@ -6102,9 +6470,11 @@ const awardStageProgression = (ctx, _logger, nk, payload) => {
     }
   }
   const loot = [];
+  const goldBoostMultiplier = progressionGameplayBoostMultiplier(profile, "gold");
   if (won) {
     const rewards = sweepRoll(sweepRewardTable(nk, stageId, difficultyId, stageRows[0], difficultyRows[0], grade));
     for (const reward of rewards) {
+      if (reward.resource_id === "gold") reward.quantity = Math.max(0, Math.round(Number(reward.quantity || 0) * goldBoostMultiplier));
       if (reward.item_id) {
         if (!serverGrantInventoryItem(nk, inventoryItems, reward.item_id, reward.quantity)) throw new Error("REWARD_ITEM_INVALID");
       } else if (reward.resource_id) {
@@ -6122,7 +6492,7 @@ const awardStageProgression = (ctx, _logger, nk, payload) => {
     eligible: won && !isTrainingStage && (awardedExp > 0 || loot.length > 0),
     hero_id: heroId,
     base_exp: awardedExp,
-    first_clear_bonus_exp: firstClearBonusExp,
+    first_clear_bonus_exp: boostedFirstClearBonusExp,
     base_loot: loot.slice(),
     claimed: false
   };
@@ -6131,6 +6501,10 @@ const awardStageProgression = (ctx, _logger, nk, payload) => {
     if (quantity > 0) {
       if (!serverGrantInventoryItem(nk, inventoryItems, SWEEP_TICKET, quantity)) throw new Error("SWEEP_TICKET_CONFIG_MISSING");
       loot.push({ item_id: SWEEP_TICKET, quantity });
+    }
+    if (stageRows[0].is_boss === true && /^stage_[1-5]_10$/.test(stageId) && Math.random() < Number(towerSweepConfig(nk).boss_ticket_rates[difficultyId] || 0)) {
+      if (!serverGrantInventoryItem(nk, inventoryItems, TOWER_SWEEP_TICKET, 1)) throw Error("TOWER_TICKET_CONFIG_MISSING");
+      loot.push({ item_id: TOWER_SWEEP_TICKET, quantity: 1 });
     }
   }
   nk.storageWrite([
@@ -6167,7 +6541,8 @@ const awardStageProgression = (ctx, _logger, nk, payload) => {
     stage_reward: stageRewardSummary(run),
     exp_awarded: awardedExp,
     first_clear: firstClear,
-    first_clear_bonus_exp: firstClearBonusExp,
+    first_clear_bonus_exp: boostedFirstClearBonusExp,
+    gameplay_boosts: { exp: expBoostMultiplier, gold: goldBoostMultiplier },
     profile: userResult,
     inventory: inventoryValue,
     resources: profile.resources,
@@ -6817,6 +7192,7 @@ function dailyPackState(profile, now) {
       day: day + 1,
       days_remaining: active ? 30 - day : 0,
       expires_at: pack ? Math.floor(Number(pack.expires_at_ms) / 1e3) : 0,
+      rewards: active && Array.isArray(pack.rewards) ? pack.rewards : [],
       next_claim_at: active ? Math.floor((Number(pack.started_at_ms) + (day + 1) * DAILY_PACK_DAY_MS) / 1e3) : 0
     };
   }
@@ -6904,7 +7280,8 @@ function applyPurchaseStorageRewards(nk, userId, grantId, productId, fulfillment
   const profileObjects = nk.storageRead([{ collection: "player_profiles", key: "main", userId }]);
   if (profileObjects.length === 0) throw new Error("Player profile does not exist");
   const profile = profileObjects[0].value || {};
-  const recurring = DAILY_PACK_IDS.indexOf(productId) >= 0 && rewards.length > 0 && rewards.every((line) => line.metadata && Number(line.metadata.daily_pack_days) === 30);
+  const dailyRewards = DAILY_PACK_IDS.indexOf(productId) >= 0 ? rewards.filter((line) => line.metadata && Number(line.metadata.daily_pack_days) === 30) : [];
+  const recurring = dailyRewards.length > 0;
   if (recurring) {
     profile.daily_packs = profile.daily_packs || {};
     const existing = profile.daily_packs[productId];
@@ -6916,19 +7293,22 @@ function applyPurchaseStorageRewards(nk, userId, grantId, productId, fulfillment
       started_at_ms: now,
       expires_at_ms: now + 30 * DAILY_PACK_DAY_MS,
       last_claim_day: -1,
-      rewards: rewards.map((line) => ({ reward_type: line.reward_type, reward_id: line.reward_id, quantity: line.quantity }))
+      rewards: dailyRewards.map((line) => ({ reward_type: line.reward_type, reward_id: line.reward_id, quantity: line.quantity }))
     };
     profile.daily_packs[productId] = pack;
-    nk.storageWrite([{
-      collection: "player_profiles",
-      key: "main",
-      userId,
-      value: profile,
-      permissionRead: 1,
-      permissionWrite: 0,
-      version: profileObjects[0].version
-    }]);
-    return { daily_pack: pack };
+    rewards = rewards.filter((line) => dailyRewards.indexOf(line) < 0);
+    if (!rewards.length) {
+      nk.storageWrite([{
+        collection: "player_profiles",
+        key: "main",
+        userId,
+        value: profile,
+        permissionRead: 1,
+        permissionWrite: 0,
+        version: profileObjects[0].version
+      }]);
+      return { daily_pack: pack };
+    }
   }
   const profileGrants = Array.isArray(profile._iap_reward_ids) ? profile._iap_reward_ids.map((value) => String(value)) : [];
   if (profileGrants.indexOf(grantId) < 0) {
@@ -7064,7 +7444,8 @@ const createPurchaseOrder = (ctx, _logger, nk, payload) => {
     }, idempotent: true });
   }
   const monthlyCatalog = DAILY_PACK_IDS.indexOf(productId) >= 0 && Number((parseJsonb(product.ui) || {}).duration_days) === 30;
-  const pending = previous.find((row) => String(row.status) === "pending" && (!monthlyCatalog || Array.isArray(parseJsonb(row.reward_snapshot)) && parseJsonb(row.reward_snapshot).length > 0 && parseJsonb(row.reward_snapshot).every((line) => Number((line.metadata || {}).daily_pack_days) === 30)));
+  const catalogPricingVersion = Number((parseJsonb(product.ui) || {}).pricing_version || 0);
+  const pending = previous.find((row) => String(row.status) === "pending" && (!monthlyCatalog || Array.isArray(parseJsonb(row.reward_snapshot)) && parseJsonb(row.reward_snapshot).length > 0 && parseJsonb(row.reward_snapshot).some((line) => Number((line.metadata || {}).daily_pack_days) === 30)) && (!catalogPricingVersion || Array.isArray(parseJsonb(row.reward_snapshot)) && parseJsonb(row.reward_snapshot).length > 0 && parseJsonb(row.reward_snapshot).every((line) => Number((line.metadata || {}).pricing_version || 0) === catalogPricingVersion)));
   if (pending) {
     return JSON.stringify({ status: "success", data: {
       purchase_order_id: String(pending.id),
@@ -8889,6 +9270,50 @@ const weeklyLeaderboardTickRpc = (ctx, _logger, nk, _payload) => {
 };
 
 const SWEEP_TICKET = "campaign_sweep_ticket";
+const TOWER_SWEEP_TICKET = "tower_sweep_ticket";
+const TOWER_SWEEP_DEFAULTS = { version: 1, enabled: true, round_duration_ms: 9e4, max_rounds: 100, stamina_cost: 2, entry_cost: 1, ticket_cost: 1, boss_ticket_rates: { normal: 0.05, epic: 0.075, legend: 0.1 } };
+function towerSweepConfig(nk) {
+  const c = getRemoteConfigValue(nk, "system", "tower_sweep", null);
+  return towerSweepValidateConfig(c);
+}
+function towerSweepValidateConfig(c) {
+  if (!c || c.version !== 1 || typeof c.enabled !== "boolean" || !Number.isSafeInteger(c.round_duration_ms) || c.round_duration_ms < 1e3 || !Number.isSafeInteger(c.max_rounds) || c.max_rounds < 1 || c.max_rounds > 100 || c.stamina_cost !== 2 || c.entry_cost !== 1 || c.ticket_cost !== 1 || !c.boss_ticket_rates || ["normal", "epic", "legend"].some((k) => !Number.isFinite(c.boss_ticket_rates[k]) || c.boss_ticket_rates[k] < 0 || c.boss_ticket_rates[k] > 1)) throw Error("TOWER_SWEEP_CONFIG_INVALID");
+  return c;
+}
+function towerRewardEntries(nk, rewards, profile, floor) {
+  if (!Array.isArray(rewards)) throw Error("TOWER_REWARD_INVALID");
+  return rewards.map((r) => {
+    if (!r || ["exp", "gold", "gems", "item"].indexOf(r.kind) < 0) throw Error("TOWER_REWARD_INVALID");
+    if (r.kind === "exp" && (!Number.isInteger(profile.level) || profile.level < 1 || profile.level > 50)) throw Error("TOWER_PROFILE_LEVEL_INVALID");
+    const amount = r.kind === "exp" ? Math.ceil(progressionNextUserExp(nk, Number(profile.level || 1)) * 5e-3 * Number(profile.level || 1) * floor / 100 / 5e3) * 5e3 : Number(r.amount);
+    if (!Number.isSafeInteger(amount) || amount < 0 || r.kind === "item" && !r.item_id) throw Error("TOWER_REWARD_INVALID");
+    return Object.assign({}, r, { amount, label: r.kind === "exp" ? amount + " EXP" : r.label });
+  });
+}
+function towerSweepPreview(nk, s, req) {
+  const c = towerSweepConfig(nk), floor = Number(req.floor);
+  if (!c.enabled) throw Error("SWEEP_DISABLED");
+  if (!Number.isInteger(floor) || floor < 1 || floor > 20 || !s.t || floor > Number(s.tower.highest_cleared)) throw Error("FLOOR_NOT_CLEARED");
+  if (!(s.heroes.heroes || []).some((h) => h.hero_id === req.hero_id && h.owned === true)) throw Error("HERO_NOT_OWNED");
+  const definition = readContentConfig(nk, "trial_tower").floors[floor - 1];
+  const entries = towerRewardEntries(nk, definition.repeat_rewards, s.profile, floor);
+  const items = entries.filter((r) => r.kind !== "exp").map((r) => ({ item_id: r.kind === "item" ? r.item_id : void 0, resource_id: r.kind === "item" ? void 0 : r.kind, quantity: r.amount, drop_rate: 1 }));
+  const held = sweepActive(s.profile) ? s.profile.sweep : null;
+  return {
+    sweep_type: "tower",
+    floor,
+    ticket_item_id: TOWER_SWEEP_TICKET,
+    stamina_cost: 2,
+    entry_cost: 1,
+    items,
+    exp: entries.filter((r) => r.kind === "exp").reduce((n, r) => n + r.amount, 0),
+    modifiers: { exp: progressionGameplayBoostMultiplier(s.profile, "exp"), gold: progressionGameplayBoostMultiplier(s.profile, "gold") },
+    round_duration_ms: c.round_duration_ms,
+    max_rounds: Math.max(0, Math.min(c.max_rounds, sweepCount(s.inventory.items || [], TOWER_SWEEP_TICKET) - (held && held.sweep_type === "tower" ? held.reserved_tickets : 0), Math.floor((Number(s.profile.stamina || 0) - (held ? held.reserved_stamina : 0)) / 2), Number(s.tower.tickets || 0) - (held ? Number(held.reserved_entries || 0) : 0))),
+    arc_id: "tower",
+    config: c
+  };
+}
 const SWEEP_DEFAULTS = {
   version: 1,
   enabled: true,
@@ -8952,7 +9377,7 @@ function sweepResourceRuntime(base, userId) {
           if (!profileWrite) writes.push({ collection: "player_profiles", key: "main", userId, value: old, version: rows[0].version, permissionRead: 1, permissionWrite: 0 });
           const held = sweepActive(next) ? next.sweep : null;
           if (held && Number(next.stamina || 0) < Number(held.reserved_stamina || 0)) throw new Error("STAMINA_RESERVED");
-          if (held && inventoryWrite && sweepCount(parseJsonObject(inventoryWrite.value).items || []) < Number(held.reserved_tickets || 0)) throw new Error("TICKETS_RESERVED");
+          if (held && inventoryWrite && sweepCount(parseJsonObject(inventoryWrite.value).items || [], held.sweep_type === "tower" ? TOWER_SWEEP_TICKET : SWEEP_TICKET) < Number(held.reserved_tickets || 0)) throw new Error("TICKETS_RESERVED");
         } else if (inventoryWrite && !profileWrite) {
           writes.push({ collection: "player_profiles", key: "main", userId, value: old, version: rows[0].version, permissionRead: 1, permissionWrite: 0 });
         }
@@ -8974,8 +9399,8 @@ function sweepSetBest(profile, stage, mode, grade) {
   const key = stage + ":" + mode;
   if (order.indexOf(grade) > order.indexOf(profile.stage_grades[key])) profile.stage_grades[key] = grade;
 }
-function sweepCount(items) {
-  return items.reduce((n, r) => n + (r.item_id === SWEEP_TICKET ? Math.max(0, Number(r.quantity) || 0) : 0), 0);
+function sweepCount(items, ticket = SWEEP_TICKET) {
+  return items.reduce((n, r) => n + (r.item_id === ticket ? Math.max(0, Number(r.quantity) || 0) : 0), 0);
 }
 function sweepStaminaTime(p, nowMs) {
   const session = p.sweep;
@@ -8992,23 +9417,25 @@ function sweepRefreshStamina(nk, p, now) {
   } else if (current >= 30 || !p.last_stamina_update) p.last_stamina_update = sec;
 }
 function sweepRead(nk, userId, nowMs = Date.now()) {
-  const rows = nk.storageRead(["player_profiles", "player_inventory", "player_heroes", "player_stage_runs"].map((collection) => ({ collection, key: collection === "player_profiles" ? "main" : collection === "player_inventory" ? "items" : collection === "player_heroes" ? "states" : "active", userId })));
+  const rows = nk.storageRead(["player_profiles", "player_inventory", "player_heroes", "player_stage_runs", "player_trial_tower"].map((collection) => ({ collection, key: collection === "player_profiles" || collection === "player_trial_tower" ? "main" : collection === "player_inventory" ? "items" : collection === "player_heroes" ? "states" : "active", userId })));
   const get = (c) => rows.find((r2) => r2.collection === c);
   const p = get("player_profiles"), i = get("player_inventory"), h = get("player_heroes"), r = get("player_stage_runs");
   if (!p || !i || !h) throw new Error("PLAYER_INCOMPLETE");
   const profile = parseJsonObject(p.value);
   sweepRefreshStamina(nk, profile, nowMs);
-  return { p, i, h, r, profile, inventory: parseJsonObject(i.value), heroes: parseJsonObject(h.value) };
+  const t = get("player_trial_tower");
+  return { p, i, h, r, t, tower: t ? parseJsonObject(t.value) : {}, profile, inventory: parseJsonObject(i.value), heroes: parseJsonObject(h.value) };
 }
 function sweepWrite(nk, userId, s, full) {
   const writes = [{ collection: "player_profiles", key: "main", userId, value: s.profile, version: s.p.version, permissionRead: 1, permissionWrite: 0 }];
   if (full) writes.push({ collection: "player_inventory", key: "items", userId, value: s.inventory, version: s.i.version, permissionRead: 1, permissionWrite: 0 }, { collection: "player_heroes", key: "states", userId, value: s.heroes, version: s.h.version, permissionRead: 1, permissionWrite: 0 });
   if (s.extraWrites) writes.push.apply(writes, s.extraWrites);
+  if (s.towerDirty && s.t) writes.push({ collection: "player_trial_tower", key: "main", userId, value: s.tower, version: s.t.version, permissionRead: 0, permissionWrite: 0 });
   nk.storageWrite(writes);
 }
 function sweepRewardTable(nk, stage, mode, stageRow, level, grade, rules = null) {
   const boss = parseJsonb(level.boss_loot_table) || [], normal = parseJsonb(level.loot_table) || [];
-  const table = (stageRow.is_boss && boss.length ? boss : normal).filter((r) => r.item_id !== SWEEP_TICKET && r.resource_id !== "gold");
+  const table = (stageRow.is_boss && boss.length ? boss : normal).filter((r) => r.item_id !== SWEEP_TICKET && r.item_id !== TOWER_SWEEP_TICKET && r.resource_id !== "gold");
   const items = table.map((r) => Object.assign({}, r, { quantity: sweepQuantity(nk, r, grade, rules) })).filter((r) => r.quantity > 0);
   if (mode === "legend" && stageRow.is_boss === true && ["stage_1_10", "stage_2_10", "stage_3_10", "stage_4_10", "stage_5_10"].indexOf(stage) >= 0) {
     const arcs = nk.sqlQuery("SELECT element FROM game_arcs WHERE id = $1", [stageRow.arc_id]);
@@ -9044,6 +9471,10 @@ function stageCompletionLoot(nk, stage, level, ticketProbabilities, rules = null
     ordinary_combat_only: true,
     quantity_outcomes: probabilities.map((probability, quantity) => ({ quantity, probability }))
   });
+  if (stage.is_boss === true && /^stage_[1-5]_10$/.test(String(stage.id))) {
+    const rate = towerSweepConfig(nk).boss_ticket_rates[level.level_id];
+    if (rate !== void 0) items.push({ item_id: TOWER_SWEEP_TICKET, min_qty: 1, max_qty: 1, drop_rate: rate, ordinary_combat_only: true });
+  }
   return items;
 }
 function stageTicketQuantity(nk, roll = Math.random()) {
@@ -9051,6 +9482,7 @@ function stageTicketQuantity(nk, roll = Math.random()) {
   return roll < probabilities[0] ? 0 : roll < probabilities[0] + probabilities[1] ? 1 : 2;
 }
 function sweepPreviewData(nk, s, req) {
+  if (req.sweep_type === "tower") return towerSweepPreview(nk, s, req);
   const c = sweepConfig(nk), stage = String(req.stage_id || ""), mode = String(req.level_id || "");
   if (!c.enabled) throw new Error("SWEEP_DISABLED");
   if (!s.profile.stage_grades || s.profile.stage_grades[stage + ":" + mode] !== "S") throw new Error("STAGE_S_REQUIRED");
@@ -9063,7 +9495,7 @@ function sweepPreviewData(nk, s, req) {
   const exp = Math.max(0, Math.round(progressionMaxStageBaseExp(nk, stage) * Number(stages[0].exp_weight || 1) * Number(level.exp_multiplier || 1)));
   const held = sweepActive(s.profile) ? Number(s.profile.sweep.reserved_tickets || 0) : 0;
   const staminaHeld = sweepActive(s.profile) ? Number(s.profile.sweep.reserved_stamina || 0) : 0;
-  return { items, exp, modifiers: { exp: 1, gold: 1 }, round_duration_ms: c.round_duration_ms, max_rounds: Math.max(0, Math.min(c.max_rounds, sweepCount(s.inventory.items || []) - held, Math.floor(Number(s.profile.stamina || 0)) - staminaHeld)), arc_id: stages[0].arc_id, is_boss: stages[0].is_boss, config: c };
+  return { items, exp, modifiers: { exp: progressionGameplayBoostMultiplier(s.profile, "exp"), gold: progressionGameplayBoostMultiplier(s.profile, "gold") }, round_duration_ms: c.round_duration_ms, max_rounds: Math.max(0, Math.min(c.max_rounds, sweepCount(s.inventory.items || []) - held, Math.floor(Number(s.profile.stamina || 0)) - staminaHeld)), arc_id: stages[0].arc_id, is_boss: stages[0].is_boss, config: c };
 }
 function sweepRoll(items) {
   const rune = (r) => r.group === "rune" || String(r.item_id || "").indexOf("stone_") === 0 || String(r.item_id || "").indexOf("rune_") === 0;
@@ -9092,6 +9524,7 @@ function sweepProcess(nk, userId, logger, nowMs = Date.now(), limit = 4, atomicS
         session.status = session.cancel_at_ms !== void 0 ? "cancelled" : "completed";
         session.reserved_tickets = 0;
         session.reserved_stamina = 0;
+        session.reserved_entries = 0;
         session.state_version++;
         delete s.profile.activity;
         sweepRefreshStamina(nk, s.profile, nowMs);
@@ -9099,17 +9532,23 @@ function sweepProcess(nk, userId, logger, nowMs = Date.now(), limit = 4, atomicS
       }
       return session;
     }
-    const items = s.inventory.items || [], held = sweepCount(items);
-    if (held < 1 || Number(s.profile.stamina || 0) < 1) throw new Error("RESERVATION_CORRUPTED");
+    const towerMode = session.sweep_type === "tower", ticket = towerMode ? TOWER_SWEEP_TICKET : SWEEP_TICKET, staminaCost = towerMode ? 2 : 1;
+    const items = s.inventory.items || [], held = sweepCount(items, ticket);
+    if (held < 1 || Number(s.profile.stamina || 0) < staminaCost || towerMode && (!s.t || Number(s.tower.tickets || 0) < 1)) throw new Error("RESERVATION_CORRUPTED");
     let debit = 1;
     for (let k = items.length - 1; k >= 0 && debit; k--) {
-      if (items[k].item_id !== SWEEP_TICKET) continue;
+      if (items[k].item_id !== ticket) continue;
       const n = Math.min(debit, Number(items[k].quantity));
       items[k].quantity -= n;
       debit -= n;
       if (items[k].quantity <= 0) items.splice(k, 1);
     }
-    s.profile.stamina -= 1;
+    s.profile.stamina -= staminaCost;
+    if (towerMode) {
+      s.tower.tickets--;
+      s.towerDirty = true;
+      session.reserved_entries--;
+    }
     const modifiers = session.config_snapshot.modifiers || { exp: 1, gold: 1 };
     const rewards = sweepRoll(session.config_snapshot.items).map((r) => r.resource_id === "gold" ? Object.assign({}, r, { quantity: Math.floor(r.quantity * modifiers.gold) }) : r);
     for (const reward of rewards) {
@@ -9123,7 +9562,8 @@ function sweepProcess(nk, userId, logger, nowMs = Date.now(), limit = 4, atomicS
     const heroes = s.heroes.heroes || [], hero = heroes.find((h) => h.hero_id === session.hero_id && h.owned === true);
     if (!hero) throw new Error("HERO_NOT_OWNED");
     progressionMigrate(nk, s.profile, heroes);
-    const exp = Math.floor(session.config_snapshot.exp * modifiers.exp);
+    const baseExp = towerMode ? Math.ceil(progressionNextUserExp(nk, Number(s.profile.level || 1)) * 5e-3 * Number(s.profile.level || 1) * Number(session.floor) / 100 / 5e3) * 5e3 : session.config_snapshot.exp;
+    const exp = Math.floor(baseExp * modifiers.exp);
     progressionApplyUser(nk, s.profile, exp);
     progressionReconcileLevelUnlocks(nk, s.profile);
     let level = Number(hero.level || 1), xp = Number(hero.exp || 0) + exp, next = progressionNextHeroExp(nk, level);
@@ -9138,7 +9578,7 @@ function sweepProcess(nk, userId, logger, nowMs = Date.now(), limit = 4, atomicS
     hero.current_attribute = progressionHeroAttributes(nk, session.hero_id, level);
     session.completed_rounds++;
     session.reserved_tickets--;
-    session.reserved_stamina--;
+    session.reserved_stamina -= staminaCost;
     session.state_version++;
     session.receipts.push({ round_index: session.completed_rounds, receipt_id: session.session_id + ":" + session.completed_rounds, completed_at_ms: atomicState ? nowMs : session.next_due_at_ms, loot: rewards, exp });
     session.next_due_at_ms = session.started_at_ms + (session.completed_rounds + 1) * session.config_snapshot.round_duration_ms;
@@ -9146,6 +9586,7 @@ function sweepProcess(nk, userId, logger, nowMs = Date.now(), limit = 4, atomicS
       session.status = session.cancel_at_ms !== void 0 ? "cancelled" : "completed";
       session.reserved_tickets = 0;
       session.reserved_stamina = 0;
+      session.reserved_entries = 0;
       delete s.profile.activity;
     }
     if (!sweepActive(s.profile)) sweepRefreshStamina(nk, s.profile, nowMs);
@@ -9187,14 +9628,22 @@ const getSweepOptions = sweepRpc((ctx, _logger, nk) => {
   const held = sweepActive(s.profile) ? s.profile.sweep.reserved_tickets : 0;
   return sweepResponse(s, { options, available_tickets: Math.max(0, sweepCount(s.inventory.items || []) - held), available_stamina: Math.max(0, Number(s.profile.stamina || 0) - (sweepActive(s.profile) ? s.profile.sweep.reserved_stamina : 0)), max_rounds: c.max_rounds });
 });
-const previewSweep = sweepRpc((ctx, _logger, nk, req) => {
+const previewSweep = sweepRpc((ctx, logger, nk, req) => {
+  if (req.sweep_type === "tower") {
+    const status = JSON.parse(trialTowerStatus(ctx, logger, nk, "{}"));
+    if (!status.success) return JSON.stringify(status);
+  }
   const s = sweepRead(nk, ctx.userId);
   return sweepResponse(s, { preview: sweepPreviewData(nk, s, req) });
 });
 const startSweep = sweepRpc((ctx, _logger, nk, req) => {
+  if (req.sweep_type === "tower") {
+    const status = JSON.parse(trialTowerStatus(ctx, _logger, nk, "{}"));
+    if (!status.success) return JSON.stringify(status);
+  }
   const s = sweepRead(nk, ctx.userId), old = s.profile.sweep;
   if (typeof req.request_id !== "string" || !/^[a-zA-Z0-9_-]{8,60}$/.test(req.request_id)) throw new Error("INVALID_REQUEST_ID");
-  const fingerprint = JSON.stringify([req.stage_id, req.level_id, req.hero_id, req.rounds]), requestKey = "sweep_" + req.request_id;
+  const fingerprint = JSON.stringify(req.sweep_type === "tower" ? ["tower", req.floor, req.hero_id, req.rounds] : [req.stage_id, req.level_id, req.hero_id, req.rounds]), requestKey = "sweep_" + req.request_id;
   const requestRows = nk.storageRead([{ collection: "player_item_requests", key: requestKey, userId: ctx.userId }]);
   if (requestRows.length) {
     if (requestRows[0].value.fingerprint !== fingerprint) throw new Error("REQUEST_CONFLICT");
@@ -9209,6 +9658,7 @@ const startSweep = sweepRpc((ctx, _logger, nk, req) => {
   if (!Number.isSafeInteger(rounds) || rounds < 1 || rounds > preview.max_rounds) throw new Error("INSUFFICIENT_TICKETS_OR_STAMINA");
   const now = Date.now();
   s.profile.sweep = { session_id: nk.uuidv4(), request_id: req.request_id, stage_id: req.stage_id, level_id: req.level_id, hero_id: req.hero_id, arc_id: preview.arc_id, is_boss: preview.is_boss, total_rounds: rounds, completed_rounds: 0, started_at_ms: now, next_due_at_ms: now + preview.round_duration_ms, status: "running", reserved_tickets: rounds, reserved_stamina: rounds, config_snapshot: preview, state_version: 1, receipts: [] };
+  if (req.sweep_type === "tower") Object.assign(s.profile.sweep, { sweep_type: "tower", floor: req.floor, stage_id: "stage_trial_tower", level_id: "floor_" + req.floor, reserved_entries: rounds, reserved_stamina: rounds * 2 });
   s.profile.activity = { type: "sweeping", activity_id: s.profile.sweep.session_id };
   s.profile.sweep_request_ids = (s.profile.sweep_request_ids || []).concat([req.request_id]).slice(-100);
   s.extraWrites = [{ collection: "player_item_requests", key: requestKey, userId: ctx.userId, value: { fingerprint, session_id: s.profile.sweep.session_id, created_at: now }, version: "*", permissionRead: 0, permissionWrite: 0 }];
@@ -9227,6 +9677,7 @@ const cancelSweep = sweepRpc((ctx, logger, nk, req) => {
     session.status = "cancelled";
     session.reserved_tickets = 0;
     session.reserved_stamina = 0;
+    session.reserved_entries = 0;
     session.state_version++;
     delete s.profile.activity;
     sweepWrite(nk, ctx.userId, s, false);
@@ -9808,9 +10259,9 @@ function applyPurchaseMailRewards(nk, userId, grantId, productId, fulfillmentTyp
   const marker = { collection: "player_purchase_grants", key: grantId, userId };
   const p = nk.storageRead([{ collection: "player_profiles", key: "main", userId }])[0];
   if (nk.storageRead([marker]).length || p && Array.isArray(p.value._iap_reward_ids) && p.value._iap_reward_ids.indexOf(grantId) >= 0) return { idempotent: true };
-  const recurring = DAILY_PACK_IDS.indexOf(productId) >= 0 && rewards.length > 0 && rewards.every((r) => r.metadata && Number(r.metadata.daily_pack_days) === 30);
-  const mailed = recurring ? [] : rewards.filter((r) => ["currency", "item", "hero"].indexOf(r.reward_type) >= 0);
-  const immediate = recurring ? rewards : rewards.filter((r) => ["currency", "item", "hero"].indexOf(r.reward_type) < 0);
+  const isDaily = (r) => DAILY_PACK_IDS.indexOf(productId) >= 0 && r.metadata && Number(r.metadata.daily_pack_days) === 30;
+  const mailed = rewards.filter((r) => !isDaily(r) && ["currency", "item", "hero"].indexOf(r.reward_type) >= 0);
+  const immediate = rewards.filter((r) => isDaily(r) || ["currency", "item", "hero"].indexOf(r.reward_type) < 0);
   const writes = [], batch = Object.create(nk);
   batch.__purchaseBatch = true;
   batch.__mailBatch = true;
@@ -9981,6 +10432,18 @@ function linkedRpc_award_stage_progression(ctx, logger, nk, payload) {
 function linkedRpc_tribulation_action(ctx, logger, nk, payload) {
   return accountGuardedRpc("tribulation_action", (c, l, n, p) => gatedTribulationAction(c, l, mailCombatRuntime(n, c.userId), p))(ctx, logger, nk, payload);
 }
+function linkedRpc_get_trial_tower_status(ctx, logger, nk, payload) {
+  return accountGuardedRpc("get_trial_tower_status", (c, l, n, p) => invokeWithVersionGate(c, l, n, p, trialTowerStatus))(ctx, logger, nk, payload);
+}
+function linkedRpc_start_trial_tower(c, l, n, p) {
+  return accountGuardedRpc("start_trial_tower", (cc, ll, nn, pp) => invokeWithVersionGate(cc, ll, nn, pp, startTrialTower))(c, l, n, p);
+}
+function linkedRpc_finish_trial_tower(c, l, n, p) {
+  return accountGuardedRpc("finish_trial_tower", (cc, ll, nn, pp) => invokeWithVersionGate(cc, ll, nn, pp, finishTrialTower))(c, l, n, p);
+}
+function linkedRpc_prepare_trial_tower(c, l, n, p) {
+  return accountGuardedRpc("prepare_trial_tower", (cc, ll, nn, pp) => invokeWithVersionGate(cc, ll, nn, pp, prepareTrialTower))(c, l, n, p);
+}
 function linkedRpc_get_monetization_status(ctx, logger, nk, payload) {
   return accountGuardedRpc("get_monetization_status", gatedGetMonetizationStatus)(ctx, logger, nk, payload);
 }
@@ -10147,6 +10610,10 @@ function InitModule(ctx, logger, nk, initializer) {
   initializer.registerRpc("upgrade_element", linkedRpc_upgrade_element);
   initializer.registerRpc("award_stage_progression", linkedRpc_award_stage_progression);
   initializer.registerRpc("tribulation_action", linkedRpc_tribulation_action);
+  initializer.registerRpc("get_trial_tower_status", linkedRpc_get_trial_tower_status);
+  initializer.registerRpc("start_trial_tower", linkedRpc_start_trial_tower);
+  initializer.registerRpc("prepare_trial_tower", linkedRpc_prepare_trial_tower);
+  initializer.registerRpc("finish_trial_tower", linkedRpc_finish_trial_tower);
   initializer.registerRpc("get_monetization_status", linkedRpc_get_monetization_status);
   initializer.registerRpc("get_daily_pack_status", linkedRpc_get_daily_pack_status);
   initializer.registerRpc("claim_daily_pack", linkedRpc_claim_daily_pack);
