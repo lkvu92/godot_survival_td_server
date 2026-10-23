@@ -108,6 +108,7 @@ assert.ok(seed('store_catalog',[selected, {...selected,id:'other-pack'}]).error)
 for (const [id,file] of [['daily_checkin','daily_checkin'],['events','events'],['stamina','stamina_config'],['vip','vip_config'],['rewarded_ads','rewarded_ads'],['enemy_skills','enemy_skills'],['boss_skills','boss_skills'],['tribulation','tribulation_config']]) good('content_configs',[{id,payload:read(file)}]);
 assert.equal(JSON.parse(api.seedGameData(ctx,logger,nk,JSON.stringify({table:'config',config_key:'progression',config_value:read('progression')}))).success,true);
 assert.equal(JSON.parse(api.publishConfigRelease(ctx,logger,nk,'{}')).code,403);
+good('remote_settings',['tower_sweep','stage_sweep'].map(key=>({module:'system',key,value_type:'json',value:vm.runInContext('JSON.stringify('+ (key==='tower_sweep'?'TOWER_SWEEP_DEFAULTS':'SWEEP_DEFAULTS') +')',sandbox)})));
 good('remote_settings',[{module:'system',key:'payment_enabled',value_type:'bool',value:'true'}]);
 const published=JSON.parse(api.publishConfigRelease({...ctx,userId:'admin'},logger,nk,'{}'));
 assert.equal(published.status,'ok');

@@ -19,7 +19,7 @@ class DeploySeedArgsTests(unittest.TestCase):
             root = Path(temporary)
             (root / "nakama").mkdir()
             (root / "commands").mkdir()
-            shutil.copyfile(ROOT / "deploy.sh", root / "deploy.sh")
+            (root / "deploy.sh").write_text((ROOT / "deploy.sh").read_text(), newline="\n")
             for filename in [".env", "iap.secret.yml"]:
                 (root / "nakama" / filename).write_text("synthetic fixture\n")
             stub = """#!/usr/bin/env bash
@@ -41,9 +41,10 @@ exit 0
             env = os.environ.copy()
             env.update(PATH=str(root / "commands") + os.pathsep + env.get("PATH", ""),
                        TEST_ARG_LOG=log.as_posix(), TEST_SEED_EXIT=str(failure),
+                       TEST_STUB_DIR=("/" + str(root.drive)[0].lower() + (root / "commands").as_posix()[2:]) if os.name == "nt" else str(root / "commands"),
                        NAKAMA_CONFIG_ADMIN_TOKEN="synthetic-admin-env-only")
-            result = subprocess.run([BASH, str(root / "deploy.sh"), *args], env=env,
-                                    capture_output=True, text=True, timeout=20)
+            result = subprocess.run([BASH, "-c", 'export PATH="$TEST_STUB_DIR:$PATH"; exec bash "$@"', "deploy-test", str(root / "deploy.sh"), *args], env=env,
+                                    capture_output=True, text=True, timeout=30)
             calls = []
             if log.exists():
                 for line in log.read_text().splitlines():
@@ -75,7 +76,8 @@ exit 0
         self.assertEqual(result.returncode, 0, result.stderr)
         python_calls = [call for call in calls if call[0] == "python3"]
         self.assertEqual(python_calls, [["python3", "configure_runtime.py"],
-                                       ["python3", "configure_runtime.py", "--seed", "--", "--publish"]])
+                                       ["python3", "configure_runtime.py", "--seed", "--", "--publish"],
+                                       ["python3", "configure_runtime.py", "--seed", "--", "--check-active"]])
         self.assertTrue(any(call[:4] == ["docker", "compose", "up", "-d"] for call in calls))
 
     def test_seed_failure_propagates(self):

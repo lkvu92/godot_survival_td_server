@@ -15,6 +15,13 @@ SPEC.loader.exec_module(runtime)
 
 
 class RuntimeSecretsTests(unittest.TestCase):
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        root = mock.patch.object(runtime, "ROOT", Path(temporary.name))
+        root.start()
+        self.addCleanup(root.stop)
+
     def env(self):
         names = ["POSTGRES_USER", "POSTGRES_PASSWORD", "POSTGRES_DB", "NAKAMA_SERVER_KEY",
                  "NAKAMA_CONSOLE_USERNAME", "NAKAMA_CONSOLE_PASSWORD", "NAKAMA_CONSOLE_SIGNING_KEY",
@@ -24,6 +31,23 @@ class RuntimeSecretsTests(unittest.TestCase):
                  "CONFIG_ADMIN_USER_ID", "ADMOB_REWARDED_UNIT_ID_DEVELOP",
                  "ADMOB_REWARDED_UNIT_ID_PRODUCTION"]
         return {name: "synthetic-" + name for name in names}
+
+    def test_publisher_credential_is_persistent_private_and_not_logged(self):
+        env = self.env()
+        doc = {"services": {"nakama": {"environment": env}, "monetization-verifier": {"environment": env}}}
+        result = mock.Mock(returncode=0, stdout=json.dumps(doc))
+        with mock.patch.object(runtime.subprocess, "run", return_value=result), contextlib.redirect_stdout(io.StringIO()) as output:
+            self.assertEqual(runtime.main(), 0)
+            token_path = runtime.ROOT / "runtime.secret.yml.publish-token"
+            token = token_path.read_text()
+            self.assertEqual(len(token), 64)
+            self.assertEqual(runtime.main(), 0)
+            self.assertEqual(token_path.read_text(), token)
+            config = json.loads((runtime.ROOT / "runtime.secret.yml").read_text())
+            self.assertIn("CONFIG_PUBLISH_TOKEN=" + token, config["runtime"]["env"])
+            self.assertNotIn(token, output.getvalue())
+            if os.name != "nt":
+                self.assertEqual(token_path.stat().st_mode & 0o777, 0o600)
 
     def test_mapping_and_distinct_keys(self):
         env = self.env()
@@ -96,11 +120,12 @@ class RuntimeSecretsTests(unittest.TestCase):
         seed_env = calls.call_args_list[1].kwargs["env"]
         self.assertEqual(seed_env["NAKAMA_URL"], "http://127.0.0.1:17350")
         self.assertNotIn("NAKAMA_SEED_URL", seed_env)
+        self.assertEqual(len(seed_env["NAKAMA_CONFIG_PUBLISH_TOKEN"]), 64)
 
     def test_seed_forwards_exact_args_token_only_in_environment_and_exit_code(self):
         env = self.env()
         verifier = {name: env[name] for name in ["NAKAMA_HTTP_KEY", "MONETIZATION_VERIFIER_SECRET"]}
-        doc = {"services": {"nakama": {"environment": env}, "monetization-verifier": {"environment": verifier}}}
+        doc = {"services": {"nakama": {"environment": env, "ports": [{"target": 7350, "published": "17350"}]}, "monetization-verifier": {"environment": verifier}}}
         resolved = mock.Mock(returncode=0, stdout=json.dumps(doc))
         args = ["--publish", "--settings", "reviewed settings/my production.json", "--app-version", "1.2.3"]
         secret = "synthetic-admin-token-not-for-logs"

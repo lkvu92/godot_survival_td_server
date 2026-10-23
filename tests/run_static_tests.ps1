@@ -21,6 +21,8 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Stage sweep acceptance failed' }
     node tests/test_tower_sweep.cjs
     if ($LASTEXITCODE -ne 0) { throw 'Tower sweep acceptance failed' }
+    & node tests/test_operator_publish.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Operator publication regression failed' }
     & node tests/test_sweep_config.cjs
     if ($LASTEXITCODE -ne 0) { throw 'Stage sweep config publication failed' }
     & node tests/test_layered_talisman_config.cjs

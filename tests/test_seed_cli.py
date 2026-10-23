@@ -17,6 +17,34 @@ class SeedCliTests(unittest.TestCase):
         with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
             return cli.main(args)
 
+    def test_operator_publish_without_login_and_then_checks_active(self):
+        def respond(name, body, bearer=None):
+            self.assertIsNone(bearer)
+            self.assertEqual(name, "operator_config_release")
+            self.assertEqual(body["publish_token"], "a" * 64)
+            return {"status": "ok", "config_version": 7}
+        with patch.dict(os.environ, {"NAKAMA_CONFIG_PUBLISH_TOKEN": "a" * 64}, clear=True), patch.object(cli, "invoke_seed"), patch.object(cli, "invoke_rpc", side_effect=respond) as rpc, patch.object(cli, "admin_login") as login:
+            self.assertEqual(self.run_main(["--publish"]), 0)
+            self.assertEqual(rpc.call_count, 2)
+            self.assertTrue(rpc.call_args.args[1]["check_active"])
+            login.assert_not_called()
+
+    def test_active_check_never_seeds(self):
+        with patch.dict(os.environ, {"NAKAMA_CONFIG_PUBLISH_TOKEN": "a" * 64}, clear=True), patch.object(cli, "invoke_rpc", return_value={"status": "ok", "config_version": 7}), patch.object(cli, "invoke_seed") as seed:
+            self.assertEqual(self.run_main(["--check-active"]), 0)
+            seed.assert_not_called()
+
+    def test_server_error_is_actionable_and_redacts_credential(self):
+        class Response:
+            def __enter__(self): return self
+            def __exit__(self, *args): pass
+            def read(self): return json.dumps({"payload": json.dumps({"status": "error", "code": 422, "message": "Missing system.tower_sweep secret-token"})}).encode()
+        with patch.dict(os.environ, {"NAKAMA_CONFIG_PUBLISH_TOKEN": "secret-token"}), patch.object(cli.urllib.request, "urlopen", return_value=Response()):
+            with self.assertRaises(cli.SeedError) as failure:
+                cli.invoke_rpc("operator_config_release", {})
+            self.assertIn("422: Missing system.tower_sweep", str(failure.exception))
+            self.assertNotIn("secret-token", str(failure.exception))
+
     def test_failure_stops_run(self):
         with patch.object(cli, "invoke_rpc", side_effect=cli.SeedError("failure")) as call:
             self.assertEqual(self.run_main([]), 1)

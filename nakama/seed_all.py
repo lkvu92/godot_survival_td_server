@@ -50,8 +50,14 @@ def invoke_rpc(name, payload, bearer=None):
     except (urllib.error.URLError, ValueError, KeyError, TypeError, OSError) as error:
         # URLs and exception text may expose credentials.
         raise SeedError(f"{name}: transport/response failure ({type(error).__name__})") from error
-    if not isinstance(result, dict) or result.get("error") or result.get("status") in ("error", "force_update"):
-        raise SeedError(f"{name}: server rejected request")
+    if not isinstance(result, dict) or result.get("error") or result.get("success") is False or result.get("status") in ("error", "force_update"):
+        code = result.get("code", "unknown") if isinstance(result, dict) else "invalid-response"
+        message = str(result.get("message") or result.get("error") or result.get("success") is False or result.get("status") or "Rejected") if isinstance(result, dict) else "Invalid response"
+        for secret in (bearer, os.environ.get("NAKAMA_CONFIG_PUBLISH_TOKEN"), os.environ.get("NAKAMA_HTTP_KEY")):
+            if secret:
+                message = message.replace(secret, "[redacted]")
+        message = " ".join(message.split())[:300]
+        raise SeedError(f"{name}: {code}: {message}")
     return result
 
 
@@ -131,9 +137,10 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--replace-all", action="store_true", help="Prune absent heroes and deactivate absent products; full catalogs only")
     parser.add_argument("--settings", type=Path, help="Remote settings JSON array; updates draft only")
-    parser.add_argument("--content-only", action="store_true", help="Seed only the eight supplemental content configs")
+    parser.add_argument("--content-only", action="store_true", help="Seed only the supplemental content configs")
     parser.add_argument("--settings-only", action="store_true", help="Skip content seed; requires --settings")
-    parser.add_argument("--publish", action="store_true", help="Publish using NAKAMA_CONFIG_ADMIN_TOKEN after successful seed")
+    parser.add_argument("--check-active", action="store_true", help="Check active release compatibility without seeding")
+    parser.add_argument("--publish", action="store_true", help="Publish with VPS credential (or legacy admin session) after successful seed")
     parser.add_argument("--u", "--user", dest="admin_email", help="Admin email for publish; prompts for password")
     parser.add_argument("--app-version", default="1.0.0")
     parser.add_argument("--store-url", default="")
@@ -143,12 +150,19 @@ def main(argv=None):
             raise SeedError("Choose either --content-only or --settings-only")
         if args.settings_only and not args.settings:
             raise SeedError("--settings-only requires --settings")
+        operator_token = os.environ.get("NAKAMA_CONFIG_PUBLISH_TOKEN")
+        if args.check_active:
+            if not operator_token:
+                raise SeedError("Active check requires the VPS publisher credential")
+            checked = invoke_rpc("operator_config_release", {"publish_token": operator_token, "check_active": True})
+            print(f"[OK] Active config version {checked.get('config_version')} is compatible")
+            return 0
         admin = os.environ.get("NAKAMA_CONFIG_ADMIN_TOKEN")
         if args.admin_email and not args.publish:
             raise SeedError("--u requires --publish")
-        if args.publish and not admin and not args.admin_email:
+        if args.publish and not operator_token and not admin and not args.admin_email:
             raise SeedError("--publish requires NAKAMA_CONFIG_ADMIN_TOKEN or --u EMAIL")
-        if args.publish and not admin and args.admin_email:
+        if args.publish and not operator_token and not admin and args.admin_email:
             if not sys.stdin.isatty():
                 raise SeedError("Admin password prompt requires a terminal")
             admin = admin_login(args.admin_email, getpass.getpass("Admin password: "))
@@ -185,7 +199,11 @@ def main(argv=None):
                     raise SeedError("Bundle readback mismatch: " + request["table"])
                 print(f"[OK] {request['table']}: {expected} rows verified atomically")
         if args.publish:
-            result = invoke_rpc("publish_config_release", {"app_version": args.app_version, "store_url": args.store_url}, admin)
+            if operator_token:
+                result = invoke_rpc("operator_config_release", {"publish_token": operator_token, "store_url": args.store_url})
+                invoke_rpc("operator_config_release", {"publish_token": operator_token, "check_active": True})
+            else:
+                result = invoke_rpc("publish_config_release", {"app_version": args.app_version, "store_url": args.store_url}, admin)
             if result.get("status") != "ok" or not isinstance(result.get("config_version"), int):
                 raise SeedError("Publication failed")
             print(f"[OK] Published config version {result['config_version']}")

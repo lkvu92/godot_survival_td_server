@@ -1,8 +1,8 @@
 # C119 Config and seed integrity
 
-Version: 1.0.0
+Version: 1.1.0
 Status: ACTIVE
-Updated: 2026-10-16
+Updated: 2026-10-23
 
 ## Schema and interfaces
 
@@ -57,4 +57,29 @@ is claimed. No production database was seeded or flags enabled.
 
 | Version | Date | Change |
 |---|---|---|
+| 1.1.0 | 2026-10-23 | Persistent VPS publisher credential, required sweep validation, active release checks and actionable CLI errors. |
 | 1.0.0 | 2026-10-16 | Preserve config fields, atomic validated seeding, explicit remote settings and reliable CLI. |
+
+## VPS publication (1.1.0)
+
+configure_runtime.py creates a persistent 256-bit publish credential in
+nakama/<output>.publish-token (0600), injects CONFIG_PUBLISH_TOKEN into the
+private runtime config and supplies it to the CLI through the environment.
+Never commit, print or send it in command arguments. Rotation requires replacing
+the token and recreating Nakama. HTTP-key plus this separate credential authorize
+operator_config_release; user sessions are rejected on this endpoint. It bypasses
+game session/version gates, while the existing UUID admin endpoint remains.
+Request: {publish_token, check_active?:boolean, store_url?:string}.
+Response: {status:ok,config_version} or {status:error,code,message}.
+check_active is read-only. Publication requires valid tower_sweep and stage_sweep
+using the runtime validators, plus existing typed checks; invalid drafts never
+create releases. CLI errors show only sanitized server codes/messages. No offline
+fallback, automatic draft publication or automatic monetization activation.
+After startup and seeding, deploy checks the active snapshot and exits nonzero
+if it is incompatible. This detects failure after startup; it is not a zero
+downtime rollout or automatic rollback. Operators publish a reviewed valid draft.
+
+Validation for 1.1.0: backend build and runtime packaging PASS; full server static
+suite PASS, including 44 Python tests and operator authorization/publication
+regressions. Gate score 9/10. PostgreSQL integration and live VPS rollout were
+not executed for this revision. Presentation gate is not applicable.

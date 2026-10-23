@@ -93,3 +93,29 @@ full tribulation_config. It does not touch player profiles or base catalogs.
 Verify get_game_config table=all returns schema_version=2 and all required
 catalogs before releasing the new client. Older/incomplete backends are blocked
 at the client loading screen. No client balance JSON synchronization is required.
+
+## Unattended VPS publication
+
+After updating this server checkout, run `bash deploy.sh deploy` once. It builds
+and recreates Nakama to load the operator credential. Subsequent publication:
+
+```bash
+bash deploy.sh publish
+# Explicit draft updates, if needed:
+bash deploy.sh publish --settings /path/to/reviewed-settings.json
+```
+
+No email, password or app version is required for the VPS operator. The existing
+session-admin endpoint remains for compatibility. The ignored private file
+`nakama/runtime.secret.yml.publish-token` is generated once with mode 0600; do
+not commit/copy it to clients. Local stacks use a separate token for each output
+runtime config. To rotate, replace the file with a new random 64-character hex
+value, regenerate config and recreate Nakama. Publisher calls use the resolved
+loopback HTTP port and never shell URL overrides. The HTTP key alone cannot
+publish. A valid game session alone cannot use the operator endpoint.
+
+Deploy checks the active release after seeding; invalid sweep config exits with
+an actionable error instead of reporting success. It does not roll back a running
+container. Publish a reviewed complete draft to resolve the error; drafts are
+never implicitly published by deploy. A missing/invalid `tower_sweep` or
+`stage_sweep` rejects publication without changing the active release.

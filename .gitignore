@@ -45,3 +45,5 @@ nakama/runtime.local.secret.yml
 nakama/runtime.local.secret.yml.*
 nakama/iap.local.secret.yml
 nakama/iap.local.secret.yml.*
+
+nakama/*.publish-token

@@ -1,0 +1,27 @@
+const fs=require('fs'),path=require('path'),vm=require('vm'),assert=require('assert');
+const c=vm.createContext({});
+for(const module of ['sweep_rpc','config_rpc'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../nakama/data/modules/build',module+'.js'),'utf8'),c);
+const get=n=>vm.runInContext(n,c),clone=x=>JSON.parse(JSON.stringify(x));
+c.parseJsonb=x=>typeof x==='string'?JSON.parse(x):x;
+c.validRewardedAdsConfig=x=>!!x;
+const token='a'.repeat(64),ctx={env:{CONFIG_PUBLISH_TOKEN:token}},rpc=get('operatorConfigRelease');
+let inserts=[],queries=0;
+const draft={min_app_version:'1.1.0',latest_app_version:'1.1.0',ads_enabled:false,payment_enabled:false,rewarded_ads:{},stage_sweep:clone(get('SWEEP_DEFAULTS')),tower_sweep:clone(get('TOWER_SWEEP_DEFAULTS'))};
+let active={version:6,config:{system:clone(draft)}};
+const nk={sqlQuery(sql){queries++;if(sql.includes('remote_config_settings'))return Object.entries(draft).map(([key,v])=>({module:'system',key,value_type:typeof v==='boolean'?'bool':typeof v==='string'?'string':'json',value:typeof v==='string'?v:JSON.stringify(v)}));if(sql.includes('remote_config_releases'))return [{config_version:active.version,snapshot:active.config}];throw Error(sql);},sqlExec(sql,args){inserts.push(args);}};
+const call=(body,context=ctx)=>JSON.parse(rpc(context,{},nk,JSON.stringify(body)));
+for(const [body,context] of [[{},ctx],[{publish_token:'wrong'},ctx],[{publish_token:token},{env:{}}],[{publish_token:token},{...ctx,userId:'admin'}]])assert.equal(call(body,context).code,403);
+assert.equal(queries,0,'unauthorized requests never query database');
+assert.equal(JSON.parse(rpc(ctx,{},nk,'null')).code,403);
+assert.equal(JSON.parse(rpc(ctx,{},nk,'bad-json')).code,400);
+assert.equal(call({publish_token:token,check_active:true}).config_version,6);
+assert.equal(inserts.length,0,'compatibility check is read-only');
+delete active.config.system.tower_sweep;
+assert.equal(call({publish_token:token,check_active:true}).code,422);
+assert.equal(inserts.length,0);
+assert.equal(call({publish_token:token}).config_version,7,'operator bypasses game session and app version gates');
+assert.equal(inserts[0][5],'operator:deploy');
+const published=JSON.parse(inserts[0][1]);assert.equal(published.system.ads_enabled,false);assert.equal(published.system.payment_enabled,false);
+for(const key of ['tower_sweep','stage_sweep','rewarded_ads']){const saved=draft[key];delete draft[key];const result=call({publish_token:token});assert.equal(result.code,422);assert(result.message.includes(key));draft[key]=saved;}
+assert.equal(inserts.length,1,'invalid draft never creates a release');
+console.log('PASS operator publish: separate identity, required configs, immutable active release and read-only compatibility checks');

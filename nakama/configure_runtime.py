@@ -1,4 +1,5 @@
 """Render private Nakama configuration from Compose-resolved .env values."""
+import secrets
 import json
 import argparse
 import os
@@ -75,21 +76,35 @@ def main(seed=False, compose_file="docker-compose.yml", env_file=None, output="r
         for name in ["NAKAMA_HTTP_KEY", "MONETIZATION_VERIFIER_SECRET"]:
             if env.get(name) != verifier.get(name):
                 raise ConfigError("Service configuration mismatch: " + name)
-        write_private(make_config(env), ROOT / output)
+        token_path = ROOT / (Path(output).name + ".publish-token")
+        try:
+            descriptor = os.open(token_path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+            with os.fdopen(descriptor, "w", encoding="utf-8") as token_file:
+                token_file.write(secrets.token_hex(32))
+        except FileExistsError:
+            pass
+        publish_token = token_path.read_text(encoding="utf-8").strip()
+        if len(publish_token) != 64 or any(c not in "0123456789abcdef" for c in publish_token):
+            raise ConfigError("Invalid private publish credential file")
+        os.chmod(token_path, 0o600)
+        config = make_config(env)
+        config["runtime"]["env"].append("CONFIG_PUBLISH_TOKEN=" + publish_token)
+        write_private(config, ROOT / output)
         if seed:
             process_env = os.environ.copy()
+            process_env["NAKAMA_CONFIG_PUBLISH_TOKEN"] = publish_token
             process_env["NAKAMA_HTTP_KEY"] = env["NAKAMA_HTTP_KEY"]
             process_env["NAKAMA_SERVER_KEY"] = env["NAKAMA_SERVER_KEY"]
-            if env_file:
-                process_env.pop("NAKAMA_SEED_URL", None)
+            # The VPS credential is never sent to a shell-provided remote URL.
+            process_env.pop("NAKAMA_SEED_URL", None)
             ports = services["nakama"].get("ports", [])
             for port in ports:
                 if int(port.get("target", 0)) == 7350:
                     local_url = "http://127.0.0.1:" + str(port["published"])
-                    if env_file:
-                        process_env["NAKAMA_URL"] = local_url
-                    else:
-                        process_env.setdefault("NAKAMA_URL", local_url)
+                    process_env["NAKAMA_URL"] = local_url
+                    break
+            else:
+                raise ConfigError("Nakama HTTP port mapping is required for local operator calls")
             return subprocess.run([sys.executable, str(ROOT / "seed_all.py"), *(seed_args or [])],
                                   cwd=ROOT, env=process_env, check=False).returncode
     except ConfigError as error:

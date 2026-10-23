@@ -45,6 +45,8 @@ start_services() {
     python3 configure_runtime.py
     echo "[INFO] Starting Survival TD stack (PostgreSQL, Nakama, Monetization Verifier)..."
     docker compose up -d --build
+    # Mounted JavaScript and runtime secrets require a fresh Nakama process.
+    docker compose up -d --force-recreate nakama
     wait_for_nakama
 }
 
@@ -110,6 +112,7 @@ case "${ACTION}" in
         cmd_start
         echo ""
         cmd_seed "$@"
+        python3 configure_runtime.py --seed -- --check-active
         echo ""
         echo "=== [SUCCESS] Survival TD Stack deployed and seeded successfully! ==="
         ;;
@@ -136,7 +139,7 @@ case "${ACTION}" in
         ;;
     *)
         echo "Usage: $0 {deploy|start|stop|restart|seed|publish|build|logs|status} [seed options]"
-        echo "Example: $0 publish --u admin@example.com --app-version 1.0.0 [--settings FILE]"
+        echo "Example: $0 publish [--settings FILE]"
         exit 1
         ;;
 esac

@@ -2997,6 +2997,9 @@ const publishConfigRelease = (ctx, _logger, nk, payload) => {
   if (!ctx.userId || ctx.userId !== String(ctx.env.CONFIG_ADMIN_USER_ID || "")) {
     return JSON.stringify({ status: "error", code: 403, message: "Forbidden" });
   }
+  return publishValidatedConfig(ctx.userId, nk, payload);
+};
+function publishValidatedConfig(publisher, nk, payload) {
   let request = {};
   try {
     request = JSON.parse(payload || "{}");
@@ -3012,24 +3015,42 @@ const publishConfigRelease = (ctx, _logger, nk, payload) => {
   } catch (e) {
     return JSON.stringify({ status: "error", code: 422, message: String(e) });
   }
+  const invalid = validateReleaseSnapshot(nk, snapshot);
+  if (invalid) return invalid;
+  const minVersion = String(snapshot.system.min_app_version);
+  const latestVersion = String(snapshot.system.latest_app_version);
+  const active = getActiveRemoteConfig(nk);
+  const version = active.version + 1;
+  nk.sqlExec(
+    `INSERT INTO remote_config_releases
+        (config_version, snapshot, min_app_version, latest_app_version, store_url, published_by)
+        VALUES ($1, $2::jsonb, $3, $4, $5, $6)`,
+    [version, JSON.stringify(snapshot), minVersion, latestVersion, String(request.store_url || ""), publisher]
+  );
+  return JSON.stringify({ status: "ok", config_version: version });
+}
+;
+function validateReleaseSnapshot(nk, snapshot) {
+  if (!snapshot || !snapshot.system || typeof snapshot.system !== "object")
+    return JSON.stringify({ status: "error", code: 422, message: "Missing system config" });
   const minVersion = String(snapshot.system.min_app_version || "");
   if (snapshot.system.mailbox !== void 0) {
     const mail = snapshot.system.mailbox;
     if (!mail || !Number.isSafeInteger(mail.warning_hours) || mail.warning_hours < 1 || mail.warning_hours > 720 || !Number.isSafeInteger(mail.retention_days) || mail.retention_days < 1 || mail.retention_days > 365)
       return JSON.stringify({ status: "error", code: 422, message: "Invalid system.mailbox" });
   }
-  if (snapshot.system.tower_sweep !== void 0) {
+  {
     try {
       towerSweepValidateConfig(snapshot.system.tower_sweep);
     } catch (_error) {
-      return JSON.stringify({ status: "error", code: 422, message: "Invalid system.tower_sweep" });
+      return JSON.stringify({ status: "error", code: 422, message: "Missing or invalid system.tower_sweep" });
     }
   }
-  if (snapshot.system.stage_sweep !== void 0) {
+  {
     try {
       sweepValidateConfig(snapshot.system.stage_sweep);
     } catch (_error) {
-      return JSON.stringify({ status: "error", code: 422, message: "Invalid system.stage_sweep" });
+      return JSON.stringify({ status: "error", code: 422, message: "Missing or invalid system.stage_sweep" });
     }
   }
   if (!validRewardedAdsConfig(snapshot.system.rewarded_ads)) return JSON.stringify({ status: "error", code: 422, message: "Missing or invalid system.rewarded_ads" });
@@ -3038,19 +3059,34 @@ const publishConfigRelease = (ctx, _logger, nk, payload) => {
   if (typeof snapshot.system.ads_enabled !== "boolean" || typeof snapshot.system.payment_enabled !== "boolean") {
     return JSON.stringify({ status: "error", code: 422, message: "Missing or invalid monetization flags" });
   }
-  if (!minVersion || !latestVersion || compareVersions(minVersion, latestVersion) > 0) {
+  if (!/^\d+\.\d+\.\d+$/.test(minVersion) || !/^\d+\.\d+\.\d+$/.test(latestVersion) || compareVersions(minVersion, latestVersion) > 0) {
     return JSON.stringify({ status: "error", code: 422, message: "Invalid app-version settings" });
   }
-  const active = getActiveRemoteConfig(nk);
-  const version = active.version + 1;
-  nk.sqlExec(
-    `INSERT INTO remote_config_releases
-        (config_version, snapshot, min_app_version, latest_app_version, store_url, published_by)
-        VALUES ($1, $2::jsonb, $3, $4, $5, $6)`,
-    [version, JSON.stringify(snapshot), minVersion, latestVersion, String(request.store_url || ""), ctx.userId]
-  );
-  return JSON.stringify({ status: "ok", config_version: version });
-};
+  return null;
+}
+function operatorConfigRelease(ctx, logger, nk, payload) {
+  let request;
+  try {
+    request = JSON.parse(payload || "{}");
+  } catch (_e) {
+    return JSON.stringify({ status: "error", code: 400, message: "Invalid JSON" });
+  }
+  const expected = String(ctx.env.CONFIG_PUBLISH_TOKEN || "");
+  if (ctx.userId || expected.length < 64 || !request || typeof request !== "object" || request.publish_token !== expected)
+    return JSON.stringify({ status: "error", code: 403, message: "Invalid operator credential; configure runtime and recreate Nakama" });
+  if (request.check_active === true) {
+    const active = getActiveRemoteConfig(nk);
+    try {
+      if (!active.version) throw Error("No active release");
+      const invalid = validateReleaseSnapshot(nk, active.config);
+      if (invalid) return invalid;
+    } catch (_e) {
+      return JSON.stringify({ status: "error", code: 422, message: "Active release missing/invalid system.tower_sweep or system.stage_sweep; publish a valid draft" });
+    }
+    return JSON.stringify({ status: "ok", config_version: active.version });
+  }
+  return publishValidatedConfig("operator:deploy", nk, JSON.stringify({ store_url: request.store_url }));
+}
 
 const HERO_ID_MIGRATIONS = { ice_demoness: "hero_1", flame_archer: "hero_2" };
 const adminTestAccess = (ctx, _logger, nk) => {
@@ -10586,6 +10622,7 @@ function InitModule(ctx, logger, nk, initializer) {
   initializer.registerRpc("get_game_config", linkedRpc_get_game_config);
   initializer.registerRpc("get_config_bootstrap", linkedRpc_get_config_bootstrap);
   initializer.registerRpc("publish_config_release", linkedRpc_publish_config_release);
+  initializer.registerRpc("operator_config_release", operatorConfigRelease);
   initializer.registerRpc("save_player_profile", linkedRpc_save_player_profile);
   initializer.registerRpc("load_player_profile", linkedRpc_load_player_profile);
   initializer.registerRpc("abandon_run", linkedRpc_abandon_run);

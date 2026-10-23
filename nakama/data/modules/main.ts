@@ -259,6 +259,7 @@ function InitModule(
     initializer.registerRpc("get_game_config", linkedRpc_get_game_config);
     initializer.registerRpc("get_config_bootstrap", linkedRpc_get_config_bootstrap);
     initializer.registerRpc("publish_config_release", linkedRpc_publish_config_release);
+    initializer.registerRpc("operator_config_release", operatorConfigRelease);
 
     // Phase 4: Player RPCs
     initializer.registerRpc("save_player_profile", linkedRpc_save_player_profile);

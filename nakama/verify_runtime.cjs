@@ -20,3 +20,6 @@ console.log('PASS runtime packaging: canonical build/index.js, matching artifact
 
 assert(canonical.includes("linkedRpc_mail_claim"), "Runtime missing C147 mailbox RPCs");
 for (const name of ["docker-compose.yml", "docker-compose.local.yml"]) assert(read(name).includes("mail-worker:"), "Deployment missing mailbox worker");
+
+for (const rpc of ['operator_config_release', 'get_trial_tower_status', 'start_trial_tower', 'prepare_trial_tower', 'finish_trial_tower'])
+    assert(canonical.includes('registerRpc("' + rpc + '"'), 'Runtime missing required RPC: ' + rpc);

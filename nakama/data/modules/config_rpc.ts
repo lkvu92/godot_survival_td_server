@@ -465,6 +465,10 @@ const publishConfigRelease: nkruntime.RpcFunction = (
     if (!ctx.userId || ctx.userId !== String(ctx.env.CONFIG_ADMIN_USER_ID || "")) {
         return JSON.stringify({ status: "error", code: 403, message: "Forbidden" });
     }
+    return publishValidatedConfig(ctx.userId, nk, payload);
+};
+
+function publishValidatedConfig(publisher:string, nk:nkruntime.Nakama, payload:string):string {
     let request: any = {};
     try { request = JSON.parse(payload || "{}"); } catch (_e) { return JSON.stringify({ status: "error", code: 400, message: "Invalid JSON" }); }
     const rows = nk.sqlQuery("SELECT module, key, value_type, value FROM remote_config_settings WHERE is_active = TRUE ORDER BY module, key", []);
@@ -472,19 +476,35 @@ const publishConfigRelease: nkruntime.RpcFunction = (
     try {
         rows.forEach((row: any) => { snapshot[String(row.module)][String(row.key)] = parseRemoteSetting(String(row.value_type), String(row.value)); });
     } catch (e) { return JSON.stringify({ status: "error", code: 422, message: String(e) }); }
+    const invalid=validateReleaseSnapshot(nk,snapshot);
+    if(invalid)return invalid;
+    const minVersion=String(snapshot.system.min_app_version);
+    const latestVersion=String(snapshot.system.latest_app_version);
+    const active = getActiveRemoteConfig(nk);
+    const version = active.version + 1;
+    nk.sqlExec(`INSERT INTO remote_config_releases
+        (config_version, snapshot, min_app_version, latest_app_version, store_url, published_by)
+        VALUES ($1, $2::jsonb, $3, $4, $5, $6)`,
+        [version, JSON.stringify(snapshot), minVersion, latestVersion, String(request.store_url || ""), publisher]);
+    return JSON.stringify({ status: "ok", config_version: version });
+};
+
+function validateReleaseSnapshot(nk:nkruntime.Nakama,snapshot:any):string|null {
+    if(!snapshot || !snapshot.system || typeof snapshot.system!=='object')
+        return JSON.stringify({status:'error',code:422,message:'Missing system config'});
     const minVersion = String(snapshot.system.min_app_version || "");
     if(snapshot.system.mailbox!==undefined){
         const mail=snapshot.system.mailbox;
         if(!mail||!Number.isSafeInteger(mail.warning_hours)||mail.warning_hours<1||mail.warning_hours>720||!Number.isSafeInteger(mail.retention_days)||mail.retention_days<1||mail.retention_days>365)
             return JSON.stringify({status:'error',code:422,message:'Invalid system.mailbox'});
     }
-    if(snapshot.system.tower_sweep!==undefined){
+    {
         try{towerSweepValidateConfig(snapshot.system.tower_sweep);}
-        catch(_error){return JSON.stringify({status:'error',code:422,message:'Invalid system.tower_sweep'});}
+        catch(_error){return JSON.stringify({status:'error',code:422,message:'Missing or invalid system.tower_sweep'});}
     }
-    if(snapshot.system.stage_sweep!==undefined){
+    {
         try{sweepValidateConfig(snapshot.system.stage_sweep);}
-        catch(_error){return JSON.stringify({status:'error',code:422,message:'Invalid system.stage_sweep'});}
+        catch(_error){return JSON.stringify({status:'error',code:422,message:'Missing or invalid system.stage_sweep'});}
     }
     if (!validRewardedAdsConfig(snapshot.system.rewarded_ads)) return JSON.stringify({ status: "error", code: 422, message: "Missing or invalid system.rewarded_ads" });
     if (snapshot.system.leaderboard_rewards !== undefined && (!validWeeklyLeaderboardConfig(snapshot.system.leaderboard_rewards)
@@ -493,14 +513,27 @@ const publishConfigRelease: nkruntime.RpcFunction = (
     if (typeof snapshot.system.ads_enabled !== "boolean" || typeof snapshot.system.payment_enabled !== "boolean") {
         return JSON.stringify({status: "error", code: 422, message: "Missing or invalid monetization flags"});
     }
-    if (!minVersion || !latestVersion || compareVersions(minVersion, latestVersion) > 0) {
+    if (!/^\d+\.\d+\.\d+$/.test(minVersion) || !/^\d+\.\d+\.\d+$/.test(latestVersion) || compareVersions(minVersion, latestVersion) > 0) {
         return JSON.stringify({ status: "error", code: 422, message: "Invalid app-version settings" });
     }
-    const active = getActiveRemoteConfig(nk);
-    const version = active.version + 1;
-    nk.sqlExec(`INSERT INTO remote_config_releases
-        (config_version, snapshot, min_app_version, latest_app_version, store_url, published_by)
-        VALUES ($1, $2::jsonb, $3, $4, $5, $6)`,
-        [version, JSON.stringify(snapshot), minVersion, latestVersion, String(request.store_url || ""), ctx.userId]);
-    return JSON.stringify({ status: "ok", config_version: version });
-};
+    return null;
+}
+
+// Independent operator identity; Nakama also enforces HTTP-key authentication.
+function operatorConfigRelease(ctx:nkruntime.Context, logger:nkruntime.Logger, nk:nkruntime.Nakama, payload:string):string {
+    let request:any;
+    try {request=JSON.parse(payload||'{}');} catch(_e) {return JSON.stringify({status:'error',code:400,message:'Invalid JSON'});}
+    const expected=String(ctx.env.CONFIG_PUBLISH_TOKEN||'');
+    if(ctx.userId || expected.length<64 || !request || typeof request!=='object' || request.publish_token!==expected)
+        return JSON.stringify({status:'error',code:403,message:'Invalid operator credential; configure runtime and recreate Nakama'});
+    if(request.check_active===true) {
+        const active=getActiveRemoteConfig(nk);
+        try {
+            if(!active.version)throw Error('No active release');
+            const invalid=validateReleaseSnapshot(nk,active.config);
+            if(invalid)return invalid;
+        } catch(_e) {return JSON.stringify({status:'error',code:422,message:'Active release missing/invalid system.tower_sweep or system.stage_sweep; publish a valid draft'});}
+        return JSON.stringify({status:'ok',config_version:active.version});
+    }
+    return publishValidatedConfig('operator:deploy',nk,JSON.stringify({store_url:request.store_url}));
+}
