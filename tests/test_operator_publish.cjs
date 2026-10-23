@@ -1,12 +1,13 @@
 const fs=require('fs'),path=require('path'),vm=require('vm'),assert=require('assert');
 const c=vm.createContext({});
-for(const module of ['sweep_rpc','config_rpc'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../nakama/data/modules/build',module+'.js'),'utf8'),c);
+for(const module of ['feature_unlocks','sweep_rpc','config_rpc'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../nakama/data/modules/build',module+'.js'),'utf8'),c);
 const get=n=>vm.runInContext(n,c),clone=x=>JSON.parse(JSON.stringify(x));
 c.parseJsonb=x=>typeof x==='string'?JSON.parse(x):x;
 c.validRewardedAdsConfig=x=>!!x;
 const token='a'.repeat(64),ctx={env:{CONFIG_PUBLISH_TOKEN:token}},rpc=get('operatorConfigRelease');
 let inserts=[],queries=0;
 const draft={min_app_version:'1.1.0',latest_app_version:'1.1.0',ads_enabled:false,payment_enabled:false,rewarded_ads:{},stage_sweep:clone(get('SWEEP_DEFAULTS')),tower_sweep:clone(get('TOWER_SWEEP_DEFAULTS'))};
+draft.feature_unlocks=clone(get('FEATURE_DEFAULTS'));draft.realm_milestones=clone(get('REALM_MILESTONE_DEFAULTS'));
 let active={version:6,config:{system:clone(draft)}};
 const nk={sqlQuery(sql){queries++;if(sql.includes('remote_config_settings'))return Object.entries(draft).map(([key,v])=>({module:'system',key,value_type:typeof v==='boolean'?'bool':typeof v==='string'?'string':'json',value:typeof v==='string'?v:JSON.stringify(v)}));if(sql.includes('remote_config_releases'))return [{config_version:active.version,snapshot:active.config}];throw Error(sql);},sqlExec(sql,args){inserts.push(args);}};
 const call=(body,context=ctx)=>JSON.parse(rpc(context,{},nk,JSON.stringify(body)));

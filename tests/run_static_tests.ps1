@@ -7,6 +7,8 @@ try {
     }
     & node --check nakama/data/build/index.js
     if ($LASTEXITCODE -ne 0) { throw 'Runtime syntax failed' }
+    & node tests/test_feature_unlocks.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Feature unlock regression failed' }
     & node tests/test_server_admission.cjs
     if ($LASTEXITCODE -ne 0) { throw 'Server admission regression failed' }
     & node tests/test_character_repository.cjs
@@ -55,7 +57,9 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Consumable use regression failed' }
     & node --check services/monetization-verifier/src/server.js
     if ($LASTEXITCODE -ne 0) { throw 'Verifier syntax failed' }
-    & python -B -m unittest discover -s tests -p 'test_*.py'
+    # unittest defaults to stderr; Windows PowerShell treats successful progress
+    # output as a native error under Stop. Keep the report on stdout.
+    & python -B -c "import sys,unittest; result=unittest.TextTestRunner(stream=sys.stdout).run(unittest.defaultTestLoader.discover('tests',pattern='test_*.py')); sys.exit(not result.wasSuccessful())"
     if ($LASTEXITCODE -ne 0) { throw 'Seed CLI regressions failed' }
     if ($env:SEED_TEST_PSQL -and $env:SEED_TEST_PORT) {
         & node tests/test_sweep_migration.cjs

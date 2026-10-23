@@ -1,5 +1,6 @@
 {
   "contracts": [
+    {"id":"C176_FEATURE_UNLOCKS","version":"1.0.0","status":"ACTIVE","updated_at":"2026-10-23","contract_file":"docs/contracts/C176_FEATURE_UNLOCKS.md"},
     {"id":"C173_CURRENCY_PRICING","version":"1.0.0","status":"ACTIVE","updated_at":"2026-10-22","contract_file":"docs/contracts/C173_CURRENCY_PRICING.md"},
     {"id":"C172_PRIMORDIAL_WRAITH_SKILLS","version":"1.0.0","status":"ACTIVE","updated_at":"2026-10-22","contract_file":"docs/contracts/C172_PRIMORDIAL_WRAITH_SKILLS.md"},
     {"id":"C171_ARC5_BOSS_SKILLS","version":"1.0.1","status":"ACTIVE","updated_at":"2026-10-23","contract_file":"docs/contracts/C171_ARC5_BOSS_SKILLS.md"},

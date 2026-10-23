@@ -277,6 +277,7 @@ function applyPurchaseMailRewards(nk:nkruntime.Nakama,userId:string,grantId:stri
 }
 // Only newly opened arcs generate progression mail; ordinary stages stay quiet.
 function mailCombatRuntime(base:nkruntime.Nakama,userId:string):nkruntime.Nakama {
+    if(typeof featureRuntime === "function")base=featureRuntime(base,userId);
     const runtime:any=Object.create(base);
     runtime.storageWrite=(changes:any[])=>{
         const writes=changes.slice(),reports:any[]=[];

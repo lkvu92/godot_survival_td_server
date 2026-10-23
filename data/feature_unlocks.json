@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "features": {
+    "checkin": {
+      "required_user_level": 2,
+      "enabled": true,
+      "release_status": "released",
+      "display_name": "Điểm danh hàng ngày",
+      "description": "Nhận quà điểm danh mỗi ngày khi sự kiện hoạt động.",
+      "tour_id": "checkin_v1",
+      "tour_mode": "dismiss_any",
+      "mail_title": "Đã khai mở: Điểm danh hàng ngày",
+      "mail_body": "Chúc mừng đạo hữu đạt cấp {level}! Điểm danh hàng ngày đã khai mở.\n\nNhận quà điểm danh mỗi ngày khi sự kiện hoạt động.\n\nTrở về Trang chủ để khám phá chức năng mới."
+    },
+    "daily_quests": {
+      "required_user_level": 3,
+      "enabled": false,
+      "release_status": "planned",
+      "display_name": "Nhiệm vụ hàng ngày",
+      "description": "Hoàn thành nhiệm vụ mỗi ngày.",
+      "tour_id": "",
+      "tour_mode": "dismiss_any",
+      "mail_title": "Đã khai mở: Nhiệm vụ hàng ngày",
+      "mail_body": "Chúc mừng đạo hữu đạt cấp {level}! Nhiệm vụ hàng ngày đã khai mở.\n\nHoàn thành nhiệm vụ mỗi ngày.\n\nTrở về Trang chủ để khám phá chức năng mới."
+    },
+    "shop": {
+      "required_user_level": 5,
+      "enabled": true,
+      "release_status": "released",
+      "display_name": "Huyền Thiên Các",
+      "description": "Khám phá những vật phẩm trợ lực trên đường tu luyện.",
+      "tour_id": "shop_v1",
+      "tour_mode": "dismiss_any",
+      "mail_title": "Đã khai mở: Huyền Thiên Các",
+      "mail_body": "Chúc mừng đạo hữu đạt cấp {level}! Huyền Thiên Các đã khai mở.\n\nKhám phá những vật phẩm trợ lực trên đường tu luyện.\n\nTrở về Trang chủ để khám phá chức năng mới."
+    },
+    "leaderboard": {
+      "required_user_level": 9,
+      "enabled": true,
+      "release_status": "released",
+      "display_name": "Bảng xếp hạng",
+      "description": "Theo dõi thành tựu của các đạo hữu.",
+      "tour_id": "leaderboard_v1",
+      "tour_mode": "dismiss_any",
+      "mail_title": "Đã khai mở: Bảng xếp hạng",
+      "mail_body": "Chúc mừng đạo hữu đạt cấp {level}! Bảng xếp hạng đã khai mở.\n\nTheo dõi thành tựu của các đạo hữu.\n\nTrở về Trang chủ để khám phá chức năng mới."
+    },
+    "stage_epic": {
+      "required_user_level": 10,
+      "enabled": true,
+      "release_status": "released",
+      "display_name": "Stage Epic",
+      "description": "Thử sức với độ khó Tinh Anh tại những ải đã đủ điều kiện.",
+      "tour_id": "stage_epic_v1",
+      "tour_mode": "dismiss_any",
+      "mail_title": "Đã khai mở: Stage Epic",
+      "mail_body": "Chúc mừng đạo hữu đạt cấp {level}! Stage Epic đã khai mở.\n\nThử sức với độ khó Tinh Anh tại những ải đã đủ điều kiện.\n\nTrở về Trang chủ để khám phá chức năng mới."
+    },
+    "sweep": {
+      "required_user_level": 15,
+      "enabled": true,
+      "release_status": "released",
+      "display_name": "Càn quét",
+      "description": "Càn quét những ải đủ điều kiện để tích lũy tài nguyên.",
+      "tour_id": "sweep_v1",
+      "tour_mode": "dismiss_any",
+      "mail_title": "Đã khai mở: Càn quét",
+      "mail_body": "Chúc mừng đạo hữu đạt cấp {level}! Càn quét đã khai mở.\n\nCàn quét những ải đủ điều kiện để tích lũy tài nguyên.\n\nTrở về Trang chủ để khám phá chức năng mới."
+    },
+    "elements": {
+      "required_user_level": 20,
+      "enabled": true,
+      "release_status": "released",
+      "display_name": "Linh căn",
+      "description": "Tìm hiểu và bồi dưỡng thuộc tính ngũ hành.",
+      "tour_id": "elements_v1",
+      "tour_mode": "dismiss_any",
+      "mail_title": "Đã khai mở: Linh căn",
+      "mail_body": "Chúc mừng đạo hữu đạt cấp {level}! Linh căn đã khai mở.\n\nTìm hiểu và bồi dưỡng thuộc tính ngũ hành.\n\nTrở về Trang chủ để khám phá chức năng mới."
+    },
+    "stage_legend": {
+      "required_user_level": 22,
+      "enabled": true,
+      "release_status": "released",
+      "display_name": "Stage Legend",
+      "description": "Chinh phục độ khó Huyền Thoại tại những ải đã đủ điều kiện.",
+      "tour_id": "stage_legend_v1",
+      "tour_mode": "dismiss_any",
+      "mail_title": "Đã khai mở: Stage Legend",
+      "mail_body": "Chúc mừng đạo hữu đạt cấp {level}! Stage Legend đã khai mở.\n\nChinh phục độ khó Huyền Thoại tại những ải đã đủ điều kiện.\n\nTrở về Trang chủ để khám phá chức năng mới."
+    },
+    "talisman": {
+      "required_user_level": 25,
+      "enabled": true,
+      "release_status": "released",
+      "display_name": "Pháp bảo",
+      "description": "Quản lý và bồi dưỡng pháp bảo trợ chiến.",
+      "tour_id": "talisman_v1",
+      "tour_mode": "dismiss_any",
+      "mail_title": "Đã khai mở: Pháp bảo",
+      "mail_body": "Chúc mừng đạo hữu đạt cấp {level}! Pháp bảo đã khai mở.\n\nQuản lý và bồi dưỡng pháp bảo trợ chiến.\n\nTrở về Trang chủ để khám phá chức năng mới."
+    },
+    "trial_tower": {
+      "required_user_level": 30,
+      "enabled": true,
+      "release_status": "released",
+      "display_name": "Thí luyện",
+      "description": "Bước vào Tháp Thí Luyện để tôi luyện bản lĩnh.",
+      "tour_id": "trial_tower_v1",
+      "tour_mode": "dismiss_any",
+      "mail_title": "Đã khai mở: Thí luyện",
+      "mail_body": "Chúc mừng đạo hữu đạt cấp {level}! Thí luyện đã khai mở.\n\nBước vào Tháp Thí Luyện để tôi luyện bản lĩnh.\n\nTrở về Trang chủ để khám phá chức năng mới."
+    },
+    "laws": {
+      "required_user_level": 35,
+      "enabled": false,
+      "release_status": "planned",
+      "display_name": "Pháp tắc",
+      "description": "Sắp ra mắt.",
+      "tour_id": "",
+      "tour_mode": "dismiss_any",
+      "mail_title": "Đã khai mở: Pháp tắc",
+      "mail_body": "Chúc mừng đạo hữu đạt cấp {level}! Pháp tắc đã khai mở.\n\nSắp ra mắt.\n\nTrở về Trang chủ để khám phá chức năng mới."
+    },
+    "guild_war": {
+      "required_user_level": null,
+      "enabled": false,
+      "release_status": "planned",
+      "display_name": "Tông môn chi chiến",
+      "description": "Đại chiến bảo vệ tông môn — sắp ra mắt.",
+      "tour_id": "",
+      "tour_mode": "dismiss_any",
+      "mail_title": "Đã khai mở: Tông môn chi chiến",
+      "mail_body": "Chúc mừng đạo hữu đạt cấp {level}! Tông môn chi chiến đã khai mở.\n\nĐại chiến bảo vệ tông môn — sắp ra mắt.\n\nTrở về Trang chủ để khám phá chức năng mới."
+    },
+    "ancient_battlefield": {
+      "required_user_level": null,
+      "enabled": false,
+      "release_status": "planned",
+      "display_name": "Chiến trường thượng cổ",
+      "description": "Nhân – yêu – ma chi chiến — sắp ra mắt.",
+      "tour_id": "",
+      "tour_mode": "dismiss_any",
+      "mail_title": "Đã khai mở: Chiến trường thượng cổ",
+      "mail_body": "Chúc mừng đạo hữu đạt cấp {level}! Chiến trường thượng cổ đã khai mở.\n\nNhân – yêu – ma chi chiến — sắp ra mắt.\n\nTrở về Trang chủ để khám phá chức năng mới."
+    },
+    "multiverse": {
+      "required_user_level": null,
+      "enabled": false,
+      "release_status": "planned",
+      "display_name": "Vạn giới chư thiên",
+      "description": "Phá bỏ thiên đạo gông cùm — sắp ra mắt.",
+      "tour_id": "",
+      "tour_mode": "dismiss_any",
+      "mail_title": "Đã khai mở: Vạn giới chư thiên",
+      "mail_body": "Chúc mừng đạo hữu đạt cấp {level}! Vạn giới chư thiên đã khai mở.\n\nPhá bỏ thiên đạo gông cùm — sắp ra mắt.\n\nTrở về Trang chủ để khám phá chức năng mới."
+    }
+  }
+}

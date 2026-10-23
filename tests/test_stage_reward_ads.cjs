@@ -3,7 +3,7 @@ const root=path.join(__dirname,'..'),clone=x=>JSON.parse(JSON.stringify(x));
 let now=1800000000000,noAds=true,conflict=false,sequence=0;
 class ServerDate extends Date {static now(){return now;}}
 const context=vm.createContext({Date:ServerDate});
-for(const file of ['config_rpc','progression_rpc','monetization_rpc','sweep_rpc'])vm.runInContext(fs.readFileSync(path.join(root,'nakama/data/modules/build',file+'.js'),'utf8'),context);
+for(const file of ['feature_unlocks','config_rpc','progression_rpc','monetization_rpc','sweep_rpc'])vm.runInContext(fs.readFileSync(path.join(root,'nakama/data/modules/build',file+'.js'),'utf8'),context);
 const fn=name=>vm.runInContext(name,context);
 let config=JSON.parse(fs.readFileSync(path.join(root,'data/rewarded_ads.json'),'utf8'));
 const db={},sessions=new Map(),claims=new Map();

@@ -205,7 +205,7 @@ function withActiveAccount<T>(nk: nkruntime.Nakama, userId: string, action: () =
 }
 
 function accountGuardedRpc(id: string, handler: nkruntime.RpcFunction): nkruntime.RpcFunction {
-    handler = serverAdmissionRpc(id, handler);
+    handler = serverAdmissionRpc(id, typeof featureGuardedRpc === "function" ? featureGuardedRpc(id, handler) : handler);
     return (ctx, logger, nk, payload) => {
         const rejected = requireCurrentLogin(ctx, nk);
         if (rejected) return rejected;

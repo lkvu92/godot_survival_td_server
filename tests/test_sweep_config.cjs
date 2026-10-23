@@ -1,7 +1,7 @@
 // Publication must reject broken sweep rules before creating an immutable release.
 const fs=require('fs'),path=require('path'),vm=require('vm'),assert=require('assert');
 const context=vm.createContext({});
-for(const file of ['sweep_rpc','config_rpc'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../nakama/data/modules/build',file+'.js'),'utf8'),context);
+for(const file of ['feature_unlocks','sweep_rpc','config_rpc'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../nakama/data/modules/build',file+'.js'),'utf8'),context);
 const get=name=>vm.runInContext(name,context),clone=value=>JSON.parse(JSON.stringify(value));
 const defaults=clone(get('SWEEP_DEFAULTS'));
 context.validRewardedAdsConfig=()=>true;
@@ -15,6 +15,7 @@ const nk={sqlQuery(sql){
 function publish(config){
  settings=[['min_app_version','string','1.0.0'],['latest_app_version','string','1.0.0'],['ads_enabled','bool','false'],['payment_enabled','bool','false']].map(([key,value_type,value])=>({module:'system',key,value_type,value}));
  settings.push({module:'system',key:'tower_sweep',value_type:'json',value:JSON.stringify(clone(get('TOWER_SWEEP_DEFAULTS')))});
+ for(const [key,name] of [['feature_unlocks','FEATURE_DEFAULTS'],['realm_milestones','REALM_MILESTONE_DEFAULTS']])settings.push({module:'system',key,value_type:'json',value:JSON.stringify(clone(get(name)))});
  if(config!==undefined)settings.push({module:'system',key:'stage_sweep',value_type:'json',value:JSON.stringify(config)});
  return JSON.parse(get('publishConfigRelease')({userId:'admin',env:{CONFIG_ADMIN_USER_ID:'admin'}},{},nk,'{}'));
 }

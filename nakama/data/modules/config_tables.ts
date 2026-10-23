@@ -343,6 +343,8 @@ function createGameConfigTables(nk: nkruntime.Nakama, logger: nkruntime.Logger) 
 
     const defaultSettings: any = {
         system: {
+            feature_unlocks: FEATURE_DEFAULTS,
+            realm_milestones: REALM_MILESTONE_DEFAULTS,
             stage_sweep: SWEEP_DEFAULTS,
             tower_sweep: TOWER_SWEEP_DEFAULTS,
             min_app_version: "1.0.0", latest_app_version: "1.0.0",

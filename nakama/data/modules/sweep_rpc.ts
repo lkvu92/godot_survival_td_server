@@ -58,6 +58,7 @@ function sweepActive(profile:any):boolean {return !!profile.sweep&&['running','c
 // Fence inventory-only actions on the profile so reservations cannot race a start.
 function sweepResourceRuntime(base:nkruntime.Nakama,userId:string):nkruntime.Nakama {
     if(!userId)return base;
+    if(typeof featureRuntime === "function")base=featureRuntime(base,userId);
     const runtime:any=Object.create(base);
     const observed:any={};
     const identity=(r:any)=>(r.userId||userId)+'/'+r.collection+'/'+r.key;

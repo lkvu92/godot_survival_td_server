@@ -401,6 +401,10 @@ function invokeWithVersionGate(ctx: nkruntime.Context, logger: nkruntime.Logger,
             const response = JSON.parse(raw || "{}");
             if (response && typeof response === "object" && !Array.isArray(response)) {
                 response.config_version = active.version;
+                if(ctx.userId && typeof featureRuntime === 'function') {
+                    const row=nk.storageRead([{collection:'player_profiles',key:'main',userId:ctx.userId}])[0];
+                    if(row&&row.value.feature_unlocks)response.feature_unlocks=row.value.feature_unlocks;
+                }
                 return JSON.stringify(response);
             }
         } catch (_e) { }
@@ -492,6 +496,8 @@ function publishValidatedConfig(publisher:string, nk:nkruntime.Nakama, payload:s
 function validateReleaseSnapshot(nk:nkruntime.Nakama,snapshot:any):string|null {
     if(!snapshot || !snapshot.system || typeof snapshot.system!=='object')
         return JSON.stringify({status:'error',code:422,message:'Missing system config'});
+    try{featureValidateConfig(snapshot.system.feature_unlocks,snapshot.system.realm_milestones);}
+    catch(_error){return JSON.stringify({status:"error",code:422,message:"Missing or invalid system.feature_unlocks / realm_milestones"});}
     const minVersion = String(snapshot.system.min_app_version || "");
     if(snapshot.system.mailbox!==undefined){
         const mail=snapshot.system.mailbox;

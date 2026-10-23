@@ -284,6 +284,7 @@ function InitModule(
     initializer.registerRpc("event_claim", linkedRpc_event_claim);
     initializer.registerRpc("start_stage", linkedRpc_start_stage);
     initializer.registerRpc("upgrade_element", linkedRpc_upgrade_element);
+    initializer.registerRpc("complete_feature_tour", linkedRpc_complete_feature_tour);
     initializer.registerRpc("award_stage_progression", linkedRpc_award_stage_progression);
     initializer.registerRpc("tribulation_action", linkedRpc_tribulation_action);
     initializer.registerRpc("get_trial_tower_status", linkedRpc_get_trial_tower_status);
@@ -350,3 +351,5 @@ function linkedRpc_mail_admin_send(c:nkruntime.Context,l:nkruntime.Logger,n:nkru
 function linkedRpc_mail_admin_campaign(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string{return accountGuardedRpc("mail_admin_campaign",rpcMailAdminCampaign)(c,l,n,p);}
 
 function linkedRpc_finish_sweep(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string{return accountGuardedRpc("finish_sweep",(cc,ll,nn,pp)=>invokeWithVersionGate(cc,ll,mailCombatRuntime(nn,cc.userId),pp,finishSweep))(c,l,n,p);}
+
+function linkedRpc_complete_feature_tour(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string {return accountGuardedRpc("complete_feature_tour",(cc,ll,nn,pp)=>invokeWithVersionGate(cc,ll,nn,pp,completeFeatureTour))(c,l,n,p);}

@@ -410,6 +410,8 @@ const loadPlayerProfile: nkruntime.RpcFunction = (
 
     if (result.profile && typeof result.profile === "object" && Object.keys(result.profile).length > 0) {
         let profileChanged = cultivationEnsureProfile(nk, result.profile, freshLogin);
+        // Reconcile published feature definitions on every authenticated profile load.
+        if(typeof featureRuntime === "function")profileChanged=true;
         if (cultivationEnsurePreview(nk, result.profile)) profileChanged = true;
         // Stamina regeneration uses server UTC and the currently published
         // interval/amount; device time is never trusted.

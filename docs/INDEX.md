@@ -1,3 +1,6 @@
+- [C176 local readiness](reports/C176_LOCAL_READINESS.md): local config v4 and native Nakama/PostgreSQL smoke PASS.
+- [Feature unlock operations](FEATURE_UNLOCKS.md): published settings, migration, system mail and tour ACK.
+- [C176 Feature unlocks](contracts/C176_FEATURE_UNLOCKS.md): published level gates, atomic mail and generic tours.
 # Server documentation
 
 - C171 v1.0.1: Sa Thạch Toái Kích flight speed 420 → 630 for both earth bosses.

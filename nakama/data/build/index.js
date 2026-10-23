@@ -1144,6 +1144,8 @@ function createGameConfigTables(nk, logger) {
     `, []);
   const defaultSettings = {
     system: {
+      feature_unlocks: FEATURE_DEFAULTS,
+      realm_milestones: REALM_MILESTONE_DEFAULTS,
       stage_sweep: SWEEP_DEFAULTS,
       tower_sweep: TOWER_SWEEP_DEFAULTS,
       min_app_version: "1.0.0",
@@ -2936,6 +2938,10 @@ function invokeWithVersionGate(ctx, logger, nk, payload, handler) {
     const response = JSON.parse(raw || "{}");
     if (response && typeof response === "object" && !Array.isArray(response)) {
       response.config_version = active.version;
+      if (ctx.userId && typeof featureRuntime === "function") {
+        const row = nk.storageRead([{ collection: "player_profiles", key: "main", userId: ctx.userId }])[0];
+        if (row && row.value.feature_unlocks) response.feature_unlocks = row.value.feature_unlocks;
+      }
       return JSON.stringify(response);
     }
   } catch (_e) {
@@ -3033,6 +3039,11 @@ function publishValidatedConfig(publisher, nk, payload) {
 function validateReleaseSnapshot(nk, snapshot) {
   if (!snapshot || !snapshot.system || typeof snapshot.system !== "object")
     return JSON.stringify({ status: "error", code: 422, message: "Missing system config" });
+  try {
+    featureValidateConfig(snapshot.system.feature_unlocks, snapshot.system.realm_milestones);
+  } catch (_error) {
+    return JSON.stringify({ status: "error", code: 422, message: "Missing or invalid system.feature_unlocks / realm_milestones" });
+  }
   const minVersion = String(snapshot.system.min_app_version || "");
   if (snapshot.system.mailbox !== void 0) {
     const mail = snapshot.system.mailbox;
@@ -3611,6 +3622,7 @@ const loadPlayerProfile = (ctx, logger, nk, payload) => {
   result.monetization = buildMonetizationResponse(nk, ctx.userId, monetizationMode(ctx));
   if (result.profile && typeof result.profile === "object" && Object.keys(result.profile).length > 0) {
     let profileChanged = cultivationEnsureProfile(nk, result.profile, freshLogin);
+    if (typeof featureRuntime === "function") profileChanged = true;
     if (cultivationEnsurePreview(nk, result.profile)) profileChanged = true;
     const nowRows = nk.sqlQuery("SELECT EXTRACT(EPOCH FROM NOW())::BIGINT AS now", []);
     const realNow = Number(nowRows.length > 0 ? nowRows[0].now : 0);
@@ -3946,7 +3958,7 @@ function withActiveAccount(nk, userId, action) {
   }
 }
 function accountGuardedRpc(id, handler) {
-  handler = serverAdmissionRpc(id, handler);
+  handler = serverAdmissionRpc(id, typeof featureGuardedRpc === "function" ? featureGuardedRpc(id, handler) : handler);
   return (ctx, logger, nk, payload) => {
     const rejected = requireCurrentLogin(ctx, nk);
     if (rejected) return rejected;
@@ -9384,6 +9396,7 @@ function sweepActive(profile) {
 }
 function sweepResourceRuntime(base, userId) {
   if (!userId) return base;
+  if (typeof featureRuntime === "function") base = featureRuntime(base, userId);
   const runtime = Object.create(base);
   const observed = {};
   const identity = (r) => (r.userId || userId) + "/" + r.collection + "/" + r.key;
@@ -9907,6 +9920,212 @@ function sweepMigratePublishedConfig(nk, logger) {
   logger.info("C144 startup migration verified config release %s", String(rows.length ? rows[0].config_version : ""));
 }
 
+var __defProp = Object.defineProperty;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+const FEATURE_IDS = ["checkin", "daily_quests", "shop", "leaderboard", "stage_epic", "sweep", "elements", "stage_legend", "talisman", "trial_tower", "laws", "guild_war", "ancient_battlefield", "multiverse"];
+const FEATURE_DEFAULTS = { schema_version: 1, features: {} };
+[
+  ["checkin", 2, "\u0110i\u1EC3m danh h\xE0ng ng\xE0y", "Nh\u1EADn qu\xE0 \u0111i\u1EC3m danh m\u1ED7i ng\xE0y khi s\u1EF1 ki\u1EC7n ho\u1EA1t \u0111\u1ED9ng."],
+  ["daily_quests", 3, "Nhi\u1EC7m v\u1EE5 h\xE0ng ng\xE0y", "Ho\xE0n th\xE0nh nhi\u1EC7m v\u1EE5 m\u1ED7i ng\xE0y."],
+  ["shop", 5, "Huy\u1EC1n Thi\xEAn C\xE1c", "Kh\xE1m ph\xE1 nh\u1EEFng v\u1EADt ph\u1EA9m tr\u1EE3 l\u1EF1c tr\xEAn \u0111\u01B0\u1EDDng tu luy\u1EC7n."],
+  ["leaderboard", 9, "B\u1EA3ng x\u1EBFp h\u1EA1ng", "Theo d\xF5i th\xE0nh t\u1EF1u c\u1EE7a c\xE1c \u0111\u1EA1o h\u1EEFu."],
+  ["stage_epic", 10, "Stage Epic", "Th\u1EED s\u1EE9c v\u1EDBi \u0111\u1ED9 kh\xF3 Tinh Anh t\u1EA1i nh\u1EEFng \u1EA3i \u0111\xE3 \u0111\u1EE7 \u0111i\u1EC1u ki\u1EC7n."],
+  ["sweep", 15, "C\xE0n qu\xE9t", "C\xE0n qu\xE9t nh\u1EEFng \u1EA3i \u0111\u1EE7 \u0111i\u1EC1u ki\u1EC7n \u0111\u1EC3 t\xEDch l\u0169y t\xE0i nguy\xEAn."],
+  ["elements", 20, "Linh c\u0103n", "T\xECm hi\u1EC3u v\xE0 b\u1ED3i d\u01B0\u1EE1ng thu\u1ED9c t\xEDnh ng\u0169 h\xE0nh."],
+  ["stage_legend", 22, "Stage Legend", "Chinh ph\u1EE5c \u0111\u1ED9 kh\xF3 Huy\u1EC1n Tho\u1EA1i t\u1EA1i nh\u1EEFng \u1EA3i \u0111\xE3 \u0111\u1EE7 \u0111i\u1EC1u ki\u1EC7n."],
+  ["talisman", 25, "Ph\xE1p b\u1EA3o", "Qu\u1EA3n l\xFD v\xE0 b\u1ED3i d\u01B0\u1EE1ng ph\xE1p b\u1EA3o tr\u1EE3 chi\u1EBFn."],
+  ["trial_tower", 30, "Th\xED luy\u1EC7n", "B\u01B0\u1EDBc v\xE0o Th\xE1p Th\xED Luy\u1EC7n \u0111\u1EC3 t\xF4i luy\u1EC7n b\u1EA3n l\u0129nh."],
+  ["laws", 35, "Ph\xE1p t\u1EAFc", "S\u1EAFp ra m\u1EAFt."],
+  ["guild_war", null, "T\xF4ng m\xF4n chi chi\u1EBFn", "\u0110\u1EA1i chi\u1EBFn b\u1EA3o v\u1EC7 t\xF4ng m\xF4n \u2014 s\u1EAFp ra m\u1EAFt."],
+  ["ancient_battlefield", null, "Chi\u1EBFn tr\u01B0\u1EDDng th\u01B0\u1EE3ng c\u1ED5", "Nh\xE2n \u2013 y\xEAu \u2013 ma chi chi\u1EBFn \u2014 s\u1EAFp ra m\u1EAFt."],
+  ["multiverse", null, "V\u1EA1n gi\u1EDBi ch\u01B0 thi\xEAn", "Ph\xE1 b\u1ECF thi\xEAn \u0111\u1EA1o g\xF4ng c\xF9m \u2014 s\u1EAFp ra m\u1EAFt."]
+].forEach((row) => {
+  const planned = ["daily_quests", "laws", "guild_war", "ancient_battlefield", "multiverse"].indexOf(row[0]) >= 0;
+  FEATURE_DEFAULTS.features[row[0]] = {
+    required_user_level: row[1],
+    enabled: !planned,
+    release_status: planned ? "planned" : "released",
+    display_name: row[2],
+    description: row[3],
+    tour_id: planned ? "" : row[0] + "_v1",
+    tour_mode: "dismiss_any",
+    mail_title: "\u0110\xE3 khai m\u1EDF: " + row[2],
+    mail_body: "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu \u0111\u1EA1t c\u1EA5p {level}! " + row[2] + " \u0111\xE3 khai m\u1EDF.\n\n" + row[3] + "\n\nTr\u1EDF v\u1EC1 Trang ch\u1EE7 \u0111\u1EC3 kh\xE1m ph\xE1 ch\u1EE9c n\u0103ng m\u1EDBi."
+  };
+});
+const REALM_MILESTONE_DEFAULTS = { schema_version: 1, milestones: {
+  "10": { title: "Ch\xFAc m\u1EEBng \u0111\u1ED9t ph\xE1 \u2014 Lv.10", body: "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu v\u01B0\u1EE3t thi\xEAn ki\u1EBFp, b\u01B0\u1EDBc v\xE0o c\u1EA3nh gi\u1EDBi m\u1EDBi! Ti\xEAn l\u1ED9 t\u1EEB \u0111\xE2y r\u1ED9ng m\u1EDF, nh\u01B0ng m\u1ED7i mi\u1EC1n \u0111\u1EA5t \u0111\u1EC1u \u1EA9n ch\u1EE9a nh\xE2n qu\u1EA3. H\xE3y v\u1EEFng \u0111\u1EA1o t\xE2m, t\xEDch l\u0169y c\u0103n c\u01A1 v\xE0 th\u1EED s\u1EE9c v\u1EDBi nh\u1EEFng th\u1EED th\xE1ch kh\u1EAFc nghi\u1EC7t h\u01A1n." },
+  "20": { title: "Ch\xFAc m\u1EEBng \u0111\u1ED9t ph\xE1 \u2014 Lv.20", body: "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu \u0111\u1ED9t ph\xE1 th\xE0nh c\xF4ng! Khi linh l\u1EF1c d\u1EA7n tinh thu\u1EA7n, ng\u0169 h\xE0nh c\u0169ng h\xE9 l\u1ED9 quy lu\u1EADt t\u01B0\u01A1ng sinh t\u01B0\u01A1ng kh\u1EAFc. Th\u1EA5u hi\u1EC3u linh c\u0103n s\u1EBD gi\xFAp \u0111\u1EA1o h\u1EEFu \u0111i xa h\u01A1n tr\xEAn con \u0111\u01B0\u1EDDng tu luy\u1EC7n." },
+  "30": { title: "Ch\xFAc m\u1EEBng \u0111\u1ED9t ph\xE1 \u2014 Lv.30", body: "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu v\u01B0\u1EE3t th\xEAm m\u1ED9t t\u1EA7ng thi\xEAn \u0111\u1EA1o! S\u1EE9c m\u1EA1nh c\u1EA7n \u0111\u01B0\u1EE3c t\xF4i luy\u1EC7n qua th\u1EF1c chi\u1EBFn; Th\xE1p Th\xED Luy\u1EC7n \u0111ang ch\u1EDD nh\u1EEFng ng\u01B0\u1EDDi \u0111\u1EE7 b\u1EA3n l\u0129nh. H\xE3y chu\u1EA9n b\u1ECB ph\xE1p b\u1EA3o, gi\u1EEF t\xE2m s\xE1ng v\xE0 ti\u1EBFn t\u1EEBng b\u01B0\u1EDBc v\u1EEFng v\xE0ng." },
+  "40": { title: "Ch\xFAc m\u1EEBng \u0111\u1ED9t ph\xE1 \u2014 Lv.40", body: "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu \u0111\u1EB7t ch\xE2n t\u1EDBi c\u1EA3nh gi\u1EDBi cao h\u01A1n! C\xE0ng g\u1EA7n thi\xEAn \u0111\u1EA1o, ng\u01B0\u1EDDi tu h\xE0nh c\xE0ng nh\u1EADn ra s\u1EE9c m\u1EA1nh lu\xF4n \u0111i c\xF9ng tr\xE1ch nhi\u1EC7m. Ph\xEDa sau nh\u1EEFng cu\u1ED9c tranh \u0111\u1EA5u c\xF2n c\xF3 b\xED m\u1EADt c\u1EE7a th\u1EBF gi\u1EDBi n\xE0y \u0111ang ch\u1EDD \u0111\u01B0\u1EE3c kh\xE1m ph\xE1." },
+  "50": { title: "Ch\xFAc m\u1EEBng \u0111\u1ED9t ph\xE1 \u2014 Lv.50", body: "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu ch\u1EA1m t\u1EDBi \u0111\u1EC9nh cao hi\u1EC7n t\u1EA1i! \u0110\u1EC9nh n\xFAi h\xF4m nay c\xF3 th\u1EC3 ch\u1EC9 l\xE0 kh\u1EDFi \u0111\u1EA7u c\u1EE7a m\u1ED9t ch\xE2n tr\u1EDDi kh\xE1c. Truy\u1EC1n thuy\u1EBFt k\u1EC3 r\u1EB1ng ngo\xE0i g\xF4ng c\xF9m thi\xEAn \u0111\u1EA1o c\xF2n c\xF3 v\u1EA1n gi\u1EDBi ch\u01B0 thi\xEAn \u2014 h\xE3y gi\u1EEF v\u1EEFng \u0111\u1EA1o t\xE2m, ch\u1EDD ng\xE0y ti\xEAn l\u1ED9 ti\u1EBFp t\u1EE5c r\u1ED9ng m\u1EDF." }
+} };
+function featureValidateConfig(config, realms) {
+  if (!config || config.schema_version !== 1 || !config.features || Array.isArray(config.features) || !realms || realms.schema_version !== 1 || !realms.milestones) throw Error("FEATURE_CONFIG_INVALID");
+  const tours = [];
+  for (const id of FEATURE_IDS) {
+    const f = config.features[id];
+    if (!f || typeof f.enabled !== "boolean" || ["planned", "released"].indexOf(f.release_status) < 0 || f.required_user_level !== null && (!Number.isSafeInteger(f.required_user_level) || f.required_user_level < 1 || f.required_user_level > 50) || f.enabled && (f.required_user_level === null || f.release_status !== "released") || typeof f.display_name !== "string" || !f.display_name.trim() || f.display_name.length > 100 || typeof f.description !== "string" || f.description.length > 2e3 || typeof f.tour_id !== "string" || f.tour_id !== "" && !/^[a-z][a-z0-9_]{0,79}$/.test(f.tour_id) || ["dismiss_any", "guided"].indexOf(f.tour_mode) < 0 || typeof f.mail_title !== "string" || !f.mail_title.trim() || f.mail_title.length > 160 || typeof f.mail_body !== "string" || !f.mail_body.trim() || f.mail_body.length > 1e4) throw Error("FEATURE_CONFIG_INVALID:" + id);
+    if (f.tour_id) {
+      if (tours.indexOf(f.tour_id) >= 0) throw Error("DUPLICATE_TOUR");
+      tours.push(f.tour_id);
+    }
+  }
+  if (Object.keys(config.features).some((id) => FEATURE_IDS.indexOf(id) < 0)) throw Error("UNKNOWN_FEATURE");
+  for (const level of ["10", "20", "30", "40", "50"]) {
+    const r = realms.milestones[level];
+    if (!r || typeof r.title !== "string" || !r.title.trim() || r.title.length > 160 || typeof r.body !== "string" || !r.body.trim() || r.body.length > 1e4) throw Error("REALM_CONFIG_INVALID");
+  }
+}
+function featureConfig(nk) {
+  const c = getRemoteConfigValue(nk, "system", "feature_unlocks", null), r = getRemoteConfigValue(nk, "system", "realm_milestones", null);
+  featureValidateConfig(c, r);
+  return { features: c.features, realms: r.milestones };
+}
+function featureState(profile) {
+  const s = profile.feature_unlocks;
+  return s && s.schema_version === 1 && s.unlocked && typeof s.unlocked === "object" && !Array.isArray(s.unlocked) && Array.isArray(s.completed_tours) ? s : { schema_version: 1, unlocked: {}, completed_tours: [] };
+}
+function featureAccess(profile, id, config) {
+  const f = config.features[id], level = Number(profile.level || 1);
+  if (!f || !f.enabled || f.release_status !== "released") return { success: false, code: "FEATURE_UNAVAILABLE", feature_id: id, message: "Ch\u1EE9c n\u0103ng ch\u01B0a ph\xE1t h\xE0nh." };
+  if (!featureState(profile).unlocked[id] && level < f.required_user_level) return { success: false, code: "FEATURE_LOCKED", feature_id: id, required_user_level: f.required_user_level, current_user_level: level, message: "M\u1EDF \u1EDF Lv." + f.required_user_level };
+  return { success: true };
+}
+function featureRuntime(base, userId) {
+  if (!userId || base.__featureRuntime === userId) return base;
+  const runtime = Object.create(base);
+  runtime.__featureRuntime = userId;
+  runtime.storageWrite = (input) => {
+    const writes = input.slice(), profile = writes.find((w) => w.collection === "player_profiles" && w.key === "main" && w.userId === userId);
+    if (!profile) return base.storageWrite(writes);
+    const c = featureConfig(base), old = base.storageRead([{ collection: "player_profiles", key: "main", userId }])[0];
+    if (old && profile.version && profile.version !== old.version) throw Error("FEATURE_PROFILE_CONFLICT");
+    const previous = old ? old.value : {}, state = featureState(profile.value), migrating = !!old && !previous.feature_unlocks;
+    profile.value.feature_unlocks = state;
+    const priorState = featureState(previous);
+    Object.keys(priorState.unlocked).forEach((id) => state.unlocked[id] = priorState.unlocked[id]);
+    priorState.completed_tours.forEach((id) => {
+      if (state.completed_tours.indexOf(id) < 0) state.completed_tours.push(id);
+    });
+    const reports = [], batch = Object.create(base);
+    batch.__mailBatch = true;
+    batch.storageWrite = (extra) => {
+      writes.push(...extra);
+      return [];
+    };
+    const send = (definition) => reports.push(deliverMail(batch, userId, Object.assign({ category: "system", sender_name: "Thi\xEAn \u0110\u1EA1o Truy\u1EC1n Th\u01B0", attachments: [], expires_at_ms: null }, definition)));
+    Object.keys(c.features).forEach((id) => {
+      const f = c.features[id];
+      if (!f.enabled || f.release_status !== "released" || Number(profile.value.level || 1) < f.required_user_level) return;
+      if (!state.unlocked[id]) {
+        state.unlocked[id] = Date.now();
+        send({ source_id: "feature_unlocked:" + id, source_type: "feature_unlocked", title: f.mail_title, body: f.mail_body.split("{level}").join(String(f.required_user_level)) });
+      }
+      if (migrating && f.tour_id && state.completed_tours.indexOf(f.tour_id) < 0) state.completed_tours.push(f.tour_id);
+    });
+    const history = profile.value.breakthrough && profile.value.breakthrough.history;
+    if (Array.isArray(history)) for (const level of ["10", "20", "30", "40", "50"]) {
+      if (!history.some((h) => Number(h.level) === Number(level))) continue;
+      const r = c.realms[level];
+      send({ source_id: "realm_breakthrough:" + level, source_type: "realm_breakthrough", title: r.title, body: r.body });
+    }
+    const result = base.storageWrite(writes);
+    for (const report of reports) if (!report.idempotent) mailPush(base, userId, report.id);
+    return result;
+  };
+  return runtime;
+}
+function featureForRpc(id, req) {
+  const map = {
+    daily_checkin_status: "checkin",
+    daily_checkin_claim: "checkin",
+    store_purchase: "shop",
+    purchase_hero: "shop",
+    upgrade_element: "elements",
+    talisman_action: "talisman",
+    get_trial_tower_status: "trial_tower",
+    start_trial_tower: "trial_tower",
+    get_weekly_leaderboard_rewards: "leaderboard",
+    claim_weekly_leaderboard_reward: "leaderboard",
+    get_leaderboard_records: "leaderboard"
+  };
+  if (id === "talisman_action") return ["buy_material", "buy_fragment"].indexOf(req.action) >= 0 ? ["shop"] : req.action === "reroll_talent" ? [] : ["talisman"];
+  if (["get_sweep_options", "preview_sweep", "start_sweep"].indexOf(id) >= 0) {
+    if (req.sweep_type === "tower") return ["sweep", "trial_tower"];
+    const needed = ["sweep"], mode = req.level_id || req.difficulty_id;
+    if (mode === "epic" || mode === "legend") needed.push("stage_" + mode);
+    return needed;
+  }
+  if (id === "start_stage") {
+    if (req.stage_id === "stage_trial_tower") return ["trial_tower"];
+    const mode = req.level_id || req.difficulty_id;
+    return mode === "epic" ? ["stage_epic"] : mode === "legend" ? ["stage_legend"] : [];
+  }
+  return map[id] ? [map[id]] : [];
+}
+function featureGuardedRpc(id, handler) {
+  return (ctx, logger, nk, payload) => {
+    if (!ctx.userId) return handler(ctx, logger, nk, payload);
+    let req;
+    try {
+      req = JSON.parse(payload || "{}");
+    } catch (_e) {
+      return JSON.stringify({ success: false, code: 400, message: "Invalid JSON" });
+    }
+    const needed = featureForRpc(id, req || {});
+    if (needed.length) {
+      let c;
+      try {
+        c = featureConfig(nk);
+      } catch (_e) {
+        return JSON.stringify({ success: false, code: "FEATURE_CONFIG_INVALID", message: "C\u1EA5u h\xECnh m\u1EDF ch\u1EE9c n\u0103ng ch\u01B0a s\u1EB5n s\xE0ng." });
+      }
+      const row = nk.storageRead([{ collection: "player_profiles", key: "main", userId: ctx.userId }])[0];
+      if (!row) return JSON.stringify({ success: false, code: "PROFILE_REQUIRED" });
+      for (const key of needed) {
+        const access = featureAccess(row.value, key, c);
+        if (!access.success) return JSON.stringify(access);
+      }
+    }
+    return handler(ctx, logger, nk, payload);
+  };
+}
+const completeFeatureTour = (ctx, _logger, nk, payload) => {
+  if (!ctx.userId) return JSON.stringify({ success: false, code: 401 });
+  const req = JSON.parse(payload || "{}");
+  const c = featureConfig(nk), f = Object.keys(c.features).map((id) => __spreadValues({ id }, c.features[id])).find((f2) => f2.tour_id && f2.tour_id === req.tour_id);
+  const row = nk.storageRead([{ collection: "player_profiles", key: "main", userId: ctx.userId }])[0];
+  if (!f || !row) return JSON.stringify({ success: false, code: "UNKNOWN_TOUR" });
+  const access = featureAccess(row.value, f.id, c);
+  if (!access.success) return JSON.stringify(access);
+  const s = featureState(row.value);
+  row.value.feature_unlocks = s;
+  if (s.completed_tours.indexOf(req.tour_id) < 0) {
+    s.completed_tours.push(req.tour_id);
+    try {
+      nk.storageWrite([{ collection: "player_profiles", key: "main", userId: ctx.userId, value: row.value, version: row.version, permissionRead: 1, permissionWrite: 0 }]);
+    } catch (_e) {
+      return JSON.stringify({ success: false, code: "DATA_CHANGED", message: "Vui l\xF2ng th\u1EED l\u1EA1i." });
+    }
+  }
+  return JSON.stringify({ success: true, feature_unlocks: s });
+};
+
 const MAIL_COLLECTION = "player_mail";
 const MAIL_DAY = 864e5;
 const MAIL_FILTERS = ["all", "unread", "read", "reward", "expiring", "system", "battle_report"];
@@ -10319,6 +10538,7 @@ function applyPurchaseMailRewards(nk, userId, grantId, productId, fulfillmentTyp
   return result;
 }
 function mailCombatRuntime(base, userId) {
+  if (typeof featureRuntime === "function") base = featureRuntime(base, userId);
   const runtime = Object.create(base);
   runtime.storageWrite = (changes) => {
     const writes = changes.slice(), reports = [];
@@ -10645,6 +10865,7 @@ function InitModule(ctx, logger, nk, initializer) {
   initializer.registerRpc("event_claim", linkedRpc_event_claim);
   initializer.registerRpc("start_stage", linkedRpc_start_stage);
   initializer.registerRpc("upgrade_element", linkedRpc_upgrade_element);
+  initializer.registerRpc("complete_feature_tour", linkedRpc_complete_feature_tour);
   initializer.registerRpc("award_stage_progression", linkedRpc_award_stage_progression);
   initializer.registerRpc("tribulation_action", linkedRpc_tribulation_action);
   initializer.registerRpc("get_trial_tower_status", linkedRpc_get_trial_tower_status);
@@ -10721,4 +10942,7 @@ function linkedRpc_mail_admin_campaign(c, l, n, p) {
 }
 function linkedRpc_finish_sweep(c, l, n, p) {
   return accountGuardedRpc("finish_sweep", (cc, ll, nn, pp) => invokeWithVersionGate(cc, ll, mailCombatRuntime(nn, cc.userId), pp, finishSweep))(c, l, n, p);
+}
+function linkedRpc_complete_feature_tour(c, l, n, p) {
+  return accountGuardedRpc("complete_feature_tour", (cc, ll, nn, pp) => invokeWithVersionGate(cc, ll, nn, pp, completeFeatureTour))(c, l, n, p);
 }
