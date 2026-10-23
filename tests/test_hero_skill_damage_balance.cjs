@@ -2,7 +2,7 @@ const fs=require('fs'),path=require('path'),assert=require('assert');
 const {curves,poison,presentationTuning,maskedHash}=require('../tools/hero_skill_damage_curves.cjs');
 const skills=JSON.parse(fs.readFileSync(path.join(__dirname,'../data/skills.json'),'utf8'));
 const index=Object.fromEntries(skills.map(s=>[s.id,s]));
-// C010 v1.4.3 baseline: Hero 3 sheets, three-component Skill 2 and twice-speed sword burst.
+// C010 v1.4.3 / C012 v1.5.0 baseline: Hero 3 sheets/burst and Hero 4 looping vortex/needle timing.
 assert.equal(maskedHash(skills),'6d48d0710483e3fe5d1af81413e22598d07b95c6622c1c4077bec3b06b150891','Unrelated skills/stats/mechanics must be byte-value equivalent');
 let components=0;
 for(const [id,fields] of Object.entries(curves)){

@@ -153,3 +153,4 @@
 - [C178 — Thần Luân](contracts/C178_THAN_LUAN.md): shared level-35 survival progression, five-tier aura, shared combat HUD and dedicated Pháp Tắc Phù.
 - [C183 Hero 3 falling seal](contracts/C183_HERO_3_FALLING_SEAL.md) v1.0.0: single-target sword, eight-sword AOE, three sound waves at 0.3s intervals; 30% stun for 0.2s.
 - C183 v1.0.1: halve Hero 3 Skill 2 sword-burst duration at all five levels.
+- [C184 Hero 4 Venom Vortex](contracts/C184_HERO_4_VENOM_VORTEX.md) v1.0.0: looping vortex and random timed needle burst; corrected poison description.

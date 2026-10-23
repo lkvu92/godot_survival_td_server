@@ -1,0 +1,31 @@
+// Explicit loopback-only seed of exactly one skill. Never log credentials.
+const fs=require('fs'),path=require('path'),assert=require('assert/strict');
+const {execFileSync}=require('child_process');
+const docker=args=>execFileSync('docker',args,{encoding:'utf8',stdio:['pipe','pipe','pipe']}).trim();
+const envOf=meta=>Object.fromEntries(meta.Config.Env.map(e=>{const i=e.indexOf('=');return[e.slice(0,i),e.slice(i+1)];}));
+const keepAlive=setInterval(()=>{},1000);
+(async()=>{
+  const nk='survival_td_local-nakama-1',pg='survival_td_local-postgres-1';
+  const nkMeta=JSON.parse(docker(['inspect',nk]))[0],pgMeta=JSON.parse(docker(['inspect',pg]))[0];
+  for(const meta of [nkMeta,pgMeta])assert.equal(meta.Config.Labels['com.docker.compose.project'],'survival_td_local');
+  const binding=nkMeta.NetworkSettings.Ports['7350/tcp'][0];assert.equal(binding.HostIp,'127.0.0.1');
+  const nkEnv=envOf(nkMeta),pgEnv=envOf(pgMeta);
+  assert(nkEnv.NAKAMA_HTTP_KEY&&pgEnv.POSTGRES_USER&&pgEnv.POSTGRES_DB);
+  const sql=q=>docker(['exec',pg,'psql','-X','-U',pgEnv.POSTGRES_USER,'-d',pgEnv.POSTGRES_DB,'-v','ON_ERROR_STOP=1','-t','-A','-c',q]);
+  const row=JSON.parse(fs.readFileSync(path.join(__dirname,'../data/skills.json'),'utf8')).find(s=>s.id==='hero_4_skill_4');assert(row);
+  const untouched="SELECT md5(COALESCE(jsonb_agg(to_jsonb(s) ORDER BY id)::text,'')) FROM game_skills s WHERE id <> 'hero_4_skill_4'";
+  const before=sql(untouched);
+  fs.mkdirSync(path.join(__dirname,'../../tmp'),{recursive:true});
+  fs.writeFileSync(path.join(__dirname,'../../tmp/hero4_vortex_config_before.json'),sql("SELECT row_to_json(s) FROM game_skills s WHERE id='hero_4_skill_4'"));
+  const response=await fetch('http://127.0.0.1:'+binding.HostPort+'/v2/rpc/seed_game_data?http_key='+encodeURIComponent(nkEnv.NAKAMA_HTTP_KEY),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(JSON.stringify({table:'skills',rows:[row]})),signal:AbortSignal.timeout(20000)});
+  assert(response.ok);
+  const result=JSON.parse((await response.json()).payload);assert(result.success&&result.inserted===1);
+  const stored=JSON.parse(sql("SELECT row_to_json(s) FROM game_skills s WHERE id='hero_4_skill_4'"));
+  assert.deepEqual(stored.levels,row.levels);
+  assert.deepEqual(stored.vfx_frames,row.vfx_frames);
+  assert.deepEqual(stored.metadata.needle_vfx_frames,row.needle_vfx_frames);
+  assert.equal(stored.description,row.description);
+  assert.equal(sql(untouched),before,'Other skills must remain unchanged');
+  sql("BEGIN; LOCK TABLE remote_config_releases IN EXCLUSIVE MODE; INSERT INTO remote_config_releases(config_version,snapshot,min_app_version,latest_app_version,store_url,published_by) SELECT config_version+1,snapshot,min_app_version,latest_app_version,store_url,'local:C184:hero4-vortex' FROM remote_config_releases ORDER BY config_version DESC LIMIT 1; COMMIT;");
+  console.log('PASS local Hero 4 vortex sync: exactly one row verified, other skills unchanged, config version advanced.');
+})().catch(()=>{console.error('Local Hero 4 sync failed; credentials were not logged.');process.exitCode=1;}).finally(()=>clearInterval(keepAlive));
