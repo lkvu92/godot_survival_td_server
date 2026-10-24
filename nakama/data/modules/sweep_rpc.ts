@@ -179,6 +179,7 @@ function sweepPreviewData(nk:nkruntime.Nakama,s:any,req:any):any {
     const stages=nk.sqlQuery('SELECT exp_weight, is_boss, arc_id FROM game_stages WHERE id = $1',[stage]);
     const levels=nk.sqlQuery('SELECT exp_multiplier, gold_reward, loot_table, boss_loot_table FROM game_stage_levels WHERE stage_id = $1 AND level_id = $2',[stage,mode]);
     if(!stages.length||!levels.length||stages[0].arc_id==='arc_0'||stage==='stage_0_admin_test'||['normal','epic','legend'].indexOf(mode)<0)throw new Error('INVALID_STAGE');
+    if(!progressionArcModeAllowed(nk,s.profile,stage,mode))throw new Error('ARC_MODE_LOCKED');
     const level=levels[0],items=sweepRewardTable(nk,stage,mode,stages[0],level,'S');
     const exp=Math.max(0,Math.round(progressionMaxStageBaseExp(nk,stage)*Number(stages[0].exp_weight||1)*Number(level.exp_multiplier||1)));
     const held=sweepActive(s.profile)?Number(s.profile.sweep.reserved_tickets||0):0;
@@ -220,7 +221,7 @@ function sweepProcess(nk:nkruntime.Nakama,userId:string,logger:nkruntime.Logger,
         progressionApplyUser(nk,s.profile,exp);progressionReconcileLevelUnlocks(nk,s.profile);
         let level=Number(hero.level||1),xp=Number(hero.exp||0)+exp,next=progressionNextHeroExp(nk,level);
         while(level<Math.min(PROGRESSION_MAX_LEVEL,s.profile.level)&&next>0&&xp>=next){xp-=next;level++;next=progressionNextHeroExp(nk,level);}
-        hero.level=level;hero.exp=level>=PROGRESSION_MAX_LEVEL?0:xp;hero.next_level_exp=level>=PROGRESSION_MAX_LEVEL?0:next;hero.current_attribute=progressionHeroAttributes(nk,session.hero_id,level);
+        hero.level=level;hero.exp=level>=PROGRESSION_MAX_LEVEL?0:Math.min(xp,next);hero.next_level_exp=level>=PROGRESSION_MAX_LEVEL?0:next;hero.current_attribute=progressionHeroAttributes(nk,session.hero_id,level);
         session.completed_rounds++;session.reserved_tickets--;session.reserved_stamina-=staminaCost;session.state_version++;
         session.receipts.push({round_index:session.completed_rounds,receipt_id:session.session_id+':'+session.completed_rounds,completed_at_ms:atomicState?nowMs:session.next_due_at_ms,loot:rewards,exp});
         session.next_due_at_ms=session.started_at_ms+(session.completed_rounds+1)*session.config_snapshot.round_duration_ms;

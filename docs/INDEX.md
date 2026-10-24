@@ -1,4 +1,7 @@
 - [C176 local readiness](reports/C176_LOCAL_READINESS.md): local config v4 and native Nakama/PostgreSQL smoke PASS.
+
+- [Skill hero — thông số hiện hành 2026-10-24](HERO_SKILLS_CURRENT.md): đủ 5 hero, 20 skill; bảng level, cơ chế/asset và phần % HP Hero 5 đã chốt đủ 5 cấp.
+- [C198 Current hero documentation](contracts/C198_HERO_SKILL_DOCS_CURRENT.md) v1.0.1: đối chiếu source và thay đường dẫn ưu tiên khỏi snapshot cũ.
 - [Feature unlock operations](FEATURE_UNLOCKS.md): published settings, migration, system mail and tour ACK.
 - [C176 Feature unlocks](contracts/C176_FEATURE_UNLOCKS.md): published level gates, atomic mail and generic tours.
 # Server documentation
@@ -6,7 +9,7 @@
 - [C181 Trial Tower 30 floors](contracts/C181_TRIAL_TOWER_30_FLOORS.md): three ten-floor fragment bands, 3.60× final scaling and server-authoritative 1–30 challenge/sweep.
 - [C182 Reward boost-card shop](contracts/C182_REWARD_BOOST_CARD_SHOP.md): 1-hour 10%/25% EXP and Gold cards, Gem-to-Gold ratio 1:500, direct-shop whitelist and event-pack-only high cards.
 
-- [C180 Hero 1 Ice Domain layers](contracts/C180_HERO_1_ICE_DOMAIN_LAYERS.md): four-stage impact, 10s field / 15s cooldown, centred slow gradient and authored VFX parsing.
+- [C180 Hero 1 Ice Domain layers](contracts/C180_HERO_1_ICE_DOMAIN_LAYERS.md): slot 3 support field, level-scaled duration/cooldown/radius/debuffs and owner-specific replacement (C189).
 
 - [C177 Tower test entries](contracts/C177_TOWER_TEST_ENTRIES.md): protected admin grant capacity, standard daily recovery unchanged.
 - [C179 Campaign tank HP](contracts/C179_CAMPAIGN_TANK_HP.md): tank base HP is 1.5x its arc grunt, including a 1.75x effective cap after spawn buffs.
@@ -17,7 +20,7 @@
 
 - C158 v1.1.1: U Hồn Phệ Cốt uses eight skulls, 35% direct ATK and flight speed 540.
 
-- [C162 Hero skill damage curves](contracts/C162_HERO_SKILL_DAMAGE_CURVES.md): stronger level 1 and flatter subsequent ATK damage growth, shared by all combat modes.
+- [C162 Hero skill damage curves](contracts/C162_HERO_SKILL_DAMAGE_CURVES.md) v1.0.2: historical flattening recipe with explicit current overrides; use the five current hero pages.
 
 - [C159 Inventory stack consolidation](contracts/C159_INVENTORY_STACK_CONSOLIDATION.md) v1.0.0: stack fungible items, consolidate scoped inventory and preserve instance equipment.
 
@@ -151,6 +154,70 @@
 - [C158 wood skills v1.1.0](contracts/C158_CREEP_WOOD_SKILLS.md): compact target-centered thorn ellipse and authoritative presentation dimensions.
 
 - [C178 — Thần Luân](contracts/C178_THAN_LUAN.md): shared level-35 survival progression, five-tier aura, shared combat HUD and dedicated Pháp Tắc Phù.
-- [C183 Hero 3 falling seal](contracts/C183_HERO_3_FALLING_SEAL.md) v1.0.0: single-target sword, eight-sword AOE, three sound waves at 0.3s intervals; 30% stun for 0.2s.
+- [C183 Hero 3 falling seal](contracts/C183_HERO_3_FALLING_SEAL.md) v1.0.2: same three-wave mechanics, current skill2 cooldown8/7.5/7/6.5/6s under C195.
 - C183 v1.0.1: halve Hero 3 Skill 2 sword-burst duration at all five levels.
-- [C184 Hero 4 Venom Vortex](contracts/C184_HERO_4_VENOM_VORTEX.md) v1.0.0: looping vortex and random timed needle burst; corrected poison description.
+- [C184 Hero 4 Venom Vortex](contracts/C184_HERO_4_VENOM_VORTEX.md) v1.0.1: C196 vortex2.5s/five ticks,20% stun and additive ATK poison capped5000 DPS.
+
+- [C185 Hero 1 skill unlocks](contracts/C185_HERO_1_SKILL_UNLOCKS.md) v1.0.1: historical gate change; superseded by C189: persistent levels 1/10/20/30, combat levels 1/5/10/15.
+
+- C158 v1.1.3: both boss swamps start at 3s/range 500; Hydra souls start at 3s/range 600 with 15% explosions; Hydra regeneration 0.5% max HP/s.
+
+- [C186 Hero EXP cap and test](contracts/C186_HERO_EXP_CAP_TEST.md) v1.0.0: cap stored EXP; restricted two-account hero level test.
+
+- [C187 Hero 2 skill 1 spread](contracts/C187_HERO_2_SKILL1_SPREAD.md) v1.0.0: adjacent rays 10 degrees; full three-ray cone 20 degrees.
+
+- [C188 Hero 2 Phoenix](contracts/C188_HERO_2_PHOENIX_RANGE.md): radius 100/115/130/145/160; cast range 700, travel 1024.
+
+- [C189 Hero 1 skill order](contracts/C189_HERO_1_SKILL_ORDER.md): domain slot 3 at hero 20/combat 10; mastery slot 4 at hero 30/combat 15. Supersedes C185 skill 3/4 levels.
+
+- [C192 Arc difficulty unlocks](contracts/C192_ARC_DIFFICULTY_UNLOCKS.md): clear all Normal in an arc for Epic; all Epic for Legend.
+
+- [C193 Feature milestones/tours](contracts/C193_FEATURE_MILESTONES_TOURS.md): revised levels, matching tours and local/VPS seed/publication repair (1.0.2).
+
+C193 1.0.3: sweep tour stage focus takes precedence over latest-unlocked scroll.
+
+
+
+C180 v1.0.1: support-only ice domain level curves and owner-specific recast cleanup.
+
+C189 v1.0.1: Hero 1 projectile mastery rebalance, probabilistic freeze and lotus damage.
+
+- [C194 Arc 5 creep roster](contracts/C194_ARC5_CREEP_ROSTER.md): four authored creeps, Amber replaces campaign wraith.
+
+- [C195 Hero 3 skill rebalance](contracts/C195_HERO3_SKILL_REBALANCE.md): fixed-speed fan, new cooldown/damage curves and formation movement.
+
+- [C196 Hero 4 rebalance](contracts/C196_HERO4_SKILL_REBALANCE.md): skill curves, capped traps and additive-ATK poison vortex.
+
+- [C197 Hero 5 rebalance](contracts/C197_HERO5_SKILL_REBALANCE.md): finger explosion, delayed runes, palm/crack/propagating waves.
+
+C197 v1.1.0: fixed golden phantom, 0.5s protection, actual-hit repeat damage and consecutive target marks.
+
+- C197 v1.1.1 ACTIVE: Hero5 rune HP per pulse is 0.2/0.3/0.6/0.8/1 percent; all five levels confirmed.
+
+- [C199 Hero5 asset grid](contracts/C199_HERO5_ASSET_GRID.md): canonical impact artwork, 3x3/400px frames and scoped normalization cache.
+
+- [C200 Hero4 asset grid](contracts/C200_HERO4_ASSET_GRID.md): v1.1.0: six animation sheets at3x3/400px including the updated needle; UI icons stay whole-image.
+
+- [C201 Hero5 finger display size](contracts/C201_HERO5_FINGER_DISPLAY_SIZE.md): compensate tiny legacy scale after400px frame normalization.
+
+- [C202 Hero5 palm/mark size](contracts/C202_HERO5_PALM_MARK_SIZE.md): stage1 palm2x; initial target mark0.7x, all levels.
+
+- [C203 Hero5 Skill3 double size/range](contracts/C203_HERO5_PALM_DOUBLE.md).
+
+- C142 v1.0.2: Test 2 account allowlist includes lkvu921@gmail.com.
+
+- C199 v1.1.0: Skill4 punches use skill4_effect1, play once and hold last frame.
+
+- C203 v1.1.0: Skill3 visual scales reduced20%; combat ranges retained.
+
+- C195 v1.1.0: Hero3 Skill1+30% speed; ordinary Skill3 swords-30%.
+
+- C196 v1.1.0: Hero4 Skill3 artwork40% smaller.
+
+- [C204 Law battle entry](contracts/C204_LAW_BATTLE_ENTRY.md): preserve run aura; remove CharacterSelect aura.
+
+- C204 v1.1.0: tower, admin-test loadout and breakthrough Law coverage.
+
+- C204 v1.2.0: visible world aura above map; remove Law HUD text.
+
+- C204 v1.3.0: no Law effects on Home/Profile/Tower/hero-select avatars.

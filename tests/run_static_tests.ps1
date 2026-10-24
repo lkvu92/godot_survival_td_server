@@ -7,6 +7,8 @@ try {
     }
     & node --check nakama/data/build/index.js
     if ($LASTEXITCODE -ne 0) { throw 'Runtime syntax failed' }
+    & node tests/test_arc_mode_unlocks.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Arc difficulty unlock regression failed' }
     & node tests/test_feature_unlocks.cjs
     if ($LASTEXITCODE -ne 0) { throw 'Feature unlock regression failed' }
     & node tests/test_than_luan.cjs
@@ -45,6 +47,8 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Legacy pack reward regression failed' }
     & node tests/test_new_profile_inventory.cjs
     if ($LASTEXITCODE -ne 0) { throw 'New profile inventory regression failed' }
+    & node tests/test_hero_exp_test.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Hero EXP test failed' }
     & node tests/test_admin_skill_test.cjs
     if ($LASTEXITCODE -ne 0) { throw 'Admin skill test regression failed' }
     & node tests/test_account_password.cjs

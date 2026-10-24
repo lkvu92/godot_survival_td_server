@@ -7,7 +7,7 @@ const ROLES = {
   arc_frozen_realm: {grunt: 'snow_skeleton', rusher: 'frost_wolf', tanker: 'horn_cactus'},
   arc_verdant_realm: {grunt: 'spore_crawler', rusher: 'venom_spider', tanker: 'ent_protector'},
   arc_iron_bastion: {grunt: 'steam_automaton', rusher: 'clockwork_spider', tanker: 'shield_sentinel'},
-  arc_titan_realm: {grunt: 'primordial_wraith', rusher: 'sand_stalker', tanker: 'granite_colossus'},
+  arc_titan_realm: {grunt: 'amber_spirit', rusher: 'sand_stalker', tanker: 'granite_colossus'},
 };
 
 function applyWaveRoleRules(stages) {

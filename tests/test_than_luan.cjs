@@ -32,7 +32,7 @@ assert.equal(battleRow.level,20);assert.equal(battleRow.aura_id,'tl_2');
 battleProfile.than_luan.level=50;assert.equal(battleRow.level,20);
 battleRow.stats.persistent_damage_reduction=999;
 assert.notEqual(activeConfig.than_luan.levels[19].stats.persistent_damage_reduction,999);
-assert.equal(Object.keys(fn('thanLuanBattleSnapshot')({level:34,than_luan:{level:50}},activeConfig.than_luan)).length,0);
+assert.equal(Object.keys(fn('thanLuanBattleSnapshot')({level:29,than_luan:{level:50}},activeConfig.than_luan)).length,0);
 let nk=scoped();setup(nk);
 assert(invoke('getThanLuanState',nk).success);assert.equal(read(nk).value.than_luan.level,1);
 const saved=copy([...db]);invoke('getThanLuanState',nk);assert.deepEqual([...db],saved,'Reconcile is idempotent');
@@ -48,8 +48,8 @@ for(let level=2;level<50;level++){
 }
 assert.deepEqual(totals,{low:558,medium:950,high:2215});assert.equal(upgrade(nk,50).code,'MAX_LEVEL');
 assert.equal(result.state.next,null);assert.equal(result.state.stats.persistent_damage_reduction,.15);
-let other=scoped('s002');setup(other,34);assert.equal(invoke('getThanLuanState',other).state.level,0);assert.equal(upgrade(other,1).code,'FEATURE_LOCKED');
-let p=read(other);p.value.level=35;other.storageWrite([{...p,value:p.value}]);assert.equal(invoke('getThanLuanState',other).state.level,1);
+let other=scoped('s002');setup(other,29);assert.equal(invoke('getThanLuanState',other).state.level,0);assert.equal(upgrade(other,1).code,'FEATURE_LOCKED');
+let p=read(other);p.value.level=30;other.storageWrite([{...p,value:p.value}]);assert.equal(invoke('getThanLuanState',other).state.level,1);
 assert.equal(read(nk).value.than_luan.level,50,'Server isolation');
 const inv=read(other,'player_inventory','items');inv.value.items=[];other.storageWrite([{...inv,value:inv.value}]);
 const insufficient=copy([...db]);assert.equal(upgrade(other,1).code,'INSUFFICIENT_MATERIALS');assert.deepEqual([...db],insufficient);

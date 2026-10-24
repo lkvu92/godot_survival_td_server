@@ -250,6 +250,8 @@ function InitModule(
     initializer.registerAfterAuthenticateCustom(afterSingleLogin);
     initializer.registerRpc("session_status", linkedRpc_session_status);
     initializer.registerRpc("admin_test_access", linkedRpc_admin_test_access);
+    initializer.registerRpc("admin_exp_test_access", linkedRpc_admin_exp_test_access);
+    initializer.registerRpc("admin_exp_test", linkedRpc_admin_exp_test);
     initializer.registerRpc("rename_player", linkedRpc_rename_player);
     initializer.registerRpc("account_password_status", linkedRpc_account_password_status);
     initializer.registerRpc("setup_account_password", linkedRpc_setup_account_password);
@@ -361,3 +363,10 @@ function linkedRpc_mail_admin_campaign(c:nkruntime.Context,l:nkruntime.Logger,n:
 function linkedRpc_finish_sweep(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string{return accountGuardedRpc("finish_sweep",(cc,ll,nn,pp)=>invokeWithVersionGate(cc,ll,mailCombatRuntime(nn,cc.userId),pp,finishSweep))(c,l,n,p);}
 
 function linkedRpc_complete_feature_tour(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string {return accountGuardedRpc("complete_feature_tour",(cc,ll,nn,pp)=>invokeWithVersionGate(cc,ll,nn,pp,completeFeatureTour))(c,l,n,p);}
+
+function linkedRpc_admin_exp_test_access(ctx:nkruntime.Context,logger:nkruntime.Logger,nk:nkruntime.Nakama,payload:string):string {
+    return accountGuardedRpc("admin_exp_test_access",adminExpTestAccess)(ctx,logger,nk,payload);
+}
+function linkedRpc_admin_exp_test(ctx:nkruntime.Context,logger:nkruntime.Logger,nk:nkruntime.Nakama,payload:string):string {
+    return accountGuardedRpc("admin_exp_test",(c,l,n,p)=>invokeWithVersionGate(c,l,n,p,adminExpTest))(ctx,logger,nk,payload);
+}

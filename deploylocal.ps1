@@ -1,10 +1,15 @@
 param(
     [ValidateSet('deploy', 'start', 'stop', 'restart', 'seed', 'build', 'logs', 'status', 'health')]
     [string]$Action = 'deploy',
-    [string]$Service = ''
+    [string]$Service = '',
+    [switch]$Publish
 )
 
 $ErrorActionPreference = 'Stop'
+if ($Service -eq '--publish') { $Publish = $true; $Service = '' }
+if ($Publish -and $Action -ne 'seed') { throw 'Publish is supported only with seed.' }
+if ($Service -and $Action -ne 'logs') { throw "Unexpected argument: $Service" }
+if ($args.Count) { throw "Unexpected arguments: $args" }
 $nakamaDir = Join-Path $PSScriptRoot 'nakama'
 $envPath = Join-Path $nakamaDir '.env.local'
 $iapPath = Join-Path $nakamaDir 'iap.local.secret.yml'
@@ -43,6 +48,7 @@ function Build-Runtime {
 function Configure-Runtime([bool]$Seed = $false) {
     $arguments = @('configure_runtime.py', '--compose-file', 'docker-compose.local.yml', '--env-file', '.env.local', '--output', 'runtime.local.secret.yml')
     if ($Seed) { $arguments += '--seed' }
+    if ($Seed -and $Publish) { $arguments += @('--', '--publish') }
     Invoke-Checked python $arguments
 }
 

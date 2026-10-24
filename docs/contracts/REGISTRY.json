@@ -1,17 +1,143 @@
 {
   "contracts": [
     {
-      "id": "C184_HERO_4_VENOM_VORTEX",
+      "id": "C204_LAW_BATTLE_ENTRY",
+      "version": "1.3.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-24",
+      "contract_file": "docs/contracts/C204_LAW_BATTLE_ENTRY.md"
+    },
+    {
+      "id": "C203_HERO5_PALM_DOUBLE",
+      "version": "1.1.0",
+      "status": "ACTIVE",
+      "contract_file": "docs/contracts/C203_HERO5_PALM_DOUBLE.md",
+      "updated_at": "2026-10-24"
+    },
+    {
+      "id": "C202_HERO5_PALM_MARK_SIZE",
       "version": "1.0.0",
       "status": "ACTIVE",
-      "updated_at": "2026-10-23",
+      "updated_at": "2026-10-24",
+      "contract_file": "docs/contracts/C202_HERO5_PALM_MARK_SIZE.md"
+    },
+    {
+      "id": "C201_HERO5_FINGER_DISPLAY_SIZE",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-24",
+      "contract_file": "docs/contracts/C201_HERO5_FINGER_DISPLAY_SIZE.md"
+    },
+    {
+      "id": "C200_HERO4_ASSET_GRID",
+      "version": "1.1.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-24",
+      "contract_file": "docs/contracts/C200_HERO4_ASSET_GRID.md"
+    },
+    {
+      "id": "C199_HERO5_ASSET_GRID",
+      "version": "1.1.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-24",
+      "contract_file": "docs/contracts/C199_HERO5_ASSET_GRID.md"
+    },
+    {
+      "id": "C198_HERO_SKILL_DOCS_CURRENT",
+      "version": "1.0.1",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-24",
+      "contract_file": "docs/contracts/C198_HERO_SKILL_DOCS_CURRENT.md"
+    },
+    {
+      "id": "C197_HERO5_SKILL_REBALANCE",
+      "version": "1.1.2",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-24",
+      "contract_file": "docs/contracts/C197_HERO5_SKILL_REBALANCE.md"
+    },
+    {
+      "id": "C196_HERO4_SKILL_REBALANCE",
+      "version": "1.1.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-24",
+      "contract_file": "docs/contracts/C196_HERO4_SKILL_REBALANCE.md"
+    },
+    {
+      "id": "C195_HERO3_SKILL_REBALANCE",
+      "version": "1.1.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-24",
+      "contract_file": "docs/contracts/C195_HERO3_SKILL_REBALANCE.md"
+    },
+    {
+      "id": "C194_ARC5_CREEP_ROSTER",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-24",
+      "contract_file": "docs/contracts/C194_ARC5_CREEP_ROSTER.md"
+    },
+    {
+      "id": "C193_FEATURE_MILESTONES_TOURS",
+      "version": "1.0.3",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-24",
+      "contract_file": "docs/contracts/C193_FEATURE_MILESTONES_TOURS.md"
+    },
+    {
+      "id": "C192_ARC_DIFFICULTY_UNLOCKS",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-24",
+      "contract_file": "docs/contracts/C192_ARC_DIFFICULTY_UNLOCKS.md"
+    },
+    {
+      "id": "C189_HERO_1_SKILL_ORDER",
+      "version": "1.0.1",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-24",
+      "contract_file": "docs/contracts/C189_HERO_1_SKILL_ORDER.md"
+    },
+    {
+      "id": "C188_HERO_2_PHOENIX_RANGE",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-24",
+      "contract_file": "docs/contracts/C188_HERO_2_PHOENIX_RANGE.md"
+    },
+    {
+      "id": "C187_HERO_2_SKILL1_SPREAD",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-24",
+      "contract_file": "docs/contracts/C187_HERO_2_SKILL1_SPREAD.md"
+    },
+    {
+      "id": "C186_HERO_EXP_CAP_TEST",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-24",
+      "contract_file": "docs/contracts/C186_HERO_EXP_CAP_TEST.md"
+    },
+    {
+      "id": "C185_HERO_1_SKILL_UNLOCKS",
+      "version": "1.0.1",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-24",
+      "contract_file": "docs/contracts/C185_HERO_1_SKILL_UNLOCKS.md"
+    },
+    {
+      "id": "C184_HERO_4_VENOM_VORTEX",
+      "version": "1.0.2",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-24",
       "contract_file": "docs/contracts/C184_HERO_4_VENOM_VORTEX.md"
     },
     {
       "id": "C183_HERO_3_FALLING_SEAL",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "status": "ACTIVE",
-      "updated_at": "2026-10-23",
+      "updated_at": "2026-10-24",
       "contract_file": "docs/contracts/C183_HERO_3_FALLING_SEAL.md"
     },
     {
@@ -30,9 +156,9 @@
     },
     {
       "id": "C180_HERO_1_ICE_DOMAIN_LAYERS",
-      "version": "1.0.0",
+      "version": "1.0.2",
       "status": "ACTIVE",
-      "updated_at": "2026-10-23",
+      "updated_at": "2026-10-24",
       "contract_file": "docs/contracts/C180_HERO_1_ICE_DOMAIN_LAYERS.md"
     },
     {
@@ -135,9 +261,9 @@
     },
     {
       "id": "C162_HERO_SKILL_DAMAGE_CURVES",
-      "version": "1.0.0",
+      "version": "1.0.2",
       "status": "ACTIVE",
-      "updated_at": "2026-10-22",
+      "updated_at": "2026-10-24",
       "contract_file": "docs/contracts/C162_HERO_SKILL_DAMAGE_CURVES.md"
     },
     {
@@ -163,9 +289,9 @@
     },
     {
       "id": "C158_CREEP_WOOD_SKILLS",
-      "version": "1.1.2",
+      "version": "1.1.3",
       "status": "ACTIVE",
-      "updated_at": "2026-10-23",
+      "updated_at": "2026-10-24",
       "contract_file": "docs/contracts/C158_CREEP_WOOD_SKILLS.md"
     },
     {
@@ -270,9 +396,9 @@
     },
     {
       "id": "C142_ADMIN_SKILL_TEST",
-      "version": "1.0.1",
-      "status": "IN_PROGRESS",
-      "updated_at": "2026-10-19",
+      "version": "1.0.2",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-24",
       "contract_file": "docs/contracts/C142_ADMIN_SKILL_TEST.md"
     },
     {
@@ -408,5 +534,5 @@
       "contract_file": "docs/contracts/C119_CONFIG_SEED_INTEGRITY.md"
     }
   ],
-  "updated_at": "2026-10-23"
+  "updated_at": "2026-10-24"
 }

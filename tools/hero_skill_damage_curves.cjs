@@ -3,7 +3,7 @@ const fs = require('fs'), path = require('path'), assert = require('assert'), cr
 const curves = {
   hero_1_skill_1:{damage_pct:[75,95,120,150,185]},
   hero_1_skill_2:{damage_pct:[50,65,85,110,140],second_damage_pct:[0,0,0,0,0]},
-  hero_1_skill_3:{damage_pct:[10,15,20,25,30]},
+  hero_1_skill_4:{damage_pct:[10,15,20,25,30]},
   hero_2_skill_1:{damage_pct:[70,90,115,145,180]},
   hero_2_skill_2:{damage_pct:[30,40,51.25,63.75,80]},
   hero_2_skill_3:{burn_total_damage_pct:[5,10,15,20,25]},
@@ -22,7 +22,7 @@ const curves = {
 };
 const poison = {hero_4_skill_1:[36,50,68,92,124],hero_4_skill_3:[30,42,58,80,110]};
 const presentationTuning = {
-  hero_1_skill_4:['cooldown','domain_duration','domain_radius','domain_cast_range','domain_slow_edge','domain_slow_center','impact_stun_chance','impact_stun_duration'],
+  hero_1_skill_3:['cooldown','domain_duration','domain_radius','domain_cast_range','domain_slow_edge','domain_slow_center','impact_stun_chance','impact_stun_duration'],
   hero_2_skill_2:['speed_pct','knockback_distance','knockback_duration','vfx_alpha'],
   hero_2_skill_4:['charge_time','telegraph_radius','telegraph_max_hp_pct','telegraph_tick_interval','telegraph_tick_count','telegraph_vfx_scale']
 };
@@ -37,7 +37,7 @@ function descriptions(skill,level) {
       if(/^\d+x /.test(text))text=s.sequence_count+'x '+number(s.damage_pct)+'% ATK';
       text=text.replace(/(Stronger final )\d+(?:\.\d+)?(% ATK)/,(_,p,q)=>p+number(s.final_damage_pct)+q);
     }
-    if(id==='hero_1_skill_3'&&text.startsWith('Tăng '))text='Tăng '+number(s.damage_pct)+'% DMG, +'+number(s.speed_pct)+'% SPD';
+    if(id==='hero_1_skill_4'&&text.startsWith('Tăng '))text='Tăng '+number(s.damage_pct)+'% DMG, +'+number(s.speed_pct)+'% SPD';
     if(id==='hero_2_skill_3')text=text.replace(/(Thiêu đốt tổng )\d+(?:\.\d+)?(% ATK)/,(_,p,q)=>p+number(s.burn_total_damage_pct)+q);
     if(id==='hero_2_skill_4'&&(text.startsWith('Tiễn chính ')||text.startsWith('Tổng 3 tiễn:')))text='Tiễn chính '+number(s.damage_pct)+'%, mỗi tiễn phụ '+number(s.damage_pct*0.5)+'% ATK';
     if(poison[id]) {
@@ -58,7 +58,7 @@ function maskedHash(catalog) {
     if(poison[skill.id])for(const effect of level.effects||[])if(effect.id==='poison')delete effect.dps_pct;
   }
 	for(const skill of masked)if(presentationTuning[skill.id]){
-		if(skill.id==='hero_1_skill_4') {
+		if(skill.id==='hero_1_skill_3') {
 			delete skill.vfx_frames;
 			for(const level of skill.levels) {
 				delete level.stats.domain_coverage;

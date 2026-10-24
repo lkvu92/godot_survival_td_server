@@ -109,3 +109,18 @@ for (const training of [{stage: 'stage_0_1', arc: 'arc_0'}, {stage: 'stage_0_1',
   }
 }
 console.log('PASS first-clear EXP: normal first/repeat/difficulty/loss/replay/conflict, active EXP boost; training victory/defeat/repeat grant zero User/Hero EXP');
+
+// C186: rewards cannot bank unlimited EXP at the account-level cap.
+reset();
+db.player_heroes.value.heroes[0].exp=999999;
+result=settle('one');
+assert(result.success);
+assert.equal(result.hero.level,result.profile.level);
+assert.equal(result.hero.exp,result.hero.next_level_exp);
+assert.equal(db.player_heroes.value.heroes[0].exp,result.hero.next_level_exp);
+// Legitimate progression below the user cap still spends EXP across levels.
+reset();db.player_profiles.value.level=15;
+db.player_heroes.value.heroes[0].exp=5000;
+result=settle('one');assert(result.success);assert(result.hero.level>1);
+assert(result.hero.exp<=result.hero.next_level_exp);
+console.log('PASS C186 campaign EXP: legacy overflow capped; normal hero level progression preserved');

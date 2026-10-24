@@ -85,6 +85,28 @@ exit 0
         self.assertEqual(result.returncode, 37, result.stderr)
         self.assertEqual(len(calls), 1)
 
+    def test_deploy_aliases_publish_by_default(self):
+        for action in ["deploy", "up", "start"]:
+            with self.subTest(action=action):
+                result, calls = self.execute([action])
+                self.assertEqual(result.returncode, 0, result.stderr)
+                python_calls = [call for call in calls if call[0] == "python3"]
+                self.assertEqual(python_calls[1:], [
+                    ["python3", "configure_runtime.py", "--seed", "--", "--publish"],
+                    ["python3", "configure_runtime.py", "--seed", "--", "--check-active"]])
+
+    def test_deploy_publish_failure_prevents_success_and_active_check(self):
+        result, calls = self.execute(["deploy"], failure=37)
+        self.assertEqual(result.returncode, 37, result.stderr)
+        self.assertNotIn("[SUCCESS]", result.stdout)
+        self.assertFalse(any("--check-active" in call for call in calls))
+
+    def test_deploy_quotes_settings_with_implicit_publish(self):
+        filename = "reviewed settings/production config.json"
+        result, calls = self.execute(["deploy", "--settings", filename])
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn(["python3", "configure_runtime.py", "--seed", "--", "--publish", "--settings", filename], calls)
+
     def test_logs_retains_service_argument(self):
         result, calls = self.execute(["logs", "nakama"])
         self.assertEqual(result.returncode, 0, result.stderr)

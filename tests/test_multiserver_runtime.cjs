@@ -103,7 +103,7 @@ const keepAlive=setInterval(()=>{},1000);
     assert.equal((await call('start_trial_tower',{...towerContext,floor:1,hero_id:'hero_5',request_id:'tower-unowned'})).code,'HERO_NOT_OWNED');
     const started=await call('start_trial_tower',{...towerContext,floor:1,hero_id:'hero_1',request_id:'tower-start-1'});
     assert.equal(started.success,true,JSON.stringify(started));
-    assert.equal(started.run.skill_unlock_version,4);
+    assert.equal(started.run.skill_unlock_version,5);
     assert(started.run.demon_attributes.atk>0);
     assert.deepEqual(started.run.demon_element_profile.affinities,started.run.hero_element_profile.affinities);
     assert(Object.values(started.run.demon_element_profile.levels).every(level=>level===0));
@@ -148,7 +148,7 @@ const keepAlive=setInterval(()=>{},1000);
     sql(`UPDATE storage SET value=value-'skill_unlock_version' WHERE collection='player_stage_runs' AND key='s001:g1:active' AND user_id='${uid}'`);
     assert.equal((await call('prepare_trial_tower',{...towerContext,run_id:second.run.run_id,picks:Array(19).fill('tower_atk')})).code,'RUN_RULES_CHANGED');
     assert.equal((await call('finish_trial_tower',{...towerContext,run_id:second.run.run_id,result:'abandon'})).success,true);
-    for(const level of [1,20,30]) {
+    for(const level of [1,9,10,19,20,29,30]) {
       sql(`UPDATE storage SET value='{"heroes":[{"hero_id":"hero_1","owned":true,"level":${level}}]}'::jsonb WHERE collection='player_heroes' AND key='s001:g1:states' AND user_id='${uid}'`);
       const attempt=await call('start_trial_tower',{...towerContext,floor:2,hero_id:'hero_1',request_id:'tower-unlocks-'+level});
       assert.equal(attempt.success,true,JSON.stringify(attempt));

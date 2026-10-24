@@ -1,7 +1,9 @@
 # C183 — Hero 3 falling seal and propagating sound waves
 
+> **Cập nhật theo C195:** [Hero 3 hiện hành](../heroes/HERO_3.md). Hồi chiêu Skill 2 là 8/7,5/7/6,5/6s trước bonus Thất Tinh Trận; damage và ba sóng vẫn theo bảng hiện tại. Các mô tả giữ cooldown cũ bên dưới là lịch sử.
+
 Status: ACTIVE  
-Version: 1.0.1
+Version: 1.0.2
 Updated: 2026-10-23
 
 Client behavior is specified in C010 v1.4.0 in the sibling client repository.
@@ -30,3 +32,10 @@ offline fallback. Seed only the four Hero 3 skill rows for local verification.
 
 Changelog: 1.0.0 — separate single-target impact, eight-sword AOE and three
 propagating sound waves; consume the user's 400x400, 3x3 assets.
+
+
+## Documentation Changelog
+
+| Version | Date | Change |
+|---|---|---|
+| 1.0.2 | 2026-10-24 | Đồng bộ đường dẫn thông số hiện hành và phạm vi override; không thay config/gameplay. |

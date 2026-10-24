@@ -1,0 +1,10 @@
+{
+  "E:\\LKVU\\survival_td_godot\\server\\data\\skills.json": "d170a9db68f1d8ac62077b2799a2da291efc6c561523c136b2db2efc0d235656",
+  "E:\\LKVU\\survival_td_godot\\server\\data\\heroes.json": "8a1f003968660c8d93f17992bdbefd487a7054bbd01ec5acc2acac3af00a23cc",
+  "E:\\LKVU\\survival_td_godot\\client\\src\\managers\\SkillManager.gd": "4f3dcc54367250dd8a9823e3c31e1d75b94415b5314cf476754d1a330721f608",
+  "E:\\LKVU\\survival_td_godot\\client\\src\\actors\\Player.gd": "8ad7eb141f833af6edb752811d04148321fe384f047c3d994b439ae0da91ebaf",
+  "E:\\LKVU\\survival_td_godot\\client\\src\\actors\\Enemy.gd": "b1a9e1cbdd91a24e51726dce40920546dcca081eec1c8735840b2cff9dd0315c",
+  "E:\\LKVU\\survival_td_godot\\client\\src\\combat\\Projectile.gd": "e8ecf0886860c116d33683b642fa807ad4e19774781fec1eb3ecb866c8185692",
+  "E:\\LKVU\\survival_td_godot\\client\\src\\combat\\PoisonTrap.gd": "47075431be951e4dd1a147575acb299f4e3ea7448a89cc2dd5228c9d10ff5e8c",
+  "E:\\LKVU\\survival_td_godot\\client\\src\\combat\\BuddhaMark.gd": "20bf28974b2978ccb7df9828212015a49267b9a61204b7a514e1f5fe267273c8"
+}

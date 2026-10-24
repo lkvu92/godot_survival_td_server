@@ -10,13 +10,31 @@ const expectedRoles = {
   arc_frozen_realm: {grunt: 'snow_skeleton', rusher: 'frost_wolf', tanker: 'horn_cactus'},
   arc_verdant_realm: {grunt: 'spore_crawler', rusher: 'venom_spider', tanker: 'ent_protector'},
   arc_iron_bastion: {grunt: 'steam_automaton', rusher: 'clockwork_spider', tanker: 'shield_sentinel'},
-  arc_titan_realm: {grunt: 'primordial_wraith', rusher: 'sand_stalker', tanker: 'granite_colossus'},
+  arc_titan_realm: {grunt: 'amber_spirit', rusher: 'sand_stalker', tanker: 'granite_colossus'},
 };
 assert.deepEqual(ROLES, expectedRoles, 'authored role mapping for all five arcs');
 
 // C179: tank HP is constrained against its own arc's standard grunt. Account
 // for a spawn-time max-HP buff so the player-facing value stays in range too.
 const enemyById = new Map(read('enemies').map(enemy => [enemy.id, enemy]));
+const amber=enemyById.get('amber_spirit'),wraith=enemyById.get('primordial_wraith');
+assert(amber && wraith,'Amber is spawnable while wraith remains available for separate content');
+for(const key of ['hp','atk','def','move_speed','attack_speed','crit_rate','crit_damage'])
+  assert.equal(amber.attributes[key],wraith.attributes[key],`Amber preserves grunt ${key} budget`);
+assert.deepEqual(amber.reward,wraith.reward);
+assert.deepEqual(amber.generic_skills.map(s=>s.params),wraith.generic_skills.map(s=>s.params));
+assert.equal(amber.attack_skill.type,'earth_orb');
+assert.equal(amber.attack_skill.detonation_delay,0.5);
+assert.equal(amber.attack_skill.damage_multiplier,1);
+assert(!amber.boss_skills?.length && !amber.is_boss,'Amber must never inherit wraith boss skills');
+const arc5Roster=new Set(['granite_colossus','sand_stalker','seismic_shaman','amber_spirit']);
+const actualArc5Ids=new Set();
+for(const stage of read('stages').filter(s=>s.arc_id==='arc_titan_realm'))
+  for(const wave of stage.waves)for(const entry of wave.entries){
+    assert.notEqual(entry.enemy_id,'primordial_wraith','No wraith in any Arc 5 stage');
+    if(!entry.boss){assert(arc5Roster.has(entry.enemy_id));actualArc5Ids.add(entry.enemy_id);}
+  }
+assert.deepEqual(actualArc5Ids,arc5Roster,'Exactly four authored Arc 5 creeps');
 for (const [arcId, roles] of Object.entries(expectedRoles)) {
   const gruntHp = enemyById.get(roles.grunt).attributes.hp;
   const tanker = enemyById.get(roles.tanker);

@@ -104,7 +104,7 @@ const enterGameServer: nkruntime.RpcFunction=(ctx,_logger,nk,payload)=>{
 // No registry seed or legacy migration at startup. An operator must reconcile S1 first.
 // This guard is activated explicitly when migration has completed; config always validates context.
 function serverAdmissionRpc(id: string, handler: nkruntime.RpcFunction): nkruntime.RpcFunction {
-    const accountOnly=['session_status','admin_test_access','account_password_status','setup_account_password','google_link_status',
+    const accountOnly=['session_status','admin_exp_test_access','admin_test_access','account_password_status','setup_account_password','google_link_status',
       'prepare_google_link','confirm_google_link','save_compliance_profile','get_compliance_profile','seed_game_data','publish_config_release','resolve_purchase_order'];
     if (accountOnly.indexOf(id)>=0 || (id.indexOf('admin_server_')===0 || id.indexOf('mail_admin_')===0) || id==='list_servers'||id==='list_my_characters'||id==='enter_server') return handler;
     return (ctx,logger,nk,payload)=>{

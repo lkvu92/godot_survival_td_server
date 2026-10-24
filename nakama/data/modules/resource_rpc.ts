@@ -334,7 +334,7 @@ const startStage: nkruntime.RpcFunction = (ctx, _logger, nk, payload): string =>
     const existingRuns=nk.storageRead([{collection:'player_stage_runs',key:'active',userId:ctx.userId}]);
     if(existingRuns.length&&existingRuns[0].value.status==='active'&&Number(existingRuns[0].value.expires_at_ms)>Date.now())return JSON.stringify({success:false,code:'COMBAT_ACTIVE',message:'Combat is active'});
     if(stageId==='stage_0_admin_test') {
-        const allowed=nk.sqlQuery("SELECT 1 FROM users WHERE id=$1::UUID AND LOWER(email)=LOWER($2) AND COALESCE(EXTRACT(EPOCH FROM disable_time),0)=0 LIMIT 1",[ctx.userId,'lkvu92@gmail.com']);
+        const allowed=nk.sqlQuery("SELECT 1 FROM users WHERE id=$1::UUID AND LOWER(email) IN (LOWER($2),LOWER($3)) AND COALESCE(EXTRACT(EPOCH FROM disable_time),0)=0 LIMIT 1",[ctx.userId,'lkvu92@gmail.com','lkvu921@gmail.com']);
         if(!allowed.length)return JSON.stringify({success:false,code:'FORBIDDEN'});
         const state=talismanCreateStageRun(nk,ctx.userId,stageId,levelId);
         profile.activity={type:'combat',activity_id:state.run.run_id};
@@ -347,10 +347,12 @@ const startStage: nkruntime.RpcFunction = (ctx, _logger, nk, payload): string =>
     // Migrate campaign completions produced before final-stage cross-arc
     // unlocking existed, before validating the requested stage.
     progressionReconcileCampaignUnlocks(nk, profile);
+    progressionReconcileArcModes(nk, profile);
     const unlock = (Array.isArray(profile.unlocked_stages) ? profile.unlocked_stages : [])
         .find((entry: any) => entry && String(entry.stage_id || entry) === stageId);
     const unlockedLevels = unlock && typeof unlock === "object" && Array.isArray(unlock.unlocked_levels)
         ? unlock.unlocked_levels : (unlock ? ["normal"] : []);
+    if (!progressionArcModeAllowed(nk,profile,stageId,levelId)) return JSON.stringify({success:false,code:"ARC_MODE_LOCKED",message:"Clear the previous difficulty across this arc first"});
     if (unlockedLevels.indexOf(levelId) === -1) return JSON.stringify({ success: false, message: "Stage level is locked" });
     const rows = nk.sqlQuery("SELECT stamina_cost FROM game_stage_levels WHERE stage_id = $1 AND level_id = $2", [stageId, levelId]);
     if (rows.length === 0) return JSON.stringify({ success: false, message: "Unknown stage level" });

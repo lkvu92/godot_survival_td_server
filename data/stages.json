@@ -43880,7 +43880,7 @@
         "display_name": "Wave 1",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 0,
@@ -43894,7 +43894,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 2,
             "interval": 1,
             "start_delay": 0.42,
@@ -43922,7 +43922,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.82,
@@ -43958,7 +43958,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 0.42,
@@ -43972,7 +43972,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.4,
@@ -43986,7 +43986,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.82,
@@ -44008,7 +44008,7 @@
         "display_name": "Wave 3",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 0,
@@ -44022,7 +44022,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 0.42,
@@ -44036,7 +44036,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.4,
@@ -44050,7 +44050,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.82,
@@ -44064,7 +44064,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 3,
             "interval": 1,
             "start_delay": 0,
@@ -44128,7 +44128,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.82,
@@ -44150,7 +44150,7 @@
         "display_name": "Wave 5",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 5,
             "interval": 0.847,
             "start_delay": 0,
@@ -44164,7 +44164,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.847,
             "start_delay": 0.42,
@@ -44178,7 +44178,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 3,
             "interval": 1,
             "start_delay": 2.4,
@@ -44214,7 +44214,7 @@
         "display_name": "Wave 6",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 13,
             "interval": 0.847,
             "start_delay": 0,
@@ -44228,7 +44228,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 0.847,
             "start_delay": 0.42,
@@ -44242,7 +44242,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.4,
@@ -44278,7 +44278,7 @@
         "display_name": "Wave 7",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 7,
             "interval": 0.8,
             "start_delay": 0,
@@ -44292,7 +44292,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.8,
             "start_delay": 0.42,
@@ -44342,7 +44342,7 @@
         "display_name": "Wave 8",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 7,
             "interval": 0.8,
             "start_delay": 0,
@@ -44356,7 +44356,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.8,
             "start_delay": 0.42,
@@ -44448,7 +44448,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 3,
             "interval": 0.522,
             "start_delay": 2.82,
@@ -44576,7 +44576,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 5,
             "interval": 0.48,
             "start_delay": 2.82,
@@ -44640,7 +44640,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 6,
             "interval": 0.48,
             "start_delay": 2.82,
@@ -44676,7 +44676,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.45,
             "start_delay": 0.42,
@@ -44690,7 +44690,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.48,
             "start_delay": 2.4,
@@ -44704,7 +44704,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.48,
             "start_delay": 2.82,
@@ -44726,7 +44726,7 @@
         "display_name": "Wave 14",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 3,
             "interval": 0.45,
             "start_delay": 0,
@@ -44804,7 +44804,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 6,
             "interval": 0.45,
             "start_delay": 0.42,
@@ -44854,7 +44854,7 @@
         "display_name": "Wave 16",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 7,
             "interval": 0.45,
             "start_delay": 0,
@@ -44946,7 +44946,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 2,
             "interval": 0.48,
             "start_delay": 2.4,
@@ -44996,7 +44996,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 6,
             "interval": 0.45,
             "start_delay": 0.42,
@@ -45060,7 +45060,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 7,
             "interval": 0.45,
             "start_delay": 0.42,
@@ -45110,7 +45110,7 @@
         "display_name": "Wave 20",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 14,
             "interval": 0.45,
             "start_delay": 0,
@@ -45138,7 +45138,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 5,
             "interval": 0.48,
             "start_delay": 2.4,
@@ -45187,7 +45187,7 @@
         "display_name": "Wave 1",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 0,
@@ -45215,7 +45215,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 2,
             "interval": 1,
             "start_delay": 2.4,
@@ -45229,7 +45229,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.82,
@@ -45251,7 +45251,7 @@
         "display_name": "Wave 2",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 1,
             "start_delay": 0,
@@ -45265,7 +45265,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 0.42,
@@ -45279,7 +45279,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.4,
@@ -45293,7 +45293,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.82,
@@ -45357,7 +45357,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.82,
@@ -45471,7 +45471,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.847,
             "start_delay": 0.42,
@@ -45535,7 +45535,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 0.847,
             "start_delay": 0.42,
@@ -45599,7 +45599,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.8,
             "start_delay": 0.42,
@@ -45663,7 +45663,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.8,
             "start_delay": 0.42,
@@ -45741,7 +45741,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.522,
             "start_delay": 2.4,
@@ -45791,7 +45791,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 2,
             "interval": 0.45,
             "start_delay": 0.42,
@@ -45869,7 +45869,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 5,
             "interval": 0.48,
             "start_delay": 2.4,
@@ -45933,7 +45933,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 6,
             "interval": 0.48,
             "start_delay": 2.4,
@@ -46011,7 +46011,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.48,
             "start_delay": 2.82,
@@ -46175,7 +46175,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 6,
             "interval": 0.45,
             "start_delay": 0.42,
@@ -46189,7 +46189,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 6,
             "interval": 0.48,
             "start_delay": 2.4,
@@ -46289,7 +46289,7 @@
         "display_name": "Wave 18",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 10,
             "interval": 0.45,
             "start_delay": 0,
@@ -46353,7 +46353,7 @@
         "display_name": "Wave 19",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 8,
             "interval": 0.45,
             "start_delay": 0,
@@ -46431,7 +46431,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 5,
             "interval": 0.45,
             "start_delay": 0.42,
@@ -46445,7 +46445,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 5,
             "interval": 0.48,
             "start_delay": 2.4,
@@ -46494,7 +46494,7 @@
         "display_name": "Wave 1",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 0,
@@ -46522,7 +46522,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 2,
             "interval": 1,
             "start_delay": 2.4,
@@ -46536,7 +46536,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.82,
@@ -46572,7 +46572,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 0.42,
@@ -46600,7 +46600,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.82,
@@ -46650,7 +46650,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.4,
@@ -46664,7 +46664,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.82,
@@ -46700,7 +46700,7 @@
         "display_name": "Wave 4",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 10,
             "interval": 0.9,
             "start_delay": 0,
@@ -46714,7 +46714,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 2,
             "interval": 0.9,
             "start_delay": 0.42,
@@ -46742,7 +46742,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.82,
@@ -46778,7 +46778,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.847,
             "start_delay": 0.42,
@@ -46842,7 +46842,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 0.847,
             "start_delay": 0.42,
@@ -47020,7 +47020,7 @@
         "display_name": "Wave 9",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 8,
             "interval": 0.45,
             "start_delay": 0,
@@ -47034,7 +47034,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.45,
             "start_delay": 0.42,
@@ -47048,7 +47048,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.522,
             "start_delay": 2.4,
@@ -47062,7 +47062,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 3,
             "interval": 0.522,
             "start_delay": 2.82,
@@ -47084,7 +47084,7 @@
         "display_name": "Wave 10",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 15,
             "interval": 0.45,
             "start_delay": 0,
@@ -47098,7 +47098,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 2,
             "interval": 0.45,
             "start_delay": 0.42,
@@ -47162,7 +47162,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 5,
             "interval": 0.45,
             "start_delay": 0.42,
@@ -47176,7 +47176,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 5,
             "interval": 0.48,
             "start_delay": 2.4,
@@ -47226,7 +47226,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 6,
             "interval": 0.45,
             "start_delay": 0.42,
@@ -47240,7 +47240,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 6,
             "interval": 0.48,
             "start_delay": 2.4,
@@ -47446,7 +47446,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 5,
             "interval": 0.48,
             "start_delay": 2.82,
@@ -47510,7 +47510,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 6,
             "interval": 0.48,
             "start_delay": 2.82,
@@ -47532,7 +47532,7 @@
         "display_name": "Wave 17",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 20,
             "interval": 0.45,
             "start_delay": 0,
@@ -47560,7 +47560,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 2,
             "interval": 0.48,
             "start_delay": 2.4,
@@ -47574,7 +47574,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 0.48,
             "start_delay": 2.82,
@@ -47724,7 +47724,7 @@
         "display_name": "Wave 20",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 14,
             "interval": 0.45,
             "start_delay": 0,
@@ -47801,7 +47801,7 @@
         "display_name": "Wave 1",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 0,
@@ -47815,7 +47815,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 2,
             "interval": 1,
             "start_delay": 0.42,
@@ -47829,7 +47829,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 2,
             "interval": 1,
             "start_delay": 2.4,
@@ -47865,7 +47865,7 @@
         "display_name": "Wave 2",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 1,
             "start_delay": 0,
@@ -47893,7 +47893,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.4,
@@ -47907,7 +47907,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.82,
@@ -47929,7 +47929,7 @@
         "display_name": "Wave 3",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 0,
@@ -47943,7 +47943,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 0.42,
@@ -47957,7 +47957,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.4,
@@ -47971,7 +47971,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.82,
@@ -47985,7 +47985,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 3,
             "interval": 1,
             "start_delay": 0,
@@ -48071,7 +48071,7 @@
         "display_name": "Wave 5",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 5,
             "interval": 0.96,
             "start_delay": 0,
@@ -48085,7 +48085,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.96,
             "start_delay": 0.42,
@@ -48099,7 +48099,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 3,
             "interval": 1,
             "start_delay": 2.4,
@@ -48135,7 +48135,7 @@
         "display_name": "Wave 6",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 13,
             "interval": 0.96,
             "start_delay": 0,
@@ -48149,7 +48149,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 0.96,
             "start_delay": 0.42,
@@ -48163,7 +48163,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.4,
@@ -48213,7 +48213,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.96,
             "start_delay": 0.42,
@@ -48291,7 +48291,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 1,
             "start_delay": 2.4,
@@ -48369,7 +48369,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 3,
             "interval": 0.571,
             "start_delay": 2.82,
@@ -48405,7 +48405,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 2,
             "interval": 0.48,
             "start_delay": 0.42,
@@ -48419,7 +48419,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 2,
             "interval": 0.571,
             "start_delay": 2.4,
@@ -48497,7 +48497,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 5,
             "interval": 0.546,
             "start_delay": 2.82,
@@ -48561,7 +48561,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 6,
             "interval": 0.546,
             "start_delay": 2.82,
@@ -48611,7 +48611,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.546,
             "start_delay": 2.4,
@@ -48661,7 +48661,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 7,
             "interval": 0.45,
             "start_delay": 0.42,
@@ -48675,7 +48675,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 7,
             "interval": 0.522,
             "start_delay": 2.4,
@@ -48739,7 +48739,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 5,
             "interval": 0.5,
             "start_delay": 2.4,
@@ -48789,7 +48789,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 6,
             "interval": 0.45,
             "start_delay": 0.42,
@@ -48803,7 +48803,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 6,
             "interval": 0.48,
             "start_delay": 2.4,
@@ -48995,7 +48995,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 6,
             "interval": 0.48,
             "start_delay": 2.4,
@@ -49045,7 +49045,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 5,
             "interval": 0.45,
             "start_delay": 0.42,
@@ -49108,7 +49108,7 @@
         "display_name": "Wave 1",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 0,
@@ -49122,7 +49122,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 2,
             "interval": 1,
             "start_delay": 0.42,
@@ -49150,7 +49150,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.82,
@@ -49173,7 +49173,7 @@
         "display_name": "Wave 2",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 1,
             "start_delay": 0,
@@ -49201,7 +49201,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.4,
@@ -49238,7 +49238,7 @@
         "display_name": "Wave 3",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 0,
@@ -49252,7 +49252,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 0.42,
@@ -49266,7 +49266,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.4,
@@ -49280,7 +49280,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.82,
@@ -49294,7 +49294,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 3,
             "interval": 1,
             "start_delay": 0,
@@ -49359,7 +49359,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.82,
@@ -49396,7 +49396,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.96,
             "start_delay": 0.42,
@@ -49461,7 +49461,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 0.96,
             "start_delay": 0.42,
@@ -49512,7 +49512,7 @@
         "display_name": "Wave 7",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 7,
             "interval": 0.96,
             "start_delay": 0,
@@ -49526,7 +49526,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.96,
             "start_delay": 0.42,
@@ -49619,7 +49619,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 3,
             "interval": 1,
             "start_delay": 2.82,
@@ -49670,7 +49670,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.571,
             "start_delay": 2.4,
@@ -49749,7 +49749,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 0.571,
             "start_delay": 2.82,
@@ -49916,7 +49916,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.45,
             "start_delay": 0.42,
@@ -49944,7 +49944,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.522,
             "start_delay": 2.82,
@@ -49967,7 +49967,7 @@
         "display_name": "Wave 14",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 3,
             "interval": 0.45,
             "start_delay": 0,
@@ -50032,7 +50032,7 @@
         "display_name": "Wave 15",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 8,
             "interval": 0.45,
             "start_delay": 0,
@@ -50046,7 +50046,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 6,
             "interval": 0.45,
             "start_delay": 0.42,
@@ -50060,7 +50060,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 5,
             "interval": 0.5,
             "start_delay": 2.4,
@@ -50176,7 +50176,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 2,
             "interval": 0.45,
             "start_delay": 0.42,
@@ -50292,7 +50292,7 @@
         "display_name": "Wave 19",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 8,
             "interval": 0.45,
             "start_delay": 0,
@@ -50452,7 +50452,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 2,
             "interval": 1,
             "start_delay": 0.42,
@@ -50466,7 +50466,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 2,
             "interval": 1,
             "start_delay": 2.4,
@@ -50502,7 +50502,7 @@
         "display_name": "Wave 2",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 1,
             "start_delay": 0,
@@ -50530,7 +50530,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.4,
@@ -50544,7 +50544,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.82,
@@ -50580,7 +50580,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 0.42,
@@ -50608,7 +50608,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.82,
@@ -50644,7 +50644,7 @@
         "display_name": "Wave 4",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 10,
             "interval": 1,
             "start_delay": 0,
@@ -50658,7 +50658,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 2,
             "interval": 1,
             "start_delay": 0.42,
@@ -50672,7 +50672,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 2,
             "interval": 1,
             "start_delay": 2.4,
@@ -50750,7 +50750,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 3,
             "interval": 1,
             "start_delay": 2.82,
@@ -50814,7 +50814,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.82,
@@ -50964,7 +50964,7 @@
         "display_name": "Wave 9",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 8,
             "interval": 0.48,
             "start_delay": 0,
@@ -51028,7 +51028,7 @@
         "display_name": "Wave 10",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 15,
             "interval": 0.48,
             "start_delay": 0,
@@ -51056,7 +51056,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 2,
             "interval": 0.571,
             "start_delay": 2.4,
@@ -51070,7 +51070,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 0.571,
             "start_delay": 2.82,
@@ -51134,7 +51134,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 5,
             "interval": 0.546,
             "start_delay": 2.82,
@@ -51198,7 +51198,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 6,
             "interval": 0.546,
             "start_delay": 2.82,
@@ -51234,7 +51234,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.45,
             "start_delay": 0.42,
@@ -51248,7 +51248,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.522,
             "start_delay": 2.4,
@@ -51326,7 +51326,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 6,
             "interval": 0.522,
             "start_delay": 2.82,
@@ -51348,7 +51348,7 @@
         "display_name": "Wave 15",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 8,
             "interval": 0.45,
             "start_delay": 0,
@@ -51362,7 +51362,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 6,
             "interval": 0.45,
             "start_delay": 0.42,
@@ -51390,7 +51390,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 5,
             "interval": 0.5,
             "start_delay": 2.82,
@@ -51412,7 +51412,7 @@
         "display_name": "Wave 16",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 7,
             "interval": 0.45,
             "start_delay": 0,
@@ -51490,7 +51490,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 2,
             "interval": 0.45,
             "start_delay": 0.42,
@@ -51604,7 +51604,7 @@
         "display_name": "Wave 19",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 8,
             "interval": 0.45,
             "start_delay": 0,
@@ -51646,7 +51646,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 6,
             "interval": 0.48,
             "start_delay": 2.82,
@@ -51696,7 +51696,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 5,
             "interval": 0.48,
             "start_delay": 2.4,
@@ -51745,7 +51745,7 @@
         "display_name": "Wave 1",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 0,
@@ -51773,7 +51773,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 2,
             "interval": 1,
             "start_delay": 2.4,
@@ -51787,7 +51787,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.82,
@@ -51837,7 +51837,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.4,
@@ -51851,7 +51851,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.82,
@@ -51873,7 +51873,7 @@
         "display_name": "Wave 3",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 0,
@@ -51901,7 +51901,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.4,
@@ -51915,7 +51915,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.82,
@@ -51929,7 +51929,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 3,
             "interval": 1,
             "start_delay": 0,
@@ -51951,7 +51951,7 @@
         "display_name": "Wave 4",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 10,
             "interval": 1,
             "start_delay": 0,
@@ -51965,7 +51965,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 2,
             "interval": 1,
             "start_delay": 0.42,
@@ -51979,7 +51979,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 2,
             "interval": 1,
             "start_delay": 2.4,
@@ -51993,7 +51993,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.82,
@@ -52015,7 +52015,7 @@
         "display_name": "Wave 5",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 5,
             "interval": 0.96,
             "start_delay": 0,
@@ -52029,7 +52029,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.96,
             "start_delay": 0.42,
@@ -52079,7 +52079,7 @@
         "display_name": "Wave 6",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 13,
             "interval": 0.96,
             "start_delay": 0,
@@ -52093,7 +52093,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 0.96,
             "start_delay": 0.42,
@@ -52157,7 +52157,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.96,
             "start_delay": 0.42,
@@ -52285,7 +52285,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.48,
             "start_delay": 0.42,
@@ -52413,7 +52413,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 5,
             "interval": 0.45,
             "start_delay": 0.42,
@@ -52427,7 +52427,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 5,
             "interval": 0.546,
             "start_delay": 2.4,
@@ -52477,7 +52477,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 6,
             "interval": 0.45,
             "start_delay": 0.42,
@@ -52491,7 +52491,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 6,
             "interval": 0.546,
             "start_delay": 2.4,
@@ -52569,7 +52569,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.522,
             "start_delay": 2.82,
@@ -52633,7 +52633,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 6,
             "interval": 0.522,
             "start_delay": 2.82,
@@ -52669,7 +52669,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 6,
             "interval": 0.45,
             "start_delay": 0.42,
@@ -52761,7 +52761,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 6,
             "interval": 0.48,
             "start_delay": 2.82,
@@ -52911,7 +52911,7 @@
         "display_name": "Wave 19",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 8,
             "interval": 0.45,
             "start_delay": 0,
@@ -52989,7 +52989,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 5,
             "interval": 0.45,
             "start_delay": 0.42,
@@ -53003,7 +53003,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 5,
             "interval": 0.48,
             "start_delay": 2.4,
@@ -53052,7 +53052,7 @@
         "display_name": "Wave 1",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 0,
@@ -53066,7 +53066,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 2,
             "interval": 1,
             "start_delay": 0.42,
@@ -53080,7 +53080,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 2,
             "interval": 1,
             "start_delay": 2.4,
@@ -53094,7 +53094,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.82,
@@ -53116,7 +53116,7 @@
         "display_name": "Wave 2",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 1,
             "start_delay": 0,
@@ -53130,7 +53130,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 0.42,
@@ -53144,7 +53144,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.4,
@@ -53158,7 +53158,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.82,
@@ -53180,7 +53180,7 @@
         "display_name": "Wave 3",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 0,
@@ -53194,7 +53194,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 0.42,
@@ -53208,7 +53208,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.4,
@@ -53236,7 +53236,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 3,
             "interval": 1,
             "start_delay": 0,
@@ -53258,7 +53258,7 @@
         "display_name": "Wave 4",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 10,
             "interval": 1,
             "start_delay": 0,
@@ -53272,7 +53272,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 2,
             "interval": 1,
             "start_delay": 0.42,
@@ -53300,7 +53300,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.82,
@@ -53350,7 +53350,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 3,
             "interval": 1,
             "start_delay": 2.4,
@@ -53414,7 +53414,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.4,
@@ -53514,7 +53514,7 @@
         "display_name": "Wave 8",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 7,
             "interval": 0.9,
             "start_delay": 0,
@@ -53528,7 +53528,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.9,
             "start_delay": 0.42,
@@ -53592,7 +53592,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.48,
             "start_delay": 0.42,
@@ -53734,7 +53734,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 5,
             "interval": 0.546,
             "start_delay": 2.4,
@@ -53748,7 +53748,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 5,
             "interval": 0.546,
             "start_delay": 2.82,
@@ -53798,7 +53798,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 6,
             "interval": 0.546,
             "start_delay": 2.4,
@@ -53812,7 +53812,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 6,
             "interval": 0.546,
             "start_delay": 2.82,
@@ -53834,7 +53834,7 @@
         "display_name": "Wave 13",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 10,
             "interval": 0.45,
             "start_delay": 0,
@@ -53862,7 +53862,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.522,
             "start_delay": 2.4,
@@ -53876,7 +53876,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.522,
             "start_delay": 2.82,
@@ -53926,7 +53926,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 7,
             "interval": 0.522,
             "start_delay": 2.4,
@@ -53990,7 +53990,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 5,
             "interval": 0.5,
             "start_delay": 2.4,
@@ -54004,7 +54004,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 5,
             "interval": 0.5,
             "start_delay": 2.82,
@@ -54054,7 +54054,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 6,
             "interval": 0.48,
             "start_delay": 2.4,
@@ -54068,7 +54068,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 6,
             "interval": 0.48,
             "start_delay": 2.82,
@@ -54090,7 +54090,7 @@
         "display_name": "Wave 17",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 20,
             "interval": 0.45,
             "start_delay": 0,
@@ -54154,7 +54154,7 @@
         "display_name": "Wave 18",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 10,
             "interval": 0.45,
             "start_delay": 0,
@@ -54282,7 +54282,7 @@
         "display_name": "Wave 20",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 14,
             "interval": 0.45,
             "start_delay": 0,
@@ -54359,7 +54359,7 @@
         "display_name": "Wave 1",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 0,
@@ -54373,7 +54373,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 2,
             "interval": 1,
             "start_delay": 0.42,
@@ -54401,7 +54401,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.82,
@@ -54437,7 +54437,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 0.42,
@@ -54451,7 +54451,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.4,
@@ -54501,7 +54501,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 0.42,
@@ -54515,7 +54515,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.4,
@@ -54593,7 +54593,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 2,
             "interval": 1,
             "start_delay": 2.4,
@@ -54607,7 +54607,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.82,
@@ -54643,7 +54643,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.96,
             "start_delay": 0.42,
@@ -54657,7 +54657,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 3,
             "interval": 1,
             "start_delay": 2.4,
@@ -54707,7 +54707,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 0.96,
             "start_delay": 0.42,
@@ -54721,7 +54721,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.4,
@@ -54757,7 +54757,7 @@
         "display_name": "Wave 7",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 7,
             "interval": 0.96,
             "start_delay": 0,
@@ -54771,7 +54771,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.96,
             "start_delay": 0.42,
@@ -54785,7 +54785,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 3,
             "interval": 1,
             "start_delay": 2.4,
@@ -54821,7 +54821,7 @@
         "display_name": "Wave 8",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 7,
             "interval": 0.9,
             "start_delay": 0,
@@ -54835,7 +54835,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.9,
             "start_delay": 0.42,
@@ -54899,7 +54899,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.48,
             "start_delay": 0.42,
@@ -54949,7 +54949,7 @@
         "display_name": "Wave 10",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 15,
             "interval": 0.464,
             "start_delay": 0,
@@ -55041,7 +55041,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 5,
             "interval": 0.546,
             "start_delay": 2.4,
@@ -55055,7 +55055,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 5,
             "interval": 0.546,
             "start_delay": 2.82,
@@ -55105,7 +55105,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 6,
             "interval": 0.546,
             "start_delay": 2.4,
@@ -55119,7 +55119,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 6,
             "interval": 0.546,
             "start_delay": 2.82,
@@ -55155,7 +55155,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.45,
             "start_delay": 0.42,
@@ -55183,7 +55183,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.522,
             "start_delay": 2.82,
@@ -55219,7 +55219,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 7,
             "interval": 0.45,
             "start_delay": 0.42,
@@ -55247,7 +55247,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 6,
             "interval": 0.522,
             "start_delay": 2.82,
@@ -55283,7 +55283,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 6,
             "interval": 0.45,
             "start_delay": 0.42,
@@ -55425,7 +55425,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 2,
             "interval": 0.48,
             "start_delay": 2.4,
@@ -55461,7 +55461,7 @@
         "display_name": "Wave 18",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 10,
             "interval": 0.45,
             "start_delay": 0,
@@ -55475,7 +55475,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 6,
             "interval": 0.45,
             "start_delay": 0.42,
@@ -55489,7 +55489,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 5,
             "interval": 0.48,
             "start_delay": 2.4,
@@ -55553,7 +55553,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 6,
             "interval": 0.48,
             "start_delay": 2.4,
@@ -55589,7 +55589,7 @@
         "display_name": "Wave 20",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 14,
             "interval": 0.45,
             "start_delay": 0,
@@ -55617,7 +55617,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 5,
             "interval": 0.48,
             "start_delay": 2.4,
@@ -55631,7 +55631,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.48,
             "start_delay": 2.82,
@@ -55680,7 +55680,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 2,
             "interval": 1,
             "start_delay": 0.42,
@@ -55730,7 +55730,7 @@
         "display_name": "Wave 2",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 1,
             "start_delay": 0,
@@ -55744,7 +55744,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 0.42,
@@ -55758,7 +55758,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.4,
@@ -55772,7 +55772,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.82,
@@ -55794,7 +55794,7 @@
         "display_name": "Wave 3",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 0,
@@ -55808,7 +55808,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 0.42,
@@ -55850,7 +55850,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 3,
             "interval": 1,
             "start_delay": 0,
@@ -55872,7 +55872,7 @@
         "display_name": "Wave 4",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 10,
             "interval": 1,
             "start_delay": 0,
@@ -55886,7 +55886,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 2,
             "interval": 1,
             "start_delay": 0.42,
@@ -55900,7 +55900,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 2,
             "interval": 1,
             "start_delay": 2.4,
@@ -55914,7 +55914,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 1,
             "interval": 1,
             "start_delay": 2.82,
@@ -55950,7 +55950,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 1,
             "start_delay": 0.42,
@@ -55978,7 +55978,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 3,
             "interval": 1,
             "start_delay": 2.82,
@@ -56092,7 +56092,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 3,
             "interval": 1,
             "start_delay": 2.4,
@@ -56156,7 +56156,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 1,
             "start_delay": 2.4,
@@ -56270,7 +56270,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 2,
             "interval": 0.515,
             "start_delay": 0.42,
@@ -56284,7 +56284,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 2,
             "interval": 0.6,
             "start_delay": 2.4,
@@ -56320,7 +56320,7 @@
         "display_name": "Wave 11",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 5,
             "interval": 0.497,
             "start_delay": 0,
@@ -56334,7 +56334,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 5,
             "interval": 0.497,
             "start_delay": 0.42,
@@ -56348,7 +56348,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 5,
             "interval": 0.571,
             "start_delay": 2.4,
@@ -56398,7 +56398,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 6,
             "interval": 0.48,
             "start_delay": 0.42,
@@ -56462,7 +56462,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 4,
             "interval": 0.464,
             "start_delay": 0.42,
@@ -56526,7 +56526,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 7,
             "interval": 0.45,
             "start_delay": 0.42,
@@ -56576,7 +56576,7 @@
         "display_name": "Wave 15",
         "entries": [
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 8,
             "interval": 0.45,
             "start_delay": 0,
@@ -56732,7 +56732,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 2,
             "interval": 0.48,
             "start_delay": 2.4,
@@ -56782,7 +56782,7 @@
             }
           },
           {
-            "enemy_id": "primordial_wraith",
+            "enemy_id": "amber_spirit",
             "count": 6,
             "interval": 0.45,
             "start_delay": 0.42,

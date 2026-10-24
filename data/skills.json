@@ -1455,27 +1455,27 @@
         "level": 1,
         "stats": {
           "damage_pct": 110.5,
-          "speed_pct": 285,
           "range": 768,
           "projectile_count": 1,
           "cooldown": 2.4,
           "radius": 28,
           "pierce": 0,
-          "angle_step": 15,
+          "angle_step": 10,
           "fan_half_angle": 30,
-          "vfx_scale": 0.264
+          "vfx_scale": 0.264,
+          "projectile_speed": 416
         },
         "description_rows": [
-          "Fan projectile",
           "Damage 110.5% ATK",
           "Blades 1",
-          "Knockback 28",
+          "Speed 416px/s; angle step 10 degrees",
+          "Knockback 35",
           "CD 2.4s"
         ],
         "effects": [
           {
             "id": "knockback",
-            "distance": 28,
+            "distance": 35,
             "duration": 0.16
           }
         ]
@@ -1484,27 +1484,27 @@
         "level": 2,
         "stats": {
           "damage_pct": 118,
-          "speed_pct": 300,
           "range": 782,
           "projectile_count": 2,
           "cooldown": 2.25,
           "radius": 29,
           "pierce": 0,
-          "angle_step": 15,
+          "angle_step": 10,
           "fan_half_angle": 30,
-          "vfx_scale": 0.276
+          "vfx_scale": 0.276,
+          "projectile_speed": 416
         },
         "description_rows": [
-          "Fan projectile",
           "Damage 118% ATK",
           "Blades 2",
-          "Knockback 30",
+          "Speed 416px/s; angle step 10 degrees",
+          "Knockback 35",
           "CD 2.25s"
         ],
         "effects": [
           {
             "id": "knockback",
-            "distance": 30,
+            "distance": 35,
             "duration": 0.17
           }
         ]
@@ -1513,27 +1513,27 @@
         "level": 3,
         "stats": {
           "damage_pct": 127,
-          "speed_pct": 315,
           "range": 822.25,
           "projectile_count": 3,
           "cooldown": 2.05,
           "radius": 31,
           "pierce": 0,
-          "angle_step": 15,
+          "angle_step": 10,
           "fan_half_angle": 30,
-          "vfx_scale": 0.288
+          "vfx_scale": 0.288,
+          "projectile_speed": 416
         },
         "description_rows": [
-          "Fan projectile",
           "Damage 127% ATK",
           "Blades 3",
-          "Knockback 33",
+          "Speed 416px/s; angle step 10 degrees",
+          "Knockback 35",
           "CD 2.05s"
         ],
         "effects": [
           {
             "id": "knockback",
-            "distance": 33,
+            "distance": 35,
             "duration": 0.18
           }
         ]
@@ -1542,20 +1542,20 @@
         "level": 4,
         "stats": {
           "damage_pct": 137.5,
-          "speed_pct": 335,
           "range": 868.25,
           "projectile_count": 4,
           "cooldown": 1.85,
           "radius": 33,
           "pierce": 0,
-          "angle_step": 15,
+          "angle_step": 10,
           "fan_half_angle": 30,
-          "vfx_scale": 0.3
+          "vfx_scale": 0.3,
+          "projectile_speed": 416
         },
         "description_rows": [
-          "Fan projectile",
           "Damage 137.5% ATK",
           "Blades 4",
+          "Speed 416px/s; angle step 10 degrees",
           "Knockback 35",
           "CD 1.85s"
         ],
@@ -1571,27 +1571,27 @@
         "level": 5,
         "stats": {
           "damage_pct": 149.5,
-          "speed_pct": 360,
           "range": 896,
           "projectile_count": 5,
           "cooldown": 1.6,
           "radius": 35,
           "pierce": 0,
-          "angle_step": 15,
+          "angle_step": 10,
           "fan_half_angle": 30,
-          "vfx_scale": 0.312
+          "vfx_scale": 0.312,
+          "projectile_speed": 416
         },
         "description_rows": [
-          "Fan projectile",
           "Damage 149.5% ATK",
           "Blades 5",
-          "Knockback 40",
+          "Speed 416px/s; angle step 10 degrees",
+          "Knockback 35",
           "CD 1.6s"
         ],
         "effects": [
           {
             "id": "knockback",
-            "distance": 40,
+            "distance": 35,
             "duration": 0.2
           }
         ]
@@ -1653,7 +1653,7 @@
           "damage_pct": 143,
           "second_damage_pct": 78,
           "range": 620,
-          "cooldown": 7,
+          "cooldown": 8,
           "radius": 70,
           "second_radius": 135,
           "impact_delay": 0.32,
@@ -1690,7 +1690,7 @@
           "8-sword AOE 78% ATK",
           "3 waves: 26.0% ATK each",
           "Waves 0.3s apart; 30% stun 0.2s",
-          "Radius 135; CD 7s"
+          "Radius 135; CD 8s"
         ],
         "effects": []
       },
@@ -1700,7 +1700,7 @@
           "damage_pct": 153.5,
           "second_damage_pct": 82.5,
           "range": 650,
-          "cooldown": 6.5,
+          "cooldown": 7.5,
           "radius": 82,
           "second_radius": 149,
           "impact_delay": 0.32,
@@ -1737,7 +1737,7 @@
           "8-sword AOE 82.5% ATK",
           "3 waves: 27.5% ATK each",
           "Waves 0.3s apart; 30% stun 0.2s",
-          "Radius 149; CD 6.5s"
+          "Radius 149; CD 7.5s"
         ],
         "effects": []
       },
@@ -1747,7 +1747,7 @@
           "damage_pct": 165.5,
           "second_damage_pct": 88.5,
           "range": 690,
-          "cooldown": 6,
+          "cooldown": 7,
           "radius": 96,
           "second_radius": 162,
           "impact_delay": 0.3,
@@ -1784,7 +1784,7 @@
           "8-sword AOE 88.5% ATK",
           "3 waves: 29.5% ATK each",
           "Waves 0.3s apart; 30% stun 0.2s",
-          "Radius 162; CD 6s"
+          "Radius 162; CD 7s"
         ],
         "effects": []
       },
@@ -1794,7 +1794,7 @@
           "damage_pct": 180.5,
           "second_damage_pct": 96,
           "range": 735,
-          "cooldown": 5.5,
+          "cooldown": 6.5,
           "radius": 112,
           "second_radius": 176,
           "impact_delay": 0.28,
@@ -1831,7 +1831,7 @@
           "8-sword AOE 96% ATK",
           "3 waves: 32.0% ATK each",
           "Waves 0.3s apart; 30% stun 0.2s",
-          "Radius 176; CD 5.5s"
+          "Radius 176; CD 6.5s"
         ],
         "effects": []
       },
@@ -1841,7 +1841,7 @@
           "damage_pct": 200,
           "second_damage_pct": 105,
           "range": 795,
-          "cooldown": 4.9,
+          "cooldown": 6,
           "radius": 130,
           "second_radius": 189,
           "impact_delay": 0.26,
@@ -1878,7 +1878,7 @@
           "8-sword AOE 105% ATK",
           "3 waves: 35.0% ATK each",
           "Waves 0.3s apart; 30% stun 0.2s",
-          "Radius 189; CD 4.9s"
+          "Radius 189; CD 6s"
         ],
         "effects": []
       }
@@ -1952,31 +1952,32 @@
       {
         "level": 1,
         "stats": {
-          "damage_pct": 39,
-          "final_damage_pct": 123.5,
+          "damage_pct": 12.5,
+          "final_damage_pct": 100,
           "speed_pct": 260,
           "range": 700,
-          "cooldown": 10.5,
+          "cooldown": 12,
           "radius": 36,
           "final_radius": 55,
           "pierce": 999,
-          "sequence_count": 7,
-          "sequence_interval": 0.2,
+          "sequence_count": 6,
+          "sequence_interval": 0.1,
           "final_delay": 0.08,
           "vfx_scale": 0.3432,
-          "final_vfx_scale": 0.9945
+          "final_vfx_scale": 0.9945,
+          "arc_speed_pct": 182.0
         },
         "description_rows": [
           "Piercing arcs",
-          "7x 39% ATK",
-          "Stronger final 123.5% ATK",
-          "Heavy knockback",
-          "CD 10.5s"
+          "6x 12.5% ATK",
+          "Stronger final 100% ATK",
+          "Knockback 40; interval 0.1s",
+          "CD 12s"
         ],
         "effects": [
           {
             "id": "knockback",
-            "distance": 63,
+            "distance": 40,
             "duration": 0.22
           }
         ]
@@ -1984,31 +1985,32 @@
       {
         "level": 2,
         "stats": {
-          "damage_pct": 41.4,
-          "final_damage_pct": 132.5,
+          "damage_pct": 15,
+          "final_damage_pct": 130,
           "speed_pct": 275,
           "range": 735,
-          "cooldown": 9.8,
+          "cooldown": 11,
           "radius": 39,
           "final_radius": 60,
           "pierce": 999,
-          "sequence_count": 9,
-          "sequence_interval": 0.2,
+          "sequence_count": 8,
+          "sequence_interval": 0.1,
           "final_delay": 0.08,
           "vfx_scale": 0.3588,
-          "final_vfx_scale": 1.08225
+          "final_vfx_scale": 1.08225,
+          "arc_speed_pct": 192.5
         },
         "description_rows": [
           "Piercing arcs",
-          "9x 41.4% ATK",
-          "Stronger final 132.5% ATK",
-          "Heavy knockback",
-          "CD 9.8s"
+          "8x 15% ATK",
+          "Stronger final 130% ATK",
+          "Knockback 45; interval 0.1s",
+          "CD 11s"
         ],
         "effects": [
           {
             "id": "knockback",
-            "distance": 70,
+            "distance": 45,
             "duration": 0.23
           }
         ]
@@ -2016,31 +2018,32 @@
       {
         "level": 3,
         "stats": {
-          "damage_pct": 44.4,
-          "final_damage_pct": 143,
+          "damage_pct": 17.5,
+          "final_damage_pct": 140,
           "speed_pct": 290,
           "range": 775,
-          "cooldown": 9.1,
+          "cooldown": 10,
           "radius": 42,
           "final_radius": 65,
           "pierce": 999,
-          "sequence_count": 11,
-          "sequence_interval": 0.2,
+          "sequence_count": 10,
+          "sequence_interval": 0.1,
           "final_delay": 0.08,
           "vfx_scale": 0.3744,
-          "final_vfx_scale": 1.17
+          "final_vfx_scale": 1.17,
+          "arc_speed_pct": 203.0
         },
         "description_rows": [
           "Piercing arcs",
-          "11x 44.4% ATK",
-          "Stronger final 143% ATK",
-          "Heavy knockback",
-          "CD 9.1s"
+          "10x 17.5% ATK",
+          "Stronger final 140% ATK",
+          "Knockback 50; interval 0.1s",
+          "CD 10s"
         ],
         "effects": [
           {
             "id": "knockback",
-            "distance": 78,
+            "distance": 50,
             "duration": 0.24
           }
         ]
@@ -2048,31 +2051,32 @@
       {
         "level": 4,
         "stats": {
-          "damage_pct": 48,
-          "final_damage_pct": 156.5,
+          "damage_pct": 20,
+          "final_damage_pct": 150,
           "speed_pct": 310,
           "range": 825,
-          "cooldown": 8.4,
+          "cooldown": 9,
           "radius": 44,
           "final_radius": 72,
           "pierce": 999,
-          "sequence_count": 13,
-          "sequence_interval": 0.2,
+          "sequence_count": 12,
+          "sequence_interval": 0.1,
           "final_delay": 0.08,
           "vfx_scale": 0.39,
-          "final_vfx_scale": 1.25775
+          "final_vfx_scale": 1.25775,
+          "arc_speed_pct": 217.0
         },
         "description_rows": [
           "Piercing arcs",
-          "13x 48% ATK",
-          "Stronger final 156.5% ATK",
-          "Heavy knockback",
-          "CD 8.4s"
+          "12x 20% ATK",
+          "Stronger final 150% ATK",
+          "Knockback 55; interval 0.1s",
+          "CD 9s"
         ],
         "effects": [
           {
             "id": "knockback",
-            "distance": 85,
+            "distance": 55,
             "duration": 0.25
           }
         ]
@@ -2080,31 +2084,32 @@
       {
         "level": 5,
         "stats": {
-          "damage_pct": 52.5,
-          "final_damage_pct": 173,
+          "damage_pct": 25,
+          "final_damage_pct": 160,
           "speed_pct": 335,
           "range": 890,
-          "cooldown": 7.5,
+          "cooldown": 8,
           "radius": 47,
           "final_radius": 81,
           "pierce": 999,
-          "sequence_count": 15,
-          "sequence_interval": 0.2,
+          "sequence_count": 14,
+          "sequence_interval": 0.1,
           "final_delay": 0.08,
           "vfx_scale": 0.4056,
-          "final_vfx_scale": 1.404
+          "final_vfx_scale": 1.404,
+          "arc_speed_pct": 234.5
         },
         "description_rows": [
           "Piercing arcs",
-          "15x 52.5% ATK",
-          "Stronger final 173% ATK",
-          "Heavy knockback",
-          "CD 7.5s"
+          "14x 25% ATK",
+          "Stronger final 160% ATK",
+          "Knockback 60; interval 0.1s",
+          "CD 8s"
         ],
         "effects": [
           {
             "id": "knockback",
-            "distance": 95,
+            "distance": 60,
             "duration": 0.26
           }
         ]
@@ -2159,21 +2164,28 @@
         "stats": {
           "cooldown": 1,
           "dodge_pct": 10,
-          "skill_2_cooldown_reduction": 0.2,
-          "skill_3_crit_damage_bonus": 0.2,
+          "skill_2_cooldown_reduction": 0.15,
+          "skill_3_crit_damage_bonus": 0.1,
           "vfx_scale": 0.93,
-          "vfx_alpha": 0.6
+          "vfx_alpha": 0.6,
+          "move_speed_pct": 0
         },
         "description_rows": [
           "Né tránh +10%",
-          "Hồi chiêu Skill 2 -20%",
-          "Sát thương chí mạng Skill 3 +20%"
+          "Hồi chiêu Skill 2 -15%",
+          "Sát thương chí mạng Skill 3 +10%",
+          "Tốc độ di chuyển +0%"
         ],
         "passive_effects": [
           {
             "type": "stat_flat",
             "stat": "dodge_rate",
             "value": 0.1
+          },
+          {
+            "type": "stat_percent",
+            "stat": "move_speed",
+            "value": 0.0
           }
         ]
       },
@@ -2182,20 +2194,27 @@
         "stats": {
           "cooldown": 1,
           "dodge_pct": 15,
-          "skill_2_cooldown_reduction": 0.25,
-          "skill_3_crit_damage_bonus": 0.3,
+          "skill_2_cooldown_reduction": 0.2,
+          "skill_3_crit_damage_bonus": 0.15,
           "vfx_scale": 0.93,
-          "vfx_alpha": 0.6
+          "vfx_alpha": 0.6,
+          "move_speed_pct": 5
         },
         "description_rows": [
           "Né tránh +15%",
-          "Hồi chiêu Skill 2 -25%",
-          "Sát thương chí mạng Skill 3 +30%"
+          "Hồi chiêu Skill 2 -20%",
+          "Sát thương chí mạng Skill 3 +15%",
+          "Tốc độ di chuyển +5%"
         ],
         "passive_effects": [
           {
             "type": "stat_flat",
             "stat": "dodge_rate",
+            "value": 0.05
+          },
+          {
+            "type": "stat_percent",
+            "stat": "move_speed",
             "value": 0.05
           }
         ]
@@ -2205,21 +2224,28 @@
         "stats": {
           "cooldown": 1,
           "dodge_pct": 20,
-          "skill_2_cooldown_reduction": 0.3,
-          "skill_3_crit_damage_bonus": 0.4,
+          "skill_2_cooldown_reduction": 0.25,
+          "skill_3_crit_damage_bonus": 0.2,
           "vfx_scale": 0.93,
-          "vfx_alpha": 0.6
+          "vfx_alpha": 0.6,
+          "move_speed_pct": 10
         },
         "description_rows": [
           "Né tránh +20%",
-          "Hồi chiêu Skill 2 -30%",
-          "Sát thương chí mạng Skill 3 +40%"
+          "Hồi chiêu Skill 2 -25%",
+          "Sát thương chí mạng Skill 3 +20%",
+          "Tốc độ di chuyển +10%"
         ],
         "passive_effects": [
           {
             "type": "stat_flat",
             "stat": "dodge_rate",
             "value": 0.05
+          },
+          {
+            "type": "stat_percent",
+            "stat": "move_speed",
+            "value": 0.1
           }
         ]
       },
@@ -2228,21 +2254,28 @@
         "stats": {
           "cooldown": 1,
           "dodge_pct": 25,
-          "skill_2_cooldown_reduction": 0.35,
-          "skill_3_crit_damage_bonus": 0.4,
+          "skill_2_cooldown_reduction": 0.3,
+          "skill_3_crit_damage_bonus": 0.25,
           "vfx_scale": 0.93,
-          "vfx_alpha": 0.6
+          "vfx_alpha": 0.6,
+          "move_speed_pct": 15
         },
         "description_rows": [
           "Né tránh +25%",
-          "Hồi chiêu Skill 2 -35%",
-          "Sát thương chí mạng Skill 3 +40%"
+          "Hồi chiêu Skill 2 -30%",
+          "Sát thương chí mạng Skill 3 +25%",
+          "Tốc độ di chuyển +15%"
         ],
         "passive_effects": [
           {
             "type": "stat_flat",
             "stat": "dodge_rate",
             "value": 0.05
+          },
+          {
+            "type": "stat_percent",
+            "stat": "move_speed",
+            "value": 0.15000000000000002
           }
         ]
       },
@@ -2251,21 +2284,28 @@
         "stats": {
           "cooldown": 1,
           "dodge_pct": 30,
-          "skill_2_cooldown_reduction": 0.4,
-          "skill_3_crit_damage_bonus": 0.4,
+          "skill_2_cooldown_reduction": 0.35,
+          "skill_3_crit_damage_bonus": 0.3,
           "vfx_scale": 0.93,
-          "vfx_alpha": 0.6
+          "vfx_alpha": 0.6,
+          "move_speed_pct": 20
         },
         "description_rows": [
           "Né tránh +30%",
-          "Hồi chiêu Skill 2 -40%",
-          "Sát thương chí mạng Skill 3 +40%"
+          "Hồi chiêu Skill 2 -35%",
+          "Sát thương chí mạng Skill 3 +30%",
+          "Tốc độ di chuyển +20%"
         ],
         "passive_effects": [
           {
             "type": "stat_flat",
             "stat": "dodge_rate",
             "value": 0.05
+          },
+          {
+            "type": "stat_percent",
+            "stat": "move_speed",
+            "value": 0.2
           }
         ]
       }
@@ -2297,7 +2337,7 @@
     "deployment": {
       "type": "multi_target"
     },
-    "description": "Bắn hỏa tiễn theo hình nón; luôn có một tia hướng thẳng vào mục tiêu, các tia còn lại cách nhau 15 độ. Cấp 3 bắn 2 tiễn, cấp 5 bắn 3 tiễn.",
+    "description": "Bắn hỏa tiễn theo hình nón; luôn có một tia hướng thẳng vào mục tiêu, các tia còn lại cách nhau 10 độ. Cấp 3 bắn 2 tiễn, cấp 5 bắn 3 tiễn.",
     "vfx_frames": [
       "hero_2_skill1_frame_0",
       "hero_2_skill1_frame_1",
@@ -2359,7 +2399,7 @@
         },
         "description_rows": [
           "Phạm vi 90%",
-          "2 hỏa tiễn: 1 tia giữa, 1 tia lệch 15°",
+          "2 hỏa tiễn: 1 tia giữa, 1 tia lệch 10°",
           "Sát thương 104.5% ATK/tiễn",
           "CD 2.1s"
         ]
@@ -2377,7 +2417,7 @@
         },
         "description_rows": [
           "Phạm vi 90%",
-          "2 hỏa tiễn: 1 tia giữa, 1 tia lệch 15°",
+          "2 hỏa tiễn: 1 tia giữa, 1 tia lệch 10°",
           "Sát thương 113.5% ATK/tiễn",
           "CD 1.95s"
         ]
@@ -2395,7 +2435,7 @@
         },
         "description_rows": [
           "Phạm vi 90%",
-          "3 hỏa tiễn, lệch 15°",
+          "3 hỏa tiễn, lệch 10°",
           "Sát thương 124% ATK/tiễn",
           "CD 1.8s"
         ]
@@ -2448,14 +2488,15 @@
           "speed_pct": 240,
           "range": 1024,
           "cooldown": 7.5,
-          "radius": 144,
+          "radius": 100,
           "pierce": 999,
           "knockback_distance": 24,
           "knockback_duration": 0.15,
-          "vfx_scale": 1
+          "vfx_scale": 0.694444,
+          "cast_range": 700
         },
         "description_rows": [
-          "Phạm vi 80%",
+          "Tầm thi triển 700 px; tầm bay 1024 px",
           "Sát thương 39% ATK",
           "Thiêu đốt 10% sát thương/giây × 3",
           "CD 7.5s"
@@ -2468,14 +2509,15 @@
           "speed_pct": 250,
           "range": 1024,
           "cooldown": 7,
-          "radius": 158,
+          "radius": 115,
           "pierce": 999,
           "knockback_distance": 27,
           "knockback_duration": 0.15,
-          "vfx_scale": 1.1
+          "vfx_scale": 0.800633,
+          "cast_range": 700
         },
         "description_rows": [
-          "Phạm vi 80%",
+          "Tầm thi triển 700 px; tầm bay 1024 px",
           "Sát thương 42% ATK",
           "Thiêu đốt 10% sát thương/giây × 3",
           "CD 7s"
@@ -2488,14 +2530,15 @@
           "speed_pct": 260,
           "range": 1024,
           "cooldown": 6.5,
-          "radius": 173,
+          "radius": 130,
           "pierce": 999,
           "knockback_distance": 30,
           "knockback_duration": 0.15,
-          "vfx_scale": 1.2
+          "vfx_scale": 0.901734,
+          "cast_range": 700
         },
         "description_rows": [
-          "Phạm vi 80%",
+          "Tầm thi triển 700 px; tầm bay 1024 px",
           "Sát thương 45.375% ATK",
           "Thiêu đốt 10% sát thương/giây × 3",
           "CD 6.5s"
@@ -2508,14 +2551,15 @@
           "speed_pct": 270,
           "range": 1024,
           "cooldown": 6,
-          "radius": 187,
+          "radius": 145,
           "pierce": 999,
           "knockback_distance": 33,
           "knockback_duration": 0.15,
-          "vfx_scale": 1.3
+          "vfx_scale": 1.008021,
+          "cast_range": 700
         },
         "description_rows": [
-          "Phạm vi 80%",
+          "Tầm thi triển 700 px; tầm bay 1024 px",
           "Sát thương 49.125% ATK",
           "Thiêu đốt 10% sát thương/giây × 3",
           "CD 6s"
@@ -2528,14 +2572,15 @@
           "speed_pct": 280,
           "range": 1024,
           "cooldown": 5.5,
-          "radius": 202,
+          "radius": 160,
           "pierce": 999,
           "knockback_distance": 36,
           "knockback_duration": 0.15,
-          "vfx_scale": 1.4
+          "vfx_scale": 1.108911,
+          "cast_range": 700
         },
         "description_rows": [
-          "Phạm vi 80%",
+          "Tầm thi triển 700 px; tầm bay 1024 px",
           "Sát thương 54% ATK",
           "Thiêu đốt 10% sát thương/giây × 3",
           "CD 5.5s"
@@ -2878,7 +2923,7 @@
     "deployment": {
       "type": "single_target"
     },
-    "description": "Throws poison darts at the nearest enemy. Lv.3 throws 2 darts, Lv.5 throws 3 darts in quick succession.",
+    "description": "See level descriptions for authoritative damage, timing and effects.",
     "vfx_frames": [
       "hero_4_skill_1_frame_0",
       "hero_4_skill_1_frame_1",
@@ -2894,135 +2939,135 @@
       {
         "level": 1,
         "stats": {
-          "damage_pct": 45.5,
+          "damage_pct": 40,
           "speed_pct": 230,
-          "range": 768,
+          "range": 680,
           "projectile_count": 1,
           "volley_interval": 0.12,
-          "cooldown": 2,
+          "cooldown": 2.4,
           "radius": 0,
           "vfx_scale": 0.09
         },
         "description_rows": [
           "Single target",
-          "Damage 45.5% ATK",
-          "Poison 46.8% ATK/s",
+          "Damage 40% ATK",
+          "Poison 25% ATK/s for 2s",
           "Darts 1",
-          "CD 2s"
+          "CD 2.4s"
         ],
         "effects": [
           {
             "id": "poison",
-            "duration": 3,
-            "dps_pct": 46.8
+            "duration": 2,
+            "dps_pct": 25
           }
         ]
       },
       {
         "level": 2,
         "stats": {
-          "damage_pct": 48.8,
+          "damage_pct": 45,
           "speed_pct": 244,
-          "range": 768,
-          "projectile_count": 1,
+          "range": 700,
+          "projectile_count": 2,
           "volley_interval": 0.12,
-          "cooldown": 1.9,
+          "cooldown": 2.2,
           "radius": 0,
           "vfx_scale": 0.095
         },
         "description_rows": [
           "Single target",
-          "Damage 48.8% ATK",
-          "Poison 51% ATK/s",
-          "Darts 1",
-          "CD 1.9s"
+          "Damage 45% ATK",
+          "Poison 30% ATK/s for 2s",
+          "Darts 2",
+          "CD 2.2s"
         ],
         "effects": [
           {
             "id": "poison",
-            "duration": 3.2,
-            "dps_pct": 51
+            "duration": 2,
+            "dps_pct": 30
           }
         ]
       },
       {
         "level": 3,
         "stats": {
-          "damage_pct": 52.4,
+          "damage_pct": 50,
           "speed_pct": 258,
-          "range": 805,
+          "range": 720,
           "projectile_count": 2,
           "volley_interval": 0.12,
-          "cooldown": 1.8,
+          "cooldown": 2,
           "radius": 0,
           "vfx_scale": 0.0975
         },
         "description_rows": [
           "Single target",
-          "Damage 52.4% ATK",
-          "Poison 56.4% ATK/s",
+          "Damage 50% ATK",
+          "Poison 35% ATK/s for 2s",
           "Darts 2",
-          "CD 1.8s"
+          "CD 2s"
         ],
         "effects": [
           {
             "id": "poison",
-            "duration": 3.5,
-            "dps_pct": 56.4
+            "duration": 2,
+            "dps_pct": 35
           }
         ]
       },
       {
         "level": 4,
         "stats": {
-          "damage_pct": 56.6,
+          "damage_pct": 55,
           "speed_pct": 274,
-          "range": 885.5,
-          "projectile_count": 2,
+          "range": 740,
+          "projectile_count": 3,
           "volley_interval": 0.12,
-          "cooldown": 1.7,
+          "cooldown": 1.8,
           "radius": 0,
           "vfx_scale": 0.1025
         },
         "description_rows": [
           "Single target",
-          "Damage 56.6% ATK",
-          "Poison 63.6% ATK/s",
-          "Darts 2",
-          "CD 1.7s"
+          "Damage 55% ATK",
+          "Poison 40% ATK/s for 2s",
+          "Darts 3",
+          "CD 1.8s"
         ],
         "effects": [
           {
             "id": "poison",
-            "duration": 3.8,
-            "dps_pct": 63.6
+            "duration": 2,
+            "dps_pct": 40
           }
         ]
       },
       {
         "level": 5,
         "stats": {
-          "damage_pct": 62,
+          "damage_pct": 60,
           "speed_pct": 292,
-          "range": 896,
+          "range": 760,
           "projectile_count": 3,
           "volley_interval": 0.1,
-          "cooldown": 1.5,
+          "cooldown": 1.6,
           "radius": 0,
           "vfx_scale": 0.105
         },
         "description_rows": [
           "Single target",
-          "Damage 62% ATK",
-          "Poison 73.2% ATK/s",
+          "Damage 60% ATK",
+          "Poison 45% ATK/s for 2s",
           "Darts 3",
-          "CD 1.5s"
+          "CD 1.6s"
         ],
         "effects": [
           {
             "id": "poison",
-            "duration": 4.2,
-            "dps_pct": 73.2
+            "duration": 2,
+            "dps_pct": 45
           }
         ]
       }
@@ -3054,7 +3099,7 @@
     "deployment": {
       "type": "line_area"
     },
-    "description": "Piercing boomerang glaives that fly out and return to the hero, slowing enemies. Each level adds one glaive in a 15 degree fan.",
+    "description": "Piercing boomerang glaives fly out and return; each level adds one glaive with a 10 degree fan step.",
     "vfx_frames": [
       "hero_4_skill_2_frame_0",
       "hero_4_skill_2_frame_1",
@@ -3070,81 +3115,81 @@
       {
         "level": 1,
         "stats": {
-          "damage_pct": 78,
+          "damage_pct": 85,
           "speed_pct": 248,
-          "range": 820,
+          "range": 700,
           "projectile_count": 1,
           "angle_step": 10,
           "fan_half_angle": 20,
-          "cooldown": 5.5,
+          "cooldown": 6.5,
           "radius": 30,
           "pierce": 999,
           "vfx_scale": 0.09
         },
         "description_rows": [
           "Piercing return",
-          "Damage 78% ATK",
-          "Slow 10%",
+          "Damage 85% ATK",
+          "Slow 15%",
           "Glaives 1",
-          "CD 5.5s"
+          "CD 6.5s"
         ],
         "effects": [
           {
             "id": "slow",
             "duration": 1.5,
-            "slow_percent": 0.1
+            "slow_percent": 0.15
           }
         ]
       },
       {
         "level": 2,
         "stats": {
-          "damage_pct": 83.4,
+          "damage_pct": 95,
           "speed_pct": 261,
-          "range": 830,
+          "range": 720,
           "projectile_count": 2,
           "angle_step": 10,
           "fan_half_angle": 20,
-          "cooldown": 5.1,
+          "cooldown": 6,
           "radius": 31,
           "pierce": 999,
           "vfx_scale": 0.095
         },
         "description_rows": [
           "Piercing return",
-          "Damage 83.4% ATK",
-          "Slow 15%",
+          "Damage 95% ATK",
+          "Slow 17.5%",
           "Glaives 2",
-          "CD 5.1s"
+          "CD 6s"
         ],
         "effects": [
           {
             "id": "slow",
             "duration": 1.75,
-            "slow_percent": 0.15
+            "slow_percent": 0.175
           }
         ]
       },
       {
         "level": 3,
         "stats": {
-          "damage_pct": 90,
+          "damage_pct": 105,
           "speed_pct": 275,
-          "range": 840,
+          "range": 740,
           "projectile_count": 3,
           "angle_step": 10,
           "fan_half_angle": 20,
-          "cooldown": 4.7,
+          "cooldown": 5.5,
           "radius": 32,
           "pierce": 999,
           "vfx_scale": 0.0975
         },
         "description_rows": [
           "Piercing return",
-          "Damage 90% ATK",
+          "Damage 105% ATK",
           "Slow 20%",
           "Glaives 3",
-          "CD 4.7s"
+          "CD 5.5s"
         ],
         "effects": [
           {
@@ -3157,58 +3202,58 @@
       {
         "level": 4,
         "stats": {
-          "damage_pct": 97.5,
+          "damage_pct": 115,
           "speed_pct": 291,
-          "range": 850,
+          "range": 760,
           "projectile_count": 4,
           "angle_step": 10,
           "fan_half_angle": 20,
-          "cooldown": 4.3,
+          "cooldown": 5,
           "radius": 33,
           "pierce": 999,
           "vfx_scale": 0.1
         },
         "description_rows": [
           "Piercing return",
-          "Damage 97.5% ATK",
-          "Slow 25%",
+          "Damage 115% ATK",
+          "Slow 22.5%",
           "Glaives 4",
-          "CD 4.3s"
+          "CD 5s"
         ],
         "effects": [
           {
             "id": "slow",
             "duration": 2.25,
-            "slow_percent": 0.25
+            "slow_percent": 0.225
           }
         ]
       },
       {
         "level": 5,
         "stats": {
-          "damage_pct": 106.5,
+          "damage_pct": 125,
           "speed_pct": 310,
-          "range": 880,
+          "range": 780,
           "projectile_count": 5,
           "angle_step": 10,
           "fan_half_angle": 20,
-          "cooldown": 3.8,
+          "cooldown": 4.5,
           "radius": 34,
           "pierce": 999,
           "vfx_scale": 0.105
         },
         "description_rows": [
           "Piercing return",
-          "Damage 106.5% ATK",
-          "Slow 30%",
+          "Damage 125% ATK",
+          "Slow 25%",
           "Glaives 5",
-          "CD 3.8s"
+          "CD 4.5s"
         ],
         "effects": [
           {
             "id": "slow",
             "duration": 2.5,
-            "slow_percent": 0.3
+            "slow_percent": 0.25
           }
         ]
       }
@@ -3239,7 +3284,7 @@
     "deployment": {
       "type": "area"
     },
-    "description": "Plants a trap ahead of the nearest enemy. It bursts when a creep steps close, poisoning and slowing enemies in the blast.",
+    "description": "See level descriptions for authoritative damage, timing and effects.",
     "vfx_frames": [
       "hero_4_skill_3a_frame_0",
       "hero_4_skill_3a_frame_1",
@@ -3267,29 +3312,33 @@
         "level": 1,
         "stats": {
           "damage_pct": 100.1,
-          "range": 760,
+          "range": 725,
           "cooldown": 8.8,
-          "radius": 80.5,
-          "trigger_radius": 160,
+          "radius": 85,
+          "trigger_radius": 125,
           "proximity_detonation_delay": 1,
           "place_offset": 130,
-          "trap_lifetime": 24,
-          "vfx_scale": 0.085,
-          "explosion_vfx_scale": 1.15
+          "trap_lifetime": 12.5,
+          "vfx_scale": 0.051,
+          "explosion_vfx_scale": 0.897,
+          "max_traps": 3,
+          "explosion_duration": 1.5,
+          "explosion_loop": true
         },
         "description_rows": [
           "Trap burst",
           "Damage 100.1% ATK",
-          "Poison 39% ATK/s",
+          "Poison 45% ATK/s for 3s",
           "Slow 10%",
-          "Area 115",
+          "Area 85; trigger 125",
+          "Max traps 3; lifetime 12.5s",
           "CD 8.8s"
         ],
         "effects": [
           {
             "id": "poison",
-            "duration": 4,
-            "dps_pct": 39
+            "duration": 3.0,
+            "dps_pct": 45
           },
           {
             "id": "slow",
@@ -3302,34 +3351,38 @@
         "level": 2,
         "stats": {
           "damage_pct": 107.6,
-          "range": 805,
+          "range": 750,
           "cooldown": 8.2,
-          "radius": 91,
-          "trigger_radius": 180,
+          "radius": 95,
+          "trigger_radius": 145,
           "proximity_detonation_delay": 1,
           "place_offset": 135,
-          "trap_lifetime": 26,
-          "vfx_scale": 0.09,
-          "explosion_vfx_scale": 1.3
+          "trap_lifetime": 15,
+          "vfx_scale": 0.054,
+          "explosion_vfx_scale": 1.014,
+          "max_traps": 4,
+          "explosion_duration": 1.5,
+          "explosion_loop": true
         },
         "description_rows": [
           "Trap burst",
           "Damage 107.6% ATK",
-          "Poison 42.6% ATK/s",
-          "Slow 20%",
-          "Area 30",
+          "Poison 55% ATK/s for 3.5s",
+          "Slow 15%",
+          "Area 95; trigger 145",
+          "Max traps 4; lifetime 15s",
           "CD 8.2s"
         ],
         "effects": [
           {
             "id": "poison",
-            "duration": 4.2,
-            "dps_pct": 42.6
+            "duration": 3.5,
+            "dps_pct": 55
           },
           {
             "id": "slow",
             "duration": 2.5,
-            "slow_percent": 0.2
+            "slow_percent": 0.15
           }
         ]
       },
@@ -3337,34 +3390,38 @@
         "level": 3,
         "stats": {
           "damage_pct": 116,
-          "range": 850,
+          "range": 775,
           "cooldown": 7.6,
-          "radius": 101.5,
-          "trigger_radius": 200,
+          "radius": 105,
+          "trigger_radius": 165,
           "proximity_detonation_delay": 1,
           "place_offset": 140,
-          "trap_lifetime": 28,
-          "vfx_scale": 0.095,
-          "explosion_vfx_scale": 1.45
+          "trap_lifetime": 17.5,
+          "vfx_scale": 0.057,
+          "explosion_vfx_scale": 1.131,
+          "max_traps": 5,
+          "explosion_duration": 1.5,
+          "explosion_loop": true
         },
         "description_rows": [
           "Trap burst",
           "Damage 116% ATK",
-          "Poison 47.4% ATK/s",
-          "Slow 30%",
-          "Area 145",
+          "Poison 65% ATK/s for 4s",
+          "Slow 20%",
+          "Area 105; trigger 165",
+          "Max traps 5; lifetime 17.5s",
           "CD 7.6s"
         ],
         "effects": [
           {
             "id": "poison",
-            "duration": 4.5,
-            "dps_pct": 47.4
+            "duration": 4.0,
+            "dps_pct": 65
           },
           {
             "id": "slow",
             "duration": 2.75,
-            "slow_percent": 0.3
+            "slow_percent": 0.2
           }
         ]
       },
@@ -3372,34 +3429,38 @@
         "level": 4,
         "stats": {
           "damage_pct": 126.5,
-          "range": 910,
+          "range": 800,
           "cooldown": 7,
-          "radius": 112,
-          "trigger_radius": 220,
+          "radius": 115,
+          "trigger_radius": 185,
           "proximity_detonation_delay": 1,
           "place_offset": 145,
-          "trap_lifetime": 30,
-          "vfx_scale": 0.1,
-          "explosion_vfx_scale": 1.6
+          "trap_lifetime": 20,
+          "vfx_scale": 0.06,
+          "explosion_vfx_scale": 1.248,
+          "max_traps": 6,
+          "explosion_duration": 1.5,
+          "explosion_loop": true
         },
         "description_rows": [
           "Trap burst",
           "Damage 126.5% ATK",
-          "Poison 54% ATK/s",
-          "Slow 40%",
-          "Area 160",
+          "Poison 75% ATK/s for 4.5s",
+          "Slow 25%",
+          "Area 115; trigger 185",
+          "Max traps 6; lifetime 20s",
           "CD 7s"
         ],
         "effects": [
           {
             "id": "poison",
-            "duration": 4.8,
-            "dps_pct": 54
+            "duration": 4.5,
+            "dps_pct": 75
           },
           {
             "id": "slow",
             "duration": 3,
-            "slow_percent": 0.4
+            "slow_percent": 0.25
           }
         ]
       },
@@ -3407,34 +3468,38 @@
         "level": 5,
         "stats": {
           "damage_pct": 140,
-          "range": 980,
+          "range": 825,
           "cooldown": 6.2,
-          "radius": 126,
-          "trigger_radius": 250,
+          "radius": 125,
+          "trigger_radius": 205,
           "proximity_detonation_delay": 1,
           "place_offset": 150,
-          "trap_lifetime": 32,
-          "vfx_scale": 0.105,
-          "explosion_vfx_scale": 1.8
+          "trap_lifetime": 25,
+          "vfx_scale": 0.063,
+          "explosion_vfx_scale": 1.404,
+          "max_traps": 9,
+          "explosion_duration": 1.5,
+          "explosion_loop": true
         },
         "description_rows": [
           "Trap burst",
           "Damage 140% ATK",
-          "Poison 63% ATK/s",
-          "Slow 50%",
-          "Area 180",
+          "Poison 85% ATK/s for 5s",
+          "Slow 30%",
+          "Area 125; trigger 205",
+          "Max traps 9; lifetime 25s",
           "CD 6.2s"
         ],
         "effects": [
           {
             "id": "poison",
-            "duration": 5.2,
-            "dps_pct": 63
+            "duration": 5.0,
+            "dps_pct": 85
           },
           {
             "id": "slow",
             "duration": 3,
-            "slow_percent": 0.5
+            "slow_percent": 0.3
           }
         ]
       }
@@ -3469,7 +3534,7 @@
     "deployment": {
       "type": "area"
     },
-    "description": "Venom vortex loops at double animation speed for 2s. Starting 0.5s after cast, fires 3/4/5/6/8 needles at random independent angles, 0.1s apart. Each hit adds 0.2% max HP/s poison, capped at 1.2%/s and refreshed within 3s.",
+    "description": "See level descriptions for authoritative damage, timing and effects.",
     "vfx_frames": [
       "hero_4_skill_4a_frame_0",
       "hero_4_skill_4a_frame_1",
@@ -3482,46 +3547,57 @@
       "hero_4_skill_4a_frame_8"
     ],
     "needle_vfx_frames": [
-      "hero_4_skill_4b_frame_0"
+      "hero_4_skill_4b_frame_0",
+      "hero_4_skill_4b_frame_1",
+      "hero_4_skill_4b_frame_2",
+      "hero_4_skill_4b_frame_3",
+      "hero_4_skill_4b_frame_4",
+      "hero_4_skill_4b_frame_5",
+      "hero_4_skill_4b_frame_6",
+      "hero_4_skill_4b_frame_7",
+      "hero_4_skill_4b_frame_8"
     ],
     "levels": [
       {
         "level": 1,
         "stats": {
-          "damage_pct": 117,
-          "needle_damage_pct": 78,
+          "damage_pct": 120,
+          "needle_damage_pct": 25,
           "range": 700,
           "cooldown": 13.5,
-          "radius": 90,
-          "needle_count": 3,
-          "needle_range": 240,
+          "radius": 80,
+          "needle_count": 4,
+          "needle_range": 250,
           "needle_speed_pct": 160,
           "needle_radius": 26,
           "needle_delay": 0.5,
-          "stack_hp_percent": 0.002,
-          "stack_hp_percent_cap": 0.012,
-          "stack_refresh": 3,
           "vfx_scale": 0.255,
           "needle_vfx_scale": 0.105,
-          "vortex_duration": 2,
+          "vortex_duration": 2.5,
           "vortex_tick_interval": 0.5,
           "needle_interval": 0.1,
-          "vortex_animation_duration": 1
+          "vortex_animation_duration": 1,
+          "vortex_tick_count": 5,
+          "vortex_spin_speed": 400,
+          "needle_poison_atk_pct": 5,
+          "needle_poison_duration_extension": 0.5,
+          "needle_poison_dps_cap": 5000
         },
         "description_rows": [
           "Venom vortex",
-          "Hit 117% ATK",
-          "Needles 3x 78% ATK",
-          "Stack 0.2% max HP/s each (cap 1.2%)",
-          "Stun 0.1s + Slow 10%",
+          "Hit 120% ATK over 5 ticks",
+          "Needles 4x 25% ATK",
+          "Each needle adds 5% ATK poison DPS and 0.5s; max 5000 DPS",
+          "Each tick: 20% stun 0.1s",
           "CD 13.5s",
-          "First needle at 0.5s; random angles, 0.1s apart",
-          "Vortex loops 2s, animation speed x2"
+          "First needle 0.5s; random angles, 0.1s apart",
+          "Vortex loops 2.5s, spin 400 degrees/s"
         ],
         "effects": [
           {
             "id": "stun",
-            "duration": 0.1
+            "duration": 0.1,
+            "chance": 0.2
           },
           {
             "id": "slow",
@@ -3533,40 +3609,43 @@
       {
         "level": 2,
         "stats": {
-          "damage_pct": 126,
-          "needle_damage_pct": 84,
+          "damage_pct": 130,
+          "needle_damage_pct": 27.5,
           "range": 730,
           "cooldown": 12.6,
-          "radius": 100,
-          "needle_count": 4,
-          "needle_range": 260,
+          "radius": 85,
+          "needle_count": 5,
+          "needle_range": 275,
           "needle_speed_pct": 168,
           "needle_radius": 27,
           "needle_delay": 0.5,
-          "stack_hp_percent": 0.002,
-          "stack_hp_percent_cap": 0.012,
-          "stack_refresh": 3,
           "vfx_scale": 0.285,
           "needle_vfx_scale": 0.11,
-          "vortex_duration": 2,
+          "vortex_duration": 2.5,
           "vortex_tick_interval": 0.5,
           "needle_interval": 0.1,
-          "vortex_animation_duration": 1
+          "vortex_animation_duration": 1,
+          "vortex_tick_count": 5,
+          "vortex_spin_speed": 400,
+          "needle_poison_atk_pct": 5,
+          "needle_poison_duration_extension": 0.5,
+          "needle_poison_dps_cap": 5000
         },
         "description_rows": [
           "Venom vortex",
-          "Hit 126% ATK",
-          "Needles 4x 84% ATK",
-          "Stack 0.2% max HP/s each (cap 1.2%)",
-          "Stun 0.1s + Slow 15%",
+          "Hit 130% ATK over 5 ticks",
+          "Needles 5x 27.5% ATK",
+          "Each needle adds 5% ATK poison DPS and 0.5s; max 5000 DPS",
+          "Each tick: 20% stun 0.1s",
           "CD 12.6s",
-          "First needle at 0.5s; random angles, 0.1s apart",
-          "Vortex loops 2s, animation speed x2"
+          "First needle 0.5s; random angles, 0.1s apart",
+          "Vortex loops 2.5s, spin 400 degrees/s"
         ],
         "effects": [
           {
             "id": "stun",
-            "duration": 0.1
+            "duration": 0.1,
+            "chance": 0.2
           },
           {
             "id": "slow",
@@ -3578,40 +3657,43 @@
       {
         "level": 3,
         "stats": {
-          "damage_pct": 136.5,
-          "needle_damage_pct": 91.5,
+          "damage_pct": 140,
+          "needle_damage_pct": 30,
           "range": 765,
           "cooldown": 11.7,
-          "radius": 110,
-          "needle_count": 5,
-          "needle_range": 285,
+          "radius": 90,
+          "needle_count": 6,
+          "needle_range": 300,
           "needle_speed_pct": 176,
           "needle_radius": 28,
           "needle_delay": 0.5,
-          "stack_hp_percent": 0.002,
-          "stack_hp_percent_cap": 0.012,
-          "stack_refresh": 3,
           "vfx_scale": 0.315,
           "needle_vfx_scale": 0.11,
-          "vortex_duration": 2,
+          "vortex_duration": 2.5,
           "vortex_tick_interval": 0.5,
           "needle_interval": 0.1,
-          "vortex_animation_duration": 1
+          "vortex_animation_duration": 1,
+          "vortex_tick_count": 5,
+          "vortex_spin_speed": 400,
+          "needle_poison_atk_pct": 5,
+          "needle_poison_duration_extension": 0.5,
+          "needle_poison_dps_cap": 5000
         },
         "description_rows": [
           "Venom vortex",
-          "Hit 136.5% ATK",
-          "Needles 5x 91.5% ATK",
-          "Stack 0.2% max HP/s each (cap 1.2%)",
-          "Stun 0.1s + Slow 20%",
+          "Hit 140% ATK over 5 ticks",
+          "Needles 6x 30% ATK",
+          "Each needle adds 5% ATK poison DPS and 0.5s; max 5000 DPS",
+          "Each tick: 20% stun 0.1s",
           "CD 11.7s",
-          "First needle at 0.5s; random angles, 0.1s apart",
-          "Vortex loops 2s, animation speed x2"
+          "First needle 0.5s; random angles, 0.1s apart",
+          "Vortex loops 2.5s, spin 400 degrees/s"
         ],
         "effects": [
           {
             "id": "stun",
-            "duration": 0.1
+            "duration": 0.1,
+            "chance": 0.2
           },
           {
             "id": "slow",
@@ -3624,39 +3706,42 @@
         "level": 4,
         "stats": {
           "damage_pct": 150,
-          "needle_damage_pct": 101.4,
+          "needle_damage_pct": 35,
           "range": 805,
           "cooldown": 10.8,
-          "radius": 120,
-          "needle_count": 6,
-          "needle_range": 310,
+          "radius": 95,
+          "needle_count": 7,
+          "needle_range": 325,
           "needle_speed_pct": 184,
           "needle_radius": 29,
           "needle_delay": 0.5,
-          "stack_hp_percent": 0.002,
-          "stack_hp_percent_cap": 0.012,
-          "stack_refresh": 3,
           "vfx_scale": 0.345,
           "needle_vfx_scale": 0.115,
-          "vortex_duration": 2,
+          "vortex_duration": 2.5,
           "vortex_tick_interval": 0.5,
           "needle_interval": 0.1,
-          "vortex_animation_duration": 1
+          "vortex_animation_duration": 1,
+          "vortex_tick_count": 5,
+          "vortex_spin_speed": 400,
+          "needle_poison_atk_pct": 5,
+          "needle_poison_duration_extension": 0.5,
+          "needle_poison_dps_cap": 5000
         },
         "description_rows": [
           "Venom vortex",
-          "Hit 150% ATK",
-          "Needles 6x 101.4% ATK",
-          "Stack 0.2% max HP/s each (cap 1.2%)",
-          "Stun 0.1s + Slow 25%",
+          "Hit 150% ATK over 5 ticks",
+          "Needles 7x 35% ATK",
+          "Each needle adds 5% ATK poison DPS and 0.5s; max 5000 DPS",
+          "Each tick: 20% stun 0.1s",
           "CD 10.8s",
-          "First needle at 0.5s; random angles, 0.1s apart",
-          "Vortex loops 2s, animation speed x2"
+          "First needle 0.5s; random angles, 0.1s apart",
+          "Vortex loops 2.5s, spin 400 degrees/s"
         ],
         "effects": [
           {
             "id": "stun",
-            "duration": 0.1
+            "duration": 0.1,
+            "chance": 0.2
           },
           {
             "id": "slow",
@@ -3668,40 +3753,43 @@
       {
         "level": 5,
         "stats": {
-          "damage_pct": 165,
-          "needle_damage_pct": 114,
+          "damage_pct": 160,
+          "needle_damage_pct": 40,
           "range": 860,
           "cooldown": 9.6,
-          "radius": 130,
+          "radius": 100,
           "needle_count": 8,
-          "needle_range": 340,
+          "needle_range": 350,
           "needle_speed_pct": 195,
           "needle_radius": 30,
           "needle_delay": 0.5,
-          "stack_hp_percent": 0.002,
-          "stack_hp_percent_cap": 0.012,
-          "stack_refresh": 3,
           "vfx_scale": 0.37,
           "needle_vfx_scale": 0.12,
-          "vortex_duration": 2,
+          "vortex_duration": 2.5,
           "vortex_tick_interval": 0.5,
           "needle_interval": 0.1,
-          "vortex_animation_duration": 1
+          "vortex_animation_duration": 1,
+          "vortex_tick_count": 5,
+          "vortex_spin_speed": 400,
+          "needle_poison_atk_pct": 5,
+          "needle_poison_duration_extension": 0.5,
+          "needle_poison_dps_cap": 5000
         },
         "description_rows": [
           "Venom vortex",
-          "Hit 165% ATK",
-          "Needles 8x 114% ATK",
-          "Stack 0.2% max HP/s each (cap 1.2%)",
-          "Stun 0.1s + Slow 30%",
+          "Hit 160% ATK over 5 ticks",
+          "Needles 8x 40% ATK",
+          "Each needle adds 5% ATK poison DPS and 0.5s; max 5000 DPS",
+          "Each tick: 20% stun 0.1s",
           "CD 9.6s",
-          "First needle at 0.5s; random angles, 0.1s apart",
-          "Vortex loops 2s, animation speed x2"
+          "First needle 0.5s; random angles, 0.1s apart",
+          "Vortex loops 2.5s, spin 400 degrees/s"
         ],
         "effects": [
           {
             "id": "stun",
-            "duration": 0.1
+            "duration": 0.1,
+            "chance": 0.2
           },
           {
             "id": "slow",
@@ -4010,14 +4098,14 @@
     },
     "icon_id": "hero_1_skill_2",
     "createria_unlock": {
-      "level": 1,
+      "level": 5,
       "wave": 1
     },
     "vfx_frames": [
       "hero_1_skill2_frame_0"
     ],
     "flank_bolt_config": {
-      "damage_multiplier": 0.6,
+      "damage_multiplier": 0.4,
       "speed": 540,
       "vfx_scale": 0.32,
       "slow_percent": 0.3,
@@ -4053,47 +4141,50 @@
         "level": 1,
         "stats": {
           "damage_pct": 65,
-          "radius": 80,
+          "radius": 100,
           "vfx_scale": 0.38,
           "phase_a_vfx_scale": 0.38,
           "cooldown": 6,
           "range": 600,
           "impact_delay": 0.35,
           "above_height": 360,
-          "second_damage_pct": 0
+          "second_damage_pct": 0,
+          "flank_bolts": 0
         },
         "description_rows": [
           "Băng thạch rơi từ trên trời",
           "Sát thương AOE 65% ATK",
-          "Bán kính nổ 45px",
+          "Bán kính nổ 100px",
           "CD 6s"
         ]
       },
       {
         "level": 2,
         "stats": {
-          "damage_pct": 69.5,
-          "radius": 104,
+          "damage_pct": 75,
+          "radius": 120,
           "vfx_scale": 0.494,
           "phase_a_vfx_scale": 0.494,
           "cooldown": 5.6,
           "range": 600,
           "impact_delay": 0.35,
           "above_height": 360,
-          "second_damage_pct": 0
+          "second_damage_pct": 0,
+          "flank_bolts": 1
         },
         "description_rows": [
           "Băng thạch rơi từ trên trời",
-          "Sát thương AOE 69.5% ATK",
-          "Bán kính nổ 52px",
+          "Sát thương AOE 75% ATK",
+          "Bán kính nổ 120px",
+          "1 tia băng, mỗi tia 40% sát thương chính, slow 30%",
           "CD 5.6s"
         ]
       },
       {
         "level": 3,
         "stats": {
-          "damage_pct": 75.5,
-          "radius": 135.2,
+          "damage_pct": 85,
+          "radius": 140,
           "vfx_scale": 0.6422,
           "phase_a_vfx_scale": 0.6422,
           "cooldown": 5.2,
@@ -4105,16 +4196,17 @@
         },
         "description_rows": [
           "Băng thạch rơi từ trên trời",
-          "Sát thương AOE 75.5% ATK",
-          "Bán kính nổ 60px",
+          "Sát thương AOE 85% ATK",
+          "Bán kính nổ 140px",
+          "2 tia băng, mỗi tia 40% sát thương chính, slow 30%",
           "CD 5.2s"
         ]
       },
       {
         "level": 4,
         "stats": {
-          "damage_pct": 83,
-          "radius": 175.8,
+          "damage_pct": 95,
+          "radius": 160,
           "vfx_scale": 0.8349,
           "phase_a_vfx_scale": 0.8349,
           "cooldown": 4.8,
@@ -4122,20 +4214,21 @@
           "impact_delay": 0.35,
           "above_height": 360,
           "second_damage_pct": 0,
-          "flank_bolts": 2
+          "flank_bolts": 3
         },
         "description_rows": [
           "Băng thạch rơi từ trên trời",
-          "Sát thương AOE 83% ATK",
-          "Bán kính nổ 68px",
+          "Sát thương AOE 95% ATK",
+          "Bán kính nổ 160px",
+          "3 tia băng, mỗi tia 40% sát thương chính, slow 30%",
           "CD 4.8s"
         ]
       },
       {
         "level": 5,
         "stats": {
-          "damage_pct": 92,
-          "radius": 228.5,
+          "damage_pct": 105,
+          "radius": 180,
           "vfx_scale": 1.0854,
           "phase_a_vfx_scale": 1.0854,
           "cooldown": 4.2,
@@ -4143,14 +4236,14 @@
           "impact_delay": 0.35,
           "above_height": 360,
           "second_damage_pct": 0,
-          "flank_bolts": 3,
+          "flank_bolts": 4,
           "flank_slow": 0.3
         },
         "description_rows": [
           "Băng thạch rơi từ trên trời",
-          "Sát thương AOE 92% ATK",
-          "Bán kính nổ 78px",
-          "3 tia băng hông slow 30%",
+          "Sát thương AOE 105% ATK",
+          "Bán kính nổ 180px",
+          "4 tia băng, mỗi tia 40% sát thương chính, slow 30%",
           "CD 4.2s"
         ]
       }
@@ -4169,6 +4262,160 @@
   {
     "id": "hero_1_skill_3",
     "hero_level_unlock": 20,
+    "display_name": "Cực Địa Băng Giới",
+    "category": "combat",
+    "skill_class": "passive",
+    "activation": "auto",
+    "skill_type": "support_heal",
+    "positioning": {
+      "type": "hero_self"
+    },
+    "deployment": {
+      "type": "area"
+    },
+    "icon_id": "hero_1_skill_3",
+    "createria_unlock": {
+      "level": 10,
+      "wave": 1
+    },
+    "vfx_frames": [
+      "hero_1_skill4_beam",
+      "hero_1_skill4_trail",
+      "hero_1_skill4_seal",
+      "hero_1_skill4_domain"
+    ],
+    "levels": [
+      {
+        "level": 1,
+        "stats": {
+          "cooldown": 15.0,
+          "damage_pct": 0,
+          "domain_duration": 6,
+          "domain_radius": 240,
+          "domain_cast_range": 768,
+          "domain_slow_edge": 0.1,
+          "domain_slow_center": 0.5,
+          "impact_stun_chance": 0.5,
+          "impact_stun_duration": 0.1,
+          "attack_speed_slow": 0.2,
+          "def_reduction": 0.15
+        },
+        "description_rows": [
+          "Băng quang giáng xuống trước mặt mục tiêu: 50% Choáng 0.1s",
+          "Băng giới tồn tại 6s (CD 15s), bán kính 240px",
+          "Làm chậm 10% ở biên → 50% tại tâm băng ấn",
+          "Giảm 20% tốc độ đánh của quái",
+          "Giảm 15% giáp của quái",
+          "Hỗ trợ, không gây sát thương trực tiếp"
+        ]
+      },
+      {
+        "level": 2,
+        "stats": {
+          "cooldown": 14.5,
+          "damage_pct": 0,
+          "domain_duration": 7,
+          "domain_radius": 250,
+          "domain_cast_range": 768,
+          "domain_slow_edge": 0.1,
+          "domain_slow_center": 0.5,
+          "impact_stun_chance": 0.5,
+          "impact_stun_duration": 0.1,
+          "attack_speed_slow": 0.225,
+          "def_reduction": 0.175
+        },
+        "description_rows": [
+          "Băng quang giáng xuống trước mặt mục tiêu: 50% Choáng 0.1s",
+          "Băng giới tồn tại 7s (CD 14.5s), bán kính 250px",
+          "Làm chậm 10% ở biên → 50% tại tâm băng ấn",
+          "Giảm 22.5% tốc độ đánh của quái",
+          "Giảm 17.5% giáp của quái",
+          "Hỗ trợ, không gây sát thương trực tiếp"
+        ]
+      },
+      {
+        "level": 3,
+        "stats": {
+          "cooldown": 14.0,
+          "damage_pct": 0,
+          "domain_duration": 8,
+          "domain_radius": 260,
+          "domain_cast_range": 768,
+          "domain_slow_edge": 0.1,
+          "domain_slow_center": 0.5,
+          "impact_stun_chance": 0.5,
+          "impact_stun_duration": 0.1,
+          "attack_speed_slow": 0.25,
+          "def_reduction": 0.2
+        },
+        "description_rows": [
+          "Băng quang giáng xuống trước mặt mục tiêu: 50% Choáng 0.1s",
+          "Băng giới tồn tại 8s (CD 14s), bán kính 260px",
+          "Làm chậm 10% ở biên → 50% tại tâm băng ấn",
+          "Giảm 25% tốc độ đánh của quái",
+          "Giảm 20% giáp của quái",
+          "Hỗ trợ, không gây sát thương trực tiếp"
+        ]
+      },
+      {
+        "level": 4,
+        "stats": {
+          "cooldown": 13.5,
+          "damage_pct": 0,
+          "domain_duration": 9,
+          "domain_radius": 270,
+          "domain_cast_range": 768,
+          "domain_slow_edge": 0.1,
+          "domain_slow_center": 0.5,
+          "impact_stun_chance": 0.5,
+          "impact_stun_duration": 0.1,
+          "attack_speed_slow": 0.275,
+          "def_reduction": 0.225
+        },
+        "description_rows": [
+          "Băng quang giáng xuống trước mặt mục tiêu: 50% Choáng 0.1s",
+          "Băng giới tồn tại 9s (CD 13.5s), bán kính 270px",
+          "Làm chậm 10% ở biên → 50% tại tâm băng ấn",
+          "Giảm 27.5% tốc độ đánh của quái",
+          "Giảm 22.5% giáp của quái",
+          "Hỗ trợ, không gây sát thương trực tiếp"
+        ]
+      },
+      {
+        "level": 5,
+        "stats": {
+          "cooldown": 13.0,
+          "damage_pct": 0,
+          "domain_duration": 10,
+          "domain_radius": 280,
+          "domain_cast_range": 768,
+          "domain_slow_edge": 0.1,
+          "domain_slow_center": 0.5,
+          "impact_stun_chance": 0.5,
+          "impact_stun_duration": 0.1,
+          "attack_speed_slow": 0.3,
+          "def_reduction": 0.25
+        },
+        "description_rows": [
+          "Băng quang giáng xuống trước mặt mục tiêu: 50% Choáng 0.1s",
+          "Băng giới tồn tại 10s (CD 13s), bán kính 280px",
+          "Làm chậm 10% ở biên → 50% tại tâm băng ấn",
+          "Giảm 30% tốc độ đánh của quái",
+          "Giảm 25% giáp của quái",
+          "Hỗ trợ, không gây sát thương trực tiếp"
+        ]
+      }
+    ],
+    "sfx_events": [
+      {
+        "sfx_id": "hero1-skill4-cast",
+        "timing": "cast"
+      }
+    ]
+  },
+  {
+    "id": "hero_1_skill_4",
+    "hero_level_unlock": 30,
     "display_name": "Hàn Băng Thấu Thể",
     "category": "combat",
     "skill_class": "passive",
@@ -4180,7 +4427,7 @@
     "deployment": {
       "type": "self_buff"
     },
-    "icon_id": "hero_1_skill_3",
+    "icon_id": "hero_1_skill_4",
     "createria_unlock": {
       "level": 15,
       "wave": 1,
@@ -4202,248 +4449,114 @@
         "level": 1,
         "stats": {
           "cooldown": 1,
-          "damage_pct": 13,
-          "speed_pct": 10,
+          "damage_pct": 12.5,
+          "speed_pct": 15,
           "pierce": 999,
-          "freeze_duration": 0.3,
+          "freeze_duration": 0.2,
           "damage_falloff_per_20_pct": 0.2,
-          "minimum_damage": 100
+          "minimum_damage": 100,
+          "freeze_chance": 0.3,
+          "freeze_damage_multiplier": 0.25
         },
         "description_rows": [
           "Cường hóa Băng Luân Song Hành",
-          "Tăng 13% DMG, +10% SPD",
+          "Tăng 12.5% DMG, +15% tốc độ bay",
           "Thêm hiệu ứng xuyên mục tiêu",
-          "Đóng băng quái 0.3s khi trúng"
+          "30% đóng băng quái 0.2s khi trúng",
+          "Nổ phụ gây 25% sát thương tia chính"
         ]
       },
       {
         "level": 2,
         "stats": {
           "cooldown": 1,
-          "damage_pct": 14.5,
+          "damage_pct": 15.0,
           "speed_pct": 20,
           "pierce": 999,
-          "freeze_duration": 0.3,
+          "freeze_duration": 0.2,
           "damage_falloff_per_20_pct": 0.175,
-          "minimum_damage": 100
+          "minimum_damage": 100,
+          "freeze_chance": 0.3,
+          "freeze_damage_multiplier": 0.25
         },
         "description_rows": [
           "Cường hóa Băng Luân Song Hành",
-          "Tăng 14.5% DMG, +20% SPD",
+          "Tăng 15% DMG, +20% tốc độ bay",
           "Thêm hiệu ứng xuyên mục tiêu",
-          "Đóng băng quái 0.3s khi trúng"
+          "30% đóng băng quái 0.2s khi trúng",
+          "Nổ phụ gây 25% sát thương tia chính"
         ]
       },
       {
         "level": 3,
         "stats": {
           "cooldown": 1,
-          "damage_pct": 16,
-          "speed_pct": 30,
+          "damage_pct": 17.5,
+          "speed_pct": 25,
           "pierce": 999,
-          "freeze_duration": 0.3,
+          "freeze_duration": 0.2,
           "damage_falloff_per_20_pct": 0.15,
           "minimum_damage": 100,
-          "extra_beams": 1
+          "extra_beams": 1,
+          "freeze_chance": 0.3,
+          "freeze_damage_multiplier": 0.25
         },
         "description_rows": [
           "Cường hóa Băng Luân Song Hành",
-          "Tăng 16% DMG, +30% SPD",
+          "Tăng 17.5% DMG, +25% tốc độ bay",
           "Thêm +1 tia cho Skill 1",
-          "Đóng băng quái 0.3s khi trúng"
+          "30% đóng băng quái 0.2s khi trúng",
+          "Nổ phụ gây 25% sát thương tia chính"
         ]
       },
       {
         "level": 4,
         "stats": {
           "cooldown": 1,
-          "damage_pct": 17.5,
-          "speed_pct": 40,
+          "damage_pct": 20.0,
+          "speed_pct": 30,
           "pierce": 999,
-          "freeze_duration": 0.3,
+          "freeze_duration": 0.2,
           "damage_falloff_per_20_pct": 0.125,
           "minimum_damage": 100,
-          "extra_beams": 1
+          "extra_beams": 1,
+          "freeze_chance": 0.3,
+          "freeze_damage_multiplier": 0.25
         },
         "description_rows": [
           "Cường hóa Băng Luân Song Hành",
-          "Tăng 17.5% DMG, +40% SPD",
+          "Tăng 20% DMG, +30% tốc độ bay",
           "Thêm +1 tia cho Skill 1",
-          "Đóng băng quái 0.3s khi trúng"
+          "30% đóng băng quái 0.2s khi trúng",
+          "Nổ phụ gây 25% sát thương tia chính"
         ]
       },
       {
         "level": 5,
         "stats": {
           "cooldown": 1,
-          "damage_pct": 19,
-          "speed_pct": 50,
+          "damage_pct": 22.5,
+          "speed_pct": 35,
           "pierce": 999,
-          "freeze_duration": 0.3,
+          "freeze_duration": 0.2,
           "damage_falloff_per_20_pct": 0.1,
           "minimum_damage": 100,
-          "extra_beams": 2
+          "extra_beams": 2,
+          "freeze_chance": 0.3,
+          "freeze_damage_multiplier": 0.25
         },
         "description_rows": [
           "Cường hóa Băng Luân Song Hành",
-          "Tăng 19% DMG, +50% SPD",
+          "Tăng 22.5% DMG, +35% tốc độ bay",
           "Thêm +2 tia cho Skill 1",
-          "Đóng băng quái 0.3s khi trúng"
+          "30% đóng băng quái 0.2s khi trúng",
+          "Nổ phụ gây 25% sát thương tia chính"
         ]
       }
     ],
     "sfx_events": [
       {
         "sfx_id": "hero1-skill3-cast",
-        "timing": "cast"
-      }
-    ]
-  },
-  {
-    "id": "hero_1_skill_4",
-    "hero_level_unlock": 30,
-    "display_name": "Cực Địa Băng Giới",
-    "category": "combat",
-    "skill_class": "passive",
-    "activation": "auto",
-    "skill_type": "support_heal",
-    "positioning": {
-      "type": "hero_self"
-    },
-    "deployment": {
-      "type": "area"
-    },
-    "icon_id": "hero_1_skill_4",
-    "createria_unlock": {
-      "level": 10,
-      "wave": 1
-    },
-    "vfx_frames": [
-      "hero_1_skill4_beam",
-      "hero_1_skill4_trail",
-      "hero_1_skill4_seal",
-      "hero_1_skill4_domain"
-    ],
-    "levels": [
-      {
-        "level": 1,
-        "stats": {
-          "cooldown": 15,
-          "damage_pct": 20,
-          "domain_duration": 10,
-          "domain_radius": 260,
-          "domain_cast_range": 768,
-          "domain_slow_edge": 0.1,
-          "domain_slow_center": 0.5,
-          "impact_stun_chance": 0.5,
-          "impact_stun_duration": 0.1,
-          "attack_speed_slow": 0.3,
-          "def_reduction": 0.2
-        },
-        "description_rows": [
-          "Băng quang giáng xuống trước mặt mục tiêu: 50% Choáng 0.1s",
-          "Băng vệt + băng ấn + băng giới tồn tại 10s (CD 15s)",
-          "Làm chậm 10% ở biên → 50% tại tâm băng ấn",
-          "Giảm 30% tốc độ đánh của quái",
-          "Giảm 20% giáp của quái"
-        ]
-      },
-      {
-        "level": 2,
-        "stats": {
-          "cooldown": 15,
-          "damage_pct": 20,
-          "domain_duration": 10,
-          "domain_radius": 260,
-          "domain_cast_range": 768,
-          "domain_slow_edge": 0.1,
-          "domain_slow_center": 0.5,
-          "impact_stun_chance": 0.5,
-          "impact_stun_duration": 0.1,
-          "attack_speed_slow": 0.3,
-          "def_reduction": 0.2
-        },
-        "description_rows": [
-          "Băng quang giáng xuống trước mặt mục tiêu: 50% Choáng 0.1s",
-          "Băng vệt + băng ấn + băng giới tồn tại 10s (CD 15s)",
-          "Làm chậm 10% ở biên → 50% tại tâm băng ấn",
-          "Giảm 30% tốc độ đánh của quái",
-          "Giảm 20% giáp của quái"
-        ]
-      },
-      {
-        "level": 3,
-        "stats": {
-          "cooldown": 15,
-          "damage_pct": 20,
-          "domain_duration": 10,
-          "domain_radius": 260,
-          "domain_cast_range": 768,
-          "domain_slow_edge": 0.1,
-          "domain_slow_center": 0.5,
-          "impact_stun_chance": 0.5,
-          "impact_stun_duration": 0.1,
-          "attack_speed_slow": 0.3,
-          "def_reduction": 0.2
-        },
-        "description_rows": [
-          "Băng quang giáng xuống trước mặt mục tiêu: 50% Choáng 0.1s",
-          "Băng vệt + băng ấn + băng giới tồn tại 10s (CD 15s)",
-          "Làm chậm 10% ở biên → 50% tại tâm băng ấn",
-          "Giảm 30% tốc độ đánh của quái",
-          "Giảm 20% giáp của quái"
-        ]
-      },
-      {
-        "level": 4,
-        "stats": {
-          "cooldown": 15,
-          "damage_pct": 20,
-          "domain_duration": 10,
-          "domain_radius": 260,
-          "domain_cast_range": 768,
-          "domain_slow_edge": 0.1,
-          "domain_slow_center": 0.5,
-          "impact_stun_chance": 0.5,
-          "impact_stun_duration": 0.1,
-          "attack_speed_slow": 0.3,
-          "def_reduction": 0.2
-        },
-        "description_rows": [
-          "Băng quang giáng xuống trước mặt mục tiêu: 50% Choáng 0.1s",
-          "Băng vệt + băng ấn + băng giới tồn tại 10s (CD 15s)",
-          "Làm chậm 10% ở biên → 50% tại tâm băng ấn",
-          "Giảm 30% tốc độ đánh của quái",
-          "Giảm 20% giáp của quái"
-        ]
-      },
-      {
-        "level": 5,
-        "stats": {
-          "cooldown": 15,
-          "damage_pct": 20,
-          "domain_duration": 10,
-          "domain_radius": 260,
-          "domain_cast_range": 768,
-          "domain_slow_edge": 0.1,
-          "domain_slow_center": 0.5,
-          "impact_stun_chance": 0.5,
-          "impact_stun_duration": 0.1,
-          "attack_speed_slow": 0.3,
-          "def_reduction": 0.2
-        },
-        "description_rows": [
-          "Băng quang giáng xuống trước mặt mục tiêu: 50% Choáng 0.1s",
-          "Băng vệt + băng ấn + băng giới tồn tại 10s (CD 15s)",
-          "Làm chậm 10% ở biên → 50% tại tâm băng ấn",
-          "Giảm 30% tốc độ đánh của quái",
-          "Giảm 20% giáp của quái"
-        ]
-      }
-    ],
-    "sfx_events": [
-      {
-        "sfx_id": "hero1-skill4-cast",
         "timing": "cast"
       }
     ]
@@ -4486,24 +4599,87 @@
       {
         "level": 1,
         "stats": {
-          "damage_pct": 84.5,
+          "damage_pct": 60,
           "cooldown": 2,
-          "range": 896,
+          "range": 700,
           "speed_pct": 240,
           "projectile_count": 1,
           "radius": 24,
           "pierce": 0,
           "aoe_radius": 45,
-          "explosion_damage_pct": 50,
+          "explosion_damage_pct": 25,
           "vfx_scale": 0.0686,
           "explosion_vfx_scale": 0.1225,
-          "knockback_distance": 40
+          "knockback_distance": 30,
+          "fan_angle": 10
         },
         "description_rows": [
-          "Quyền khí đẩy lùi nhẹ 40px",
-          "Sát thương 84.5% ATK tổng mỗi tia",
-          "Nổ chữ thập 50% AOE",
-          "CD 2.0s"
+          "Direct 60% ATK",
+          "Explosion 25% ATK; radius 45px",
+          "Knockback 30px; fan step 10 degrees",
+          "CD 2s"
+        ],
+        "effects": [
+          {
+            "id": "knockback_light",
+            "distance": 30,
+            "duration": 0.15
+          }
+        ]
+      },
+      {
+        "level": 2,
+        "stats": {
+          "damage_pct": 75,
+          "cooldown": 1.9,
+          "range": 720,
+          "speed_pct": 250,
+          "projectile_count": 1,
+          "radius": 26,
+          "pierce": 0,
+          "aoe_radius": 50,
+          "explosion_damage_pct": 30,
+          "vfx_scale": 0.0735,
+          "explosion_vfx_scale": 0.14,
+          "knockback_distance": 35,
+          "fan_angle": 10
+        },
+        "description_rows": [
+          "Direct 75% ATK",
+          "Explosion 30% ATK; radius 50px",
+          "Knockback 35px; fan step 10 degrees",
+          "CD 1.9s"
+        ],
+        "effects": [
+          {
+            "id": "knockback_light",
+            "distance": 35,
+            "duration": 0.15
+          }
+        ]
+      },
+      {
+        "level": 3,
+        "stats": {
+          "damage_pct": 85,
+          "cooldown": 1.8,
+          "range": 740,
+          "speed_pct": 260,
+          "projectile_count": 2,
+          "radius": 28,
+          "pierce": 0,
+          "aoe_radius": 60,
+          "explosion_damage_pct": 35,
+          "vfx_scale": 0.0784,
+          "explosion_vfx_scale": 0.1575,
+          "knockback_distance": 40,
+          "fan_angle": 10
+        },
+        "description_rows": [
+          "Direct 85% ATK",
+          "Explosion 35% ATK; radius 60px",
+          "Knockback 40px; fan step 10 degrees",
+          "CD 1.8s"
         ],
         "effects": [
           {
@@ -4514,93 +4690,32 @@
         ]
       },
       {
-        "level": 2,
-        "stats": {
-          "damage_pct": 89.6,
-          "cooldown": 1.9,
-          "range": 896,
-          "speed_pct": 250,
-          "projectile_count": 1,
-          "radius": 26,
-          "pierce": 0,
-          "aoe_radius": 52,
-          "explosion_damage_pct": 50,
-          "vfx_scale": 0.0735,
-          "explosion_vfx_scale": 0.14,
-          "knockback_distance": 50
-        },
-        "description_rows": [
-          "Quyền khí đẩy lùi 50px",
-          "Sát thương 89.6% ATK tổng mỗi tia",
-          "Nổ chữ thập 50% AOE",
-          "CD 1.9s"
-        ],
-        "effects": [
-          {
-            "id": "knockback_light",
-            "distance": 50,
-            "duration": 0.15
-          }
-        ]
-      },
-      {
-        "level": 3,
-        "stats": {
-          "damage_pct": 94.4,
-          "cooldown": 1.8,
-          "range": 896,
-          "speed_pct": 260,
-          "projectile_count": 2,
-          "radius": 28,
-          "pierce": 0,
-          "aoe_radius": 60,
-          "explosion_damage_pct": 50,
-          "vfx_scale": 0.0784,
-          "explosion_vfx_scale": 0.1575,
-          "knockback_distance": 60,
-          "fan_angle": 15
-        },
-        "description_rows": [
-          "Bắn 2 tia quạt 15 độ",
-          "Sát thương 94.4% ATK tổng mỗi tia",
-          "Đẩy lùi 60px, nổ 50% AOE",
-          "CD 1.8s"
-        ],
-        "effects": [
-          {
-            "id": "knockback_light",
-            "distance": 60,
-            "duration": 0.15
-          }
-        ]
-      },
-      {
         "level": 4,
         "stats": {
-          "damage_pct": 99.2,
+          "damage_pct": 100,
           "cooldown": 1.7,
-          "range": 896,
+          "range": 760,
           "speed_pct": 270,
           "projectile_count": 2,
           "radius": 30,
           "pierce": 0,
-          "aoe_radius": 68,
-          "explosion_damage_pct": 50,
+          "aoe_radius": 70,
+          "explosion_damage_pct": 40,
           "vfx_scale": 0.0833,
           "explosion_vfx_scale": 0.175,
-          "knockback_distance": 70,
-          "fan_angle": 15
+          "knockback_distance": 45,
+          "fan_angle": 10
         },
         "description_rows": [
-          "Bắn 2 tia quạt 15 độ",
-          "Sát thương 99.2% ATK tổng mỗi tia",
-          "Đẩy lùi 70px, nổ 50% AOE",
+          "Direct 100% ATK",
+          "Explosion 40% ATK; radius 70px",
+          "Knockback 45px; fan step 10 degrees",
           "CD 1.7s"
         ],
         "effects": [
           {
             "id": "knockback_light",
-            "distance": 70,
+            "distance": 45,
             "duration": 0.15
           }
         ]
@@ -4608,30 +4723,30 @@
       {
         "level": 5,
         "stats": {
-          "damage_pct": 104,
+          "damage_pct": 120,
           "cooldown": 1.6,
-          "range": 896,
+          "range": 780,
           "speed_pct": 280,
           "projectile_count": 3,
           "radius": 32,
           "pierce": 0,
-          "aoe_radius": 78,
-          "explosion_damage_pct": 50,
+          "aoe_radius": 80,
+          "explosion_damage_pct": 45,
           "vfx_scale": 0.0882,
           "explosion_vfx_scale": 0.1925,
-          "knockback_distance": 80,
-          "fan_angle": 15
+          "knockback_distance": 50,
+          "fan_angle": 10
         },
         "description_rows": [
-          "Bắn 3 tia quạt 15 độ",
-          "Sát thương 104% ATK tổng mỗi tia",
-          "Đẩy lùi 80px, nổ 50% AOE",
+          "Direct 120% ATK",
+          "Explosion 45% ATK; radius 80px",
+          "Knockback 50px; fan step 10 degrees",
           "CD 1.6s"
         ],
         "effects": [
           {
             "id": "knockback_light",
-            "distance": 80,
+            "distance": 50,
             "duration": 0.15
           }
         ]
@@ -4690,150 +4805,165 @@
       {
         "level": 1,
         "stats": {
-          "damage_pct": 54.6,
-          "cooldown": 6,
-          "range": 853.3333,
-          "radius": 70,
+          "damage_pct": 70,
+          "cooldown": 6.5,
+          "range": 720,
+          "radius": 80,
           "stun_duration": 0.1,
-          "burn_hp_percent": 0.01,
-          "burn_duration": 3,
-          "vfx_scale": 0.45
+          "vfx_scale": 0.51429,
+          "stun_chance": 0.35,
+          "formation_duration": 2,
+          "formation_animation_duration": 1,
+          "rune_delay": 1,
+          "rune_duration": 1.5,
+          "rune_tick_interval": 0.5,
+          "rune_damage_pct": 25,
+          "rune_hp_percent": 0.002
         },
         "description_rows": [
-          "Đại trận xoay dưới chân địch",
-          "Sát thương AOE 54.6% ATK",
-          "Choáng 0.1s, thiêu đốt 0.5% HP mỗi tick",
-          "CD 6s"
+          "Formation 70% ATK; lasts 2s",
+          "Runes after 1s: 25% ATK + 0.2% max HP per tick",
+          "Runes loop 1.5s; damage every 0.5s",
+          "35% stun 0.1s",
+          "Radius 80px; CD 6.5s"
         ],
         "effects": [
           {
             "id": "holy_stun",
+            "chance": 0.35,
             "duration": 0.1
-          },
-          {
-            "id": "burn_percent",
-            "duration": 3,
-            "hp_percent": 0.01
           }
         ]
       },
       {
         "level": 2,
         "stats": {
-          "damage_pct": 58.8,
-          "cooldown": 5.6,
-          "range": 853.3333,
-          "radius": 91,
-          "stun_duration": 0.2,
-          "burn_hp_percent": 0.01,
-          "burn_duration": 3,
-          "vfx_scale": 0.585
+          "damage_pct": 85,
+          "cooldown": 6.0,
+          "range": 740,
+          "radius": 90,
+          "stun_duration": 0.125,
+          "vfx_scale": 0.57857,
+          "stun_chance": 0.35,
+          "formation_duration": 2,
+          "formation_animation_duration": 1,
+          "rune_delay": 1,
+          "rune_duration": 1.5,
+          "rune_tick_interval": 0.5,
+          "rune_damage_pct": 30,
+          "rune_hp_percent": 0.003
         },
         "description_rows": [
-          "Đại trận xoay dưới chân địch",
-          "Sát thương AOE 58.8% ATK",
-          "Choáng 0.2s, thiêu đốt 0.5% HP mỗi tick",
-          "CD 5.6s"
+          "Formation 85% ATK; lasts 2s",
+          "Runes after 1s: 30% ATK + 0.3% max HP per tick",
+          "Runes loop 1.5s; damage every 0.5s",
+          "35% stun 0.125s",
+          "Radius 90px; CD 6s"
         ],
         "effects": [
           {
             "id": "holy_stun",
-            "duration": 0.2
-          },
-          {
-            "id": "burn_percent",
-            "duration": 3,
-            "hp_percent": 0.01
+            "chance": 0.35,
+            "duration": 0.125
           }
         ]
       },
       {
         "level": 3,
         "stats": {
-          "damage_pct": 63,
-          "cooldown": 5.2,
-          "range": 853.3333,
-          "radius": 118.3,
-          "stun_duration": 0.3,
-          "burn_hp_percent": 0.01,
-          "burn_duration": 3,
-          "vfx_scale": 0.7605
+          "damage_pct": 100,
+          "cooldown": 5.5,
+          "range": 760,
+          "radius": 100,
+          "stun_duration": 0.15,
+          "vfx_scale": 0.64286,
+          "stun_chance": 0.35,
+          "formation_duration": 2,
+          "formation_animation_duration": 1,
+          "rune_delay": 1,
+          "rune_duration": 1.5,
+          "rune_tick_interval": 0.5,
+          "rune_damage_pct": 35,
+          "rune_hp_percent": 0.006
         },
         "description_rows": [
-          "Đại trận xoay dưới chân địch",
-          "Sát thương AOE 63% ATK",
-          "Choáng 0.3s, thiêu đốt 0.5% HP mỗi tick",
-          "CD 5.2s"
+          "Formation 100% ATK; lasts 2s",
+          "Runes after 1s: 35% ATK + 0.6% max HP per tick",
+          "Runes loop 1.5s; damage every 0.5s",
+          "35% stun 0.15s",
+          "Radius 100px; CD 5.5s"
         ],
         "effects": [
           {
             "id": "holy_stun",
-            "duration": 0.3
-          },
-          {
-            "id": "burn_percent",
-            "duration": 3,
-            "hp_percent": 0.01
+            "chance": 0.35,
+            "duration": 0.15
           }
         ]
       },
       {
         "level": 4,
         "stats": {
-          "damage_pct": 67.2,
-          "cooldown": 4.8,
-          "range": 853.3333,
-          "radius": 153.8,
-          "stun_duration": 0.4,
-          "burn_hp_percent": 0.01,
-          "burn_duration": 3,
-          "vfx_scale": 0.9887
+          "damage_pct": 115,
+          "cooldown": 5.0,
+          "range": 780,
+          "radius": 120,
+          "stun_duration": 0.175,
+          "vfx_scale": 0.77143,
+          "stun_chance": 0.35,
+          "formation_duration": 2,
+          "formation_animation_duration": 1,
+          "rune_delay": 1,
+          "rune_duration": 1.5,
+          "rune_tick_interval": 0.5,
+          "rune_damage_pct": 40,
+          "rune_hp_percent": 0.008
         },
         "description_rows": [
-          "Đại trận xoay dưới chân địch",
-          "Sát thương AOE 67.2% ATK",
-          "Choáng 0.4s, thiêu đốt 0.5% HP mỗi tick",
-          "CD 4.8s"
+          "Formation 115% ATK; lasts 2s",
+          "Runes after 1s: 40% ATK + 0.8% max HP per tick",
+          "Runes loop 1.5s; damage every 0.5s",
+          "35% stun 0.175s",
+          "Radius 120px; CD 5s"
         ],
         "effects": [
           {
             "id": "holy_stun",
-            "duration": 0.4
-          },
-          {
-            "id": "burn_percent",
-            "duration": 3,
-            "hp_percent": 0.01
+            "chance": 0.35,
+            "duration": 0.175
           }
         ]
       },
       {
         "level": 5,
         "stats": {
-          "damage_pct": 71.4,
-          "cooldown": 4.2,
-          "range": 853.3333,
-          "radius": 199.9,
-          "stun_duration": 0.5,
-          "burn_hp_percent": 0.01,
-          "burn_duration": 3,
-          "vfx_scale": 1.2853
+          "damage_pct": 130,
+          "cooldown": 4.5,
+          "range": 800,
+          "radius": 140,
+          "stun_duration": 0.2,
+          "vfx_scale": 0.9,
+          "stun_chance": 0.35,
+          "formation_duration": 2,
+          "formation_animation_duration": 1,
+          "rune_delay": 1,
+          "rune_duration": 1.5,
+          "rune_tick_interval": 0.5,
+          "rune_damage_pct": 45,
+          "rune_hp_percent": 0.01
         },
         "description_rows": [
-          "Đại trận xoay dưới chân địch",
-          "Sát thương AOE 71.4% ATK",
-          "Choáng 0.5s, thiêu đốt 0.5% HP mỗi tick",
-          "CD 4.2s"
+          "Formation 130% ATK; lasts 2s",
+          "Runes after 1s: 45% ATK + 1% max HP per tick",
+          "Runes loop 1.5s; damage every 0.5s",
+          "35% stun 0.2s",
+          "Radius 140px; CD 4.5s"
         ],
         "effects": [
           {
             "id": "holy_stun",
-            "duration": 0.5
-          },
-          {
-            "id": "burn_percent",
-            "duration": 3,
-            "hp_percent": 0.01
+            "chance": 0.35,
+            "duration": 0.2
           }
         ]
       }
@@ -4907,172 +5037,177 @@
       {
         "level": 1,
         "stats": {
-          "damage_pct": 130,
-          "cooldown": 9.5,
-          "range": 960,
-          "radius": 100,
+          "damage_pct": 100,
+          "cooldown": 11,
+          "range": 1920,
+          "radius": 140,
           "impact_delay": 0.35,
           "above_height": 400,
           "stun_duration": 0.1,
           "wave_count": 1,
-          "wave_hp_percent": 0.005,
-          "vfx_scale": 0.385,
-          "crack_vfx_scale": 0.455,
-          "wave_vfx_scale": 0.56,
+          "vfx_scale": 0.4312,
+          "crack_vfx_scale": 0.728,
+          "wave_vfx_scale": 0.896,
           "wave_expand_duration": 0.55,
-          "wave_ring_width": 24,
-          "wave_collision_padding": 16,
-          "wave_tick_count": 12
+          "wave_ring_width": 48,
+          "wave_collision_padding": 32,
+          "wave_tick_count": 12,
+          "crack_duration": 1,
+          "crack_burn_hp_percent": 0.005,
+          "crack_tick_interval": 0.5,
+          "wave_radius": 200,
+          "wave_damage_pct": 30,
+          "wave_stun_chance": 0.2,
+          "wave_interval": 0.2
         },
         "description_rows": [
-          "Như Lai giáng chưởng từ trời",
-          "Sát thương 130% ATK",
-          "Đất nứt choáng 0.1s",
-          "1 sóng xung kích 0.5% HP",
-          "CD 9.5s"
+          "Palm 100% ATK; radius 140px",
+          "Crack burns 0.5% max HP over 1s",
+          "1 waves x 30% ATK; radius 200px",
+          "Waves 0.2s apart; 20% stun 0.1s",
+          "CD 11s"
         ],
-        "effects": [
-          {
-            "id": "holy_stun",
-            "duration": 0.1
-          }
-        ]
+        "effects": []
       },
       {
         "level": 2,
         "stats": {
-          "damage_pct": 137.5,
-          "cooldown": 8.8,
-          "range": 960,
-          "radius": 130,
+          "damage_pct": 110,
+          "cooldown": 10,
+          "range": 1920,
+          "radius": 150,
           "impact_delay": 0.35,
           "above_height": 400,
-          "stun_duration": 0.2,
-          "wave_count": 1,
-          "wave_hp_percent": 0.006,
-          "vfx_scale": 0.5005,
-          "crack_vfx_scale": 0.504,
-          "wave_vfx_scale": 0.616,
+          "stun_duration": 0.15,
+          "wave_count": 2,
+          "vfx_scale": 0.462,
+          "crack_vfx_scale": 0.8064,
+          "wave_vfx_scale": 0.9856,
           "wave_expand_duration": 0.55,
-          "wave_ring_width": 24,
-          "wave_collision_padding": 16,
-          "wave_tick_count": 12
+          "wave_ring_width": 48,
+          "wave_collision_padding": 32,
+          "wave_tick_count": 12,
+          "crack_duration": 1,
+          "crack_burn_hp_percent": 0.006,
+          "crack_tick_interval": 0.5,
+          "wave_radius": 220,
+          "wave_damage_pct": 40,
+          "wave_stun_chance": 0.2,
+          "wave_interval": 0.2
         },
         "description_rows": [
-          "Như Lai giáng chưởng từ trời",
-          "Sát thương 137.5% ATK",
-          "Đất nứt choáng 0.2s",
-          "1 sóng xung kích 0.6% HP",
-          "CD 8.8s"
+          "Palm 110% ATK; radius 150px",
+          "Crack burns 0.6% max HP over 1s",
+          "2 waves x 40% ATK; radius 220px",
+          "Waves 0.2s apart; 20% stun 0.15s",
+          "CD 10s"
         ],
-        "effects": [
-          {
-            "id": "holy_stun",
-            "duration": 0.2
-          }
-        ]
+        "effects": []
       },
       {
         "level": 3,
         "stats": {
-          "damage_pct": 146.5,
-          "cooldown": 8.1,
-          "range": 960,
-          "radius": 169,
+          "damage_pct": 120,
+          "cooldown": 9,
+          "range": 1920,
+          "radius": 160,
           "impact_delay": 0.35,
           "above_height": 400,
-          "stun_duration": 0.3,
+          "stun_duration": 0.2,
           "wave_count": 2,
-          "wave_hp_percent": 0.007,
-          "vfx_scale": 0.65065,
-          "crack_vfx_scale": 0.56,
-          "wave_vfx_scale": 0.672,
+          "vfx_scale": 0.4928,
+          "crack_vfx_scale": 0.896,
+          "wave_vfx_scale": 1.0752,
           "wave_expand_duration": 0.55,
-          "wave_ring_width": 24,
-          "wave_collision_padding": 16,
-          "wave_tick_count": 12
+          "wave_ring_width": 48,
+          "wave_collision_padding": 32,
+          "wave_tick_count": 12,
+          "crack_duration": 1,
+          "crack_burn_hp_percent": 0.007,
+          "crack_tick_interval": 0.5,
+          "wave_radius": 240,
+          "wave_damage_pct": 50,
+          "wave_stun_chance": 0.2,
+          "wave_interval": 0.2
         },
         "description_rows": [
-          "Như Lai giáng chưởng từ trời",
-          "Sát thương 146.5% ATK",
-          "Đất nứt choáng 0.3s",
-          "2 sóng xung kích 0.7% HP",
-          "CD 8.1s"
+          "Palm 120% ATK; radius 160px",
+          "Crack burns 0.7% max HP over 1s",
+          "2 waves x 50% ATK; radius 240px",
+          "Waves 0.2s apart; 20% stun 0.2s",
+          "CD 9s"
         ],
-        "effects": [
-          {
-            "id": "holy_stun",
-            "duration": 0.3
-          }
-        ]
+        "effects": []
       },
       {
         "level": 4,
         "stats": {
-          "damage_pct": 157,
-          "cooldown": 7.4,
-          "range": 960,
-          "radius": 219.7,
+          "damage_pct": 130,
+          "cooldown": 8,
+          "range": 1920,
+          "radius": 170,
           "impact_delay": 0.35,
           "above_height": 400,
-          "stun_duration": 0.4,
-          "wave_count": 2,
-          "wave_hp_percent": 0.008,
-          "vfx_scale": 0.84588,
-          "crack_vfx_scale": 0.616,
-          "wave_vfx_scale": 0.735,
+          "stun_duration": 0.25,
+          "wave_count": 3,
+          "vfx_scale": 0.5236,
+          "crack_vfx_scale": 0.9856,
+          "wave_vfx_scale": 1.176,
           "wave_expand_duration": 0.55,
-          "wave_ring_width": 24,
-          "wave_collision_padding": 16,
-          "wave_tick_count": 12
+          "wave_ring_width": 48,
+          "wave_collision_padding": 32,
+          "wave_tick_count": 12,
+          "crack_duration": 1,
+          "crack_burn_hp_percent": 0.008,
+          "crack_tick_interval": 0.5,
+          "wave_radius": 260,
+          "wave_damage_pct": 60,
+          "wave_stun_chance": 0.2,
+          "wave_interval": 0.2
         },
         "description_rows": [
-          "Như Lai giáng chưởng từ trời",
-          "Sát thương 157% ATK",
-          "Đất nứt choáng 0.4s",
-          "2 sóng xung kích 0.8% HP",
-          "CD 7.4s"
+          "Palm 130% ATK; radius 170px",
+          "Crack burns 0.8% max HP over 1s",
+          "3 waves x 60% ATK; radius 260px",
+          "Waves 0.2s apart; 20% stun 0.25s",
+          "CD 8s"
         ],
-        "effects": [
-          {
-            "id": "holy_stun",
-            "duration": 0.4
-          }
-        ]
+        "effects": []
       },
       {
         "level": 5,
         "stats": {
-          "damage_pct": 170.5,
-          "cooldown": 6.5,
-          "range": 960,
-          "radius": 285.6,
+          "damage_pct": 140,
+          "cooldown": 7,
+          "range": 1920,
+          "radius": 180,
           "impact_delay": 0.35,
           "above_height": 400,
-          "stun_duration": 0.5,
+          "stun_duration": 0.3,
           "wave_count": 3,
-          "wave_hp_percent": 0.01,
-          "vfx_scale": 1.0997,
-          "crack_vfx_scale": 0.686,
-          "wave_vfx_scale": 0.805,
+          "vfx_scale": 0.5544,
+          "crack_vfx_scale": 1.0976,
+          "wave_vfx_scale": 1.288,
           "wave_expand_duration": 0.55,
-          "wave_ring_width": 24,
-          "wave_collision_padding": 16,
-          "wave_tick_count": 12
+          "wave_ring_width": 48,
+          "wave_collision_padding": 32,
+          "wave_tick_count": 12,
+          "crack_duration": 1,
+          "crack_burn_hp_percent": 0.01,
+          "crack_tick_interval": 0.5,
+          "wave_radius": 280,
+          "wave_damage_pct": 70,
+          "wave_stun_chance": 0.2,
+          "wave_interval": 0.2
         },
         "description_rows": [
-          "Như Lai giáng chưởng từ trời",
-          "Sát thương 170.5% ATK",
-          "Đất nứt choáng 0.5s",
-          "3 sóng xung kích 1.0% HP",
-          "CD 6.5s"
+          "Palm 140% ATK; radius 180px",
+          "Crack burns 1% max HP over 1s",
+          "3 waves x 70% ATK; radius 280px",
+          "Waves 0.2s apart; 20% stun 0.3s",
+          "CD 7s"
         ],
-        "effects": [
-          {
-            "id": "holy_stun",
-            "duration": 0.5
-          }
-        ]
+        "effects": []
       }
     ],
     "sfx_events": [
@@ -5101,8 +5236,6 @@
     "deployment": {
       "type": "area"
     },
-    "explosion_initial_scale_multiplier": 0.5,
-    "explosion_max_scale_multiplier": 1,
     "phantom_foot_offset_y": -150,
     "icon_id": "hero_5_skill_4",
     "createria_unlock": {
@@ -5121,15 +5254,15 @@
       "hero_5_skill4_sprite_8"
     ],
     "punch_vfx_frames": [
-      "hero_5_skill4_effect1_0",
-      "hero_5_skill4_effect1_1",
-      "hero_5_skill4_effect1_2",
-      "hero_5_skill4_effect1_3",
-      "hero_5_skill4_effect1_4",
-      "hero_5_skill4_effect1_5",
-      "hero_5_skill4_effect1_6",
-      "hero_5_skill4_effect1_7",
-      "hero_5_skill4_effect1_8"
+      "hero_5_skill1_effect1_0",
+      "hero_5_skill1_effect1_1",
+      "hero_5_skill1_effect1_2",
+      "hero_5_skill1_effect1_3",
+      "hero_5_skill1_effect1_4",
+      "hero_5_skill1_effect1_5",
+      "hero_5_skill1_effect1_6",
+      "hero_5_skill1_effect1_7",
+      "hero_5_skill1_effect1_8"
     ],
     "explosion_vfx_frames": [
       "hero_5_skill4_effect2_0",
@@ -5146,202 +5279,162 @@
       {
         "level": 1,
         "stats": {
-          "damage_pct": 39,
+          "damage_pct": 40,
           "same_target_damage_multiplier": 0.5,
           "cooldown": 14,
           "golden_duration": 2,
           "punch_count": 12,
-          "map_coverage": 0.6666667,
           "stack_size_bonus": 0.05,
-          "stack_dmg_bonus": 0.05,
-          "stun_after_hits": 3,
-          "stun_duration": 1,
+          "stun_duration": 0.5,
           "vfx_scale": 0.975,
           "punch_vfx_scale": 0.175,
-          "explosion_vfx_scale": 0.4
+          "explosion_vfx_scale": 0.4,
+          "protection_duration": 0.5,
+          "punch_interval": 0.2,
+          "target_radius": 700,
+          "mark_pair_window": 0.5,
+          "mark_stun_window": 1,
+          "mark_reset_gap": 1,
+          "mark_stun_hits": 3
         },
         "description_rows": [
-          "Kim thân 2s xóa sạch debuff",
-          "Mỗi quyền gây 39% ATK trước hệ số đánh trùng mục tiêu",
-          "Tung 12 quyền quét 50% map",
-          "Đòn đầu đủ lực, đòn trùng mục tiêu còn 50% sát thương",
-          "Trúng 3 ấn gây choáng 1.0s",
+          "Fixed golden phantom 2s; cleanse harmful debuffs",
+          "First 0.5s: harmful-status and damage immunity",
+          "12 punches x 40% ATK, every 0.2s",
+          "First actual hit full; repeat target 50%",
+          "Target radius 700px from hero",
+          "3 consecutive hits within 1s: stun 0.5s; each follow-up mark +5% size",
           "CD 14s"
         ],
-        "effects": [
-          {
-            "id": "cleanse_all",
-            "duration": 2
-          },
-          {
-            "id": "buddha_stack",
-            "duration": 2,
-            "size_bonus": 0.05,
-            "damage_bonus": 0.05,
-            "stun_stacks": 3,
-            "stun_duration": 1
-          }
-        ]
+        "effects": []
       },
       {
         "level": 2,
         "stats": {
-          "damage_pct": 42,
+          "damage_pct": 40,
           "same_target_damage_multiplier": 0.5,
           "cooldown": 13.1,
           "golden_duration": 2,
           "punch_count": 14,
-          "map_coverage": 0.6666667,
           "stack_size_bonus": 0.05,
-          "stack_dmg_bonus": 0.05,
-          "stun_after_hits": 3,
-          "stun_duration": 1,
+          "stun_duration": 0.5,
           "vfx_scale": 1.014,
           "punch_vfx_scale": 0.18,
-          "explosion_vfx_scale": 0.42
+          "explosion_vfx_scale": 0.42,
+          "protection_duration": 0.5,
+          "punch_interval": 0.2,
+          "target_radius": 730,
+          "mark_pair_window": 0.5,
+          "mark_stun_window": 1,
+          "mark_reset_gap": 1,
+          "mark_stun_hits": 3
         },
         "description_rows": [
-          "Kim thân 2s xóa sạch debuff",
-          "Mỗi quyền gây 42% ATK trước hệ số đánh trùng mục tiêu",
-          "Tung 14 quyền quét 50% map",
-          "Đòn đầu đủ lực, đòn trùng mục tiêu còn 50% sát thương",
-          "Trúng 3 ấn gây choáng 1.0s",
+          "Fixed golden phantom 2s; cleanse harmful debuffs",
+          "First 0.5s: harmful-status and damage immunity",
+          "14 punches x 40% ATK, every 0.2s",
+          "First actual hit full; repeat target 50%",
+          "Target radius 730px from hero",
+          "3 consecutive hits within 1s: stun 0.5s; each follow-up mark +5% size",
           "CD 13.1s"
         ],
-        "effects": [
-          {
-            "id": "cleanse_all",
-            "duration": 2
-          },
-          {
-            "id": "buddha_stack",
-            "duration": 2,
-            "size_bonus": 0.05,
-            "damage_bonus": 0.05,
-            "stun_stacks": 3,
-            "stun_duration": 1
-          }
-        ]
+        "effects": []
       },
       {
         "level": 3,
         "stats": {
-          "damage_pct": 45,
+          "damage_pct": 50,
           "same_target_damage_multiplier": 0.5,
           "cooldown": 12.2,
           "golden_duration": 2,
           "punch_count": 16,
-          "map_coverage": 0.6666667,
           "stack_size_bonus": 0.05,
-          "stack_dmg_bonus": 0.05,
-          "stun_after_hits": 3,
-          "stun_duration": 1,
+          "stun_duration": 0.5,
           "vfx_scale": 1.053,
           "punch_vfx_scale": 0.19,
-          "explosion_vfx_scale": 0.44
+          "explosion_vfx_scale": 0.44,
+          "protection_duration": 0.5,
+          "punch_interval": 0.2,
+          "target_radius": 760,
+          "mark_pair_window": 0.5,
+          "mark_stun_window": 1,
+          "mark_reset_gap": 1,
+          "mark_stun_hits": 3
         },
         "description_rows": [
-          "Kim thân 2s xóa sạch debuff",
-          "Mỗi quyền gây 45% ATK trước hệ số đánh trùng mục tiêu",
-          "Tung 16 quyền quét 50% map",
-          "Đòn đầu đủ lực, đòn trùng mục tiêu còn 50% sát thương",
-          "Trúng 3 ấn gây choáng 1.0s",
+          "Fixed golden phantom 2s; cleanse harmful debuffs",
+          "First 0.5s: harmful-status and damage immunity",
+          "16 punches x 50% ATK, every 0.2s",
+          "First actual hit full; repeat target 50%",
+          "Target radius 760px from hero",
+          "3 consecutive hits within 1s: stun 0.5s; each follow-up mark +5% size",
           "CD 12.2s"
         ],
-        "effects": [
-          {
-            "id": "cleanse_all",
-            "duration": 2
-          },
-          {
-            "id": "buddha_stack",
-            "duration": 2,
-            "size_bonus": 0.05,
-            "damage_bonus": 0.05,
-            "stun_stacks": 3,
-            "stun_duration": 1
-          }
-        ]
+        "effects": []
       },
       {
         "level": 4,
         "stats": {
-          "damage_pct": 48,
+          "damage_pct": 55,
           "same_target_damage_multiplier": 0.5,
           "cooldown": 11.3,
           "golden_duration": 2,
           "punch_count": 18,
-          "map_coverage": 0.6666667,
           "stack_size_bonus": 0.05,
-          "stack_dmg_bonus": 0.05,
-          "stun_after_hits": 3,
-          "stun_duration": 1,
+          "stun_duration": 0.5,
           "vfx_scale": 1.092,
           "punch_vfx_scale": 0.2,
-          "explosion_vfx_scale": 0.46
+          "explosion_vfx_scale": 0.46,
+          "protection_duration": 0.5,
+          "punch_interval": 0.2,
+          "target_radius": 790,
+          "mark_pair_window": 0.5,
+          "mark_stun_window": 1,
+          "mark_reset_gap": 1,
+          "mark_stun_hits": 3
         },
         "description_rows": [
-          "Kim thân 2s xóa sạch debuff",
-          "Mỗi quyền gây 48% ATK trước hệ số đánh trùng mục tiêu",
-          "Tung 18 quyền quét 50% map",
-          "Đòn đầu đủ lực, đòn trùng mục tiêu còn 50% sát thương",
-          "Trúng 3 ấn gây choáng 1.0s",
+          "Fixed golden phantom 2s; cleanse harmful debuffs",
+          "First 0.5s: harmful-status and damage immunity",
+          "18 punches x 55% ATK, every 0.2s",
+          "First actual hit full; repeat target 50%",
+          "Target radius 790px from hero",
+          "3 consecutive hits within 1s: stun 0.5s; each follow-up mark +5% size",
           "CD 11.3s"
         ],
-        "effects": [
-          {
-            "id": "cleanse_all",
-            "duration": 2
-          },
-          {
-            "id": "buddha_stack",
-            "duration": 2,
-            "size_bonus": 0.05,
-            "damage_bonus": 0.05,
-            "stun_stacks": 3,
-            "stun_duration": 1
-          }
-        ]
+        "effects": []
       },
       {
         "level": 5,
         "stats": {
-          "damage_pct": 51,
+          "damage_pct": 60,
           "same_target_damage_multiplier": 0.5,
           "cooldown": 10,
           "golden_duration": 2,
           "punch_count": 20,
-          "map_coverage": 0.6666667,
           "stack_size_bonus": 0.05,
-          "stack_dmg_bonus": 0.05,
-          "stun_after_hits": 3,
-          "stun_duration": 1,
+          "stun_duration": 0.5,
           "vfx_scale": 1.17,
           "punch_vfx_scale": 0.21,
-          "explosion_vfx_scale": 0.5
+          "explosion_vfx_scale": 0.5,
+          "protection_duration": 0.5,
+          "punch_interval": 0.2,
+          "target_radius": 820,
+          "mark_pair_window": 0.5,
+          "mark_stun_window": 1,
+          "mark_reset_gap": 1,
+          "mark_stun_hits": 3
         },
         "description_rows": [
-          "Kim thân 2s xóa sạch debuff",
-          "Mỗi quyền gây 51% ATK trước hệ số đánh trùng mục tiêu",
-          "Tung 20 quyền quét 50% map",
-          "Đòn đầu đủ lực, đòn trùng mục tiêu còn 50% sát thương",
-          "Trúng 3 ấn gây choáng 1.0s",
+          "Fixed golden phantom 2s; cleanse harmful debuffs",
+          "First 0.5s: harmful-status and damage immunity",
+          "20 punches x 60% ATK, every 0.2s",
+          "First actual hit full; repeat target 50%",
+          "Target radius 820px from hero",
+          "3 consecutive hits within 1s: stun 0.5s; each follow-up mark +5% size",
           "CD 10s"
         ],
-        "effects": [
-          {
-            "id": "cleanse_all",
-            "duration": 2
-          },
-          {
-            "id": "buddha_stack",
-            "duration": 2,
-            "size_bonus": 0.05,
-            "damage_bonus": 0.05,
-            "stun_stacks": 3,
-            "stun_duration": 1
-          }
-        ]
+        "effects": []
       }
     ],
     "sfx_events": [

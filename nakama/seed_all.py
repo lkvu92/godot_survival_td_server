@@ -182,6 +182,12 @@ def main(argv=None):
             seed_file("stage_levels", "stage_levels.json", batch_size=30)
             invoke_seed("config", {"config_key": "progression", "config_value": read_json("progression.json")})
             seed_commerce(args.replace_all)
+            invoke_seed("remote_settings", {"rows": [
+                {"module": "system", "key": key, "value_type": "json",
+                 "value": json.dumps(read_json(key + ".json"), ensure_ascii=False),
+                 "description": "Versioned server seed input", "is_active": True}
+                for key in ("feature_unlocks", "realm_milestones")
+            ]})
         if settings is not None:
             invoke_seed("remote_settings", {"rows": settings})
         requests = _pending_requests
@@ -207,7 +213,8 @@ def main(argv=None):
             if result.get("status") != "ok" or not isinstance(result.get("config_version"), int):
                 raise SeedError("Publication failed")
             print(f"[OK] Published config version {result['config_version']}")
-        print("Synchronization complete. Catalog bundle committed atomically; player/server/financial data untouched. Publication is separate.")
+        print("Synchronization complete. Catalog bundle committed atomically; player/server/financial data untouched. "
+              + ("Publication verified." if args.publish else "Publication is separate."))
         return 0
     except (SeedError, OSError, ValueError, KeyError, TypeError) as error:
         print(f"[ERR] {error}", file=sys.stderr)

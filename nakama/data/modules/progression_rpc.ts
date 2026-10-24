@@ -120,7 +120,7 @@ function startTrialTower(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: n
     const run:any=Object.assign(issued.run,{request_id:req.request_id,floor:req.floor,hero_id:req.hero_id,skill_levels:skills,
         attributes:attrs,than_luan:Object.assign({},profile.than_luan),stat_multiplier:status.snapshot.floors[req.floor-1].stat_multiplier,speed_multiplier:status.snapshot.floors[req.floor-1].speed_multiplier,combat_rules:rules,
         demon_attributes:demonAttributes,hero_element_profile:heroElementProfile,demon_element_profile:demonElementProfile,
-        phase:'preparing',combat_level:20,upgrade_count:19,countdown_sec:5,draft_catalog:draftCatalog,skill_unlock_version:4,arena});
+        phase:'preparing',combat_level:20,upgrade_count:19,countdown_sec:5,draft_catalog:draftCatalog,skill_unlock_version:5,arena});
     profile.activity={type:'combat',activity_id:run.run_id};
     try{nk.storageWrite([{...refs[0],value:profile,version:p.version,permissionRead:0,permissionWrite:0},
         {...refs[4],value:Object.assign({},towerRow.value,{tickets:towerRow.value.tickets-1}),version:towerRow.version,permissionRead:0,permissionWrite:0},
@@ -147,7 +147,7 @@ function prepareTrialTower(ctx:nkruntime.Context,_logger:nkruntime.Logger,nk:nkr
     const row=rows[0],run=row&&cpObject(row.value);
     if(!run||run.run_id!==req.run_id||run.stage_id!=='stage_trial_tower'||run.status!=='active')return fail('RUN_MISMATCH','Trận không hợp lệ.');
     if(Date.now()>run.expires_at_ms)return fail('RUN_EXPIRED','Trận đã hết hạn.');
-    if(run.skill_unlock_version!==4)return fail('RUN_RULES_CHANGED','Luật kỹ năng đã thay đổi. Hãy về tháp để tạo trận mới.');
+    if(run.skill_unlock_version!==5)return fail('RUN_RULES_CHANGED','Luật kỹ năng đã thay đổi. Hãy về tháp để tạo trận mới.');
     if(run.phase==='countdown')return JSON.stringify(run.player_picks&&JSON.stringify(run.player_picks)===JSON.stringify(req.picks)?{success:true,run}:{success:false,code:'BUILD_LOCKED',message:'Build đã xác nhận.'});
     if(run.phase!=='preparing'||!Array.isArray(run.draft_catalog))return fail('RUN_MISMATCH','Hãy vào lại tháp.');
     const levels=Object.assign({},run.skill_levels);
@@ -210,7 +210,7 @@ function finishTrialTower(ctx:nkruntime.Context,_logger:nkruntime.Logger,nk:nkru
         progressionApplyUser(nk,profile,exp);progressionReconcileLevelUnlocks(nk,profile);
         let level=Number(hero.level||1),xp=Number(hero.exp||0)+exp,next=progressionNextHeroExp(nk,level);
         while(level<Math.min(PROGRESSION_MAX_LEVEL,profile.level)&&next>0&&xp>=next){xp-=next;level++;next=progressionNextHeroExp(nk,level);}
-        hero.level=level;hero.exp=level>=PROGRESSION_MAX_LEVEL?0:xp;hero.next_level_exp=level>=PROGRESSION_MAX_LEVEL?0:next;hero.current_attribute=progressionHeroAttributes(nk,run.hero_id,level);
+        hero.level=level;hero.exp=level>=PROGRESSION_MAX_LEVEL?0:Math.min(xp,next);hero.next_level_exp=level>=PROGRESSION_MAX_LEVEL?0:next;hero.current_attribute=progressionHeroAttributes(nk,run.hero_id,level);
         run.tower_rewards=rewards;
         rewardState.inventory=inventory;rewardState.heroes=heroes.heroes;
         rewardWrites.push({collection:'player_inventory',key:'items',userId:ctx.userId,value:inventory,version:inv.version,permissionRead:1,permissionWrite:0},{collection:'player_heroes',key:'states',userId:ctx.userId,value:heroes,version:heroRow.version,permissionRead:1,permissionWrite:0});
@@ -567,7 +567,7 @@ function progressionReconcileLevelUnlocks(nk: nkruntime.Nakama, profile: any): v
 function thanLuanConfig(nk: nkruntime.Nakama): any {
     const rows = nk.sqlQuery("SELECT value FROM game_config WHERE key='progression'", []);
     const config = rows.length ? cpObject(rows[0].value).than_luan : null;
-    if (!config || config.schema_version !== 2 || config.unlock_level !== 35 || config.max_level !== 50
+    if (!config || config.schema_version !== 2 || config.unlock_level !== 30 || config.max_level !== 50
         ||config.charm_item_id!=='than_luan_boost_charm'||config.charm_multiplier!==1.5
         || !Array.isArray(config.levels) || config.levels.length !== 50) throw Error('THAN_LUAN_CONFIG_INVALID');
     for (let i=0;i<50;i++) {
@@ -641,7 +641,7 @@ function upgradeThanLuan(ctx:nkruntime.Context,_logger:nkruntime.Logger,nk:nkrun
     if(!p||!inv)return fail('PROFILE_INCOMPLETE','Chưa tải đủ nhân vật.');
     const profile=cpObject(p.value), inventory=cpObject(inv.value);
     try{thanLuanReconcile(profile,config);}catch(_e){return fail('STATE_INVALID','Tiến độ Thần Luân không hợp lệ.');}
-    if(Number(profile.level||1)<config.unlock_level)return fail('FEATURE_LOCKED','Thần Luân mở ở Lv.35.');
+    if(Number(profile.level||1)<config.unlock_level)return fail('FEATURE_LOCKED','Thần Luân mở ở Lv.30.');
     if(receipt){
         if(receipt.value.expected_level!==req.expected_level||receipt.value.expected_revision!==req.expected_revision||receipt.value.use_charm!==req.use_charm)return fail('REQUEST_CONFLICT','Mã yêu cầu đã được dùng.');
         return JSON.stringify(Object.assign(thanLuanResponse(profile,inventory,config),receipt.value.outcome,{duplicate:true}));
@@ -692,12 +692,6 @@ function progressionCompleteStage(nk: nkruntime.Nakama, profile: any, stageId: s
         current = { stage_id: stageId, unlocked_levels: ["normal"] }; unlockedStages.push(current);
     }
     if (!Array.isArray(current.unlocked_levels)) current.unlocked_levels = ["normal"];
-    const levels = nk.sqlQuery("SELECT level_id FROM game_stage_levels WHERE stage_id = $1 ORDER BY sort_order", [stageId]);
-    const index = levels.findIndex((entry: any) => String(entry.level_id) === levelId);
-    if (index >= 0 && index + 1 < levels.length) {
-        const nextLevel = String(levels[index + 1].level_id || "");
-        if (nextLevel && current.unlocked_levels.indexOf(nextLevel) === -1) current.unlocked_levels.push(nextLevel);
-    }
     // Campaign normal clear unlocks the next stage in the same arc.
     if (levelId === "normal") {
         const stageRows = nk.sqlQuery("SELECT arc_id, sort_order FROM game_stages WHERE id = $1", [stageId]);
@@ -733,6 +727,7 @@ function progressionCompleteStage(nk: nkruntime.Nakama, profile: any, stageId: s
         }
     }
     profile.unlocked_stages = unlockedStages;
+    progressionReconcileArcModes(nk, profile);
 }
 
 // Repair profiles earned before cross-arc unlocks were persisted. This is
@@ -923,6 +918,7 @@ const awardStageProgression: nkruntime.RpcFunction = (
         heroNext = progressionNextHeroExp(nk, heroLevel);
     }
     if (heroLevel >= PROGRESSION_MAX_LEVEL) { heroExp = 0; heroNext = 0; }
+    else heroExp = Math.min(heroExp, heroNext);
     hero.level = heroLevel;
     hero.exp = heroExp;
     hero.next_level_exp = heroNext;
@@ -1073,6 +1069,7 @@ function grantStageRewardMultiplier(nk: nkruntime.Nakama, userId: string, adSess
         exp -= next; level++; next = progressionNextHeroExp(nk, level);
     }
     if (level >= PROGRESSION_MAX_LEVEL) { exp = 0; next = 0; }
+    else exp = Math.min(exp, next);
     hero.level = level; hero.exp = exp; hero.next_level_exp = next;
     if (level > beforeLevel) hero.current_attribute = progressionHeroAttributes(nk, snapshot.hero_id, level);
     inv.value.items = Array.isArray(inv.value.items) ? inv.value.items : [];
@@ -1182,3 +1179,75 @@ const tribulationAction: nkruntime.RpcFunction = (
     return JSON.stringify({ ok: true, outcome_success: true, old_level: level, new_level: profile.level,
         attempts_left: CULTIVATION_MAX_ATTEMPTS, penalty_applied: false, reward, profile });
 };
+
+// C186: separate from the disposable combat sandbox's identity gate.
+function adminExpTestAllowed(ctx: nkruntime.Context, nk: nkruntime.Nakama): boolean {
+    return !!ctx.userId && nk.sqlQuery("SELECT 1 FROM users WHERE id=$1::UUID AND LOWER(email) IN ($2,$3) AND COALESCE(EXTRACT(EPOCH FROM disable_time),0)=0 LIMIT 1",
+        [ctx.userId,"lkvu92@gmail.com","lkvu921@gmail.com"]).length > 0;
+}
+const adminExpTestAccess: nkruntime.RpcFunction = (ctx,_logger,nk) =>
+    JSON.stringify({success:true,allowed:adminExpTestAllowed(ctx,nk)});
+const adminExpTest: nkruntime.RpcFunction = (ctx,_logger,nk,payload) => {
+    const fail=(code:string)=>JSON.stringify({success:false,code});
+    if(!adminExpTestAllowed(ctx,nk))return fail("FORBIDDEN");
+    let req:any;try{req=JSON.parse(payload||"{}");}catch(_){return fail("INVALID_REQUEST");}
+    if(!req||typeof req.hero_id!=="string")return fail("INVALID_REQUEST");
+    const rows=nk.storageRead([{collection:"player_profiles",key:"main",userId:ctx.userId},
+        {collection:"player_heroes",key:"states",userId:ctx.userId},
+        {collection:"player_stage_runs",key:"active",userId:ctx.userId}]);
+    const p=rows.find(r=>r.collection==="player_profiles"),h=rows.find(r=>r.collection==="player_heroes"),run=rows.find(r=>r.collection==="player_stage_runs");
+    if(!p||!h)return fail("STATE_MISSING");
+    if(p.value.activity || sweepActive(p.value) || (p.value.breakthrough||{}).in_tribulation===true || (run && run.value.status==="active"))return fail("ACTIVITY_ACTIVE");
+    const hero=(h.value.heroes||[]).find((r:any)=>r.hero_id===req.hero_id&&r.owned===true);
+    if(!hero)return fail("HERO_NOT_OWNED");
+    const userLevel=Number(p.value.level),heroLevel=Number(hero.level);
+    if(!Number.isSafeInteger(userLevel)||userLevel<1||userLevel>PROGRESSION_MAX_LEVEL||!Number.isSafeInteger(heroLevel)||heroLevel<1||heroLevel>PROGRESSION_MAX_LEVEL)return fail("STATE_INVALID");
+    const level=Math.max(heroLevel,userLevel);
+    const expTable:any=getRemoteConfigValue(nk,"game_play","exp_to_level",[]);
+    if(!Array.isArray(expTable)||expTable.length<=level||!Number.isFinite(Number(expTable[level]))||Number(expTable[level])<=Number(expTable[level-1]))return fail("CONFIG_INVALID");
+    const next=level>=PROGRESSION_MAX_LEVEL?0:progressionNextHeroExp(nk,level);
+    const attrs=progressionHeroAttributes(nk,req.hero_id,level);
+    if((level<PROGRESSION_MAX_LEVEL&&!(next>0))||!attrs||!Object.keys(attrs).length)return fail("CONFIG_INVALID");
+    hero.level=level;hero.exp=0;hero.next_level_exp=next;hero.current_attribute=attrs;
+    try{nk.storageWrite([
+        {collection:"player_profiles",key:"main",userId:ctx.userId,value:p.value,version:p.version,permissionRead:1,permissionWrite:0},
+        {collection:"player_heroes",key:"states",userId:ctx.userId,value:h.value,version:h.version,permissionRead:1,permissionWrite:0}]);}
+    catch(_){return fail("STATE_CONFLICT");}
+    return JSON.stringify({success:true,hero});
+};
+
+// C192: derive advanced modes from complete, authoritative arc catalogs.
+function progressionArcModeRows(nk:nkruntime.Nakama):any[] {
+    return nk.sqlQuery("SELECT s.id AS stage_id,s.arc_id,l.level_id FROM game_stages s JOIN game_stage_levels l ON l.stage_id=s.id ORDER BY s.arc_id,s.sort_order,l.sort_order",[]);
+}
+function progressionArcModeFromRows(profile:any,stageId:string,mode:string,rows:any[]):boolean {
+    if(mode==='normal')return true;
+    if(mode!=='epic'&&mode!=='legend')return false;
+    const target=rows.find(r=>r.stage_id===stageId&&r.level_id===mode);
+    if(!target)return false;
+    if(target.arc_id==='arc_0')return true;
+    if(!target.arc_id)return false;
+    const arc=rows.filter(r=>r.arc_id===target.arc_id),normal=arc.filter(r=>r.level_id==='normal');
+    if(!normal.length)return false;
+    const completed=Array.isArray(profile.completed_stage_levels)?profile.completed_stage_levels:[];
+    const all=(required:string)=>normal.every(stage=>arc.some(r=>r.stage_id===stage.stage_id&&r.level_id===required)&&completed.some((c:any)=>c.stage_id===stage.stage_id&&c.level_id===required));
+    return all('normal')&&(mode==='epic'||all('epic'));
+}
+function progressionArcModeAllowed(nk:nkruntime.Nakama,profile:any,stageId:string,mode:string):boolean {
+    return mode==='normal'||progressionArcModeFromRows(profile,stageId,mode,progressionArcModeRows(nk));
+}
+function progressionReconcileArcModes(nk:nkruntime.Nakama,profile:any):boolean {
+    const rows=progressionArcModeRows(nk),stages=Array.isArray(profile.unlocked_stages)?profile.unlocked_stages:[];
+    const before=JSON.stringify(stages);
+    for(const row of rows.filter(r=>r.level_id==='normal'&&r.arc_id&&r.arc_id!=='arc_0')) {
+        let entry=stages.find((s:any)=>String(s.stage_id||s)===row.stage_id);
+        if(!entry&&progressionArcModeFromRows(profile,row.stage_id,'epic',rows)){
+            entry={stage_id:row.stage_id,unlocked_levels:['normal']};stages.push(entry);
+        }
+        if(typeof entry==='string'){const index=stages.indexOf(entry);entry={stage_id:row.stage_id,unlocked_levels:['normal']};stages[index]=entry;}
+        if(!entry||typeof entry!=='object')continue;
+        entry.unlocked_levels=['normal',...['epic','legend'].filter(mode=>progressionArcModeFromRows(profile,row.stage_id,mode,rows))];
+    }
+    if(JSON.stringify(stages)===before)return false;
+    profile.unlocked_stages=stages;return true;
+}

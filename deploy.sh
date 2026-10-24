@@ -71,6 +71,17 @@ cmd_seed() {
     python3 configure_runtime.py --seed -- "$@"
 }
 
+cmd_publish() {
+    local option
+    for option in "$@"; do
+        if [ "$option" = '--publish' ]; then
+            cmd_seed "$@"
+            return
+        fi
+    done
+    cmd_seed --publish "$@"
+}
+
 cmd_build() {
     echo "[INFO] Compiling TypeScript runtime modules..."
     docker run --rm \
@@ -111,7 +122,7 @@ case "${ACTION}" in
     deploy|up|start)
         cmd_start
         echo ""
-        cmd_seed "$@"
+        cmd_publish "$@"
         python3 configure_runtime.py --seed -- --check-active
         echo ""
         echo "=== [SUCCESS] Survival TD Stack deployed and seeded successfully! ==="
@@ -126,7 +137,7 @@ case "${ACTION}" in
         cmd_seed "$@"
         ;;
     publish)
-        cmd_seed --publish "$@"
+        cmd_publish "$@"
         ;;
     build)
         cmd_build

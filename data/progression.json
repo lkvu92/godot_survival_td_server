@@ -696,7 +696,7 @@
   },
   "than_luan": {
     "schema_version": 2,
-    "unlock_level": 35,
+    "unlock_level": 30,
     "max_level": 50,
     "levels": [
       {

@@ -3,8 +3,8 @@ const HERO_ID_MIGRATIONS: any = { ice_demoness: "hero_1", flame_archer: "hero_2"
 // C142: read-only identity gate for the disposable admin combat sandbox.
 const adminTestAccess: nkruntime.RpcFunction = (ctx, _logger, nk) => {
     if (!ctx.userId) return JSON.stringify({success: true, allowed: false});
-    const rows = nk.sqlQuery("SELECT 1 FROM users WHERE id=$1::UUID AND LOWER(email)=LOWER($2) AND COALESCE(EXTRACT(EPOCH FROM disable_time),0)=0 LIMIT 1",
-        [ctx.userId, "lkvu92@gmail.com"]);
+    const rows = nk.sqlQuery("SELECT 1 FROM users WHERE id=$1::UUID AND LOWER(email) IN (LOWER($2),LOWER($3)) AND COALESCE(EXTRACT(EPOCH FROM disable_time),0)=0 LIMIT 1",
+        [ctx.userId, "lkvu92@gmail.com", "lkvu921@gmail.com"]);
     return JSON.stringify({success: true, allowed: rows.length > 0});
 };
 
@@ -122,6 +122,7 @@ function defaultPlayerProfile(displayName: string): any {
         display_name: displayName,
         avatar_url: "hero_1",
         level: 1, exp: 0, next_level_exp: 1000, progression_version: 2, vip: 0, vip_exp: 0,
+        feature_unlocks: {schema_version:1,unlocked:{},completed_tours:[]},
         stamina: 30, last_stamina_update: 0,
         resources: { gold: 1000, gems: 100 },
         elements: { metal: 0, wood: 0, water: 0, fire: 0, earth: 0 },
@@ -378,6 +379,11 @@ const loadPlayerProfile: nkruntime.RpcFunction = (
         if(!repairWrites.some(w=>w.collection==='player_profiles'))repairWrites.push({collection:'player_profiles',key:'main',userId:ctx.userId,value:result.profile,version:profileObject.version,permissionRead:1,permissionWrite:0});
     }
     const canonicalHeroes = canonicalHeroStates(nk, result.heroes);
+    for (const hero of canonicalHeroes) {
+        const next=Number(hero.level)>=PROGRESSION_MAX_LEVEL?0:progressionNextHeroExp(nk,Number(hero.level||1));
+        hero.exp=Math.min(Math.max(0,Number(hero.exp||0)),next);
+        hero.next_level_exp=next;
+    }
     const heroesChanged = !result.heroes || JSON.stringify(result.heroes.heroes || []) !== JSON.stringify(canonicalHeroes);
     if (heroesChanged) {
         result.heroes = { heroes: canonicalHeroes, _iap_reward_ids: result.heroes && result.heroes._iap_reward_ids ? result.heroes._iap_reward_ids : [] };
@@ -397,6 +403,9 @@ const loadPlayerProfile: nkruntime.RpcFunction = (
         result.settings = defaultPlayerSettings();
         repairWrites.push({ collection: "player_settings", key: "prefs", userId: ctx.userId,
             value: result.settings, permissionRead: 1, permissionWrite: 0, version: "*" });
+    }
+    if (progressionReconcileArcModes(nk,result.profile) && !repairWrites.some(w=>w.collection==='player_profiles')) {
+        repairWrites.push({collection:'player_profiles',key:'main',userId:ctx.userId,value:result.profile,version:profileObject?profileObject.version:'*',permissionRead:1,permissionWrite:0});
     }
     if (repairWrites.length > 0) {
         const repaired=nk.storageWrite(repairWrites);

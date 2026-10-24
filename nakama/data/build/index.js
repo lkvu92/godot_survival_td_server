@@ -786,6 +786,7 @@ const enterGameServer = (ctx, _logger, nk, payload) => {
 function serverAdmissionRpc(id, handler) {
   const accountOnly = [
     "session_status",
+    "admin_exp_test_access",
     "admin_test_access",
     "account_password_status",
     "setup_account_password",
@@ -3103,8 +3104,8 @@ const HERO_ID_MIGRATIONS = { ice_demoness: "hero_1", flame_archer: "hero_2" };
 const adminTestAccess = (ctx, _logger, nk) => {
   if (!ctx.userId) return JSON.stringify({ success: true, allowed: false });
   const rows = nk.sqlQuery(
-    "SELECT 1 FROM users WHERE id=$1::UUID AND LOWER(email)=LOWER($2) AND COALESCE(EXTRACT(EPOCH FROM disable_time),0)=0 LIMIT 1",
-    [ctx.userId, "lkvu92@gmail.com"]
+    "SELECT 1 FROM users WHERE id=$1::UUID AND LOWER(email) IN (LOWER($2),LOWER($3)) AND COALESCE(EXTRACT(EPOCH FROM disable_time),0)=0 LIMIT 1",
+    [ctx.userId, "lkvu92@gmail.com", "lkvu921@gmail.com"]
   );
   return JSON.stringify({ success: true, allowed: rows.length > 0 });
 };
@@ -3284,6 +3285,7 @@ function defaultPlayerProfile(displayName) {
     progression_version: 2,
     vip: 0,
     vip_exp: 0,
+    feature_unlocks: { schema_version: 1, unlocked: {}, completed_tours: [] },
     stamina: 30,
     last_stamina_update: 0,
     resources: { gold: 1e3, gems: 100 },
@@ -3571,6 +3573,11 @@ const loadPlayerProfile = (ctx, logger, nk, payload) => {
     if (!repairWrites.some((w) => w.collection === "player_profiles")) repairWrites.push({ collection: "player_profiles", key: "main", userId: ctx.userId, value: result.profile, version: profileObject.version, permissionRead: 1, permissionWrite: 0 });
   }
   const canonicalHeroes = canonicalHeroStates(nk, result.heroes);
+  for (const hero of canonicalHeroes) {
+    const next = Number(hero.level) >= PROGRESSION_MAX_LEVEL ? 0 : progressionNextHeroExp(nk, Number(hero.level || 1));
+    hero.exp = Math.min(Math.max(0, Number(hero.exp || 0)), next);
+    hero.next_level_exp = next;
+  }
   const heroesChanged = !result.heroes || JSON.stringify(result.heroes.heroes || []) !== JSON.stringify(canonicalHeroes);
   if (heroesChanged) {
     result.heroes = { heroes: canonicalHeroes, _iap_reward_ids: result.heroes && result.heroes._iap_reward_ids ? result.heroes._iap_reward_ids : [] };
@@ -3611,6 +3618,9 @@ const loadPlayerProfile = (ctx, logger, nk, payload) => {
       permissionWrite: 0,
       version: "*"
     });
+  }
+  if (progressionReconcileArcModes(nk, result.profile) && !repairWrites.some((w) => w.collection === "player_profiles")) {
+    repairWrites.push({ collection: "player_profiles", key: "main", userId: ctx.userId, value: result.profile, version: profileObject ? profileObject.version : "*", permissionRead: 1, permissionWrite: 0 });
   }
   if (repairWrites.length > 0) {
     const repaired = nk.storageWrite(repairWrites);
@@ -5499,7 +5509,7 @@ const startStage = (ctx, _logger, nk, payload) => {
   const existingRuns = nk.storageRead([{ collection: "player_stage_runs", key: "active", userId: ctx.userId }]);
   if (existingRuns.length && existingRuns[0].value.status === "active" && Number(existingRuns[0].value.expires_at_ms) > Date.now()) return JSON.stringify({ success: false, code: "COMBAT_ACTIVE", message: "Combat is active" });
   if (stageId === "stage_0_admin_test") {
-    const allowed = nk.sqlQuery("SELECT 1 FROM users WHERE id=$1::UUID AND LOWER(email)=LOWER($2) AND COALESCE(EXTRACT(EPOCH FROM disable_time),0)=0 LIMIT 1", [ctx.userId, "lkvu92@gmail.com"]);
+    const allowed = nk.sqlQuery("SELECT 1 FROM users WHERE id=$1::UUID AND LOWER(email) IN (LOWER($2),LOWER($3)) AND COALESCE(EXTRACT(EPOCH FROM disable_time),0)=0 LIMIT 1", [ctx.userId, "lkvu92@gmail.com", "lkvu921@gmail.com"]);
     if (!allowed.length) return JSON.stringify({ success: false, code: "FORBIDDEN" });
     const state = talismanCreateStageRun(nk, ctx.userId, stageId, levelId);
     profile.activity = { type: "combat", activity_id: state.run.run_id };
@@ -5512,8 +5522,10 @@ const startStage = (ctx, _logger, nk, payload) => {
     return JSON.stringify({ success: false, code: "SWEEP_CONFIG_INVALID", message: "Stage grading configuration is unavailable" });
   }
   progressionReconcileCampaignUnlocks(nk, profile);
+  progressionReconcileArcModes(nk, profile);
   const unlock = (Array.isArray(profile.unlocked_stages) ? profile.unlocked_stages : []).find((entry) => entry && String(entry.stage_id || entry) === stageId);
   const unlockedLevels = unlock && typeof unlock === "object" && Array.isArray(unlock.unlocked_levels) ? unlock.unlocked_levels : unlock ? ["normal"] : [];
+  if (!progressionArcModeAllowed(nk, profile, stageId, levelId)) return JSON.stringify({ success: false, code: "ARC_MODE_LOCKED", message: "Clear the previous difficulty across this arc first" });
   if (unlockedLevels.indexOf(levelId) === -1) return JSON.stringify({ success: false, message: "Stage level is locked" });
   const rows = nk.sqlQuery("SELECT stamina_cost FROM game_stage_levels WHERE stage_id = $1 AND level_id = $2", [stageId, levelId]);
   if (rows.length === 0) return JSON.stringify({ success: false, message: "Unknown stage level" });
@@ -5734,7 +5746,7 @@ function startTrialTower(ctx, logger, nk, payload) {
     upgrade_count: 19,
     countdown_sec: 5,
     draft_catalog: draftCatalog,
-    skill_unlock_version: 4,
+    skill_unlock_version: 5,
     arena
   });
   profile.activity = { type: "combat", activity_id: run.run_id };
@@ -5770,7 +5782,7 @@ function prepareTrialTower(ctx, _logger, nk, payload) {
   const row = rows[0], run = row && cpObject(row.value);
   if (!run || run.run_id !== req.run_id || run.stage_id !== "stage_trial_tower" || run.status !== "active") return fail("RUN_MISMATCH", "Tr\u1EADn kh\xF4ng h\u1EE3p l\u1EC7.");
   if (Date.now() > run.expires_at_ms) return fail("RUN_EXPIRED", "Tr\u1EADn \u0111\xE3 h\u1EBFt h\u1EA1n.");
-  if (run.skill_unlock_version !== 4) return fail("RUN_RULES_CHANGED", "Lu\u1EADt k\u1EF9 n\u0103ng \u0111\xE3 thay \u0111\u1ED5i. H\xE3y v\u1EC1 th\xE1p \u0111\u1EC3 t\u1EA1o tr\u1EADn m\u1EDBi.");
+  if (run.skill_unlock_version !== 5) return fail("RUN_RULES_CHANGED", "Lu\u1EADt k\u1EF9 n\u0103ng \u0111\xE3 thay \u0111\u1ED5i. H\xE3y v\u1EC1 th\xE1p \u0111\u1EC3 t\u1EA1o tr\u1EADn m\u1EDBi.");
   if (run.phase === "countdown") return JSON.stringify(run.player_picks && JSON.stringify(run.player_picks) === JSON.stringify(req.picks) ? { success: true, run } : { success: false, code: "BUILD_LOCKED", message: "Build \u0111\xE3 x\xE1c nh\u1EADn." });
   if (run.phase !== "preparing" || !Array.isArray(run.draft_catalog)) return fail("RUN_MISMATCH", "H\xE3y v\xE0o l\u1EA1i th\xE1p.");
   const levels = Object.assign({}, run.skill_levels);
@@ -5866,7 +5878,7 @@ function finishTrialTower(ctx, _logger, nk, payload) {
       next = progressionNextHeroExp(nk, level);
     }
     hero.level = level;
-    hero.exp = level >= PROGRESSION_MAX_LEVEL ? 0 : xp;
+    hero.exp = level >= PROGRESSION_MAX_LEVEL ? 0 : Math.min(xp, next);
     hero.next_level_exp = level >= PROGRESSION_MAX_LEVEL ? 0 : next;
     hero.current_attribute = progressionHeroAttributes(nk, run.hero_id, level);
     run.tower_rewards = rewards;
@@ -6271,7 +6283,7 @@ function progressionReconcileLevelUnlocks(nk, profile) {
 function thanLuanConfig(nk) {
   const rows = nk.sqlQuery("SELECT value FROM game_config WHERE key='progression'", []);
   const config = rows.length ? cpObject(rows[0].value).than_luan : null;
-  if (!config || config.schema_version !== 2 || config.unlock_level !== 35 || config.max_level !== 50 || config.charm_item_id !== "than_luan_boost_charm" || config.charm_multiplier !== 1.5 || !Array.isArray(config.levels) || config.levels.length !== 50) throw Error("THAN_LUAN_CONFIG_INVALID");
+  if (!config || config.schema_version !== 2 || config.unlock_level !== 30 || config.max_level !== 50 || config.charm_item_id !== "than_luan_boost_charm" || config.charm_multiplier !== 1.5 || !Array.isArray(config.levels) || config.levels.length !== 50) throw Error("THAN_LUAN_CONFIG_INVALID");
   for (let i = 0; i < 50; i++) {
     const row = config.levels[i], cost = row && row.cost, stats = row && row.stats;
     if (!row || row.level !== i + 1 || row.aura_id !== "tl_" + (Math.floor(i / 10) + 1) || !cost || !stats || !Number.isSafeInteger(cost.quantity) || cost.quantity < 0 || !Number.isSafeInteger(cost.gold) || cost.gold < 0 || !Number.isInteger(row.success_rate) || row.success_rate < 1 || row.success_rate > 100 || (i === 0 ? cost.quantity !== 0 || cost.item_id !== "" : cost.quantity === 0 || ["law_fragment_low", "law_fragment_medium", "law_fragment_high"].indexOf(cost.item_id) < 0) || ["persistent_damage_reduction", "dot_damage_reduction", "control_duration_reduction"].some((k) => !Number.isFinite(stats[k]) || stats[k] < 0 || stats[k] > 0.95)) throw Error("THAN_LUAN_CONFIG_INVALID");
@@ -6363,7 +6375,7 @@ function upgradeThanLuan(ctx, _logger, nk, payload) {
   } catch (_e) {
     return fail("STATE_INVALID", "Ti\u1EBFn \u0111\u1ED9 Th\u1EA7n Lu\xE2n kh\xF4ng h\u1EE3p l\u1EC7.");
   }
-  if (Number(profile.level || 1) < config.unlock_level) return fail("FEATURE_LOCKED", "Th\u1EA7n Lu\xE2n m\u1EDF \u1EDF Lv.35.");
+  if (Number(profile.level || 1) < config.unlock_level) return fail("FEATURE_LOCKED", "Th\u1EA7n Lu\xE2n m\u1EDF \u1EDF Lv.30.");
   if (receipt) {
     if (receipt.value.expected_level !== req.expected_level || receipt.value.expected_revision !== req.expected_revision || receipt.value.use_charm !== req.use_charm) return fail("REQUEST_CONFLICT", "M\xE3 y\xEAu c\u1EA7u \u0111\xE3 \u0111\u01B0\u1EE3c d\xF9ng.");
     return JSON.stringify(Object.assign(thanLuanResponse(profile, inventory, config), receipt.value.outcome, { duplicate: true }));
@@ -6439,12 +6451,6 @@ function progressionCompleteStage(nk, profile, stageId, levelId) {
     unlockedStages.push(current);
   }
   if (!Array.isArray(current.unlocked_levels)) current.unlocked_levels = ["normal"];
-  const levels = nk.sqlQuery("SELECT level_id FROM game_stage_levels WHERE stage_id = $1 ORDER BY sort_order", [stageId]);
-  const index = levels.findIndex((entry) => String(entry.level_id) === levelId);
-  if (index >= 0 && index + 1 < levels.length) {
-    const nextLevel = String(levels[index + 1].level_id || "");
-    if (nextLevel && current.unlocked_levels.indexOf(nextLevel) === -1) current.unlocked_levels.push(nextLevel);
-  }
   if (levelId === "normal") {
     const stageRows = nk.sqlQuery("SELECT arc_id, sort_order FROM game_stages WHERE id = $1", [stageId]);
     if (stageRows.length > 0) {
@@ -6477,6 +6483,7 @@ function progressionCompleteStage(nk, profile, stageId, levelId) {
     }
   }
   profile.unlocked_stages = unlockedStages;
+  progressionReconcileArcModes(nk, profile);
 }
 function progressionReconcileCampaignUnlocks(nk, profile) {
   const completed = Array.isArray(profile.completed_stage_levels) ? profile.completed_stage_levels : [];
@@ -6664,7 +6671,7 @@ const awardStageProgression = (ctx, _logger, nk, payload) => {
   if (heroLevel >= PROGRESSION_MAX_LEVEL) {
     heroExp = 0;
     heroNext = 0;
-  }
+  } else heroExp = Math.min(heroExp, heroNext);
   hero.level = heroLevel;
   hero.exp = heroExp;
   hero.next_level_exp = heroNext;
@@ -6835,7 +6842,7 @@ function grantStageRewardMultiplier(nk, userId, adSessionId, multiplier, limit) 
   if (level >= PROGRESSION_MAX_LEVEL) {
     exp = 0;
     next = 0;
-  }
+  } else exp = Math.min(exp, next);
   hero.level = level;
   hero.exp = exp;
   hero.next_level_exp = next;
@@ -7000,6 +7007,95 @@ const tribulationAction = (ctx, _logger, nk, payload) => {
     profile
   });
 };
+function adminExpTestAllowed(ctx, nk) {
+  return !!ctx.userId && nk.sqlQuery(
+    "SELECT 1 FROM users WHERE id=$1::UUID AND LOWER(email) IN ($2,$3) AND COALESCE(EXTRACT(EPOCH FROM disable_time),0)=0 LIMIT 1",
+    [ctx.userId, "lkvu92@gmail.com", "lkvu921@gmail.com"]
+  ).length > 0;
+}
+const adminExpTestAccess = (ctx, _logger, nk) => JSON.stringify({ success: true, allowed: adminExpTestAllowed(ctx, nk) });
+const adminExpTest = (ctx, _logger, nk, payload) => {
+  const fail = (code) => JSON.stringify({ success: false, code });
+  if (!adminExpTestAllowed(ctx, nk)) return fail("FORBIDDEN");
+  let req;
+  try {
+    req = JSON.parse(payload || "{}");
+  } catch (_) {
+    return fail("INVALID_REQUEST");
+  }
+  if (!req || typeof req.hero_id !== "string") return fail("INVALID_REQUEST");
+  const rows = nk.storageRead([
+    { collection: "player_profiles", key: "main", userId: ctx.userId },
+    { collection: "player_heroes", key: "states", userId: ctx.userId },
+    { collection: "player_stage_runs", key: "active", userId: ctx.userId }
+  ]);
+  const p = rows.find((r) => r.collection === "player_profiles"), h = rows.find((r) => r.collection === "player_heroes"), run = rows.find((r) => r.collection === "player_stage_runs");
+  if (!p || !h) return fail("STATE_MISSING");
+  if (p.value.activity || sweepActive(p.value) || (p.value.breakthrough || {}).in_tribulation === true || run && run.value.status === "active") return fail("ACTIVITY_ACTIVE");
+  const hero = (h.value.heroes || []).find((r) => r.hero_id === req.hero_id && r.owned === true);
+  if (!hero) return fail("HERO_NOT_OWNED");
+  const userLevel = Number(p.value.level), heroLevel = Number(hero.level);
+  if (!Number.isSafeInteger(userLevel) || userLevel < 1 || userLevel > PROGRESSION_MAX_LEVEL || !Number.isSafeInteger(heroLevel) || heroLevel < 1 || heroLevel > PROGRESSION_MAX_LEVEL) return fail("STATE_INVALID");
+  const level = Math.max(heroLevel, userLevel);
+  const expTable = getRemoteConfigValue(nk, "game_play", "exp_to_level", []);
+  if (!Array.isArray(expTable) || expTable.length <= level || !Number.isFinite(Number(expTable[level])) || Number(expTable[level]) <= Number(expTable[level - 1])) return fail("CONFIG_INVALID");
+  const next = level >= PROGRESSION_MAX_LEVEL ? 0 : progressionNextHeroExp(nk, level);
+  const attrs = progressionHeroAttributes(nk, req.hero_id, level);
+  if (level < PROGRESSION_MAX_LEVEL && !(next > 0) || !attrs || !Object.keys(attrs).length) return fail("CONFIG_INVALID");
+  hero.level = level;
+  hero.exp = 0;
+  hero.next_level_exp = next;
+  hero.current_attribute = attrs;
+  try {
+    nk.storageWrite([
+      { collection: "player_profiles", key: "main", userId: ctx.userId, value: p.value, version: p.version, permissionRead: 1, permissionWrite: 0 },
+      { collection: "player_heroes", key: "states", userId: ctx.userId, value: h.value, version: h.version, permissionRead: 1, permissionWrite: 0 }
+    ]);
+  } catch (_) {
+    return fail("STATE_CONFLICT");
+  }
+  return JSON.stringify({ success: true, hero });
+};
+function progressionArcModeRows(nk) {
+  return nk.sqlQuery("SELECT s.id AS stage_id,s.arc_id,l.level_id FROM game_stages s JOIN game_stage_levels l ON l.stage_id=s.id ORDER BY s.arc_id,s.sort_order,l.sort_order", []);
+}
+function progressionArcModeFromRows(profile, stageId, mode, rows) {
+  if (mode === "normal") return true;
+  if (mode !== "epic" && mode !== "legend") return false;
+  const target = rows.find((r) => r.stage_id === stageId && r.level_id === mode);
+  if (!target) return false;
+  if (target.arc_id === "arc_0") return true;
+  if (!target.arc_id) return false;
+  const arc = rows.filter((r) => r.arc_id === target.arc_id), normal = arc.filter((r) => r.level_id === "normal");
+  if (!normal.length) return false;
+  const completed = Array.isArray(profile.completed_stage_levels) ? profile.completed_stage_levels : [];
+  const all = (required) => normal.every((stage) => arc.some((r) => r.stage_id === stage.stage_id && r.level_id === required) && completed.some((c) => c.stage_id === stage.stage_id && c.level_id === required));
+  return all("normal") && (mode === "epic" || all("epic"));
+}
+function progressionArcModeAllowed(nk, profile, stageId, mode) {
+  return mode === "normal" || progressionArcModeFromRows(profile, stageId, mode, progressionArcModeRows(nk));
+}
+function progressionReconcileArcModes(nk, profile) {
+  const rows = progressionArcModeRows(nk), stages = Array.isArray(profile.unlocked_stages) ? profile.unlocked_stages : [];
+  const before = JSON.stringify(stages);
+  for (const row of rows.filter((r) => r.level_id === "normal" && r.arc_id && r.arc_id !== "arc_0")) {
+    let entry = stages.find((s) => String(s.stage_id || s) === row.stage_id);
+    if (!entry && progressionArcModeFromRows(profile, row.stage_id, "epic", rows)) {
+      entry = { stage_id: row.stage_id, unlocked_levels: ["normal"] };
+      stages.push(entry);
+    }
+    if (typeof entry === "string") {
+      const index = stages.indexOf(entry);
+      entry = { stage_id: row.stage_id, unlocked_levels: ["normal"] };
+      stages[index] = entry;
+    }
+    if (!entry || typeof entry !== "object") continue;
+    entry.unlocked_levels = ["normal", ...["epic", "legend"].filter((mode) => progressionArcModeFromRows(profile, row.stage_id, mode, rows))];
+  }
+  if (JSON.stringify(stages) === before) return false;
+  profile.unlocked_stages = stages;
+  return true;
+}
 
 const MONETIZATION_PRODUCTS = {
   remove_ads_1d: 24 * 60 * 60,
@@ -9718,6 +9814,7 @@ function sweepPreviewData(nk, s, req) {
   const stages = nk.sqlQuery("SELECT exp_weight, is_boss, arc_id FROM game_stages WHERE id = $1", [stage]);
   const levels = nk.sqlQuery("SELECT exp_multiplier, gold_reward, loot_table, boss_loot_table FROM game_stage_levels WHERE stage_id = $1 AND level_id = $2", [stage, mode]);
   if (!stages.length || !levels.length || stages[0].arc_id === "arc_0" || stage === "stage_0_admin_test" || ["normal", "epic", "legend"].indexOf(mode) < 0) throw new Error("INVALID_STAGE");
+  if (!progressionArcModeAllowed(nk, s.profile, stage, mode)) throw new Error("ARC_MODE_LOCKED");
   const level = levels[0], items = sweepRewardTable(nk, stage, mode, stages[0], level, "S");
   const exp = Math.max(0, Math.round(progressionMaxStageBaseExp(nk, stage) * Number(stages[0].exp_weight || 1) * Number(level.exp_multiplier || 1)));
   const held = sweepActive(s.profile) ? Number(s.profile.sweep.reserved_tickets || 0) : 0;
@@ -9800,7 +9897,7 @@ function sweepProcess(nk, userId, logger, nowMs = Date.now(), limit = 4, atomicS
       next = progressionNextHeroExp(nk, level);
     }
     hero.level = level;
-    hero.exp = level >= PROGRESSION_MAX_LEVEL ? 0 : xp;
+    hero.exp = level >= PROGRESSION_MAX_LEVEL ? 0 : Math.min(xp, next);
     hero.next_level_exp = level >= PROGRESSION_MAX_LEVEL ? 0 : next;
     hero.current_attribute = progressionHeroAttributes(nk, session.hero_id, level);
     session.completed_rounds++;
@@ -10114,37 +10211,177 @@ var __spreadValues = (a, b) => {
     }
   return a;
 };
-const FEATURE_IDS = ["checkin", "daily_quests", "shop", "leaderboard", "stage_epic", "sweep", "elements", "stage_legend", "talisman", "trial_tower", "laws", "guild_war", "ancient_battlefield", "multiverse"];
-const FEATURE_DEFAULTS = { schema_version: 1, features: {} };
-[
-  ["checkin", 2, "\u0110i\u1EC3m danh h\xE0ng ng\xE0y", "Nh\u1EADn qu\xE0 \u0111i\u1EC3m danh m\u1ED7i ng\xE0y khi s\u1EF1 ki\u1EC7n ho\u1EA1t \u0111\u1ED9ng."],
-  ["daily_quests", 3, "Nhi\u1EC7m v\u1EE5 h\xE0ng ng\xE0y", "Ho\xE0n th\xE0nh nhi\u1EC7m v\u1EE5 m\u1ED7i ng\xE0y."],
-  ["shop", 5, "Huy\u1EC1n Thi\xEAn C\xE1c", "Kh\xE1m ph\xE1 nh\u1EEFng v\u1EADt ph\u1EA9m tr\u1EE3 l\u1EF1c tr\xEAn \u0111\u01B0\u1EDDng tu luy\u1EC7n."],
-  ["leaderboard", 9, "B\u1EA3ng x\u1EBFp h\u1EA1ng", "Theo d\xF5i th\xE0nh t\u1EF1u c\u1EE7a c\xE1c \u0111\u1EA1o h\u1EEFu."],
-  ["stage_epic", 10, "Stage Epic", "Th\u1EED s\u1EE9c v\u1EDBi \u0111\u1ED9 kh\xF3 Tinh Anh t\u1EA1i nh\u1EEFng \u1EA3i \u0111\xE3 \u0111\u1EE7 \u0111i\u1EC1u ki\u1EC7n."],
-  ["sweep", 15, "C\xE0n qu\xE9t", "C\xE0n qu\xE9t nh\u1EEFng \u1EA3i \u0111\u1EE7 \u0111i\u1EC1u ki\u1EC7n \u0111\u1EC3 t\xEDch l\u0169y t\xE0i nguy\xEAn."],
-  ["elements", 20, "Linh c\u0103n", "T\xECm hi\u1EC3u v\xE0 b\u1ED3i d\u01B0\u1EE1ng thu\u1ED9c t\xEDnh ng\u0169 h\xE0nh."],
-  ["stage_legend", 22, "Stage Legend", "Chinh ph\u1EE5c \u0111\u1ED9 kh\xF3 Huy\u1EC1n Tho\u1EA1i t\u1EA1i nh\u1EEFng \u1EA3i \u0111\xE3 \u0111\u1EE7 \u0111i\u1EC1u ki\u1EC7n."],
-  ["talisman", 25, "Ph\xE1p b\u1EA3o", "Qu\u1EA3n l\xFD v\xE0 b\u1ED3i d\u01B0\u1EE1ng ph\xE1p b\u1EA3o tr\u1EE3 chi\u1EBFn."],
-  ["trial_tower", 30, "Th\xED luy\u1EC7n", "B\u01B0\u1EDBc v\xE0o Th\xE1p Th\xED Luy\u1EC7n \u0111\u1EC3 t\xF4i luy\u1EC7n b\u1EA3n l\u0129nh."],
-  ["laws", 35, "Th\u1EA7n Lu\xE2n", "B\u1ED3i d\u01B0\u1EE1ng Th\u1EA7n Lu\xE2n b\u1EB1ng M\u1EA3nh ph\xE1p t\u1EAFc t\u1EEB T\xE2m Ma Th\xE1p \u0111\u1EC3 t\u0103ng kh\u1EA3 n\u0103ng sinh t\u1ED3n."],
-  ["guild_war", null, "T\xF4ng m\xF4n chi chi\u1EBFn", "\u0110\u1EA1i chi\u1EBFn b\u1EA3o v\u1EC7 t\xF4ng m\xF4n \u2014 s\u1EAFp ra m\u1EAFt."],
-  ["ancient_battlefield", null, "Chi\u1EBFn tr\u01B0\u1EDDng th\u01B0\u1EE3ng c\u1ED5", "Nh\xE2n \u2013 y\xEAu \u2013 ma chi chi\u1EBFn \u2014 s\u1EAFp ra m\u1EAFt."],
-  ["multiverse", null, "V\u1EA1n gi\u1EDBi ch\u01B0 thi\xEAn", "Ph\xE1 b\u1ECF thi\xEAn \u0111\u1EA1o g\xF4ng c\xF9m \u2014 s\u1EAFp ra m\u1EAFt."]
-].forEach((row) => {
-  const planned = ["daily_quests", "guild_war", "ancient_battlefield", "multiverse"].indexOf(row[0]) >= 0;
-  FEATURE_DEFAULTS.features[row[0]] = {
-    required_user_level: row[1],
-    enabled: !planned,
-    release_status: planned ? "planned" : "released",
-    display_name: row[2],
-    description: row[3],
-    tour_id: planned ? "" : row[0] === "laws" ? "than_luan_v1" : row[0] + "_v1",
-    tour_mode: "dismiss_any",
-    mail_title: "\u0110\xE3 khai m\u1EDF: " + row[2],
-    mail_body: "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu \u0111\u1EA1t c\u1EA5p {level}! " + row[2] + " \u0111\xE3 khai m\u1EDF.\n\n" + row[3] + "\n\nTr\u1EDF v\u1EC1 Trang ch\u1EE7 \u0111\u1EC3 kh\xE1m ph\xE1 ch\u1EE9c n\u0103ng m\u1EDBi."
-  };
-});
+const FEATURE_IDS = ["mailbox", "checkin", "daily_quests", "shop", "leaderboard", "stage_epic", "sweep", "elements", "stage_legend", "talisman", "trial_tower", "laws", "guild_war", "ancient_battlefield", "multiverse"];
+const FEATURE_DEFAULTS = {
+  "schema_version": 1,
+  "features": {
+    "mailbox": {
+      "required_user_level": 1,
+      "enabled": true,
+      "release_status": "released",
+      "display_name": "H\u1ED9p th\u01B0",
+      "description": "\u0110\u1ECDc th\u01B0 v\xE0 nh\u1EADn ph\u1EA7n th\u01B0\u1EDFng t\u1EEB h\u1EC7 th\u1ED1ng.",
+      "tour_id": "mailbox_v1",
+      "tour_mode": "dismiss_any",
+      "mail_title": "\u0110\xE3 khai m\u1EDF: H\u1ED9p th\u01B0",
+      "mail_body": "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu \u0111\u1EA1t c\u1EA5p {level}! H\u1ED9p th\u01B0 \u0111\xE3 khai m\u1EDF.\n\n\u0110\u1ECDc th\u01B0 v\xE0 nh\u1EADn ph\u1EA7n th\u01B0\u1EDFng t\u1EEB h\u1EC7 th\u1ED1ng.\n\nTr\u1EDF v\u1EC1 Trang ch\u1EE7 \u0111\u1EC3 kh\xE1m ph\xE1 ch\u1EE9c n\u0103ng m\u1EDBi."
+    },
+    "checkin": {
+      "required_user_level": 2,
+      "enabled": true,
+      "release_status": "released",
+      "display_name": "\u0110i\u1EC3m danh h\xE0ng ng\xE0y",
+      "description": "Nh\u1EADn qu\xE0 \u0111i\u1EC3m danh m\u1ED7i ng\xE0y khi s\u1EF1 ki\u1EC7n ho\u1EA1t \u0111\u1ED9ng.",
+      "tour_id": "checkin_v1",
+      "tour_mode": "dismiss_any",
+      "mail_title": "\u0110\xE3 khai m\u1EDF: \u0110i\u1EC3m danh h\xE0ng ng\xE0y",
+      "mail_body": "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu \u0111\u1EA1t c\u1EA5p {level}! \u0110i\u1EC3m danh h\xE0ng ng\xE0y \u0111\xE3 khai m\u1EDF.\n\nNh\u1EADn qu\xE0 \u0111i\u1EC3m danh m\u1ED7i ng\xE0y khi s\u1EF1 ki\u1EC7n ho\u1EA1t \u0111\u1ED9ng.\n\nTr\u1EDF v\u1EC1 Trang ch\u1EE7 \u0111\u1EC3 kh\xE1m ph\xE1 ch\u1EE9c n\u0103ng m\u1EDBi."
+    },
+    "daily_quests": {
+      "required_user_level": 3,
+      "enabled": true,
+      "release_status": "released",
+      "display_name": "Nhi\u1EC7m v\u1EE5 h\xE0ng ng\xE0y",
+      "description": "Ho\xE0n th\xE0nh nhi\u1EC7m v\u1EE5 m\u1ED7i ng\xE0y.",
+      "tour_id": "daily_quests_v1",
+      "tour_mode": "dismiss_any",
+      "mail_title": "\u0110\xE3 khai m\u1EDF: Nhi\u1EC7m v\u1EE5 h\xE0ng ng\xE0y",
+      "mail_body": "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu \u0111\u1EA1t c\u1EA5p {level}! Nhi\u1EC7m v\u1EE5 h\xE0ng ng\xE0y \u0111\xE3 khai m\u1EDF.\n\nHo\xE0n th\xE0nh nhi\u1EC7m v\u1EE5 m\u1ED7i ng\xE0y.\n\nTr\u1EDF v\u1EC1 Trang ch\u1EE7 \u0111\u1EC3 kh\xE1m ph\xE1 ch\u1EE9c n\u0103ng m\u1EDBi."
+    },
+    "shop": {
+      "required_user_level": 4,
+      "enabled": true,
+      "release_status": "released",
+      "display_name": "Huy\u1EC1n Thi\xEAn C\xE1c",
+      "description": "Kh\xE1m ph\xE1 nh\u1EEFng v\u1EADt ph\u1EA9m tr\u1EE3 l\u1EF1c tr\xEAn \u0111\u01B0\u1EDDng tu luy\u1EC7n.",
+      "tour_id": "shop_v1",
+      "tour_mode": "dismiss_any",
+      "mail_title": "\u0110\xE3 khai m\u1EDF: Huy\u1EC1n Thi\xEAn C\xE1c",
+      "mail_body": "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu \u0111\u1EA1t c\u1EA5p {level}! Huy\u1EC1n Thi\xEAn C\xE1c \u0111\xE3 khai m\u1EDF.\n\nKh\xE1m ph\xE1 nh\u1EEFng v\u1EADt ph\u1EA9m tr\u1EE3 l\u1EF1c tr\xEAn \u0111\u01B0\u1EDDng tu luy\u1EC7n.\n\nTr\u1EDF v\u1EC1 Trang ch\u1EE7 \u0111\u1EC3 kh\xE1m ph\xE1 ch\u1EE9c n\u0103ng m\u1EDBi."
+    },
+    "leaderboard": {
+      "required_user_level": 10,
+      "enabled": true,
+      "release_status": "released",
+      "display_name": "B\u1EA3ng x\u1EBFp h\u1EA1ng",
+      "description": "Theo d\xF5i th\xE0nh t\u1EF1u c\u1EE7a c\xE1c \u0111\u1EA1o h\u1EEFu.",
+      "tour_id": "leaderboard_v1",
+      "tour_mode": "dismiss_any",
+      "mail_title": "\u0110\xE3 khai m\u1EDF: B\u1EA3ng x\u1EBFp h\u1EA1ng",
+      "mail_body": "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu \u0111\u1EA1t c\u1EA5p {level}! B\u1EA3ng x\u1EBFp h\u1EA1ng \u0111\xE3 khai m\u1EDF.\n\nTheo d\xF5i th\xE0nh t\u1EF1u c\u1EE7a c\xE1c \u0111\u1EA1o h\u1EEFu.\n\nTr\u1EDF v\u1EC1 Trang ch\u1EE7 \u0111\u1EC3 kh\xE1m ph\xE1 ch\u1EE9c n\u0103ng m\u1EDBi."
+    },
+    "stage_epic": {
+      "required_user_level": 10,
+      "enabled": true,
+      "release_status": "released",
+      "display_name": "Stage Epic",
+      "description": "Th\u1EED s\u1EE9c v\u1EDBi \u0111\u1ED9 kh\xF3 Tinh Anh t\u1EA1i nh\u1EEFng \u1EA3i \u0111\xE3 \u0111\u1EE7 \u0111i\u1EC1u ki\u1EC7n.",
+      "tour_id": "stage_epic_v1",
+      "tour_mode": "dismiss_any",
+      "mail_title": "\u0110\xE3 khai m\u1EDF: Stage Epic",
+      "mail_body": "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu \u0111\u1EA1t c\u1EA5p {level}! Stage Epic \u0111\xE3 khai m\u1EDF.\n\nTh\u1EED s\u1EE9c v\u1EDBi \u0111\u1ED9 kh\xF3 Tinh Anh t\u1EA1i nh\u1EEFng \u1EA3i \u0111\xE3 \u0111\u1EE7 \u0111i\u1EC1u ki\u1EC7n.\n\nTr\u1EDF v\u1EC1 Trang ch\u1EE7 \u0111\u1EC3 kh\xE1m ph\xE1 ch\u1EE9c n\u0103ng m\u1EDBi."
+    },
+    "sweep": {
+      "required_user_level": 5,
+      "enabled": true,
+      "release_status": "released",
+      "display_name": "C\xE0n qu\xE9t",
+      "description": "C\xE0n qu\xE9t nh\u1EEFng \u1EA3i \u0111\u1EE7 \u0111i\u1EC1u ki\u1EC7n \u0111\u1EC3 t\xEDch l\u0169y t\xE0i nguy\xEAn.",
+      "tour_id": "sweep_v2",
+      "tour_mode": "guided",
+      "mail_title": "\u0110\xE3 khai m\u1EDF: C\xE0n qu\xE9t",
+      "mail_body": "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu \u0111\u1EA1t c\u1EA5p {level}! C\xE0n qu\xE9t \u0111\xE3 khai m\u1EDF.\n\nC\xE0n qu\xE9t nh\u1EEFng \u1EA3i \u0111\u1EE7 \u0111i\u1EC1u ki\u1EC7n \u0111\u1EC3 t\xEDch l\u0169y t\xE0i nguy\xEAn.\n\nTr\u1EDF v\u1EC1 Trang ch\u1EE7 \u0111\u1EC3 kh\xE1m ph\xE1 ch\u1EE9c n\u0103ng m\u1EDBi."
+    },
+    "elements": {
+      "required_user_level": 15,
+      "enabled": true,
+      "release_status": "released",
+      "display_name": "Linh c\u0103n",
+      "description": "T\xECm hi\u1EC3u v\xE0 b\u1ED3i d\u01B0\u1EE1ng thu\u1ED9c t\xEDnh ng\u0169 h\xE0nh.",
+      "tour_id": "elements_v1",
+      "tour_mode": "dismiss_any",
+      "mail_title": "\u0110\xE3 khai m\u1EDF: Linh c\u0103n",
+      "mail_body": "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu \u0111\u1EA1t c\u1EA5p {level}! Linh c\u0103n \u0111\xE3 khai m\u1EDF.\n\nT\xECm hi\u1EC3u v\xE0 b\u1ED3i d\u01B0\u1EE1ng thu\u1ED9c t\xEDnh ng\u0169 h\xE0nh.\n\nTr\u1EDF v\u1EC1 Trang ch\u1EE7 \u0111\u1EC3 kh\xE1m ph\xE1 ch\u1EE9c n\u0103ng m\u1EDBi."
+    },
+    "stage_legend": {
+      "required_user_level": 22,
+      "enabled": true,
+      "release_status": "released",
+      "display_name": "Stage Legend",
+      "description": "Chinh ph\u1EE5c \u0111\u1ED9 kh\xF3 Huy\u1EC1n Tho\u1EA1i t\u1EA1i nh\u1EEFng \u1EA3i \u0111\xE3 \u0111\u1EE7 \u0111i\u1EC1u ki\u1EC7n.",
+      "tour_id": "stage_legend_v1",
+      "tour_mode": "dismiss_any",
+      "mail_title": "\u0110\xE3 khai m\u1EDF: Stage Legend",
+      "mail_body": "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu \u0111\u1EA1t c\u1EA5p {level}! Stage Legend \u0111\xE3 khai m\u1EDF.\n\nChinh ph\u1EE5c \u0111\u1ED9 kh\xF3 Huy\u1EC1n Tho\u1EA1i t\u1EA1i nh\u1EEFng \u1EA3i \u0111\xE3 \u0111\u1EE7 \u0111i\u1EC1u ki\u1EC7n.\n\nTr\u1EDF v\u1EC1 Trang ch\u1EE7 \u0111\u1EC3 kh\xE1m ph\xE1 ch\u1EE9c n\u0103ng m\u1EDBi."
+    },
+    "talisman": {
+      "required_user_level": 20,
+      "enabled": true,
+      "release_status": "released",
+      "display_name": "Ph\xE1p b\u1EA3o",
+      "description": "Qu\u1EA3n l\xFD v\xE0 b\u1ED3i d\u01B0\u1EE1ng ph\xE1p b\u1EA3o tr\u1EE3 chi\u1EBFn.",
+      "tour_id": "talisman_v1",
+      "tour_mode": "dismiss_any",
+      "mail_title": "\u0110\xE3 khai m\u1EDF: Ph\xE1p b\u1EA3o",
+      "mail_body": "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu \u0111\u1EA1t c\u1EA5p {level}! Ph\xE1p b\u1EA3o \u0111\xE3 khai m\u1EDF.\n\nQu\u1EA3n l\xFD v\xE0 b\u1ED3i d\u01B0\u1EE1ng ph\xE1p b\u1EA3o tr\u1EE3 chi\u1EBFn.\n\nTr\u1EDF v\u1EC1 Trang ch\u1EE7 \u0111\u1EC3 kh\xE1m ph\xE1 ch\u1EE9c n\u0103ng m\u1EDBi."
+    },
+    "trial_tower": {
+      "required_user_level": 25,
+      "enabled": true,
+      "release_status": "released",
+      "display_name": "Th\xED luy\u1EC7n",
+      "description": "B\u01B0\u1EDBc v\xE0o Th\xE1p Th\xED Luy\u1EC7n \u0111\u1EC3 t\xF4i luy\u1EC7n b\u1EA3n l\u0129nh.",
+      "tour_id": "trial_tower_v1",
+      "tour_mode": "dismiss_any",
+      "mail_title": "\u0110\xE3 khai m\u1EDF: Th\xED luy\u1EC7n",
+      "mail_body": "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu \u0111\u1EA1t c\u1EA5p {level}! Th\xED luy\u1EC7n \u0111\xE3 khai m\u1EDF.\n\nB\u01B0\u1EDBc v\xE0o Th\xE1p Th\xED Luy\u1EC7n \u0111\u1EC3 t\xF4i luy\u1EC7n b\u1EA3n l\u0129nh.\n\nTr\u1EDF v\u1EC1 Trang ch\u1EE7 \u0111\u1EC3 kh\xE1m ph\xE1 ch\u1EE9c n\u0103ng m\u1EDBi."
+    },
+    "laws": {
+      "required_user_level": 30,
+      "enabled": true,
+      "release_status": "released",
+      "display_name": "Ph\xE1p t\u1EAFc",
+      "description": "B\u1ED3i d\u01B0\u1EE1ng Th\u1EA7n Lu\xE2n b\u1EB1ng M\u1EA3nh ph\xE1p t\u1EAFc t\u1EEB T\xE2m Ma Th\xE1p \u0111\u1EC3 t\u0103ng kh\u1EA3 n\u0103ng sinh t\u1ED3n.",
+      "tour_id": "than_luan_v1",
+      "tour_mode": "dismiss_any",
+      "mail_title": "\u0110\xE3 khai m\u1EDF: Ph\xE1p t\u1EAFc",
+      "mail_body": "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu \u0111\u1EA1t c\u1EA5p {level}! Ph\xE1p t\u1EAFc \u0111\xE3 khai m\u1EDF.\n\nB\u1ED3i d\u01B0\u1EE1ng Th\u1EA7n Lu\xE2n b\u1EB1ng M\u1EA3nh ph\xE1p t\u1EAFc t\u1EEB T\xE2m Ma Th\xE1p \u0111\u1EC3 t\u0103ng kh\u1EA3 n\u0103ng sinh t\u1ED3n.\n\nTr\u1EDF v\u1EC1 Trang ch\u1EE7 \u0111\u1EC3 kh\xE1m ph\xE1 ch\u1EE9c n\u0103ng m\u1EDBi."
+    },
+    "guild_war": {
+      "required_user_level": null,
+      "enabled": false,
+      "release_status": "planned",
+      "display_name": "T\xF4ng m\xF4n chi chi\u1EBFn",
+      "description": "\u0110\u1EA1i chi\u1EBFn b\u1EA3o v\u1EC7 t\xF4ng m\xF4n \u2014 s\u1EAFp ra m\u1EAFt.",
+      "tour_id": "",
+      "tour_mode": "dismiss_any",
+      "mail_title": "\u0110\xE3 khai m\u1EDF: T\xF4ng m\xF4n chi chi\u1EBFn",
+      "mail_body": "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu \u0111\u1EA1t c\u1EA5p {level}! T\xF4ng m\xF4n chi chi\u1EBFn \u0111\xE3 khai m\u1EDF.\n\n\u0110\u1EA1i chi\u1EBFn b\u1EA3o v\u1EC7 t\xF4ng m\xF4n \u2014 s\u1EAFp ra m\u1EAFt.\n\nTr\u1EDF v\u1EC1 Trang ch\u1EE7 \u0111\u1EC3 kh\xE1m ph\xE1 ch\u1EE9c n\u0103ng m\u1EDBi."
+    },
+    "ancient_battlefield": {
+      "required_user_level": null,
+      "enabled": false,
+      "release_status": "planned",
+      "display_name": "Chi\u1EBFn tr\u01B0\u1EDDng th\u01B0\u1EE3ng c\u1ED5",
+      "description": "Nh\xE2n \u2013 y\xEAu \u2013 ma chi chi\u1EBFn \u2014 s\u1EAFp ra m\u1EAFt.",
+      "tour_id": "",
+      "tour_mode": "dismiss_any",
+      "mail_title": "\u0110\xE3 khai m\u1EDF: Chi\u1EBFn tr\u01B0\u1EDDng th\u01B0\u1EE3ng c\u1ED5",
+      "mail_body": "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu \u0111\u1EA1t c\u1EA5p {level}! Chi\u1EBFn tr\u01B0\u1EDDng th\u01B0\u1EE3ng c\u1ED5 \u0111\xE3 khai m\u1EDF.\n\nNh\xE2n \u2013 y\xEAu \u2013 ma chi chi\u1EBFn \u2014 s\u1EAFp ra m\u1EAFt.\n\nTr\u1EDF v\u1EC1 Trang ch\u1EE7 \u0111\u1EC3 kh\xE1m ph\xE1 ch\u1EE9c n\u0103ng m\u1EDBi."
+    },
+    "multiverse": {
+      "required_user_level": null,
+      "enabled": false,
+      "release_status": "planned",
+      "display_name": "V\u1EA1n gi\u1EDBi ch\u01B0 thi\xEAn",
+      "description": "Ph\xE1 b\u1ECF thi\xEAn \u0111\u1EA1o g\xF4ng c\xF9m, m\u1EDF ra map m\u1EDBi, c\u1EA5p \u0111\u1ED9 m\u1EDBi v\xE0 ch\u1EE9c n\u0103ng m\u1EDBi \u2014 s\u1EAFp ra m\u1EAFt.",
+      "tour_id": "",
+      "tour_mode": "dismiss_any",
+      "mail_title": "\u0110\xE3 khai m\u1EDF: V\u1EA1n gi\u1EDBi ch\u01B0 thi\xEAn",
+      "mail_body": "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu \u0111\u1EA1t c\u1EA5p {level}! V\u1EA1n gi\u1EDBi ch\u01B0 thi\xEAn \u0111\xE3 khai m\u1EDF.\n\nPh\xE1 b\u1ECF thi\xEAn \u0111\u1EA1o g\xF4ng c\xF9m, m\u1EDF ra map m\u1EDBi, c\u1EA5p \u0111\u1ED9 m\u1EDBi v\xE0 ch\u1EE9c n\u0103ng m\u1EDBi \u2014 s\u1EAFp ra m\u1EAFt.\n\nTr\u1EDF v\u1EC1 Trang ch\u1EE7 \u0111\u1EC3 kh\xE1m ph\xE1 ch\u1EE9c n\u0103ng m\u1EDBi."
+    }
+  }
+};
 const REALM_MILESTONE_DEFAULTS = { schema_version: 1, milestones: {
   "10": { title: "Ch\xFAc m\u1EEBng \u0111\u1ED9t ph\xE1 \u2014 Lv.10", body: "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu v\u01B0\u1EE3t thi\xEAn ki\u1EBFp, b\u01B0\u1EDBc v\xE0o c\u1EA3nh gi\u1EDBi m\u1EDBi! Ti\xEAn l\u1ED9 t\u1EEB \u0111\xE2y r\u1ED9ng m\u1EDF, nh\u01B0ng m\u1ED7i mi\u1EC1n \u0111\u1EA5t \u0111\u1EC1u \u1EA9n ch\u1EE9a nh\xE2n qu\u1EA3. H\xE3y v\u1EEFng \u0111\u1EA1o t\xE2m, t\xEDch l\u0169y c\u0103n c\u01A1 v\xE0 th\u1EED s\u1EE9c v\u1EDBi nh\u1EEFng th\u1EED th\xE1ch kh\u1EAFc nghi\u1EC7t h\u01A1n." },
   "20": { title: "Ch\xFAc m\u1EEBng \u0111\u1ED9t ph\xE1 \u2014 Lv.20", body: "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu \u0111\u1ED9t ph\xE1 th\xE0nh c\xF4ng! Khi linh l\u1EF1c d\u1EA7n tinh thu\u1EA7n, ng\u0169 h\xE0nh c\u0169ng h\xE9 l\u1ED9 quy lu\u1EADt t\u01B0\u01A1ng sinh t\u01B0\u01A1ng kh\u1EAFc. Th\u1EA5u hi\u1EC3u linh c\u0103n s\u1EBD gi\xFAp \u0111\u1EA1o h\u1EEFu \u0111i xa h\u01A1n tr\xEAn con \u0111\u01B0\u1EDDng tu luy\u1EC7n." },
@@ -10244,6 +10481,7 @@ function featureForRpc(id, req) {
     claim_weekly_leaderboard_reward: "leaderboard",
     get_leaderboard_records: "leaderboard"
   };
+  if (id === "prepare_rewarded_ad" && req.placement_id === "daily_mission_talisman_fragment_ad") return ["daily_quests"];
   if (id === "talisman_action") return ["buy_material", "buy_fragment"].indexOf(req.action) >= 0 ? ["shop"] : req.action === "reroll_talent" ? [] : ["talisman"];
   if (["get_sweep_options", "preview_sweep", "start_sweep"].indexOf(id) >= 0) {
     if (req.sweep_type === "tower") return ["sweep", "trial_tower"];
@@ -10256,6 +10494,7 @@ function featureForRpc(id, req) {
     const mode = req.level_id || req.difficulty_id;
     return mode === "epic" ? ["stage_epic"] : mode === "legend" ? ["stage_legend"] : [];
   }
+  if (["mail_summary", "mail_list", "mail_open", "mail_claim", "mail_claim_all", "mail_delete", "mail_delete_read"].indexOf(id) >= 0) return ["mailbox"];
   return map[id] ? [map[id]] : [];
 }
 function featureGuardedRpc(id, handler) {
@@ -11017,6 +11256,8 @@ function InitModule(ctx, logger, nk, initializer) {
   initializer.registerAfterAuthenticateCustom(afterSingleLogin);
   initializer.registerRpc("session_status", linkedRpc_session_status);
   initializer.registerRpc("admin_test_access", linkedRpc_admin_test_access);
+  initializer.registerRpc("admin_exp_test_access", linkedRpc_admin_exp_test_access);
+  initializer.registerRpc("admin_exp_test", linkedRpc_admin_exp_test);
   initializer.registerRpc("rename_player", linkedRpc_rename_player);
   initializer.registerRpc("account_password_status", linkedRpc_account_password_status);
   initializer.registerRpc("setup_account_password", linkedRpc_setup_account_password);
@@ -11133,4 +11374,10 @@ function linkedRpc_finish_sweep(c, l, n, p) {
 }
 function linkedRpc_complete_feature_tour(c, l, n, p) {
   return accountGuardedRpc("complete_feature_tour", (cc, ll, nn, pp) => invokeWithVersionGate(cc, ll, nn, pp, completeFeatureTour))(c, l, n, p);
+}
+function linkedRpc_admin_exp_test_access(ctx, logger, nk, payload) {
+  return accountGuardedRpc("admin_exp_test_access", adminExpTestAccess)(ctx, logger, nk, payload);
+}
+function linkedRpc_admin_exp_test(ctx, logger, nk, payload) {
+  return accountGuardedRpc("admin_exp_test", (c, l, n, p) => invokeWithVersionGate(c, l, n, p, adminExpTest))(ctx, logger, nk, payload);
 }
