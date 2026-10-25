@@ -113,7 +113,7 @@ for (const stage of stages.filter(candidate => ROLES[candidate.arc_id])) {
   }
 }
 assert.equal(stageCount, 50);
-assert.equal(waveCount, 881);
+assert.equal(waveCount, 985);
 assert.equal(combinations, 150);
 const actualBefore = clone(stages);
 assert.equal(rebalanceWaveExp(stages), 0, 'seed already exact');

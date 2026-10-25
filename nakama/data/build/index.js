@@ -1145,6 +1145,7 @@ function createGameConfigTables(nk, logger) {
     `, []);
   const defaultSettings = {
     system: {
+      campaign_wave_pressure: { version: 1, opening_wave_count: 4, opening_count_multiplier: 0.85, growth_interval: 4, hp_growth: 0.05, def_growth: 0.05, skill_recovery_growth: 0.05 },
       feature_unlocks: FEATURE_DEFAULTS,
       realm_milestones: REALM_MILESTONE_DEFAULTS,
       stage_sweep: SWEEP_DEFAULTS,
@@ -3037,6 +3038,14 @@ function publishValidatedConfig(publisher, nk, payload) {
   return JSON.stringify({ status: "ok", config_version: version });
 }
 ;
+function validCampaignWavePressure(value) {
+  if (!value || value.version !== 1) return false;
+  for (const key of ["opening_wave_count", "growth_interval"])
+    if (!Number.isInteger(value[key]) || value[key] < 1 || value[key] > 100) return false;
+  for (const key of ["opening_count_multiplier", "hp_growth", "def_growth", "skill_recovery_growth"])
+    if (typeof value[key] !== "number" || !Number.isFinite(value[key]) || value[key] < 0 || value[key] > 1) return false;
+  return value.opening_count_multiplier > 0;
+}
 function validateReleaseSnapshot(nk, snapshot) {
   if (!snapshot || !snapshot.system || typeof snapshot.system !== "object")
     return JSON.stringify({ status: "error", code: 422, message: "Missing system config" });
@@ -3046,6 +3055,8 @@ function validateReleaseSnapshot(nk, snapshot) {
     return JSON.stringify({ status: "error", code: 422, message: "Missing or invalid system.feature_unlocks / realm_milestones" });
   }
   const minVersion = String(snapshot.system.min_app_version || "");
+  if (snapshot.system.campaign_wave_pressure !== void 0 && !validCampaignWavePressure(snapshot.system.campaign_wave_pressure))
+    return JSON.stringify({ status: "error", code: 422, message: "Invalid system.campaign_wave_pressure" });
   if (snapshot.system.mailbox !== void 0) {
     const mail = snapshot.system.mailbox;
     if (!mail || !Number.isSafeInteger(mail.warning_hours) || mail.warning_hours < 1 || mail.warning_hours > 720 || !Number.isSafeInteger(mail.retention_days) || mail.retention_days < 1 || mail.retention_days > 365)

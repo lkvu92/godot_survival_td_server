@@ -86,6 +86,8 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'First-clear EXP regression failed' }
     & node tests/test_campaign_wave_exp.cjs
     if ($LASTEXITCODE -ne 0) { throw 'Campaign wave EXP regression failed' }
+    & node tests/test_campaign_wave_pressure.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Campaign wave pressure regression failed' }
 } finally {
     Pop-Location
 }

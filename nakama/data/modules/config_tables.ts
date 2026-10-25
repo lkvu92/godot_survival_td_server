@@ -343,6 +343,7 @@ function createGameConfigTables(nk: nkruntime.Nakama, logger: nkruntime.Logger) 
 
     const defaultSettings: any = {
         system: {
+            campaign_wave_pressure: {version:1, opening_wave_count:4, opening_count_multiplier:0.85, growth_interval:4, hp_growth:0.05, def_growth:0.05, skill_recovery_growth:0.05},
             feature_unlocks: FEATURE_DEFAULTS,
             realm_milestones: REALM_MILESTONE_DEFAULTS,
             stage_sweep: SWEEP_DEFAULTS,

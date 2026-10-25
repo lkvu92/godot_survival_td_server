@@ -186,7 +186,7 @@ def main(argv=None):
                 {"module": "system", "key": key, "value_type": "json",
                  "value": json.dumps(read_json(key + ".json"), ensure_ascii=False),
                  "description": "Versioned server seed input", "is_active": True}
-                for key in ("feature_unlocks", "realm_milestones")
+                for key in ("feature_unlocks", "realm_milestones", "campaign_wave_pressure")
             ]})
         if settings is not None:
             invoke_seed("remote_settings", {"rows": settings})

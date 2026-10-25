@@ -93,7 +93,7 @@ class SeedCliTests(unittest.TestCase):
         with patch.object(cli, "invoke_seed", side_effect=record):
             self.assertEqual(self.run_main([]), 0)
         settings = next(payload["rows"] for table, payload in calls if table == "remote_settings")
-        self.assertEqual({row["key"] for row in settings}, {"feature_unlocks", "realm_milestones"})
+        self.assertEqual({row["key"] for row in settings}, {"feature_unlocks", "realm_milestones", "campaign_wave_pressure"})
         for row in settings:
             self.assertEqual(row["module"], "system")
             self.assertEqual(json.loads(row["value"]), cli.read_json(row["key"] + ".json"))
@@ -157,7 +157,7 @@ class SeedCliTests(unittest.TestCase):
                 self.assertIsNone(bearer)
                 self.assertEqual(body["table"], "bundle")
                 settings = next(request["rows"] for request in body["requests"] if request["table"] == "remote_settings")
-                self.assertEqual({row["key"] for row in settings}, {"feature_unlocks", "realm_milestones"})
+                self.assertEqual({row["key"] for row in settings}, {"feature_unlocks", "realm_milestones", "campaign_wave_pressure"})
                 return {"success": True, "atomic": True, "table": "bundle", "results": [
                     {"success": True, "table": request["table"], "inserted": len(request["rows"]) if "rows" in request else 1}
                     for request in body["requests"]]}

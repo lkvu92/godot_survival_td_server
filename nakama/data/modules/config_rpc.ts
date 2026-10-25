@@ -493,12 +493,23 @@ function publishValidatedConfig(publisher:string, nk:nkruntime.Nakama, payload:s
     return JSON.stringify({ status: "ok", config_version: version });
 };
 
+function validCampaignWavePressure(value:any):boolean {
+    if(!value || value.version!==1)return false;
+    for(const key of ['opening_wave_count','growth_interval'])
+        if(!Number.isInteger(value[key]) || value[key]<1 || value[key]>100)return false;
+    for(const key of ['opening_count_multiplier','hp_growth','def_growth','skill_recovery_growth'])
+        if(typeof value[key]!=='number' || !Number.isFinite(value[key]) || value[key]<0 || value[key]>1)return false;
+    return value.opening_count_multiplier>0;
+}
+
 function validateReleaseSnapshot(nk:nkruntime.Nakama,snapshot:any):string|null {
     if(!snapshot || !snapshot.system || typeof snapshot.system!=='object')
         return JSON.stringify({status:'error',code:422,message:'Missing system config'});
     try{featureValidateConfig(snapshot.system.feature_unlocks,snapshot.system.realm_milestones);}
     catch(_error){return JSON.stringify({status:"error",code:422,message:"Missing or invalid system.feature_unlocks / realm_milestones"});}
     const minVersion = String(snapshot.system.min_app_version || "");
+    if(snapshot.system.campaign_wave_pressure!==undefined && !validCampaignWavePressure(snapshot.system.campaign_wave_pressure))
+        return JSON.stringify({status:'error',code:422,message:'Invalid system.campaign_wave_pressure'});
     if(snapshot.system.mailbox!==undefined){
         const mail=snapshot.system.mailbox;
         if(!mail||!Number.isSafeInteger(mail.warning_hours)||mail.warning_hours<1||mail.warning_hours>720||!Number.isSafeInteger(mail.retention_days)||mail.retention_days<1||mail.retention_days>365)

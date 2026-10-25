@@ -221,3 +221,4 @@ C197 v1.1.0: fixed golden phantom, 0.5s protection, actual-hit repeat damage and
 - C204 v1.2.0: visible world aura above map; remove Law HUD text.
 
 - C204 v1.3.0: no Law effects on Home/Profile/Tower/hero-select avatars.
+- [C218 Campaign wave pressure](contracts/C218_CAMPAIGN_WAVE_PRESSURE.md) v1.0.0: configured campaign creep growth and stage lengths.

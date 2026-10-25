@@ -1,5 +1,6 @@
 {
   "contracts": [
+    {"id":"C218_CAMPAIGN_WAVE_PRESSURE","version":"1.0.0","status":"ACTIVE","updated_at":"2026-10-25","contract_file":"docs/contracts/C218_CAMPAIGN_WAVE_PRESSURE.md"},
     {
       "id": "C204_LAW_BATTLE_ENTRY",
       "version": "1.3.0",
