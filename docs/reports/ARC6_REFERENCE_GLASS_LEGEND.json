@@ -1,0 +1,1247 @@
+{
+  "version": 1,
+  "model": "godot_full_run_neutral_offered_cards_survival_v1",
+  "mortal": true,
+  "catalog_digest": "a6c0056ec4aad38e7df7c8db1ff99ab16cc1aa1fc0fad07a7dc345d540a35eb7",
+  "valid_for_balance": true,
+  "reference_level": 50,
+  "tier_levels": null,
+  "seeds": [
+    221,
+    222,
+    223
+  ],
+  "heroes": [
+    "hero_2",
+    "hero_4"
+  ],
+  "modes": [
+    "legend"
+  ],
+  "target_wave": 20,
+  "require_max_skills": false,
+  "loadout": "no equipment, cultivation or elemental affinity",
+  "movement": "approach",
+  "summary": [
+    {
+      "stage_id": "stage_6_10",
+      "level_id": "legend",
+      "cases": 6,
+      "passed": 2,
+      "failed": [
+        {
+          "hero": "hero_2",
+          "seed": 222,
+          "reason": "hero_died",
+          "run_level": 20
+        },
+        {
+          "hero": "hero_2",
+          "seed": 223,
+          "reason": "hero_died",
+          "run_level": 20
+        },
+        {
+          "hero": "hero_4",
+          "seed": 222,
+          "reason": "hero_died",
+          "run_level": 20
+        },
+        {
+          "hero": "hero_4",
+          "seed": 223,
+          "reason": "hero_died",
+          "run_level": 20
+        }
+      ],
+      "reference_hero_level": 50,
+      "max_reference_power": 37530
+    }
+  ],
+  "results": [
+    {
+      "base_combat_power": 37530,
+      "base_stats": {
+        "atk": 2561.02073296001,
+        "attack_range": 450,
+        "attack_speed": 4.86225135958061,
+        "crit_damage": 2.975,
+        "crit_rate": 0.414,
+        "def": 16.7663839985538,
+        "hp": 3111.72158671249,
+        "move_speed": 480.36275984549,
+        "regen_percent_per_10s": 0.059
+      },
+      "checkpoint_skills": [
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_2_skill_1"
+        },
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_2_skill_2"
+        },
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_2_skill_3"
+        },
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_2_skill_4"
+        }
+      ],
+      "checkpoints": [
+        {
+          "hp": 3058.23361842212,
+          "max_hp": 3127.92158671249,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 4,
+              "max": 5,
+              "skill_id": "hero_2_skill_1"
+            }
+          ],
+          "skills_max": false,
+          "wave": 4
+        },
+        {
+          "hp": 2870.25584756063,
+          "max_hp": 3148.17158671249,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_2_skill_1"
+            },
+            {
+              "actual": 4,
+              "max": 5,
+              "skill_id": "hero_2_skill_2"
+            }
+          ],
+          "skills_max": false,
+          "wave": 9
+        },
+        {
+          "hp": 2452.14075534745,
+          "max_hp": 3168.42158671249,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_2_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_2_skill_2"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_2_skill_3"
+            }
+          ],
+          "skills_max": true,
+          "wave": 14
+        },
+        {
+          "hp": 1783.32109863951,
+          "max_hp": 3188.67158671249,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_2_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_2_skill_2"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_2_skill_3"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_2_skill_4"
+            }
+          ],
+          "skills_max": true,
+          "wave": 19
+        },
+        {
+          "hp": 84.8293131012674,
+          "max_hp": 3192.72158671249,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_2_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_2_skill_2"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_2_skill_3"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_2_skill_4"
+            }
+          ],
+          "skills_max": true,
+          "wave": 20
+        }
+      ],
+      "current_wave": 20,
+      "difficulty": "legend",
+      "elapsed_game_seconds": 222.949999999998,
+      "expected_skill_count": 4,
+      "healing_received": 4281.63855376901,
+      "hero_id": "hero_2",
+      "hp": 84.8293131012674,
+      "incoming_damage_by_enemy": {
+        "arc6_ent_protector": 161.028475466349,
+        "arc6_frost_lancer": 93.3711800214486,
+        "arc6_granite_colossus": 5.1192842722465,
+        "arc6_iron_crossbowman": 938.320241508753,
+        "arc6_lava_brute": 16.8342273500507,
+        "arc6_pyromancer": 687.865568440208,
+        "arc6_seismic_shaman": 1149.3254779718,
+        "arc6_shield_sentinel": 73.8768177370644,
+        "arc6_snow_mage": 342.971784538773,
+        "arc6_snow_skeleton": 20.8614239356964,
+        "arc6_spore_crawler": 749.123189340986,
+        "arc6_steam_automaton": 37.3081487923253,
+        "arc6_thorn_spitter": 1053.36627639488,
+        "arc6_wraith_final": 2060.15873160966
+      },
+      "incoming_damage_by_type": {
+        "normal": 7226.74738895507,
+        "reflect": 162.783438425169
+      },
+      "incoming_hit_count": 374,
+      "incoming_total_damage": 7389.53082738024,
+      "max_hit": 232.782837486677,
+      "max_hit_source": "arc6_wraith_final",
+      "max_hit_type": "normal",
+      "max_hp": 3192.72158671249,
+      "mortal": true,
+      "movement": "approach",
+      "persistent_level": 50,
+      "reason": "pass",
+      "require_max_skills": false,
+      "run_level": 21,
+      "runtime_stats": {
+        "atk": 2575.27073296002,
+        "attack_range": 450,
+        "attack_speed": 5.04350135958061,
+        "crit_damage": 3.47499999999999,
+        "crit_rate": 0.534,
+        "def": 17.3913839985538,
+        "hp": 3192.72158671249,
+        "move_speed": 495.112759845491,
+        "regen_percent_per_10s": 0.0790000000000001
+      },
+      "seed": 221,
+      "stage_id": "stage_6_10",
+      "status": "PASS",
+      "target_wave": 20,
+      "case_index": 0,
+      "process_exit": 0,
+      "requested": {
+        "stage": "stage_6_10",
+        "mode": "legend",
+        "hero": "hero_2",
+        "seed": 221,
+        "level": 50
+      }
+    },
+    {
+      "base_combat_power": 37530,
+      "base_stats": {
+        "atk": 2561.02073296001,
+        "attack_range": 450,
+        "attack_speed": 4.86225135958061,
+        "crit_damage": 2.975,
+        "crit_rate": 0.414,
+        "def": 16.7663839985538,
+        "hp": 3111.72158671249,
+        "move_speed": 480.36275984549,
+        "regen_percent_per_10s": 0.059
+      },
+      "checkpoint_skills": [
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_2_skill_1"
+        },
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_2_skill_2"
+        },
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_2_skill_3"
+        },
+        {
+          "actual": 4,
+          "max": 5,
+          "skill_id": "hero_2_skill_4"
+        }
+      ],
+      "checkpoints": [
+        {
+          "hp": 2924.20578535141,
+          "max_hp": 3127.92158671249,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 4,
+              "max": 5,
+              "skill_id": "hero_2_skill_1"
+            }
+          ],
+          "skills_max": false,
+          "wave": 4
+        },
+        {
+          "hp": 2789.84305957556,
+          "max_hp": 3148.17158671249,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_2_skill_1"
+            },
+            {
+              "actual": 4,
+              "max": 5,
+              "skill_id": "hero_2_skill_2"
+            }
+          ],
+          "skills_max": false,
+          "wave": 9
+        },
+        {
+          "hp": 2664.50330553277,
+          "max_hp": 3168.42158671249,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_2_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_2_skill_2"
+            },
+            {
+              "actual": 4,
+              "max": 5,
+              "skill_id": "hero_2_skill_3"
+            }
+          ],
+          "skills_max": false,
+          "wave": 14
+        },
+        {
+          "hp": 2497.50340467276,
+          "max_hp": 3188.67158671249,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_2_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_2_skill_2"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_2_skill_3"
+            },
+            {
+              "actual": 4,
+              "max": 5,
+              "skill_id": "hero_2_skill_4"
+            }
+          ],
+          "skills_max": false,
+          "wave": 19
+        }
+      ],
+      "current_wave": 20,
+      "difficulty": "legend",
+      "elapsed_game_seconds": 223.749999999998,
+      "expected_skill_count": 4,
+      "healing_received": 4441.79036691765,
+      "hero_id": "hero_2",
+      "hp": 0,
+      "incoming_damage_by_enemy": {
+        "arc6_ent_protector": 117.202103781556,
+        "arc6_flame_imp": 57.2878303538784,
+        "arc6_frost_knight": 14.0424088307699,
+        "arc6_frost_lancer": 115.405244208046,
+        "arc6_granite_colossus": 2.49395960741492,
+        "arc6_iron_crossbowman": 955.981727479638,
+        "arc6_lava_brute": 10.7341755670998,
+        "arc6_pyromancer": 664.699229635302,
+        "arc6_seismic_shaman": 548.57947260204,
+        "arc6_shield_sentinel": 56.9332666025637,
+        "arc6_snow_mage": 349.748310742574,
+        "arc6_snow_skeleton": 68.5995868027533,
+        "arc6_spore_crawler": 989.560446884253,
+        "arc6_thorn_spitter": 964.692152489915,
+        "arc6_wraith_final": 2810.94855285825
+      },
+      "incoming_damage_by_type": {
+        "normal": 7481.97858344323,
+        "reflect": 244.929885002828
+      },
+      "incoming_hit_count": 387,
+      "incoming_total_damage": 7726.90846844606,
+      "max_hit": 419.009107476019,
+      "max_hit_source": "arc6_wraith_final",
+      "max_hit_type": "normal",
+      "max_hp": 3188.67158671249,
+      "mortal": true,
+      "movement": "approach",
+      "persistent_level": 50,
+      "reason": "hero_died",
+      "require_max_skills": false,
+      "run_level": 20,
+      "runtime_stats": {
+        "atk": 2960.74196790402,
+        "attack_range": 450,
+        "attack_speed": 5.03443885958061,
+        "crit_damage": 3.44999999999999,
+        "crit_rate": 0.528,
+        "def": 17.3601339985538,
+        "hp": 3188.67158671249,
+        "move_speed": 494.375259845491,
+        "regen_percent_per_10s": 0.0780000000000001
+      },
+      "seed": 222,
+      "stage_id": "stage_6_10",
+      "status": "FAIL",
+      "target_wave": 20,
+      "case_index": 1,
+      "process_exit": 2,
+      "requested": {
+        "stage": "stage_6_10",
+        "mode": "legend",
+        "hero": "hero_2",
+        "seed": 222,
+        "level": 50
+      }
+    },
+    {
+      "base_combat_power": 37530,
+      "base_stats": {
+        "atk": 2561.02073296001,
+        "attack_range": 450,
+        "attack_speed": 4.86225135958061,
+        "crit_damage": 2.975,
+        "crit_rate": 0.414,
+        "def": 16.7663839985538,
+        "hp": 3111.72158671249,
+        "move_speed": 480.36275984549,
+        "regen_percent_per_10s": 0.059
+      },
+      "checkpoint_skills": [
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_2_skill_1"
+        },
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_2_skill_2"
+        },
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_2_skill_3"
+        },
+        {
+          "actual": 4,
+          "max": 5,
+          "skill_id": "hero_2_skill_4"
+        }
+      ],
+      "checkpoints": [
+        {
+          "hp": 3102.0444041176,
+          "max_hp": 3127.92158671249,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_2_skill_1"
+            }
+          ],
+          "skills_max": true,
+          "wave": 4
+        },
+        {
+          "hp": 2949.10632220834,
+          "max_hp": 3148.17158671249,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_2_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_2_skill_2"
+            }
+          ],
+          "skills_max": true,
+          "wave": 9
+        },
+        {
+          "hp": 2028.95232180109,
+          "max_hp": 3168.42158671249,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_2_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_2_skill_2"
+            },
+            {
+              "actual": 4,
+              "max": 5,
+              "skill_id": "hero_2_skill_3"
+            }
+          ],
+          "skills_max": false,
+          "wave": 14
+        },
+        {
+          "hp": 1500.90252486865,
+          "max_hp": 3188.67158671249,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_2_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_2_skill_2"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_2_skill_3"
+            },
+            {
+              "actual": 4,
+              "max": 5,
+              "skill_id": "hero_2_skill_4"
+            }
+          ],
+          "skills_max": false,
+          "wave": 19
+        }
+      ],
+      "current_wave": 20,
+      "difficulty": "legend",
+      "elapsed_game_seconds": 227.483333333331,
+      "expected_skill_count": 4,
+      "healing_received": 4316.70701369366,
+      "hero_id": "hero_2",
+      "hp": 0,
+      "incoming_damage_by_enemy": {
+        "arc6_ent_protector": 123.658857562359,
+        "arc6_flame_imp": 24.708848405271,
+        "arc6_frost_knight": 8.19276202279268,
+        "arc6_frost_lancer": 35.8718971968985,
+        "arc6_granite_colossus": 3.68840347238286,
+        "arc6_iron_crossbowman": 1026.27800442781,
+        "arc6_lava_brute": 15.3742497239915,
+        "arc6_pyromancer": 780.610672925093,
+        "arc6_seismic_shaman": 851.425386910119,
+        "arc6_shield_sentinel": 306.886164038451,
+        "arc6_snow_mage": 262.693717365422,
+        "arc6_snow_skeleton": 70.3054809161986,
+        "arc6_spore_crawler": 1327.65354367514,
+        "arc6_thorn_spitter": 1181.70723416968,
+        "arc6_wraith_final": 1662.34817227121
+      },
+      "incoming_damage_by_type": {
+        "normal": 6894.4261359851,
+        "reflect": 786.977259097723
+      },
+      "incoming_hit_count": 392,
+      "incoming_total_damage": 7681.40339508282,
+      "max_hit": 244.041396883845,
+      "max_hit_source": "arc6_spore_crawler",
+      "max_hit_type": "reflect",
+      "max_hp": 3188.67158671249,
+      "mortal": true,
+      "movement": "approach",
+      "persistent_level": 50,
+      "reason": "hero_died",
+      "require_max_skills": false,
+      "run_level": 20,
+      "runtime_stats": {
+        "atk": 2832.01405625602,
+        "attack_range": 450,
+        "attack_speed": 5.03443885958061,
+        "crit_damage": 3.44999999999999,
+        "crit_rate": 0.528,
+        "def": 17.3601339985538,
+        "hp": 3188.67158671249,
+        "move_speed": 494.375259845491,
+        "regen_percent_per_10s": 0.0780000000000001
+      },
+      "seed": 223,
+      "stage_id": "stage_6_10",
+      "status": "FAIL",
+      "target_wave": 20,
+      "case_index": 2,
+      "process_exit": 2,
+      "requested": {
+        "stage": "stage_6_10",
+        "mode": "legend",
+        "hero": "hero_2",
+        "seed": 223,
+        "level": 50
+      }
+    },
+    {
+      "base_combat_power": 16516,
+      "base_stats": {
+        "atk": 1085.68547484332,
+        "attack_range": 400,
+        "attack_speed": 7.54565995207119,
+        "crit_damage": 3.26999999999999,
+        "crit_rate": 0.552,
+        "def": 25.5373166138277,
+        "hp": 4040.89325783702,
+        "move_speed": 694.833705323646,
+        "regen_percent_per_10s": 0.061
+      },
+      "checkpoint_skills": [
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_4_skill_1"
+        },
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_4_skill_2"
+        },
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_4_skill_3"
+        },
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_4_skill_4"
+        }
+      ],
+      "checkpoints": [
+        {
+          "hp": 4018.66093298675,
+          "max_hp": 4059.39325783702,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 4,
+              "max": 5,
+              "skill_id": "hero_4_skill_1"
+            }
+          ],
+          "skills_max": false,
+          "wave": 4
+        },
+        {
+          "hp": 3909.3066965967,
+          "max_hp": 4082.51825783702,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_4_skill_1"
+            },
+            {
+              "actual": 4,
+              "max": 5,
+              "skill_id": "hero_4_skill_2"
+            }
+          ],
+          "skills_max": false,
+          "wave": 9
+        },
+        {
+          "hp": 3621.02627006575,
+          "max_hp": 4105.64325783702,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_4_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_4_skill_2"
+            },
+            {
+              "actual": 2,
+              "max": 5,
+              "skill_id": "hero_4_skill_3"
+            }
+          ],
+          "skills_max": false,
+          "wave": 14
+        },
+        {
+          "hp": 2134.17557297252,
+          "max_hp": 4128.76825783702,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_4_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_4_skill_2"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_4_skill_3"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_4_skill_4"
+            }
+          ],
+          "skills_max": true,
+          "wave": 19
+        },
+        {
+          "hp": 244.851774097123,
+          "max_hp": 4133.39325783702,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_4_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_4_skill_2"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_4_skill_3"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_4_skill_4"
+            }
+          ],
+          "skills_max": true,
+          "wave": 20
+        }
+      ],
+      "current_wave": 20,
+      "difficulty": "legend",
+      "elapsed_game_seconds": 259.216666666662,
+      "expected_skill_count": 4,
+      "healing_received": 6128.03806572695,
+      "hero_id": "hero_4",
+      "hp": 244.851774097123,
+      "incoming_damage_by_enemy": {
+        "arc6_ent_protector": 192.816606499787,
+        "arc6_flame_imp": 20.7354938410584,
+        "arc6_frost_knight": 12.8955635427324,
+        "arc6_frost_lancer": 128.574949537545,
+        "arc6_iron_crossbowman": 1369.58785773299,
+        "arc6_pyromancer": 1192.97041535279,
+        "arc6_seismic_shaman": 1490.83676334257,
+        "arc6_shield_sentinel": 101.998347501596,
+        "arc6_snow_mage": 518.677017316172,
+        "arc6_snow_skeleton": 43.0472958024183,
+        "arc6_spore_crawler": 1814.97142410161,
+        "arc6_steam_automaton": 90.7116090973241,
+        "arc6_thorn_spitter": 1352.40016813567,
+        "arc6_wraith_final": 1686.35603766258
+      },
+      "incoming_damage_by_type": {
+        "normal": 9631.2390421167,
+        "reflect": 385.340507350148
+      },
+      "incoming_hit_count": 571,
+      "incoming_total_damage": 10016.5795494668,
+      "max_hit": 389.066094501982,
+      "max_hit_source": "arc6_wraith_final",
+      "max_hit_type": "normal",
+      "max_hp": 4133.39325783702,
+      "mortal": true,
+      "movement": "approach",
+      "persistent_level": 50,
+      "reason": "pass",
+      "require_max_skills": false,
+      "run_level": 21,
+      "runtime_stats": {
+        "atk": 1095.68547484332,
+        "attack_range": 400,
+        "attack_speed": 7.81865995207119,
+        "crit_damage": 3.86999999999999,
+        "crit_rate": 0.712,
+        "def": 26.4373166138278,
+        "hp": 4133.39325783702,
+        "move_speed": 719.958705323647,
+        "regen_percent_per_10s": 0.0810000000000001
+      },
+      "seed": 221,
+      "stage_id": "stage_6_10",
+      "status": "PASS",
+      "target_wave": 20,
+      "case_index": 3,
+      "process_exit": 0,
+      "requested": {
+        "stage": "stage_6_10",
+        "mode": "legend",
+        "hero": "hero_4",
+        "seed": 221,
+        "level": 50
+      }
+    },
+    {
+      "base_combat_power": 16516,
+      "base_stats": {
+        "atk": 1085.68547484332,
+        "attack_range": 400,
+        "attack_speed": 7.54565995207119,
+        "crit_damage": 3.26999999999999,
+        "crit_rate": 0.552,
+        "def": 25.5373166138277,
+        "hp": 4040.89325783702,
+        "move_speed": 694.833705323646,
+        "regen_percent_per_10s": 0.061
+      },
+      "checkpoint_skills": [
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_4_skill_1"
+        },
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_4_skill_2"
+        },
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_4_skill_3"
+        },
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_4_skill_4"
+        }
+      ],
+      "checkpoints": [
+        {
+          "hp": 3985.04489857456,
+          "max_hp": 4059.39325783702,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 4,
+              "max": 5,
+              "skill_id": "hero_4_skill_1"
+            }
+          ],
+          "skills_max": false,
+          "wave": 4
+        },
+        {
+          "hp": 3737.705139362,
+          "max_hp": 4082.51825783702,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_4_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_4_skill_2"
+            }
+          ],
+          "skills_max": true,
+          "wave": 9
+        },
+        {
+          "hp": 2542.35690445928,
+          "max_hp": 4105.64325783702,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_4_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_4_skill_2"
+            },
+            {
+              "actual": 1,
+              "max": 5,
+              "skill_id": "hero_4_skill_3"
+            }
+          ],
+          "skills_max": false,
+          "wave": 14
+        },
+        {
+          "hp": 1475.77819009377,
+          "max_hp": 4128.76825783702,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_4_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_4_skill_2"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_4_skill_3"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_4_skill_4"
+            }
+          ],
+          "skills_max": true,
+          "wave": 19
+        }
+      ],
+      "current_wave": 20,
+      "difficulty": "legend",
+      "elapsed_game_seconds": 249.483333333329,
+      "expected_skill_count": 4,
+      "healing_received": 6006.90787660709,
+      "hero_id": "hero_4",
+      "hp": 0,
+      "incoming_damage_by_enemy": {
+        "arc6_ent_protector": 255.957183943957,
+        "arc6_flame_imp": 110.750490812118,
+        "arc6_frost_knight": 2.52743013594931,
+        "arc6_frost_lancer": 161.150503914232,
+        "arc6_iron_crossbowman": 1023.32565683897,
+        "arc6_lava_brute": 17.3727134896179,
+        "arc6_pyromancer": 824.506527195025,
+        "arc6_seismic_shaman": 1911.90996649591,
+        "arc6_shield_sentinel": 10.2452115829658,
+        "arc6_snow_mage": 288.837844340094,
+        "arc6_snow_skeleton": 38.8162282867747,
+        "arc6_spore_crawler": 1849.61648481387,
+        "arc6_steam_automaton": 2.24569609784481,
+        "arc6_thorn_spitter": 1992.12510334181,
+        "arc6_wraith_final": 1854.54838379278
+      },
+      "incoming_damage_by_type": {
+        "normal": 9840.75039400661,
+        "reflect": 503.185031075313
+      },
+      "incoming_hit_count": 542,
+      "incoming_total_damage": 10343.9354250819,
+      "max_hit": 216.147830278879,
+      "max_hit_source": "arc6_wraith_final",
+      "max_hit_type": "normal",
+      "max_hp": 4128.76825783702,
+      "mortal": true,
+      "movement": "approach",
+      "persistent_level": 50,
+      "reason": "hero_died",
+      "require_max_skills": false,
+      "run_level": 20,
+      "runtime_stats": {
+        "atk": 1095.18547484332,
+        "attack_range": 400,
+        "attack_speed": 7.80500995207119,
+        "crit_damage": 3.83999999999999,
+        "crit_rate": 0.704,
+        "def": 26.3923166138278,
+        "hp": 4128.76825783702,
+        "move_speed": 718.702455323647,
+        "regen_percent_per_10s": 0.0800000000000001
+      },
+      "seed": 222,
+      "stage_id": "stage_6_10",
+      "status": "FAIL",
+      "target_wave": 20,
+      "case_index": 4,
+      "process_exit": 2,
+      "requested": {
+        "stage": "stage_6_10",
+        "mode": "legend",
+        "hero": "hero_4",
+        "seed": 222,
+        "level": 50
+      }
+    },
+    {
+      "base_combat_power": 16516,
+      "base_stats": {
+        "atk": 1085.68547484332,
+        "attack_range": 400,
+        "attack_speed": 7.54565995207119,
+        "crit_damage": 3.26999999999999,
+        "crit_rate": 0.552,
+        "def": 25.5373166138277,
+        "hp": 4040.89325783702,
+        "move_speed": 694.833705323646,
+        "regen_percent_per_10s": 0.061
+      },
+      "checkpoint_skills": [
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_4_skill_1"
+        },
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_4_skill_2"
+        },
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_4_skill_3"
+        },
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_4_skill_4"
+        }
+      ],
+      "checkpoints": [
+        {
+          "hp": 4018.66093298675,
+          "max_hp": 4059.39325783702,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 4,
+              "max": 5,
+              "skill_id": "hero_4_skill_1"
+            }
+          ],
+          "skills_max": false,
+          "wave": 4
+        },
+        {
+          "hp": 3845.95651792651,
+          "max_hp": 4082.51825783702,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_4_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_4_skill_2"
+            }
+          ],
+          "skills_max": true,
+          "wave": 9
+        },
+        {
+          "hp": 3060.57497941052,
+          "max_hp": 4105.64325783702,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_4_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_4_skill_2"
+            },
+            {
+              "actual": 1,
+              "max": 5,
+              "skill_id": "hero_4_skill_3"
+            }
+          ],
+          "skills_max": false,
+          "wave": 14
+        },
+        {
+          "hp": 1334.87543529375,
+          "max_hp": 4128.76825783702,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_4_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_4_skill_2"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_4_skill_3"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_4_skill_4"
+            }
+          ],
+          "skills_max": true,
+          "wave": 19
+        }
+      ],
+      "current_wave": 20,
+      "difficulty": "legend",
+      "elapsed_game_seconds": 249.349999999996,
+      "expected_skill_count": 4,
+      "healing_received": 5979.67477536439,
+      "hero_id": "hero_4",
+      "hp": 0,
+      "incoming_damage_by_enemy": {
+        "arc6_ent_protector": 325.078210771914,
+        "arc6_flame_imp": 68.5056223104328,
+        "arc6_frost_knight": 20.2640995537267,
+        "arc6_frost_lancer": 171.244784083653,
+        "arc6_granite_colossus": 3.35538563147132,
+        "arc6_iron_crossbowman": 1407.66779850331,
+        "arc6_pyromancer": 1223.61809325414,
+        "arc6_seismic_shaman": 1684.63743891177,
+        "arc6_shield_sentinel": 179.156830821553,
+        "arc6_snow_mage": 533.614790759347,
+        "arc6_snow_skeleton": 157.907623552981,
+        "arc6_spore_crawler": 1705.77580724698,
+        "arc6_steam_automaton": 42.7206060565266,
+        "arc6_thorn_spitter": 1017.12936576834,
+        "arc6_wraith_final": 1674.16664136727
+      },
+      "incoming_damage_by_type": {
+        "normal": 9776.79387190857,
+        "reflect": 438.049226684848
+      },
+      "incoming_hit_count": 560,
+      "incoming_total_damage": 10214.8430985934,
+      "max_hit": 216.147830278879,
+      "max_hit_source": "arc6_wraith_final",
+      "max_hit_type": "normal",
+      "max_hp": 4128.76825783702,
+      "mortal": true,
+      "movement": "approach",
+      "persistent_level": 50,
+      "reason": "hero_died",
+      "require_max_skills": false,
+      "run_level": 20,
+      "runtime_stats": {
+        "atk": 1095.18547484332,
+        "attack_range": 400,
+        "attack_speed": 7.80500995207119,
+        "crit_damage": 3.83999999999999,
+        "crit_rate": 0.704,
+        "def": 26.3923166138278,
+        "hp": 4128.76825783702,
+        "move_speed": 718.702455323647,
+        "regen_percent_per_10s": 0.0800000000000001
+      },
+      "seed": 223,
+      "stage_id": "stage_6_10",
+      "status": "FAIL",
+      "target_wave": 20,
+      "case_index": 5,
+      "process_exit": 2,
+      "requested": {
+        "stage": "stage_6_10",
+        "mode": "legend",
+        "hero": "hero_4",
+        "seed": 223,
+        "level": 50
+      }
+    }
+  ]
+}

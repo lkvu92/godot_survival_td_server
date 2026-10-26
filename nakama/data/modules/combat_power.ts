@@ -113,7 +113,9 @@ function cpEvaluate(hero: any, level: number, affinities: any, roots: any, equip
     const element = String(hero.element || ""), amp = cpAmplification(cpNumber(roots[element]),progression);
     const attackMultiplier = 1+Math.max(0,cpNumber(affinities[element]))*amp*0.0001;
     const atk = Math.max(0,cpNumber(a.atk));
-    let dps = hero.auto_basic_attack === false ? 0 : atk*Math.max(0,cpNumber(a.attack_speed))*cpNumber(cfg.basic_damage_multiplier)*crit;
+    // Runtime Player treats SPD as linear cooldown reduction, not attacks/second.
+    const basicCooldown = Math.max(0.2,2-Math.max(0,cpNumber(a.attack_speed))*0.005);
+    let dps = hero.auto_basic_attack === false ? 0 : atk*cpNumber(cfg.basic_damage_multiplier)*crit/basicCooldown;
     for (const id of cpArray(hero.starting_skills)) dps += cpSkillDps(String(id),1,atk,crit,cpNumber(a.skill_cooldown_mul,1),skills,cfg);
     dps *= attackMultiplier;
     if (equipped.length) {

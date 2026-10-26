@@ -3,8 +3,9 @@ const root=path.join(__dirname,'..'),clone=x=>JSON.parse(JSON.stringify(x));
 let now=1800000000000,noAds=true,conflict=false,sequence=0;
 class ServerDate extends Date {static now(){return now;}}
 const context=vm.createContext({Date:ServerDate});
-for(const file of ['feature_unlocks','config_rpc','progression_rpc','monetization_rpc','sweep_rpc'])vm.runInContext(fs.readFileSync(path.join(root,'nakama/data/modules/build',file+'.js'),'utf8'),context);
+for(const file of ['feature_unlocks','config_rpc','progression_rpc','resource_rpc','monetization_rpc','sweep_rpc'])vm.runInContext(fs.readFileSync(path.join(root,'nakama/data/modules/build',file+'.js'),'utf8'),context);
 const fn=name=>vm.runInContext(name,context);
+vm.runInContext('Math.random=()=>0.5',context); // Guarantee one campaign ticket per ordinary victory.
 let config=JSON.parse(fs.readFileSync(path.join(root,'data/rewarded_ads.json'),'utf8'));
 const db={},sessions=new Map(),claims=new Map();
 const date=()=>new Date(now).toISOString().slice(0,10);
@@ -58,8 +59,12 @@ const rpc=(name,body)=>JSON.parse(fn(name)(ctx,logger,nk,JSON.stringify(body)));
 function settle(id,won=true){row('player_stage_runs',{run_id:id,status:'active',stage_id:'stage_1_1',difficulty_id:'normal',expires_at_ms:now+86400000});const r=rpc('awardStageProgression',{run_id:id,stage_id:'stage_1_1',difficulty_id:'normal',hero_id:'hero',base_exp:100,won,objective_hp_ratio:1});assert(r.success);return r;}
 const prepare=(run,request)=>rpc('prepareRewardedAd',{placement_id:'stage_reward_x2_ad',request_id:request,context:{run_id:run,loot:[{item_id:'forged',quantity:9999}]}});
 let result=settle('victory');assert(result.stage_reward.eligible);
+assert.equal(result.stage_reward.total_loot.find(r=>r.item_id==='campaign_sweep_ticket')?.quantity,1,'Result summary displays the ticket actually granted');
+assert.equal(db.player_inventory.value.items.find(r=>r.item_id==='campaign_sweep_ticket')?.quantity,1);
 const before=clone(db);
 result=prepare('victory','first');assert.equal(result.status,'success');assert(result.data.stage_reward.claimed);
+assert.equal(result.data.stage_reward.total_loot.find(r=>r.item_id==='campaign_sweep_ticket')?.quantity,1,'Ad result retains one ticket');
+assert.equal(db.player_inventory.value.items.find(r=>r.item_id==='campaign_sweep_ticket')?.quantity,1,'Ad must not regrant the ticket');
 assert.equal(db.player_profiles.value.exp,before.player_profiles.value.exp+200);
 assert.equal(db.player_heroes.value.heroes[0].exp,before.player_heroes.value.heroes[0].exp+200);
 assert.equal(db.player_profiles.value.resources.gold,before.player_profiles.value.resources.gold+50);

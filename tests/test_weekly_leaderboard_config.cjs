@@ -12,6 +12,7 @@ for(const change of [c=>c.schema_version=2,c=>c.boards.combat_power.tiers[12].fr
 for(const name of ['feature_unlocks','config_rpc','monetization_rpc','sweep_rpc'])vm.runInContext(fs.readFileSync(path.join(root,'nakama/data/modules/build',name+'.js'),'utf8'),context);
 let published=0,missing=false;
 const draft={min_app_version:'1.0.0',latest_app_version:'1.0.0',ads_enabled:false,payment_enabled:false,rewarded_ads:JSON.parse(fs.readFileSync(path.join(root,'data/rewarded_ads.json'),'utf8')),leaderboard_rewards:JSON.parse(JSON.stringify(config))};
+Object.assign(draft,{stamina_max:30,stamina_storage_max:200,stamina_ad_reward:15,stamina_purchase_amount:15,stamina_purchase_prices:[30,40,50,60,70]});
 draft.tower_sweep=JSON.parse(vm.runInContext('JSON.stringify(TOWER_SWEEP_DEFAULTS)',context));
 draft.stage_sweep=JSON.parse(vm.runInContext('JSON.stringify(SWEEP_DEFAULTS)',context));
 draft.feature_unlocks=JSON.parse(vm.runInContext('JSON.stringify(FEATURE_DEFAULTS)',context));draft.realm_milestones=JSON.parse(vm.runInContext('JSON.stringify(REALM_MILESTONE_DEFAULTS)',context));

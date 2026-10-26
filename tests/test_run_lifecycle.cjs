@@ -1,6 +1,8 @@
 const fs = require('fs'), path = require('path'), vm = require('vm'), assert = require('assert');
 const c = vm.createContext({});
-for (const name of ['combat_power', 'progression_rpc', 'player_rpc', 'sweep_rpc']) vm.runInContext(fs.readFileSync(path.join(__dirname, '../nakama/data/modules/build', name + '.js'), 'utf8'), c);
+// Profile loading now resolves stamina through resource_rpc; load the same
+// dependency before exercising login rather than only before startStage.
+for (const name of ['combat_power', 'progression_rpc', 'resource_rpc', 'player_rpc', 'sweep_rpc']) vm.runInContext(fs.readFileSync(path.join(__dirname, '../nakama/data/modules/build', name + '.js'), 'utf8'), c);
 const fn = name => vm.runInContext(name, c), clone = x => JSON.parse(JSON.stringify(x));
 // Keep actual cultivation recovery/penalties; isolate unrelated name, VIP and catalog code.
 c.getRemoteConfigValue = (_nk, _section, _key, fallback) => fallback;
@@ -70,7 +72,6 @@ profile().daily_packs = {flash_sale:{grant_id:'paid',started_at_ms:Date.now(),ex
 load({}); assert.equal(profile().stamina,80,'Profile refresh must preserve paid stamina overflow');
 load({fresh_login:true}); assert.equal(profile().stamina,80,'Login must preserve paid stamina overflow');
 assert.equal(profile().daily_packs.flash_sale.grant_id,'paid','Login must preserve daily-pack entitlement/claim state');
-vm.runInContext(fs.readFileSync(path.join(__dirname,'../nakama/data/modules/build/resource_rpc.js'),'utf8'),c);
 c.parseJsonb = x => typeof x === 'string' ? JSON.parse(x) : x;
 c.progressionReconcileLevelUnlocks = () => {};
 c.eventRecord = () => {};

@@ -14,6 +14,7 @@ const nk={sqlQuery(sql){
 },sqlExec(sql){assert(sql.includes('INSERT INTO remote_config_releases'));inserts++;}};
 function publish(config){
  settings=[['min_app_version','string','1.0.0'],['latest_app_version','string','1.0.0'],['ads_enabled','bool','false'],['payment_enabled','bool','false']].map(([key,value_type,value])=>({module:'system',key,value_type,value}));
+ for(const [key,value] of Object.entries({stamina_max:30,stamina_storage_max:200,stamina_ad_reward:15,stamina_purchase_amount:15,stamina_purchase_prices:[30,40,50,60,70]}))settings.push({module:'system',key,value_type:'json',value:JSON.stringify(value)});
  settings.push({module:'system',key:'tower_sweep',value_type:'json',value:JSON.stringify(clone(get('TOWER_SWEEP_DEFAULTS')))});
  for(const [key,name] of [['feature_unlocks','FEATURE_DEFAULTS'],['realm_milestones','REALM_MILESTONE_DEFAULTS']])settings.push({module:'system',key,value_type:'json',value:JSON.stringify(clone(get(name)))});
  if(config!==undefined)settings.push({module:'system',key:'stage_sweep',value_type:'json',value:JSON.stringify(config)});

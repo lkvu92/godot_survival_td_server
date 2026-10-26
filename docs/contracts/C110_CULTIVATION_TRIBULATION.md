@@ -4,9 +4,9 @@
 |---|---|
 | **Contract ID** | `C110_CULTIVATION_TRIBULATION` |
 | **Feature Ref** | `docs/features/F010_CULTIVATION_TRIBULATION.md` |
-| **Current Version** | `2.2.0` |
+| **Current Version** | `2.2.1` |
 | **Status** | `ACTIVE` |
-| **Last Updated** | `2026-10-21` |
+| **Last Updated** | `2026-10-26` |
 | **Backend Target** | `nakama/data/modules/progression_rpc.ts`, `player_rpc.ts`, `config_rpc.ts`, `main.ts` |
 | **Client Target** | `src/core/UserContext.gd`, `src/services/PlayerService.gd`, `src/services/CombatFormulaService.gd`, `src/ui/MainMenu.gd`, `src/tribulation/` |
 | **Scene/Asset Target** | `scenes/tribulation/HeavenlyTribulation.tscn`, `assets/boss/violet-lightning/` |
@@ -365,3 +365,15 @@ Server milestone profiles add required base_def=100 and def_step=0.15. Tribulati
 
 ### 2.2.0 verification
 Godot TestTribulationBalance PASS using an explicit test-only snapshot with updated server tribulation seed:25 hero/milestone combinations,225 stat cases,45 actual boss setup/damage cases including50% defense ignore, and rejection of missing/negative defense fields. Client standalone/C110/C111 static checks PASS. Backend npm run build and runtime packaging PASS. Gate score8.5/10. Production config was not published/reseeded; no DPS/time-to-kill re-audit performed. Existing prior timing estimates predate defense and should not be reused as measured results.
+
+## Revision 2.2.1 ? 2026-10-26: immediate milestone preview
+
+All authoritative EXP grants through progressionApplyUser initialize the milestone preview before returning or persisting the profile, including campaign and tower sweep rewards. The existing breakthrough schema and RPC payloads are unchanged. Repeated grants preserve the rolled wave count, attempts and encounter state; offline actions remain blocked. No client-side roll or relog is required.
+
+| Version | Date | Change |
+|---|---|---|
+| 2.2.1 | 2026-10-26 | Initialize breakthrough preview in shared EXP settlement so reaching x9 through sweeps opens the dialog immediately. |
+
+### 2.2.1 verification
+
+Backend build/package verification and test_breakthrough_preview pass for all five milestones, crossing into Lv.9, insufficient EXP and repeated rewards preserving attempts/encounters. Tower sweep, first-clear EXP, run lifecycle and stage-reward ads tests pass. Full static suite remains blocked by existing daily-pack cap expectation 330 vs runtime 200; standalone consumable suite similarly retains an older full-stamina expectation. No client source or asset changes. Local Nakama restarted to load the compiled fix; no data seed or config publication is needed. Interactive reproduction remains for user verification.

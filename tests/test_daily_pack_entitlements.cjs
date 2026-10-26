@@ -5,6 +5,8 @@ const items = JSON.parse(fs.readFileSync(path.join(root, 'data/items.json'), 'ut
 let now = 1800000123456, conflict = false;
 class ServerDate extends Date { static now() { return now; } }
 const ctx = vm.createContext({Date: ServerDate});
+vm.runInContext(fs.readFileSync(path.join(root, 'nakama/data/modules/build/resource_rpc.js'), 'utf8'), ctx);
+ctx.getRemoteConfigValue = (_nk, _section, _key, fallback) => fallback;
 vm.runInContext(fs.readFileSync(path.join(root, 'nakama/data/modules/build/monetization_rpc.js'), 'utf8'), ctx);
 const grant = vm.runInContext('applyPurchaseStorageRewards', ctx);
 const claim = vm.runInContext('claimDailyPack', ctx);

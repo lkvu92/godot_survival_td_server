@@ -233,7 +233,8 @@
         "stage_2_10",
         "stage_3_10",
         "stage_4_10",
-        "stage_5_10"
+        "stage_5_10",
+        "stage_6_10"
       ],
       "quantity_weights": {
         "0": 30,

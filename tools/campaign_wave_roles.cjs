@@ -10,9 +10,31 @@ const ROLES = {
   arc_titan_realm: {grunt: 'amber_spirit', rusher: 'sand_stalker', tanker: 'granite_colossus'},
 };
 
+// Mixed Arc 6 retains the legacy mappings above; its species are authored by
+// role AND element. Shared migrations must recognize it without replacing a
+// water/metal tank with an unrelated fixed grunt.
+const MIXED_ARC_ID = 'arc_ngu_to_quy_khu';
+const MIXED_TANK_TO_GRUNT = {
+  arc6_shield_sentinel: 'arc6_steam_automaton',
+  arc6_frost_knight: 'arc6_frost_lancer',
+  arc6_ent_protector: 'arc6_spore_crawler',
+  arc6_lava_brute: 'arc6_flame_imp',
+  arc6_granite_colossus: 'arc6_snow_skeleton',
+};
+const isCampaignArc = id => !!ROLES[id] || id === MIXED_ARC_ID;
+
 function applyWaveRoleRules(stages) {
   let changed = 0;
   for (const stage of stages) {
+    if (stage.arc_id === MIXED_ARC_ID) {
+      for (const wave of stage.waves.slice(0, 6)) for (const entry of wave.entries) {
+        if (!entry.boss && MIXED_TANK_TO_GRUNT[entry.enemy_id]) {
+          entry.enemy_id = MIXED_TANK_TO_GRUNT[entry.enemy_id];
+          changed++;
+        }
+      }
+      continue;
+    }
     const roles = ROLES[stage.arc_id];
     if (!roles) continue;
     for (const [index, wave] of stage.waves.entries()) {
@@ -44,4 +66,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = {ROLES, applyWaveRoleRules};
+module.exports = {ROLES, MIXED_ARC_ID, MIXED_TANK_TO_GRUNT, isCampaignArc, applyWaveRoleRules};

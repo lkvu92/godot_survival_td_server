@@ -1,0 +1,13 @@
+# C223 local acceptance — 2026-10-26
+
+Implemented in the sibling client: `CardAutoPick.gd`, `CardPickModeButton.gd`, `CardChoiceOverlay.gd`, and HUD. Existing AtlasRegistry target/map sprites provide the requested indices30/23. Local scoped `auto_card_pick` defaults to Manual. Only authenticated-profile VIP4+ exposes the buttons, and automated selection additionally requires online complete config.
+
+Battle HUD places the60px toggle immediately left of the speed button. Card overlay includes a captioned toggle below its title, allowing Manual/Auto changes while gameplay is paused. Auto uses a0.35-second real-time delay and the existing choose_card path. Higher resulting skill level wins, followed by ATK/cooldown/accuracy/wound/DEF and the documented remaining support order. No ads or rerolls are triggered automatically.
+
+Revision1.1.0 supersedes the initial placement above: HUD utility actions share one horizontal HBox row below the top bar; card-dialog toggle shares an action row with reroll/retry. Skill tiles retain only Lv.x as static text, with shortcut/mode captions hidden. Cooldown labels use the full badge rectangle and center alignment on both axes. TestHudTextLayout PASS at64/76/80/96/180px including mobile preview and action-row parenting/alignment. TestAutoCardPick and client static checks remain PASS after moving the controls.
+
+Revision1.1.1 supersedes the gameplay HBox placement after user clarification: all gameplay utility actions now share one vertical VBox column on the right, centered on the same horizontal coordinate with8px spacing. Auto pick and skill-control mode belong to that column. Its live minimum height positions the campaign skill bar below the last visible action. The card-dialog action row remains unchanged. Updated TestHudTextLayout verifies common centers, uniform spacing and unchanged level/CD layout; TestAutoCardPick and standalone client static checks PASS.
+
+`TestAutoCardPick.tscn` PASS: ranking/tier/ties, VIP3 hidden despite saved Auto, VIP4 icons, Manual mode, stale offer cancellation, manual override, disconnect and scope guards, failed offers, paused campaign selection, consecutive queued level-ups, terminal result cancellation, preference scope and local serialization/load. Fixture restores global in-memory state and does not overwrite the user's real settings file.
+
+Client static checks PASS. Hero4 piercing regression remains PASS. Full server static checks stop at the existing daily-pack stamina expectation330 versus runtime200; C223 remains IN_PROGRESS until the repository-wide gate is green. No backend/runtime/config seed changes are needed for this feature. Restart the game client to load the new scripts.

@@ -37,12 +37,17 @@ const useConsumable: nkruntime.RpcFunction = (ctx, _logger, nk, payload): string
             ? (!['exp','gold'].includes(String(effect.resource || '')) || !Number.isFinite(boostMultiplier) || boostMultiplier <= 1 || !Number.isSafeInteger(boostDuration) || ![3600, 86400].includes(boostDuration))
             : (!Number.isFinite(value) || value <= 0))) return fail("Item effect is unavailable");
     if (talismanItemQuantity(items, itemId) < quantity) return fail("Not enough items");
-    const run = runObject ? talismanJsonObject(runObject.value) : {};
+    const stageRun = runObject ? talismanJsonObject(runObject.value) : {};
+    const tribulation = (profile.breakthrough || {}).in_tribulation === true;
+    const run = tribulation ? profile.breakthrough : stageRun;
     const now = Date.now(), combat = effect.context === "combat";
     if (combat) {
-        if (!runId || quantity !== 1 || run.run_id !== runId || run.status !== "active" || now >= Number(run.expires_at_ms || 0)) return fail("No active stage run");
+        if (!runId || quantity !== 1) return fail("Invalid combat request");
+        if (tribulation) {
+            const started = Number(run.started_at);
+            if (runId !== run.encounter_id || !Number.isFinite(started) || started <= 0 || now < started || now >= started + 3600000) return fail("No active tribulation encounter");
+        } else if (run.run_id !== runId || run.status !== "active" || now >= Number(run.expires_at_ms || 0)) return fail("No active stage run");
         if (req.paused !== false || (kind !== "revive" && req.alive !== true)) return fail("Cannot use while paused or dead");
-        if ((profile.breakthrough || {}).in_tribulation) return fail("Items unavailable in tribulation");
         const cooldowns = talismanJsonObject(run.item_cooldowns);
         if (now < Number(cooldowns[itemId] || 0)) return fail("Item is on cooldown");
         if (kind === "revive" && (req.alive !== false || Number(run.item_revives || 0) >= 1)) return fail("Revive unavailable");
@@ -86,10 +91,10 @@ const useConsumable: nkruntime.RpcFunction = (ctx, _logger, nk, payload): string
             cultivationEnsurePreview(nk, profile);
             progressionReconcileLevelUnlocks(nk, profile);
         } else if (kind === "stamina") {
-            const before = Number(profile.stamina || 0);
-            if (before >= 30 || (quantity > 1 && before + (quantity - 1) * value >= 30)) return fail("Stamina full or quantity exceeds capacity");
-            profile.stamina = Math.min(30, before + value * quantity);
-            if (profile.stamina === 30) profile.last_stamina_update = Math.floor(sweepStaminaTime(profile,now) / 1000);
+            const before = staminaClamp(nk, profile.stamina), storageMax = staminaStorageMax(nk);
+            if (before >= storageMax || (quantity > 1 && before + (quantity - 1) * value >= storageMax)) return fail("Stamina storage full or quantity exceeds capacity");
+            profile.stamina = Math.min(storageMax, before + value * quantity);
+            if (profile.stamina >= staminaMax(nk)) profile.last_stamina_update = Math.floor(sweepStaminaTime(profile,now) / 1000);
         } else if (kind === "affinity") {
             if (CULTIVATION_ELEMENTS.indexOf(String(effect.element)) < 0) return fail("Unsupported element");
             cultivationEnsureSources(profile);
@@ -107,7 +112,7 @@ const useConsumable: nkruntime.RpcFunction = (ctx, _logger, nk, payload): string
         {collection:"player_inventory",key:"items",userId:ctx.userId,value:inventory,version:inventoryObject.version,permissionRead:1,permissionWrite:0},
         {collection:"player_item_requests",key:requestId,userId:ctx.userId,value:{fingerprint,effect,created_at:now},version:"*",permissionRead:1,permissionWrite:0}
     ];
-    if (combat) writes.push({collection:"player_stage_runs",key:"active",userId:ctx.userId,value:run,version:runObject.version,permissionRead:1,permissionWrite:0});
+    if (combat && !tribulation) writes.push({collection:"player_stage_runs",key:"active",userId:ctx.userId,value:run,version:runObject.version,permissionRead:1,permissionWrite:0});
     try { nk.storageWrite(writes); } catch (_) { return fail("Data changed; retry the same request"); }
     if (!combat && typeof writePlayerLeaderboardRecords === "function") {
         try { writePlayerLeaderboardRecords(nk, ctx.userId, profile, profile.display_name); } catch (_) { /* Next profile refresh reconciles ranking. */ }

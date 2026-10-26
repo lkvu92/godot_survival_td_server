@@ -1,7 +1,7 @@
 const fs=require('fs'),vm=require('vm'),path=require('path'),assert=require('assert');
 const clone=x=>JSON.parse(JSON.stringify(x));let now=1800000000000,db,revision=0,conflict=false;
 const c=vm.createContext({Date:class extends Date{static now(){return now;}}});
-for(const f of ['progression_rpc','sweep_rpc'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../nakama/data/modules/build',f+'.js'),'utf8'),c);
+for(const f of ['progression_rpc','resource_rpc','sweep_rpc'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../nakama/data/modules/build',f+'.js'),'utf8'),c);
 const fn=n=>vm.runInContext(n,c),config=JSON.parse(fs.readFileSync(path.join(__dirname,'../data/trial_tower.json'),'utf8'));
 c.parseJsonObject=v=>v||{};c.parseJsonb=v=>v||{};c.readContentConfig=()=>clone(config);
 c.getRemoteConfigValue=(_nk,_section,key,fallback)=>key==='tower_sweep'?clone(fn('TOWER_SWEEP_DEFAULTS')):key==='stage_sweep'?clone(fn('SWEEP_DEFAULTS')):fallback;

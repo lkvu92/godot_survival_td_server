@@ -71,6 +71,237 @@
           "stat": "hp",
           "value": 0.1
         }
+      },
+      {
+        "id": "deep_wound_common",
+        "title": "Vết Thương Sâu",
+        "description": "Giảm 10% lượng hồi máu mục tiêu. Đòn đánh và kỹ năng gây sát thương trực tiếp tạo vết thương trong 4 giây.",
+        "icon_id": "atk_up",
+        "priority": 2,
+        "support_family": "deep_wound",
+        "tier": "common",
+        "rarity": "common",
+        "effect": {
+          "type": "tactical_stat",
+          "stat": "deep_wound_reduction",
+          "value": 0.1,
+          "duration": 4.0,
+          "chance": 1.0
+        }
+      },
+      {
+        "id": "deep_wound_rare",
+        "title": "Vết Thương Sâu · Hiếm",
+        "description": "Giảm 20% lượng hồi máu mục tiêu. Đòn đánh và kỹ năng gây sát thương trực tiếp tạo vết thương trong 4 giây.",
+        "icon_id": "atk_up",
+        "priority": 2,
+        "support_family": "deep_wound",
+        "tier": "rare",
+        "rarity": "rare",
+        "effect": {
+          "type": "tactical_stat",
+          "stat": "deep_wound_reduction",
+          "value": 0.2,
+          "duration": 4.0,
+          "chance": 1.0
+        }
+      },
+      {
+        "id": "deep_wound_legendary",
+        "title": "Vết Thương Sâu · Huyền Thoại",
+        "description": "Giảm 30% lượng hồi máu mục tiêu. Đòn đánh và kỹ năng gây sát thương trực tiếp tạo vết thương trong 4 giây.",
+        "icon_id": "atk_up",
+        "priority": 2,
+        "support_family": "deep_wound",
+        "tier": "legendary",
+        "rarity": "legendary",
+        "effect": {
+          "type": "tactical_stat",
+          "stat": "deep_wound_reduction",
+          "value": 0.3,
+          "duration": 4.0,
+          "chance": 1.0
+        }
+      },
+      {
+        "id": "effect_accuracy_common",
+        "title": "Tinh Chuẩn",
+        "description": "Tăng 10% chính xác hiệu ứng. Tăng khả năng áp dụng hiệu ứng bất lợi, tính trên xác suất gốc.",
+        "icon_id": "attack_speed_up",
+        "priority": 2,
+        "support_family": "effect_accuracy",
+        "tier": "common",
+        "rarity": "common",
+        "effect": {
+          "type": "tactical_stat",
+          "stat": "effect_accuracy",
+          "value": 0.1
+        }
+      },
+      {
+        "id": "effect_accuracy_rare",
+        "title": "Tinh Chuẩn · Hiếm",
+        "description": "Tăng 15% chính xác hiệu ứng. Tăng khả năng áp dụng hiệu ứng bất lợi, tính trên xác suất gốc.",
+        "icon_id": "attack_speed_up",
+        "priority": 2,
+        "support_family": "effect_accuracy",
+        "tier": "rare",
+        "rarity": "rare",
+        "effect": {
+          "type": "tactical_stat",
+          "stat": "effect_accuracy",
+          "value": 0.15
+        }
+      },
+      {
+        "id": "effect_accuracy_legendary",
+        "title": "Tinh Chuẩn · Huyền Thoại",
+        "description": "Tăng 20% chính xác hiệu ứng. Tăng khả năng áp dụng hiệu ứng bất lợi, tính trên xác suất gốc.",
+        "icon_id": "attack_speed_up",
+        "priority": 2,
+        "support_family": "effect_accuracy",
+        "tier": "legendary",
+        "rarity": "legendary",
+        "effect": {
+          "type": "tactical_stat",
+          "stat": "effect_accuracy",
+          "value": 0.2
+        }
+      },
+      {
+        "id": "effect_resistance_common",
+        "title": "Tịnh Tâm",
+        "description": "Trừ 10 điểm phần trăm khỏi xác suất trúng hiệu ứng. Kháng hiệu ứng bất lợi của đối phương.",
+        "icon_id": "hp_up",
+        "priority": 2,
+        "support_family": "effect_resistance",
+        "tier": "common",
+        "rarity": "common",
+        "effect": {
+          "type": "tactical_stat",
+          "stat": "harmful_effect_resistance",
+          "value": 0.1
+        }
+      },
+      {
+        "id": "effect_resistance_rare",
+        "title": "Tịnh Tâm · Hiếm",
+        "description": "Trừ 15 điểm phần trăm khỏi xác suất trúng hiệu ứng. Kháng hiệu ứng bất lợi của đối phương.",
+        "icon_id": "hp_up",
+        "priority": 2,
+        "support_family": "effect_resistance",
+        "tier": "rare",
+        "rarity": "rare",
+        "effect": {
+          "type": "tactical_stat",
+          "stat": "harmful_effect_resistance",
+          "value": 0.15
+        }
+      },
+      {
+        "id": "effect_resistance_legendary",
+        "title": "Tịnh Tâm · Huyền Thoại",
+        "description": "Trừ 20 điểm phần trăm khỏi xác suất trúng hiệu ứng. Kháng hiệu ứng bất lợi của đối phương.",
+        "icon_id": "hp_up",
+        "priority": 2,
+        "support_family": "effect_resistance",
+        "tier": "legendary",
+        "rarity": "legendary",
+        "effect": {
+          "type": "tactical_stat",
+          "stat": "harmful_effect_resistance",
+          "value": 0.2
+        }
+      },
+      {
+        "id": "control_tenacity_common",
+        "title": "Kiên Định",
+        "description": "Giảm 10% thời gian khống chế. Thoát khỏi khống chế nhanh hơn nếu hiệu ứng đã trúng.",
+        "icon_id": "hp_up",
+        "priority": 2,
+        "support_family": "control_tenacity",
+        "tier": "common",
+        "rarity": "common",
+        "effect": {
+          "type": "tactical_stat",
+          "stat": "control_duration_reduction",
+          "value": 0.1
+        }
+      },
+      {
+        "id": "control_tenacity_rare",
+        "title": "Kiên Định · Hiếm",
+        "description": "Giảm 20% thời gian khống chế. Thoát khỏi khống chế nhanh hơn nếu hiệu ứng đã trúng.",
+        "icon_id": "hp_up",
+        "priority": 2,
+        "support_family": "control_tenacity",
+        "tier": "rare",
+        "rarity": "rare",
+        "effect": {
+          "type": "tactical_stat",
+          "stat": "control_duration_reduction",
+          "value": 0.2
+        }
+      },
+      {
+        "id": "control_tenacity_legendary",
+        "title": "Kiên Định · Huyền Thoại",
+        "description": "Giảm 30% thời gian khống chế. Thoát khỏi khống chế nhanh hơn nếu hiệu ứng đã trúng.",
+        "icon_id": "hp_up",
+        "priority": 2,
+        "support_family": "control_tenacity",
+        "tier": "legendary",
+        "rarity": "legendary",
+        "effect": {
+          "type": "tactical_stat",
+          "stat": "control_duration_reduction",
+          "value": 0.3
+        }
+      },
+      {
+        "id": "healing_power_common",
+        "title": "Dưỡng Sinh",
+        "description": "Tăng 10% lượng hồi máu nhận vào. Cường hóa lượng hồi máu nhận vào, bao gồm hồi phục theo thời gian.",
+        "icon_id": "heal",
+        "priority": 2,
+        "support_family": "healing_power",
+        "tier": "common",
+        "rarity": "common",
+        "effect": {
+          "type": "tactical_stat",
+          "stat": "healing_received_bonus",
+          "value": 0.1
+        }
+      },
+      {
+        "id": "healing_power_rare",
+        "title": "Dưỡng Sinh · Hiếm",
+        "description": "Tăng 20% lượng hồi máu nhận vào. Cường hóa lượng hồi máu nhận vào, bao gồm hồi phục theo thời gian.",
+        "icon_id": "heal",
+        "priority": 2,
+        "support_family": "healing_power",
+        "tier": "rare",
+        "rarity": "rare",
+        "effect": {
+          "type": "tactical_stat",
+          "stat": "healing_received_bonus",
+          "value": 0.2
+        }
+      },
+      {
+        "id": "healing_power_legendary",
+        "title": "Dưỡng Sinh · Huyền Thoại",
+        "description": "Tăng 30% lượng hồi máu nhận vào. Cường hóa lượng hồi máu nhận vào, bao gồm hồi phục theo thời gian.",
+        "icon_id": "heal",
+        "priority": 2,
+        "support_family": "healing_power",
+        "tier": "legendary",
+        "rarity": "legendary",
+        "effect": {
+          "type": "tactical_stat",
+          "stat": "healing_received_bonus",
+          "value": 0.3
+        }
       }
     ]
   },

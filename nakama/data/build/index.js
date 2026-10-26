@@ -1156,6 +1156,12 @@ function createGameConfigTables(nk, logger) {
       default_language: "vi",
       stamina_regen_interval_sec: 300,
       stamina_regen_amount: 1,
+      // Stamina economy.  Keep every stamina grant server-authoritative.
+      stamina_max: 30,
+      stamina_storage_max: 200,
+      stamina_ad_reward: 15,
+      stamina_purchase_amount: 15,
+      stamina_purchase_prices: [30, 40, 50, 60, 70],
       ads_enabled: false,
       ads_interval_sec: 120,
       payment_enabled: false,
@@ -1163,7 +1169,7 @@ function createGameConfigTables(nk, logger) {
       rewarded_ads: {
         schema_version: 2,
         placements: {
-          stamina_dialog_ad: { type: "stamina", amount: 5, daily_limit: 3 },
+          stamina_dialog_ad: { type: "stamina", amount: 15, daily_limit: 3 },
           daily_mission_talisman_fragment_ad: { type: "daily_fragment", amount: 1, daily_limit: 3 },
           card_reroll_ad: { type: "card_reroll", amount: 1, run_limit: 3 },
           combat_revive_ad: { type: "combat_revive", amount: 1, run_limit: 1 },
@@ -2293,7 +2299,7 @@ function eventRewardTracks(quest) {
   };
   return { normal, vip };
 }
-function eventView(campaign, occurrence, state, profile, compliance) {
+function eventView(nk, campaign, occurrence, state, profile, compliance) {
   const requirements = eventRequirements(campaign, profile);
   const claimed = eventObject(state.claimed);
   const quests = campaign.quests.map((quest) => {
@@ -2301,6 +2307,8 @@ function eventView(campaign, occurrence, state, profile, compliance) {
     const target = Math.max(1, Number(quest.target || 1));
     const progress = eventQuestProgress(quest, state, profile, compliance);
     const tracks = eventRewardTracks(quest);
+    tracks.normal = vipScaleRewardGrants(nk, tracks.normal, Number(profile.vip || 0));
+    tracks.vip.grants = vipScaleRewardGrants(nk, tracks.vip.grants, Number(profile.vip || 0));
     const questClaims = eventObject(claimed[id]);
     return {
       quest_id: id,
@@ -2415,7 +2423,7 @@ function eventApplyGrants(nk, profile, items, grants) {
       profile.resources[id] = Math.max(0, Number(profile.resources[id] || 0)) + amount;
       issued.push({ type, id, amount });
     } else if (type === "stamina") {
-      profile.stamina = Math.max(Number(profile.stamina || 0), Math.min(30, Math.max(0, Number(profile.stamina || 0)) + amount));
+      profile.stamina = staminaClamp(nk, Number(profile.stamina || 0) + amount);
       issued.push({ type, amount });
     } else if (type === "item" || type === "random_item") {
       let id = String(grant.id || "");
@@ -2448,7 +2456,7 @@ const eventList = (ctx, _logger, nk, _payload) => {
     const occurrence = eventOccurrence(campaign, now);
     if (!occurrence) continue;
     const stored = eventReadState(nk, ctx.userId, campaign, occurrence);
-    const view = eventView(campaign, occurrence, stored.state, profile, compliance);
+    const view = eventView(nk, campaign, occurrence, stored.state, profile, compliance);
     if (occurrence.phase === "upcoming") upcomingEvents.push(view);
     else activeEvents.push(view);
   }
@@ -2503,7 +2511,7 @@ const eventClaim = (ctx, _logger, nk, payload) => {
   if (track === "vip" && Number(profile.vip || 0) < Number(tracks.vip.required_vip || 1)) {
     return JSON.stringify({ success: false, message: "VIP requirement is not met" });
   }
-  const issued = eventApplyGrants(nk, profile, items, grants);
+  const issued = eventApplyGrants(nk, profile, items, vipScaleRewardGrants(nk, grants, Number(profile.vip || 0)));
   if (!issued) return JSON.stringify({ success: false, message: "Invalid event reward configuration" });
   questClaims[track] = true;
   stored.state.claimed[questId] = questClaims;
@@ -2547,7 +2555,7 @@ const eventClaim = (ctx, _logger, nk, payload) => {
     grants: issued,
     profile,
     inventory: items,
-    event: eventView(campaign, occurrence, stored.state, profile, compliance)
+    event: eventView(nk, campaign, occurrence, stored.state, profile, compliance)
   });
 };
 
@@ -3077,6 +3085,13 @@ function validateReleaseSnapshot(nk, snapshot) {
     }
   }
   if (!validRewardedAdsConfig(snapshot.system.rewarded_ads)) return JSON.stringify({ status: "error", code: 422, message: "Missing or invalid system.rewarded_ads" });
+  const staminaMaxValue = Number(snapshot.system.stamina_max);
+  const staminaStorageValue = Number(snapshot.system.stamina_storage_max);
+  const staminaAdReward = Number(snapshot.system.stamina_ad_reward);
+  const staminaPurchaseAmount = Number(snapshot.system.stamina_purchase_amount);
+  const staminaPrices = snapshot.system.stamina_purchase_prices;
+  if (!Number.isSafeInteger(staminaMaxValue) || staminaMaxValue < 1 || !Number.isSafeInteger(staminaStorageValue) || staminaStorageValue < staminaMaxValue || !Number.isSafeInteger(staminaAdReward) || staminaAdReward < 0 || !Number.isSafeInteger(staminaPurchaseAmount) || staminaPurchaseAmount < 1 || !Array.isArray(staminaPrices) || staminaPrices.length < 1 || staminaPrices.some((price) => !Number.isSafeInteger(price) || price < 1))
+    return JSON.stringify({ status: "error", code: 422, message: "Invalid stamina economy settings" });
   if (snapshot.system.leaderboard_rewards !== void 0 && (!validWeeklyLeaderboardConfig(snapshot.system.leaderboard_rewards) || !weeklyConfigItemsExist(nk, snapshot.system.leaderboard_rewards))) return JSON.stringify({ status: "error", code: 422, message: "Invalid system.leaderboard_rewards or unknown reward items" });
   const latestVersion = String(snapshot.system.latest_app_version || "");
   if (typeof snapshot.system.ads_enabled !== "boolean" || typeof snapshot.system.payment_enabled !== "boolean") {
@@ -3652,13 +3667,14 @@ const loadPlayerProfile = (ctx, logger, nk, payload) => {
     const amount = Math.max(0, Number(getRemoteConfigValue(nk, "system", "stamina_regen_amount", 1)));
     const hasLastStaminaUpdate = Number(result.profile.last_stamina_update || 0) > 0;
     const last = hasLastStaminaUpdate ? Math.max(0, Number(result.profile.last_stamina_update)) : now;
-    const currentStamina = Math.max(0, Number(result.profile.stamina || 0));
-    const ticks = currentStamina < 30 && now > last ? Math.floor((now - last) / interval) : 0;
+    const currentStamina = staminaClamp(nk, result.profile.stamina);
+    const staminaMaxValue = staminaMax(nk);
+    const ticks = currentStamina < staminaMaxValue && now > last ? Math.floor((now - last) / interval) : 0;
     if (ticks > 0 && amount > 0) {
-      result.profile.stamina = Math.min(30, currentStamina + ticks * amount);
-      result.profile.last_stamina_update = result.profile.stamina >= 30 ? now : last + ticks * interval;
+      result.profile.stamina = Math.min(staminaMaxValue, currentStamina + ticks * amount);
+      result.profile.last_stamina_update = result.profile.stamina >= staminaMaxValue ? now : last + ticks * interval;
       profileChanged = true;
-    } else if (currentStamina >= 30 && last !== now) {
+    } else if (currentStamina >= staminaMaxValue && last !== now) {
       result.profile.stamina = currentStamina;
       result.profile.last_stamina_update = now;
       profileChanged = true;
@@ -3668,7 +3684,7 @@ const loadPlayerProfile = (ctx, logger, nk, payload) => {
     }
     const appliedLast = Math.max(0, Number(result.profile.last_stamina_update || now));
     const elapsedInTick = Math.max(0, now - appliedLast) % interval;
-    const canRegenerate = Number(result.profile.stamina || 0) < 30 && amount > 0;
+    const canRegenerate = Number(result.profile.stamina || 0) < staminaMaxValue && amount > 0;
     result.stamina_regen = {
       amount: canRegenerate ? amount : 0,
       interval_sec: interval,
@@ -4429,12 +4445,17 @@ const useConsumable = (ctx, _logger, nk, payload) => {
   const boostMultiplier = Number(effect.multiplier), boostDuration = Number(effect.duration);
   if (attrs.enabled === false || attrs.use_action !== "use_consumable" || (isGameplayBoost ? !["exp", "gold"].includes(String(effect.resource || "")) || !Number.isFinite(boostMultiplier) || boostMultiplier <= 1 || !Number.isSafeInteger(boostDuration) || ![3600, 86400].includes(boostDuration) : !Number.isFinite(value) || value <= 0)) return fail("Item effect is unavailable");
   if (talismanItemQuantity(items, itemId) < quantity) return fail("Not enough items");
-  const run = runObject ? talismanJsonObject(runObject.value) : {};
+  const stageRun = runObject ? talismanJsonObject(runObject.value) : {};
+  const tribulation = (profile.breakthrough || {}).in_tribulation === true;
+  const run = tribulation ? profile.breakthrough : stageRun;
   const now = Date.now(), combat = effect.context === "combat";
   if (combat) {
-    if (!runId || quantity !== 1 || run.run_id !== runId || run.status !== "active" || now >= Number(run.expires_at_ms || 0)) return fail("No active stage run");
+    if (!runId || quantity !== 1) return fail("Invalid combat request");
+    if (tribulation) {
+      const started = Number(run.started_at);
+      if (runId !== run.encounter_id || !Number.isFinite(started) || started <= 0 || now < started || now >= started + 36e5) return fail("No active tribulation encounter");
+    } else if (run.run_id !== runId || run.status !== "active" || now >= Number(run.expires_at_ms || 0)) return fail("No active stage run");
     if (req.paused !== false || kind !== "revive" && req.alive !== true) return fail("Cannot use while paused or dead");
-    if ((profile.breakthrough || {}).in_tribulation) return fail("Items unavailable in tribulation");
     const cooldowns = talismanJsonObject(run.item_cooldowns);
     if (now < Number(cooldowns[itemId] || 0)) return fail("Item is on cooldown");
     if (kind === "revive" && (req.alive !== false || Number(run.item_revives || 0) >= 1)) return fail("Revive unavailable");
@@ -4484,10 +4505,10 @@ const useConsumable = (ctx, _logger, nk, payload) => {
       cultivationEnsurePreview(nk, profile);
       progressionReconcileLevelUnlocks(nk, profile);
     } else if (kind === "stamina") {
-      const before = Number(profile.stamina || 0);
-      if (before >= 30 || quantity > 1 && before + (quantity - 1) * value >= 30) return fail("Stamina full or quantity exceeds capacity");
-      profile.stamina = Math.min(30, before + value * quantity);
-      if (profile.stamina === 30) profile.last_stamina_update = Math.floor(sweepStaminaTime(profile, now) / 1e3);
+      const before = staminaClamp(nk, profile.stamina), storageMax = staminaStorageMax(nk);
+      if (before >= storageMax || quantity > 1 && before + (quantity - 1) * value >= storageMax) return fail("Stamina storage full or quantity exceeds capacity");
+      profile.stamina = Math.min(storageMax, before + value * quantity);
+      if (profile.stamina >= staminaMax(nk)) profile.last_stamina_update = Math.floor(sweepStaminaTime(profile, now) / 1e3);
     } else if (kind === "affinity") {
       if (CULTIVATION_ELEMENTS.indexOf(String(effect.element)) < 0) return fail("Unsupported element");
       cultivationEnsureSources(profile);
@@ -4505,7 +4526,7 @@ const useConsumable = (ctx, _logger, nk, payload) => {
     { collection: "player_inventory", key: "items", userId: ctx.userId, value: inventory, version: inventoryObject.version, permissionRead: 1, permissionWrite: 0 },
     { collection: "player_item_requests", key: requestId, userId: ctx.userId, value: { fingerprint, effect, created_at: now }, version: "*", permissionRead: 1, permissionWrite: 0 }
   ];
-  if (combat) writes.push({ collection: "player_stage_runs", key: "active", userId: ctx.userId, value: run, version: runObject.version, permissionRead: 1, permissionWrite: 0 });
+  if (combat && !tribulation) writes.push({ collection: "player_stage_runs", key: "active", userId: ctx.userId, value: run, version: runObject.version, permissionRead: 1, permissionWrite: 0 });
   try {
     nk.storageWrite(writes);
   } catch (_) {
@@ -5203,7 +5224,15 @@ function parseJsonObject(value) {
   const parsed = parseJsonb(value);
   return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
 }
-const STAMINA_CAP_RESOURCE = 30;
+function staminaMax(nk) {
+  return Math.max(1, Math.floor(Number(getRemoteConfigValue(nk, "system", "stamina_max", 30))));
+}
+function staminaStorageMax(nk) {
+  return Math.max(staminaMax(nk), Math.floor(Number(getRemoteConfigValue(nk, "system", "stamina_storage_max", 200))));
+}
+function staminaClamp(nk, value) {
+  return Math.max(0, Math.min(staminaStorageMax(nk), Number(value) || 0));
+}
 function elementUpgradeRequirement(nk, elementName, level) {
   const tiers = level < 10 ? "low" : level < 20 ? "medium" : "high";
   const tierStart = level < 10 ? 0 : level < 20 ? 10 : 20;
@@ -5349,8 +5378,9 @@ const spendResource = (ctx, logger, nk, payload) => {
   return JSON.stringify(debit);
 };
 const purchaseStamina = (ctx, _logger, nk, _payload) => {
-  const staminaAmount = 15;
-  const prices = [30, 40, 50];
+  const staminaAmount = Math.max(1, Math.floor(Number(getRemoteConfigValue(nk, "system", "stamina_purchase_amount", 15))));
+  const rawPrices = getRemoteConfigValue(nk, "system", "stamina_purchase_prices", [30, 40, 50, 60, 70]);
+  const prices = (Array.isArray(rawPrices) ? rawPrices : []).map(Number).filter((value) => Number.isSafeInteger(value) && value > 0);
   const today = (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
   const stored = nk.storageRead([
     { collection: "player_profiles", key: "main", userId: ctx.userId }
@@ -5369,7 +5399,7 @@ const purchaseStamina = (ctx, _logger, nk, _payload) => {
       purchases_today: purchasesToday
     });
   }
-  if (Number(profile.stamina || 0) >= STAMINA_CAP_RESOURCE) return JSON.stringify({ success: false, message: "Stamina is already full" });
+  if (staminaClamp(nk, profile.stamina) >= staminaStorageMax(nk)) return JSON.stringify({ success: false, message: "Stamina storage is already full" });
   const gemCost = prices[purchasesToday];
   const debit = debitResource(profile, "gems", gemCost);
   if (!debit.success) {
@@ -5381,8 +5411,8 @@ const purchaseStamina = (ctx, _logger, nk, _payload) => {
       gems: Number(parseJsonObject(profile.resources).gems || 0)
     });
   }
-  const currentStamina = Math.max(0, Math.min(STAMINA_CAP_RESOURCE, Number(profile.stamina || 0)));
-  const staminaAdded = Math.max(0, Math.min(staminaAmount, STAMINA_CAP_RESOURCE - currentStamina));
+  const currentStamina = staminaClamp(nk, profile.stamina);
+  const staminaAdded = Math.max(0, Math.min(staminaAmount, staminaStorageMax(nk) - currentStamina));
   profile.stamina = currentStamina + staminaAdded;
   profile.stamina_purchase_day = today;
   profile.stamina_purchases_today = purchasesToday + 1;
@@ -5722,7 +5752,7 @@ function startTrialTower(ctx, logger, nk, payload) {
   Object.assign(attrs, thanLuanStats(profile, thanLuanConfig(nk)));
   if (!(attrs.hp > 0) || !(attrs.atk > 0) || Object.keys(attrs).some((k) => !Number.isFinite(attrs[k]))) return fail("CONFIG_INVALID", "Ch\u1EC9 s\u1ED1 nh\xE2n v\u1EADt kh\xF4ng h\u1EE3p l\u1EC7.");
   const prep = config.preparation;
-  if (!prep || prep.combat_level !== 20 || prep.upgrade_count !== 19 || prep.countdown_sec !== 5 || !Array.isArray(prep.supports) || prep.supports.length !== 5)
+  if (!prep || prep.combat_level !== 20 || prep.upgrade_count !== 19 || prep.countdown_sec !== 5 || !Array.isArray(prep.supports) || prep.supports.length < 5 || prep.supports.some((c) => !towerSupportValid(c)))
     return fail("CONFIG_INVALID", "Ch\u01B0a c\u1EA5u h\xECnh chu\u1EA9n b\u1ECB th\xE1p.");
   const skillRows = nk.sqlQuery("SELECT id,display_name,criteria_unlock,hero_level_unlock,levels FROM game_skills WHERE id IN (SELECT jsonb_array_elements_text(skill_pool) FROM game_heroes WHERE id=$1) ORDER BY id", [req.hero_id]);
   const draftCatalog = skillRows.filter((s) => cpArray(s.levels).length > 0 && Number(s.hero_level_unlock || 1) <= level && Number(cpObject(s.criteria_unlock).level || 1) <= 20).map((s) => ({
@@ -5772,11 +5802,23 @@ function startTrialTower(ctx, logger, nk, payload) {
   }
   return JSON.stringify({ success: true, run });
 }
+function towerSupportValid(c) {
+  if (!c || typeof c.id !== "string" || !c.id || !c.effect || !Number.isFinite(c.effect.value) || c.effect.value <= 0 || !Number.isFinite(c.priority)) return false;
+  const e = c.effect;
+  if (e.type === "tactical_stat") {
+    const stats = { deep_wound: "deep_wound_reduction", effect_accuracy: "effect_accuracy", effect_resistance: "harmful_effect_resistance", control_tenacity: "control_duration_reduction", healing_power: "healing_received_bonus" };
+    if (!stats[c.support_family] || stats[c.support_family] !== e.stat || !["common", "rare", "legendary"].includes(c.tier) || e.value > 1) return false;
+    return c.support_family !== "deep_wound" || Number.isFinite(e.duration) && e.duration > 0 && Number.isFinite(e.chance) && e.chance > 0 && e.chance <= 1;
+  }
+  return e.type === "cooldown_reduction" ? e.value <= 1 : e.type === "stat_percent" && ["atk", "def", "hp", "attack_speed"].includes(e.stat);
+}
 function towerDraftLegal(c, levels) {
+  if (c.effect && c.effect.type === "tactical_stat") return Number(c.effect.value) > Number(levels["support:" + c.effect.stat] || 0);
   return !c.skill_id || (levels[c.skill_id] || 0) < c.max_level && (!c.required_skill || levels[c.required_skill] > 0);
 }
 function towerDraftApply(c, levels) {
   if (c.skill_id) levels[c.skill_id] = (levels[c.skill_id] || 0) + 1;
+  else if (c.effect && c.effect.type === "tactical_stat") levels["support:" + c.effect.stat] = c.effect.value;
 }
 function prepareTrialTower(ctx, _logger, nk, payload) {
   const fail = (code, message) => JSON.stringify({ success: false, code, message });
@@ -6087,6 +6129,8 @@ function cultivationPhase2Encounter(state) {
   state.encounter_seed = Math.floor(Math.random() * 2147483647);
   state.skill_set = skills;
   state.started_at = Date.now();
+  state.item_cooldowns = {};
+  state.item_revives = 0;
 }
 function cultivationEnsureProfile(nk, profile, recoverInterrupted) {
   let changed = thanLuanReconcile(profile, thanLuanConfig(nk));
@@ -6271,6 +6315,11 @@ function progressionApplyUser(nk, profile, awarded) {
   profile.exp = exp;
   profile.next_level_exp = next;
   profile.progression_version = PROGRESSION_VERSION;
+  cultivationEnsurePreview(nk, profile);
+  if (gained > 0) {
+    profile.stamina = staminaClamp(nk, Math.max(Number(profile.stamina || 0), staminaMax(nk)));
+    profile.last_stamina_update = Math.floor(Date.now() / 1e3);
+  }
   return { level, exp, next_level_exp: next, levels_gained: gained };
 }
 function progressionReconcileLevelUnlocks(nk, profile) {
@@ -6730,15 +6779,17 @@ const awardStageProgression = (ctx, _logger, nk, payload) => {
     claimed: false
   };
   if (won && !isTrainingStage) {
+    const ticketLootStart = loot.length;
     const quantity = stageTicketQuantity(nk);
     if (quantity > 0) {
       if (!serverGrantInventoryItem(nk, inventoryItems, SWEEP_TICKET, quantity)) throw new Error("SWEEP_TICKET_CONFIG_MISSING");
       loot.push({ item_id: SWEEP_TICKET, quantity });
     }
-    if (stageRows[0].is_boss === true && /^stage_[1-5]_10$/.test(stageId) && Math.random() < Number(towerSweepConfig(nk).boss_ticket_rates[difficultyId] || 0)) {
+    if (campaignFinalBossStage(stageId, stageRows[0].is_boss) && Math.random() < Number(towerSweepConfig(nk).boss_ticket_rates[difficultyId] || 0)) {
       if (!serverGrantInventoryItem(nk, inventoryItems, TOWER_SWEEP_TICKET, 1)) throw Error("TOWER_TICKET_CONFIG_MISSING");
       loot.push({ item_id: TOWER_SWEEP_TICKET, quantity: 1 });
     }
+    run.stage_reward.fixed_loot = loot.slice(ticketLootStart);
   }
   nk.storageWrite([
     { collection: "player_profiles", key: "main", userId: ctx.userId, value: profile, permissionRead: 1, permissionWrite: 0, version: profileObject.version },
@@ -6802,7 +6853,7 @@ function stageRewardSummary(run) {
     multiplier: factor,
     total_exp: Math.max(0, Number(snapshot.base_exp || 0)) * factor,
     first_clear_bonus_exp: Math.max(0, Number(snapshot.first_clear_bonus_exp || 0)) * factor,
-    total_loot: (Array.isArray(snapshot.base_loot) ? snapshot.base_loot : []).map((r) => Object.assign({}, r, { quantity: Number(r.quantity) * factor }))
+    total_loot: (Array.isArray(snapshot.base_loot) ? snapshot.base_loot : []).map((r) => Object.assign({}, r, { quantity: Number(r.quantity) * factor })).concat((Array.isArray(snapshot.fixed_loot) ? snapshot.fixed_loot : []).map((r) => Object.assign({}, r)))
   };
 }
 function readSettledRewardRun(nk, userId, runId) {
@@ -7338,6 +7389,31 @@ function vipProgress(exp, config, environment) {
     configured: !!config
   };
 }
+function vipBenefitsConfig(nk) {
+  const config = vipConfig(nk);
+  if (!config || !Number.isFinite(config.reward_bonus_per_level) || config.reward_bonus_per_level < 0 || config.reward_bonus_per_level > 1 || !Array.isArray(config.milestone_rewards) || config.milestone_rewards.length !== 12) throw Error("VIP_BENEFITS_CONFIG_INVALID");
+  config.milestone_rewards.forEach((m, index) => {
+    if (m.level !== index + 1 || !Array.isArray(m.rewards) || !m.rewards.length || m.rewards.length > 20) throw Error("VIP_MILESTONE_CONFIG_INVALID");
+    m.rewards.forEach((r) => {
+      if (!r || !Number.isSafeInteger(r.amount) || r.amount < 1 || r.amount > 1e3) throw Error("VIP_MILESTONE_AMOUNT_INVALID");
+      if (r.type === "item" && typeof r.id === "string" && /^[a-z0-9_]+$/.test(r.id)) return;
+      if (r.type === "random_items" && Array.isArray(r.pool) && r.pool.length === 5 && new Set(r.pool).size === 5 && r.pool.every((id) => typeof id === "string" && /^(?:(?:stone|rune)_(?:metal|water|wood|fire|earth)_(?:low|medium|high)|(?:metal|water|wood|fire|earth)_aptitude_fruit)$/.test(id))) return;
+      if (r.type === "random_item_bundle" && Array.isArray(r.pool) && r.pool.length > 0 && r.pool.length <= 100 && new Set(r.pool).size === r.pool.length && r.pool.every((id) => typeof id === "string" && /^talisman_fragment_[0-9]+$/.test(id))) return;
+      throw Error("VIP_MILESTONE_REWARD_INVALID");
+    });
+  });
+  return config;
+}
+function vipScaleRewardGrants(nk, grants, level) {
+  const config = vipBenefitsConfig(nk);
+  if (!Number.isSafeInteger(level) || level < 0 || level > config.max_level || !Array.isArray(grants)) throw Error("VIP_REWARD_INPUT_INVALID");
+  return grants.map((grant) => {
+    if (!grant || !Number.isSafeInteger(grant.amount) || grant.amount < 1) throw Error("VIP_REWARD_AMOUNT_INVALID");
+    const amount = Math.floor(grant.amount * (1 + level * config.reward_bonus_per_level) + 1e-9);
+    if (!Number.isSafeInteger(amount)) throw Error("VIP_REWARD_AMOUNT_INVALID");
+    return Object.assign({}, grant, { amount });
+  });
+}
 function readVipProgress(nk, userId, mode) {
   const config = vipConfig(nk);
   if (!config) return vipProgress(0, null, mode);
@@ -7396,10 +7472,12 @@ function buildMonetizationResponse(nk, userId, mode) {
   const row = readEntitlementRow(nk, userId);
   const serverTime = Number(row.server_time || Math.floor(Date.now() / 1e3));
   const expiresAt = Number(row.no_ads_expires_at || 0);
+  const vip = readVipProgress(nk, userId, mode);
+  if (typeof vipEnsureMilestoneMails === "function") vip.milestone_mail_levels = vipEnsureMilestoneMails(nk, userId, vip);
   return {
     mode,
     user_id: userId,
-    vip: readVipProgress(nk, userId, mode),
+    vip,
     server_time: serverTime,
     no_ads: {
       active: expiresAt > serverTime,
@@ -7571,7 +7649,7 @@ const claimDailyPack = (ctx, _logger, nk, payload) => {
       if (reward.reward_type === "currency" && ["gold", "gems"].indexOf(reward.reward_id) >= 0) {
         profile.resources[reward.reward_id] = Math.max(0, Number(profile.resources[reward.reward_id] || 0)) + reward.quantity;
       } else if (reward.reward_type === "stamina" && reward.reward_id === "stamina") {
-        profile.stamina = Math.max(0, Number(profile.stamina || 0)) + reward.quantity;
+        profile.stamina = staminaClamp(nk, Number(profile.stamina || 0) + reward.quantity);
         profile.last_stamina_update = Math.floor(now / 1e3);
       } else if (reward.reward_type === "item") {
         addStoreInventoryItem(nk, inventory.items, String(reward.reward_id), reward.quantity);
@@ -7644,7 +7722,7 @@ function applyPurchaseStorageRewards(nk, userId, grantId, productId, fulfillment
     });
     profile.resources = resources;
     rewards.filter((line) => line.reward_type === "stamina").forEach((line) => {
-      profile.stamina = Math.max(Number(profile.stamina || 0), Math.min(30, Math.max(0, Number(profile.stamina || 0)) + Number(line.quantity)));
+      profile.stamina = staminaClamp(nk, Number(profile.stamina || 0) + Number(line.quantity));
     });
     const entitlements = profile.iap_entitlements || {};
     rewards.filter((line) => line.reward_type === "entitlement" && line.reward_id !== "no_ads_seconds").forEach((line) => {
@@ -8369,7 +8447,8 @@ function grantPreparedReward(nk, userId, adSessionId, transactionId) {
   const rewardIds = Array.isArray(profile._monetization_reward_ids) ? profile._monetization_reward_ids.map((value) => String(value)) : [];
   if (rewardIds.indexOf(adSessionId) < 0) {
     if (String(reward.reward_type) === "stamina") {
-      profile.stamina = Math.max(Number(profile.stamina || 0), Math.min(30, Math.max(0, Number(profile.stamina || 0)) + Number(reward.reward_amount || 0)));
+      const configuredAmount = Math.max(0, Math.floor(Number(getRemoteConfigValue(nk, "system", "stamina_ad_reward", reward.reward_amount || 0))));
+      profile.stamina = staminaClamp(nk, Number(profile.stamina || 0) + configuredAmount);
     } else {
       const resources = profile.resources || {};
       resources[String(reward.reward_type)] = Math.max(0, Number(resources[String(reward.reward_type)] || 0)) + Number(reward.reward_amount || 0);
@@ -8712,6 +8791,14 @@ function checkinStatusFor(state, campaign, window) {
     days: campaign.days
   };
 }
+function vipCheckinStatus(nk, status, level) {
+  const config = vipBenefitsConfig(nk);
+  return Object.assign({}, status, {
+    vip_level: level,
+    vip_reward_multiplier: 1 + level * config.reward_bonus_per_level,
+    days: status.days.map((day) => Object.assign({}, day, { base_grants: day.grants, grants: vipScaleRewardGrants(nk, day.grants, level) }))
+  });
+}
 function checkinGrantItem(items, itemId, amount) {
   if (!itemId || amount <= 0) return false;
   const existing = items.find((entry) => entry && String(entry.item_id || "") === itemId && entry.unique !== true);
@@ -8733,7 +8820,7 @@ function checkinApplyGrants(nk, profile, items, grants) {
       profile.resources[id] = Math.max(0, Number(profile.resources[id] || 0)) + amount;
       issued.push({ type, id, amount });
     } else if (type === "stamina") {
-      profile.stamina = Math.max(Number(profile.stamina || 0), Math.min(30, Math.max(0, Number(profile.stamina || 0)) + amount));
+      profile.stamina = staminaClamp(nk, Number(profile.stamina || 0) + amount);
       issued.push({ type, amount });
     } else if (type === "item" || type === "random_item") {
       let itemId = String(raw.id || "");
@@ -8778,7 +8865,8 @@ const dailyCheckinStatus = (ctx, _logger, nk, _payload) => {
     }]);
     if (created.length !== 1) return JSON.stringify({ success: false, active: false, message: "Could not initialize check-in campaign" });
   }
-  return JSON.stringify(Object.assign({ success: true }, checkinStatusFor(stored.state, selected.campaign, selected.window)));
+  const vip = readVipProgress(nk, ctx.userId, monetizationMode(ctx));
+  return JSON.stringify(Object.assign({ success: true }, vipCheckinStatus(nk, checkinStatusFor(stored.state, selected.campaign, selected.window), vip.level)));
 };
 const dailyCheckinClaim = (ctx, _logger, nk, payload) => {
   let req = {};
@@ -8804,7 +8892,8 @@ const dailyCheckinClaim = (ctx, _logger, nk, payload) => {
   if (!profileObject || !inventoryObject) return JSON.stringify({ success: false, message: "Player data is incomplete" });
   const stored = checkinReadState(nk, ctx.userId, selected.campaign, selected.window);
   const state = stored.state;
-  const status = checkinStatusFor(state, selected.campaign, selected.window);
+  const authoritativeVip = readVipProgress(nk, ctx.userId, monetizationMode(ctx));
+  const status = vipCheckinStatus(nk, checkinStatusFor(state, selected.campaign, selected.window), authoritativeVip.level);
   const requestedDay = Math.floor(Number(req.day || 0));
   if (requestedDay <= 0 || requestedDay > status.today_day) return JSON.stringify({ success: false, message: "Reward is not available yet", state: status });
   if (status.claimed_days.indexOf(requestedDay) >= 0) return JSON.stringify({ success: false, message: "Reward was already claimed", state: status });
@@ -8821,7 +8910,7 @@ const dailyCheckinClaim = (ctx, _logger, nk, payload) => {
   profile.resources = profile.resources || {};
   if (Number(profile.resources.gems || 0) < cost) return JSON.stringify({ success: false, message: "Not enough gems for catch-up", gem_cost: cost, state: status });
   profile.resources.gems = Math.max(0, Number(profile.resources.gems || 0) - cost);
-  const grants = checkinApplyGrants(nk, profile, items, day.grants);
+  const grants = checkinApplyGrants(nk, profile, items, vipScaleRewardGrants(nk, day.grants, authoritativeVip.level));
   if (!grants) return JSON.stringify({ success: false, message: "Invalid reward configuration" });
   const claimDate = checkinDayText(checkinLocalDay(now));
   const nextState = {
@@ -8851,7 +8940,7 @@ const dailyCheckinClaim = (ctx, _logger, nk, payload) => {
     grants,
     profile,
     inventory: items,
-    state: checkinStatusFor(nextState, selected.campaign, selected.window)
+    state: vipCheckinStatus(nk, checkinStatusFor(nextState, selected.campaign, selected.window), authoritativeVip.level)
   });
 };
 
@@ -8987,7 +9076,8 @@ function cpEvaluate(hero, level, affinities, roots, equipped, skills, progressio
   const element = String(hero.element || ""), amp = cpAmplification(cpNumber(roots[element]), progression);
   const attackMultiplier = 1 + Math.max(0, cpNumber(affinities[element])) * amp * 1e-4;
   const atk = Math.max(0, cpNumber(a.atk));
-  let dps = hero.auto_basic_attack === false ? 0 : atk * Math.max(0, cpNumber(a.attack_speed)) * cpNumber(cfg.basic_damage_multiplier) * crit;
+  const basicCooldown = Math.max(0.2, 2 - Math.max(0, cpNumber(a.attack_speed)) * 5e-3);
+  let dps = hero.auto_basic_attack === false ? 0 : atk * cpNumber(cfg.basic_damage_multiplier) * crit / basicCooldown;
   for (const id of cpArray(hero.starting_skills)) dps += cpSkillDps(String(id), 1, atk, crit, cpNumber(a.skill_cooldown_mul, 1), skills, cfg);
   dps *= attackMultiplier;
   if (equipped.length) {
@@ -9744,11 +9834,12 @@ function sweepStaminaTime(p, nowMs) {
 function sweepRefreshStamina(nk, p, now) {
   const sec = Math.max(Number(p.last_stamina_update || 0), Math.floor(sweepStaminaTime(p, now) / 1e3)), interval = Number(getRemoteConfigValue(nk, "system", "stamina_regen_interval_sec", 300)), amount = Number(getRemoteConfigValue(nk, "system", "stamina_regen_amount", 1));
   if (!Number.isFinite(interval) || interval <= 0 || !Number.isFinite(amount) || amount < 0) throw new Error("STAMINA_CONFIG_INVALID");
-  const last = Number(p.last_stamina_update || sec), current = Number(p.stamina || 0), ticks = Math.max(0, Math.floor((sec - last) / interval));
-  if (current < 30 && ticks > 0) {
-    p.stamina = Math.min(30, current + ticks * amount);
-    p.last_stamina_update = p.stamina >= 30 ? sec : last + ticks * interval;
-  } else if (current >= 30 || !p.last_stamina_update) p.last_stamina_update = sec;
+  const last = Number(p.last_stamina_update || sec), current = staminaClamp(nk, p.stamina), ticks = Math.max(0, Math.floor((sec - last) / interval));
+  const max = staminaMax(nk);
+  if (current < max && ticks > 0) {
+    p.stamina = Math.min(max, current + ticks * amount);
+    p.last_stamina_update = p.stamina >= max ? sec : last + ticks * interval;
+  } else if (current >= max || !p.last_stamina_update) p.last_stamina_update = sec;
 }
 function sweepRead(nk, userId, nowMs = Date.now()) {
   const rows = nk.storageRead(["player_profiles", "player_inventory", "player_heroes", "player_stage_runs", "player_trial_tower"].map((collection) => ({ collection, key: collection === "player_profiles" || collection === "player_trial_tower" ? "main" : collection === "player_inventory" ? "items" : collection === "player_heroes" ? "states" : "active", userId })));
@@ -9767,18 +9858,28 @@ function sweepWrite(nk, userId, s, full) {
   if (s.towerDirty && s.t) writes.push({ collection: "player_trial_tower", key: "main", userId, value: s.tower, version: s.t.version, permissionRead: 0, permissionWrite: 0 });
   nk.storageWrite(writes);
 }
+function campaignFinalBossStage(stage, isBoss) {
+  return isBoss === true && /^stage_[1-6]_10$/.test(stage);
+}
 function sweepRewardTable(nk, stage, mode, stageRow, level, grade, rules = null) {
   const boss = parseJsonb(level.boss_loot_table) || [], normal = parseJsonb(level.loot_table) || [];
   const table = (stageRow.is_boss && boss.length ? boss : normal).filter((r) => r.item_id !== SWEEP_TICKET && r.item_id !== TOWER_SWEEP_TICKET && r.resource_id !== "gold");
   const items = table.map((r) => Object.assign({}, r, { quantity: sweepQuantity(nk, r, grade, rules) })).filter((r) => r.quantity > 0);
-  if (mode === "legend" && stageRow.is_boss === true && ["stage_1_10", "stage_2_10", "stage_3_10", "stage_4_10", "stage_5_10"].indexOf(stage) >= 0) {
+  if (mode === "legend" && campaignFinalBossStage(stage, stageRow.is_boss)) {
     const arcs = nk.sqlQuery("SELECT element FROM game_arcs WHERE id = $1", [stageRow.arc_id]);
     const element = arcs.length ? String(arcs[0].element || "") : "";
+    const mixed = stageRow.arc_id === "arc_ngu_to_quy_khu";
     for (const tier of [{ name: "H\u1EA1 ph\u1EA9m", weight: 0.85 }, { name: "Trung ph\u1EA9m", weight: 0.15 }]) {
       const candidates = nk.sqlQuery("SELECT id, element FROM game_talismans WHERE tier = $1 ORDER BY id", [tier.name]);
       const match = candidates.filter((r) => String(r.element || "") === element), other = candidates.filter((r) => String(r.element || "") !== element);
+      const elementCounts = {};
+      if (mixed) for (const row of candidates) {
+        const key = String(row.element || "");
+        elementCounts[key] = (elementCounts[key] || 0) + 1;
+      }
       for (const row of candidates) {
-        const same = String(row.element || "") === element, weight = tier.weight * (same ? other.length ? 0.75 : 1 : match.length ? 0.25 : 1) / (same ? match.length : other.length);
+        const same = String(row.element || "") === element;
+        const weight = mixed ? tier.weight / Object.keys(elementCounts).length / elementCounts[String(row.element || "")] : tier.weight * (same ? other.length ? 0.75 : 1 : match.length ? 0.25 : 1) / (same ? match.length : other.length);
         items.push({ item_id: "talisman_fragment_" + Number(row.id), quantity: sweepQuantity(nk, { base_quantity: 3 }, grade, rules), group: "fragment", group_drop_rate: 0.7, weight, drop_rate: weight });
       }
     }
@@ -9805,7 +9906,7 @@ function stageCompletionLoot(nk, stage, level, ticketProbabilities, rules = null
     ordinary_combat_only: true,
     quantity_outcomes: probabilities.map((probability, quantity) => ({ quantity, probability }))
   });
-  if (stage.is_boss === true && /^stage_[1-5]_10$/.test(String(stage.id))) {
+  if (campaignFinalBossStage(String(stage.id), stage.is_boss)) {
     const rate = towerSweepConfig(nk).boss_ticket_rates[level.level_id];
     if (rate !== void 0) items.push({ item_id: TOWER_SWEEP_TICKET, min_qty: 1, max_qty: 1, drop_rate: rate, ordinary_combat_only: true });
   }
@@ -10633,6 +10734,44 @@ function deliverMail(nk, userId, input) {
   nk.storageWrite([Object.assign(mailWrite(row, userId), { version: "*" }), Object.assign({}, marker, { value: { source_id: row.source_id, created_at_ms: row.created_at_ms }, version: "*", permissionRead: 0, permissionWrite: 0 })]);
   if (!nk.__mailBatch) mailPush(nk, userId, row.id);
   return { id: row.id, idempotent: false };
+}
+function vipEnsureMilestoneMails(nk, userId, vip) {
+  if (!vip || !vip.configured || Number(vip.level) < 1) return [];
+  const config = vipBenefitsConfig(nk), sent = [];
+  for (const milestone of config.milestone_rewards) {
+    if (milestone.level > vip.level) break;
+    const source = "vip_milestone:" + milestone.level, id = mailId(nk, source);
+    const marker = { collection: "player_mail_deliveries", key: id, userId };
+    if (nk.storageRead([marker]).length) {
+      sent.push(milestone.level);
+      continue;
+    }
+    const totals = {};
+    for (const reward of milestone.rewards) {
+      if (reward.type === "item") totals[reward.id] = Number(totals[reward.id] || 0) + reward.amount;
+      else if (reward.type === "random_item_bundle") {
+        const item = reward.pool[Math.floor(Math.random() * reward.pool.length)];
+        totals[item] = Number(totals[item] || 0) + reward.amount;
+      } else for (let i = 0; i < reward.amount; i++) {
+        const item = reward.pool[Math.floor(Math.random() * reward.pool.length)];
+        totals[item] = Number(totals[item] || 0) + 1;
+      }
+    }
+    const attachments = Object.keys(totals).map((item) => ({ type: "item", id: item, amount: totals[item] }));
+    try {
+      deliverMail(nk, userId, {
+        source_id: source,
+        source_type: "vip_milestone",
+        title: "Qu\xE0 \u0111\u1EA1t VIP " + milestone.level,
+        body: "Ch\xFAc m\u1EEBng \u0111\u1EA1t VIP " + milestone.level + ". Qu\xE0 m\u1ED1c ch\u1EC9 g\u1EEDi m\u1ED9t l\u1EA7n. V\u1EADt ph\u1EA9m ng\u1EABu nhi\xEAn \u0111\xE3 \u0111\u01B0\u1EE3c ch\u1ED1t khi g\u1EEDi th\u01B0.",
+        attachments
+      });
+    } catch (error) {
+      if (!nk.storageRead([marker]).length) throw error;
+    }
+    sent.push(milestone.level);
+  }
+  return sent;
 }
 function mailVisibleSql() {
   return "COALESCE((value->>'deleted_at_ms')::BIGINT,0)=0 AND (value->>'purge_at_ms' IS NULL OR (value->>'purge_at_ms')::BIGINT>$3)";

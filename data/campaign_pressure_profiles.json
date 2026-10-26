@@ -1,0 +1,137 @@
+{
+  "version": 1,
+  "reference_model": {
+    "hero_id": "hero_1",
+    "element_lane": "neutral",
+    "card_quantiles": {
+      "p25": 0.08,
+      "p50": 0.12,
+      "p75": 0.16
+    },
+    "simulation_runs": 1,
+    "movement_profile": "analytical_standard"
+  },
+  "shape_limits": {
+    "max_step_up": 0.15,
+    "max_step_down": 0.1,
+    "opening_caps": [
+      0.5,
+      0.6,
+      0.7
+    ],
+    "p75_low_pressure_floor": 0.45,
+    "p25_opening_min_clear_rate": 0.8
+  },
+  "difficulty": {
+    "normal": {
+      "hp_mul": 1,
+      "atk_mul": 1,
+      "def_mul": 1,
+      "target_clear_rate": 0.7
+    },
+    "epic": {
+      "hp_mul": 1.5,
+      "atk_mul": 1.5,
+      "def_mul": 1.5,
+      "target_clear_rate": 0.6
+    },
+    "legend": {
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
+      "def_mul": 2.25,
+      "target_clear_rate": 0.5
+    }
+  },
+  "profiles": [
+    {
+      "arc_id": "arc_2",
+      "version": 1,
+      "power_start": 1,
+      "power_end": 1.9,
+      "curve": "ease_in_out",
+      "opening_allowed_roles": [
+        "grunt",
+        "rusher"
+      ],
+      "late_requirements": [
+        "single_target_check",
+        "crowd_check"
+      ]
+    },
+    {
+      "arc_id": "arc_frozen_realm",
+      "version": 1,
+      "power_start": 1,
+      "power_end": 2,
+      "curve": "ease_in_out",
+      "opening_allowed_roles": [
+        "grunt",
+        "rusher"
+      ],
+      "late_requirements": [
+        "single_target_check",
+        "crowd_check"
+      ]
+    },
+    {
+      "arc_id": "arc_verdant_realm",
+      "version": 1,
+      "power_start": 1,
+      "power_end": 2.1,
+      "curve": "ease_in_out",
+      "opening_allowed_roles": [
+        "grunt",
+        "rusher"
+      ],
+      "late_requirements": [
+        "single_target_check",
+        "crowd_check"
+      ]
+    },
+    {
+      "arc_id": "arc_iron_bastion",
+      "version": 1,
+      "power_start": 1,
+      "power_end": 2.2,
+      "curve": "ease_in_out",
+      "opening_allowed_roles": [
+        "grunt",
+        "rusher"
+      ],
+      "late_requirements": [
+        "single_target_check",
+        "crowd_check"
+      ]
+    },
+    {
+      "arc_id": "arc_titan_realm",
+      "version": 1,
+      "power_start": 1,
+      "power_end": 2.3,
+      "curve": "ease_in_out",
+      "opening_allowed_roles": [
+        "grunt",
+        "rusher"
+      ],
+      "late_requirements": [
+        "single_target_check",
+        "crowd_check"
+      ]
+    },
+    {
+      "arc_id": "arc_ngu_to_quy_khu",
+      "version": 1,
+      "power_start": 1,
+      "power_end": 1.315,
+      "curve": "ease_in_out",
+      "opening_allowed_roles": [
+        "normal",
+        "ranger"
+      ],
+      "late_requirements": [
+        "single_target_check",
+        "crowd_check"
+      ]
+    }
+  ]
+}

@@ -115,8 +115,8 @@ function sweepStaminaTime(p:any,nowMs:number):number {
 function sweepRefreshStamina(nk:nkruntime.Nakama,p:any,now:number):void {
     const sec=Math.max(Number(p.last_stamina_update||0),Math.floor(sweepStaminaTime(p,now)/1000)),interval=Number(getRemoteConfigValue(nk,'system','stamina_regen_interval_sec',300)),amount=Number(getRemoteConfigValue(nk,'system','stamina_regen_amount',1));
     if(!Number.isFinite(interval)||interval<=0||!Number.isFinite(amount)||amount<0)throw new Error('STAMINA_CONFIG_INVALID');
-    const last=Number(p.last_stamina_update||sec),current=Number(p.stamina||0),ticks=Math.max(0,Math.floor((sec-last)/interval));
-    if(current<30&&ticks>0){p.stamina=Math.min(30,current+ticks*amount);p.last_stamina_update=p.stamina>=30?sec:last+ticks*interval;}else if(current>=30||!p.last_stamina_update)p.last_stamina_update=sec;
+    const last=Number(p.last_stamina_update||sec),current=staminaClamp(nk,p.stamina),ticks=Math.max(0,Math.floor((sec-last)/interval));
+    const max=staminaMax(nk);if(current<max&&ticks>0){p.stamina=Math.min(max,current+ticks*amount);p.last_stamina_update=p.stamina>=max?sec:last+ticks*interval;}else if(current>=max||!p.last_stamina_update)p.last_stamina_update=sec;
 }
 function sweepRead(nk:nkruntime.Nakama,userId:string,nowMs:number=Date.now()):any {
     const rows=nk.storageRead(['player_profiles','player_inventory','player_heroes','player_stage_runs','player_trial_tower'].map(collection=>({collection,key:collection==='player_profiles'||collection==='player_trial_tower'?'main':collection==='player_inventory'?'items':collection==='player_heroes'?'states':'active',userId})));
@@ -134,17 +134,30 @@ function sweepWrite(nk:nkruntime.Nakama,userId:string,s:any,full:boolean):void {
     if(s.towerDirty&&s.t)writes.push({collection:'player_trial_tower',key:'main',userId,value:s.tower,version:s.t.version,permissionRead:0,permissionWrite:0});
     nk.storageWrite(writes);
 }
+// C221: display levels 51–60 do not change the account/hero level cap.
+// The sixth campaign final shares the existing final-boss reward rules.
+function campaignFinalBossStage(stage:string,isBoss:boolean):boolean {
+    return isBoss===true&&/^stage_[1-6]_10$/.test(stage);
+}
 function sweepRewardTable(nk:nkruntime.Nakama,stage:string,mode:string,stageRow:any,level:any,grade:string,rules:any=null):any[] {
     const boss=parseJsonb(level.boss_loot_table)||[],normal=parseJsonb(level.loot_table)||[];
     const table=(stageRow.is_boss&&boss.length?boss:normal).filter((r:any)=>r.item_id!==SWEEP_TICKET&&r.item_id!==TOWER_SWEEP_TICKET&&r.resource_id!=='gold');
     const items=table.map((r:any)=>Object.assign({},r,{quantity:sweepQuantity(nk,r,grade,rules)})).filter((r:any)=>r.quantity>0);
-    if(mode==='legend'&&stageRow.is_boss===true&&['stage_1_10','stage_2_10','stage_3_10','stage_4_10','stage_5_10'].indexOf(stage)>=0){
+    if(mode==='legend'&&campaignFinalBossStage(stage,stageRow.is_boss)){
         const arcs=nk.sqlQuery('SELECT element FROM game_arcs WHERE id = $1',[stageRow.arc_id]);
         const element=arcs.length?String(arcs[0].element||''):'';
+        const mixed=stageRow.arc_id==='arc_ngu_to_quy_khu';
         for(const tier of [{name:'Hạ phẩm',weight:0.85},{name:'Trung phẩm',weight:0.15}]){
             const candidates=nk.sqlQuery('SELECT id, element FROM game_talismans WHERE tier = $1 ORDER BY id',[tier.name]);
             const match=candidates.filter((r:any)=>String(r.element||'')===element),other=candidates.filter((r:any)=>String(r.element||'')!==element);
-            for(const row of candidates){const same=String(row.element||'')===element,weight=tier.weight*(same?(other.length?0.75:1):(match.length?0.25:1))/(same?match.length:other.length);items.push({item_id:'talisman_fragment_'+Number(row.id),quantity:sweepQuantity(nk,{base_quantity:3},grade,rules),group:'fragment',group_drop_rate:0.7,weight,drop_rate:weight});}
+            const elementCounts:any={};
+            if(mixed)for(const row of candidates){const key=String(row.element||'');elementCounts[key]=(elementCounts[key]||0)+1;}
+            for(const row of candidates){
+                const same=String(row.element||'')===element;
+                const weight=mixed?tier.weight/Object.keys(elementCounts).length/elementCounts[String(row.element||'')]
+                    :tier.weight*(same?(other.length?0.75:1):(match.length?0.25:1))/(same?match.length:other.length);
+                items.push({item_id:'talisman_fragment_'+Number(row.id),quantity:sweepQuantity(nk,{base_quantity:3},grade,rules),group:'fragment',group_drop_rate:0.7,weight,drop_rate:weight});
+            }
         }
     }
     const gold=sweepQuantity(nk,{base_quantity:Number(level.gold_reward||0)},grade,rules);if(gold)items.push({resource_id:'gold',quantity:gold,drop_rate:1});
@@ -163,7 +176,7 @@ function stageCompletionLoot(nk:nkruntime.Nakama,stage:any,level:any,ticketProba
     const probabilities=ticketProbabilities||sweepConfig(nk).ticket_probabilities;
     items.unshift({item_id:SWEEP_TICKET,min_qty:0,max_qty:2,drop_rate:probabilities[1]+probabilities[2],ordinary_combat_only:true,
         quantity_outcomes:probabilities.map((probability:number,quantity:number)=>({quantity,probability}))});
-    if(stage.is_boss===true&&/^stage_[1-5]_10$/.test(String(stage.id))){const rate=towerSweepConfig(nk).boss_ticket_rates[level.level_id];if(rate!==undefined)items.push({item_id:TOWER_SWEEP_TICKET,min_qty:1,max_qty:1,drop_rate:rate,ordinary_combat_only:true});}
+    if(campaignFinalBossStage(String(stage.id),stage.is_boss)){const rate=towerSweepConfig(nk).boss_ticket_rates[level.level_id];if(rate!==undefined)items.push({item_id:TOWER_SWEEP_TICKET,min_qty:1,max_qty:1,drop_rate:rate,ordinary_combat_only:true});}
     return items;
 }
 function stageTicketQuantity(nk:nkruntime.Nakama,roll:number=Math.random()):number {

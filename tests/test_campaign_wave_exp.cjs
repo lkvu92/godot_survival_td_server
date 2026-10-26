@@ -84,24 +84,32 @@ assert.deepEqual(synthetic, once, 'idempotence');
 
 const stages = read('stages');
 const levels = read('stage_levels');
+const campaignArcIds = new Set(read('arcs').filter(arc => Number(arc.order) >= 1).map(arc => arc.id));
+const enemies = new Map(read('enemies').map(enemy => [enemy.id, enemy]));
 let stageCount = 0;
 let waveCount = 0;
 let combinations = 0;
-for (const stage of stages.filter(candidate => ROLES[candidate.arc_id])) {
+let legacyStages = 0, legacyWaves = 0;
+for (const stage of stages.filter(candidate => campaignArcIds.has(candidate.arc_id))) {
   stageCount++;
   const roles = ROLES[stage.arc_id];
+  if (roles) legacyStages++;
   for (const mode of ['normal', 'epic', 'legend']) {
     assert.ok(levels.some(level => level.stage_id === stage.id && level.level_id === mode));
     combinations++;
     let level = 1;
     let carriedExp = 0;
     for (const [index, wave] of stage.waves.entries()) {
-      if (mode === 'normal') waveCount++;
+      if (mode === 'normal') {
+        waveCount++;
+        if (roles) legacyWaves++;
+      }
       assert.equal(expTotal(wave), getWaveExp(index + 1), `${stage.id}/${mode}/wave${index + 1}`);
       for (const entry of wave.entries) {
         assert.ok(Number.isInteger(entry.modifiers.exp) && entry.modifiers.exp > 0);
-        assert.ok(entry.boss || index >= 3 || entry.enemy_id !== roles.rusher, 'rusher gate preserved');
-        assert.ok(entry.boss || index >= 6 || entry.enemy_id !== roles.tanker, 'tanker gate preserved');
+        assert.ok(entry.boss || index >= 3 || entry.enemy_id !== roles?.rusher, 'rusher gate preserved');
+        const isTank = roles ? entry.enemy_id === roles.tanker : enemies.get(entry.enemy_id)?.arc6_role === 'tank';
+        assert.ok(entry.boss || index >= 6 || !isTank, 'tanker gate preserved');
         for (let kill = 0; kill < entry.count; kill++) {
           carriedExp += entry.modifiers.exp;
           while (carriedExp >= getWaveExp(level)) { carriedExp -= getWaveExp(level); level++; }
@@ -112,9 +120,11 @@ for (const stage of stages.filter(candidate => ROLES[candidate.arc_id])) {
     }
   }
 }
-assert.equal(stageCount, 50);
-assert.equal(waveCount, 985);
-assert.equal(combinations, 150);
+assert.equal(legacyStages, 50, 'original five arcs retain their 50 stages');
+assert.equal(legacyWaves, 985, 'original five arcs retain their 985 waves');
+assert.equal(stageCount, 60);
+assert.equal(waveCount, 1185);
+assert.equal(combinations, 180);
 const actualBefore = clone(stages);
 assert.equal(rebalanceWaveExp(stages), 0, 'seed already exact');
 assert.deepEqual(stages, actualBefore);

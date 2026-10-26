@@ -148,5 +148,33 @@
       "stage_5_09",
       "stage_5_10"
     ]
+  },
+  {
+    "id": "arc_ngu_to_quy_khu",
+    "display_name": "Ngũ Tố Quy Khư",
+    "description": "Vạn vật sinh từ hỗn độn, quy về hư vô. Linh khí Ngũ Hành cắn xé, không còn ranh giới.",
+    "level_min": 51,
+    "level_max": 60,
+    "enabled_if": {
+      "type": "always"
+    },
+    "element": "earth",
+    "order": 6,
+    "enemy_visual_scale_multiplier": 1.6,
+    "boss_skill_ids": [
+      "control_resistance_growth"
+    ],
+    "stage_ids": [
+      "stage_6_01",
+      "stage_6_02",
+      "stage_6_03",
+      "stage_6_04",
+      "stage_6_05",
+      "stage_6_06",
+      "stage_6_07",
+      "stage_6_08",
+      "stage_6_09",
+      "stage_6_10"
+    ]
   }
 ]

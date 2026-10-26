@@ -15,7 +15,7 @@
       "attack_range": 38,
       "crit_rate": 0.03,
       "crit_damage": 1.35,
-      "regen_percent_per_10s": 0.0
+      "regen_percent_per_10s": 0
     },
     "skills": [
       "bang_vuot"
@@ -25,12 +25,12 @@
       "gold": 1,
       "exp": 2
     },
-    "collision_radius": 20.0,
+    "collision_radius": 20,
     "attack_skill": {
       "id": "bang_vuot",
       "display_name": "Băng Vuốt",
       "type": "ice_claw",
-      "damage_multiplier": 1.0,
+      "damage_multiplier": 1,
       "radius": 64
     }
   },
@@ -50,7 +50,7 @@
       "attack_range": 54,
       "crit_rate": 0.03,
       "crit_damage": 1.5,
-      "regen_percent_per_10s": 0.0
+      "regen_percent_per_10s": 0
     },
     "skills": [
       "bang_vuot"
@@ -60,12 +60,12 @@
       "gold": 2,
       "exp": 3
     },
-    "collision_radius": 32.0,
+    "collision_radius": 32,
     "attack_skill": {
       "id": "bang_vuot",
       "display_name": "Băng Vuốt",
       "type": "ice_claw",
-      "damage_multiplier": 1.0,
+      "damage_multiplier": 1,
       "radius": 64
     }
   },
@@ -86,7 +86,7 @@
       "projectile_speed": 320,
       "crit_rate": 0.04,
       "crit_damage": 1.4,
-      "regen_percent_per_10s": 0.0
+      "regen_percent_per_10s": 0
     },
     "skills": [
       "bang_dan"
@@ -96,7 +96,7 @@
       "gold": 2,
       "exp": 3
     },
-    "collision_radius": 18.0,
+    "collision_radius": 18,
     "attack_effects": [
       {
         "id": "slow",
@@ -114,7 +114,7 @@
       "id": "bang_dan",
       "display_name": "Băng Đạn",
       "type": "ice_bolt",
-      "damage_multiplier": 1.0,
+      "damage_multiplier": 1,
       "radius": 0
     }
   },
@@ -134,7 +134,7 @@
       "attack_range": 34,
       "crit_rate": 0.05,
       "crit_damage": 1.35,
-      "regen_percent_per_10s": 0.0
+      "regen_percent_per_10s": 0
     },
     "skills": [
       "bang_vuot"
@@ -144,12 +144,12 @@
       "gold": 2,
       "exp": 3
     },
-    "collision_radius": 16.0,
+    "collision_radius": 16,
     "attack_skill": {
       "id": "bang_vuot",
       "display_name": "Băng Vuốt",
       "type": "ice_claw",
-      "damage_multiplier": 1.0,
+      "damage_multiplier": 1,
       "radius": 64
     }
   },
@@ -169,7 +169,7 @@
       "attack_range": 30,
       "crit_rate": 0.05,
       "crit_damage": 1.35,
-      "regen_percent_per_10s": 0.0
+      "regen_percent_per_10s": 0
     },
     "skills": [
       "bang_vuot"
@@ -179,12 +179,12 @@
       "gold": 1,
       "exp": 2
     },
-    "collision_radius": 22.0,
+    "collision_radius": 22,
     "attack_skill": {
       "id": "bang_vuot",
       "display_name": "Băng Vuốt",
       "type": "ice_claw",
-      "damage_multiplier": 1.0,
+      "damage_multiplier": 1,
       "radius": 64
     }
   },
@@ -204,7 +204,7 @@
       "attack_range": 52,
       "crit_rate": 0.04,
       "crit_damage": 1.55,
-      "regen_percent_per_10s": 0.0
+      "regen_percent_per_10s": 0
     },
     "skills": [
       "tia_doc"
@@ -214,7 +214,7 @@
       "gold": 6,
       "exp": 6
     },
-    "collision_radius": 22.0
+    "collision_radius": 22
   },
   {
     "id": "ice_golem",
@@ -245,8 +245,8 @@
         "display_name": "Permafrost Core",
         "params": {
           "shield_percent_max_hp": 0.2,
-          "cooldown_seconds": 20.0,
-          "initial_delay_seconds": 6.0
+          "cooldown_seconds": 20,
+          "initial_delay_seconds": 6
         }
       },
       {
@@ -276,11 +276,11 @@
         "pulse_multiplier": 0.1,
         "pulse_radius_multiplier": 1.5,
         "radius": 120,
-        "range": 400,
-        "charge_duration": 2.0,
-        "warning_time": 0.0,
-        "cooldown": 12.0,
-        "initial_cooldown": 2.0
+        "range": 700,
+        "charge_duration": 2,
+        "warning_time": 0,
+        "cooldown": 12,
+        "initial_cooldown": 2
       }
     ],
     "reward": {
@@ -288,7 +288,7 @@
       "level_up": 1,
       "exp": 35
     },
-    "collision_radius": 32.0
+    "collision_radius": 32
   },
   {
     "id": "ghost_low",
@@ -324,10 +324,10 @@
         "pulse_multiplier": 0.1,
         "pulse_radius_multiplier": 1.5,
         "radius": 135,
-        "range": 400,
-        "charge_duration": 2.0,
-        "warning_time": 0.0,
-        "cooldown": 12.0,
+        "range": 700,
+        "charge_duration": 2,
+        "warning_time": 0,
+        "cooldown": 12,
         "initial_cooldown": 1.8
       },
       {
@@ -338,10 +338,10 @@
         "cocoon_multiplier": 0.5,
         "splinter_multiplier": 0.5,
         "radius": 145,
-        "range": 420,
-        "charge_duration": 2.0,
-        "warning_time": 0.0,
-        "cooldown": 16.0,
+        "range": 550,
+        "charge_duration": 2,
+        "warning_time": 0,
+        "cooldown": 16,
         "initial_cooldown": 1.5
       }
     ],
@@ -350,7 +350,7 @@
       "level_up": 1,
       "exp": 60
     },
-    "collision_radius": 22.0
+    "collision_radius": 22
   },
   {
     "id": "ghost_medium",
@@ -375,13 +375,45 @@
       "medium_ghost_slam"
     ],
     "generic_skills": [],
-    "boss_skills": [],
+    "boss_skills": [
+      {
+        "id": "cuc_bang_tam_trong_thien",
+        "display_name": "Cực Băng Tam Trọng Thiên",
+        "type": "ice_trinity",
+        "damage_multiplier": 1.5,
+        "impact_multiplier": 0.2,
+        "pulse_count": 3,
+        "pulse_interval": 0.8,
+        "pulse_multiplier": 0.1,
+        "pulse_radius_multiplier": 1.5,
+        "radius": 135,
+        "range": 700,
+        "charge_duration": 2,
+        "warning_time": 0,
+        "cooldown": 12,
+        "initial_cooldown": 1.8
+      },
+      {
+        "id": "bang_linh_long",
+        "display_name": "Băng Linh Lung",
+        "type": "ice_linglong",
+        "damage_multiplier": 1.5,
+        "cocoon_multiplier": 0.5,
+        "splinter_multiplier": 0.5,
+        "radius": 145,
+        "range": 550,
+        "charge_duration": 2,
+        "warning_time": 0,
+        "cooldown": 16,
+        "initial_cooldown": 1.5
+      }
+    ],
     "reward": {
       "gold": 80,
       "level_up": 1,
       "exp": 100
     },
-    "collision_radius": 28.0
+    "collision_radius": 28
   },
   {
     "id": "frost_giant",
@@ -399,7 +431,7 @@
       "attack_range": 65,
       "crit_rate": 0.03,
       "crit_damage": 1.5,
-      "regen_percent_per_10s": 0.0
+      "regen_percent_per_10s": 0
     },
     "skills": [
       "bang_tru_chan_dia"
@@ -409,12 +441,12 @@
       "gold": 8,
       "exp": 8
     },
-    "collision_radius": 22.0,
+    "collision_radius": 22,
     "attack_skill": {
       "id": "bang_tru_chan_dia",
       "display_name": "Băng Trụ Chấn Địa",
       "type": "ice_pillar",
-      "damage_multiplier": 1.0,
+      "damage_multiplier": 1,
       "radius": 82,
       "effects": [
         {
@@ -447,7 +479,7 @@
       "attack_range": 85,
       "crit_rate": 0.05,
       "crit_damage": 1.45,
-      "regen_percent_per_10s": 0.0
+      "regen_percent_per_10s": 0
     },
     "skills": [
       "bang_tru_chan_dia"
@@ -457,12 +489,12 @@
       "gold": 7,
       "exp": 6
     },
-    "collision_radius": 22.0,
+    "collision_radius": 22,
     "attack_skill": {
       "id": "bang_tru_chan_dia",
       "display_name": "Băng Trụ Chấn Địa",
       "type": "ice_pillar",
-      "damage_multiplier": 1.0,
+      "damage_multiplier": 1,
       "radius": 82,
       "effects": [
         {
@@ -491,11 +523,11 @@
       "atk": 18,
       "def": 4,
       "move_speed": 74,
-      "attack_speed": 1.0,
+      "attack_speed": 1,
       "attack_range": 36,
       "crit_rate": 0.04,
       "crit_damage": 1.35,
-      "regen_percent_per_10s": 0.0
+      "regen_percent_per_10s": 0
     },
     "skills": [
       "lieu_hoa_tam_tram"
@@ -514,12 +546,12 @@
       "gold": 10,
       "exp": 10
     },
-    "collision_radius": 20.0,
+    "collision_radius": 20,
     "attack_skill": {
       "id": "lieu_hoa_tam_tram",
       "display_name": "Liệt Hỏa Tam Trảm",
       "type": "fire_claw",
-      "damage_multiplier": 1.0,
+      "damage_multiplier": 1,
       "radius": 64
     }
   },
@@ -539,7 +571,7 @@
       "attack_range": 32,
       "crit_rate": 0.05,
       "crit_damage": 1.35,
-      "regen_percent_per_10s": 0.0
+      "regen_percent_per_10s": 0
     },
     "skills": [
       "lieu_hoa_tam_tram"
@@ -558,12 +590,12 @@
       "gold": 13,
       "exp": 13
     },
-    "collision_radius": 16.0,
+    "collision_radius": 16,
     "attack_skill": {
       "id": "lieu_hoa_tam_tram",
       "display_name": "Liệt Hỏa Tam Trảm",
       "type": "fire_claw",
-      "damage_multiplier": 1.0,
+      "damage_multiplier": 1,
       "radius": 64
     }
   },
@@ -584,7 +616,7 @@
       "projectile_speed": 340,
       "crit_rate": 0.05,
       "crit_damage": 1.45,
-      "regen_percent_per_10s": 0.0
+      "regen_percent_per_10s": 0
     },
     "skills": [
       "xich_viem_chau"
@@ -592,8 +624,8 @@
     "attack_effects": [
       {
         "id": "burn",
-        "duration": 3.0,
-        "dps": 12.0,
+        "duration": 3,
+        "dps": 12,
         "tick_interval": 0.5
       }
     ],
@@ -603,8 +635,8 @@
         "display_name": "Hỏa Thuẫn",
         "params": {
           "shield_percent_max_hp": 0.2,
-          "duration_seconds": 6.0,
-          "cooldown_seconds": 10.0,
+          "duration_seconds": 6,
+          "cooldown_seconds": 10,
           "initial_delay_seconds": 1.5
         }
       }
@@ -613,12 +645,12 @@
       "gold": 16,
       "exp": 16
     },
-    "collision_radius": 18.0,
+    "collision_radius": 18,
     "attack_skill": {
       "id": "xich_viem_chau",
       "display_name": "Xích Viêm Châu",
       "type": "fire_ball",
-      "damage_multiplier": 1.0,
+      "damage_multiplier": 1,
       "radius": 0
     }
   },
@@ -638,7 +670,7 @@
       "attack_range": 68,
       "crit_rate": 0.03,
       "crit_damage": 1.55,
-      "regen_percent_per_10s": 0.0
+      "regen_percent_per_10s": 0
     },
     "skills": [
       "chan_nguc_viem_dap"
@@ -657,12 +689,12 @@
       "gold": 22,
       "exp": 22
     },
-    "collision_radius": 34.0,
+    "collision_radius": 34,
     "attack_skill": {
       "id": "chan_nguc_viem_dap",
       "display_name": "Chấn Ngục Viêm Đạp",
       "type": "fire_stomp",
-      "damage_multiplier": 1.0,
+      "damage_multiplier": 1,
       "radius": 90,
       "pulse_count": 2,
       "pulse_interval": 0.5,
@@ -688,7 +720,7 @@
       "attack_range": 38,
       "crit_rate": 0.03,
       "crit_damage": 1.35,
-      "regen_percent_per_10s": 0.0
+      "regen_percent_per_10s": 0
     },
     "skills": [
       "tia_doc"
@@ -699,9 +731,9 @@
         "display_name": "Giáp Bào Tử",
         "params": {
           "reflect_percent_received": 0.04,
-          "duration_seconds": 4.0,
-          "cooldown_seconds": 10.0,
-          "initial_delay_seconds": 3.0
+          "duration_seconds": 4,
+          "cooldown_seconds": 10,
+          "initial_delay_seconds": 3
         }
       }
     ],
@@ -709,11 +741,11 @@
       "gold": 28,
       "exp": 28
     },
-    "collision_radius": 20.0,
+    "collision_radius": 20,
     "attack_effects": [
       {
         "id": "poison",
-        "duration": 3.0,
+        "duration": 3,
         "dps_multiplier": 0.1,
         "tick_interval": 0.5
       }
@@ -722,7 +754,7 @@
       "id": "tia_doc",
       "display_name": "Tia Độc",
       "type": "wood_bolt",
-      "damage_multiplier": 1.0,
+      "damage_multiplier": 1,
       "range": 250
     }
   },
@@ -743,7 +775,7 @@
       "projectile_speed": 320,
       "crit_rate": 0.04,
       "crit_damage": 1.45,
-      "regen_percent_per_10s": 0.0
+      "regen_percent_per_10s": 0
     },
     "skills": [
       "tia_doc"
@@ -751,7 +783,7 @@
     "attack_effects": [
       {
         "id": "poison",
-        "duration": 3.0,
+        "duration": 3,
         "dps_multiplier": 0.1,
         "tick_interval": 0.5
       }
@@ -762,9 +794,9 @@
         "display_name": "Vỏ Gai",
         "params": {
           "shield_percent_max_hp": 0.18,
-          "duration_seconds": 6.0,
-          "cooldown_seconds": 10.0,
-          "initial_delay_seconds": 2.0
+          "duration_seconds": 6,
+          "cooldown_seconds": 10,
+          "initial_delay_seconds": 2
         }
       }
     ],
@@ -772,12 +804,12 @@
       "gold": 31,
       "exp": 31
     },
-    "collision_radius": 18.0,
+    "collision_radius": 18,
     "attack_skill": {
       "id": "tia_doc",
       "display_name": "Tia Độc",
       "type": "wood_bolt",
-      "damage_multiplier": 1.0,
+      "damage_multiplier": 1,
       "range": 310
     }
   },
@@ -797,7 +829,7 @@
       "attack_range": 34,
       "crit_rate": 0.05,
       "crit_damage": 1.35,
-      "regen_percent_per_10s": 0.0
+      "regen_percent_per_10s": 0
     },
     "skills": [
       "tia_doc"
@@ -816,11 +848,11 @@
       "gold": 35,
       "exp": 35
     },
-    "collision_radius": 16.0,
+    "collision_radius": 16,
     "attack_effects": [
       {
         "id": "poison",
-        "duration": 3.0,
+        "duration": 3,
         "dps_multiplier": 0.1,
         "tick_interval": 0.5
       }
@@ -829,7 +861,7 @@
       "id": "tia_doc",
       "display_name": "Tia Độc",
       "type": "wood_bolt",
-      "damage_multiplier": 1.0,
+      "damage_multiplier": 1,
       "range": 250
     }
   },
@@ -849,7 +881,7 @@
       "attack_range": 64,
       "crit_rate": 0.03,
       "crit_damage": 1.55,
-      "regen_percent_per_10s": 0.0
+      "regen_percent_per_10s": 0
     },
     "skills": [
       "day_leo_hut_mau"
@@ -859,7 +891,7 @@
         "id": "defense_aura",
         "display_name": "Vỏ Cây Cộng Sinh",
         "params": {
-          "radius": 180.0,
+          "radius": 180,
           "def_multiplier": 1.3
         }
       },
@@ -875,23 +907,23 @@
       "gold": 42,
       "exp": 42
     },
-    "collision_radius": 34.0,
+    "collision_radius": 34,
     "attack_skill": {
       "id": "day_leo_hut_mau",
       "display_name": "Dây Leo Hút Máu",
       "type": "wood_vine",
-      "damage_multiplier": 1.0,
+      "damage_multiplier": 1,
       "radius": 72,
       "range": 170,
       "lifesteal_percent": 0.2,
       "effects": [
         {
           "id": "root",
-          "duration": 3.0
+          "duration": 3
         },
         {
           "id": "poison",
-          "duration": 3.0,
+          "duration": 3,
           "dps_multiplier": 0.1,
           "tick_interval": 0.5
         }
@@ -914,7 +946,7 @@
       "attack_range": 34,
       "crit_rate": 0.05,
       "crit_damage": 1.35,
-      "regen_percent_per_10s": 0.0
+      "regen_percent_per_10s": 0
     },
     "skills": [
       "melee_hit"
@@ -933,7 +965,7 @@
       "gold": 52,
       "exp": 52
     },
-    "collision_radius": 16.0,
+    "collision_radius": 16,
     "attack_skill": {
       "type": "metal_slash",
       "display_name": "Canh Kim Song Trảm",
@@ -959,7 +991,7 @@
       "projectile_speed": 400,
       "crit_rate": 0.06,
       "crit_damage": 1.55,
-      "regen_percent_per_10s": 0.0
+      "regen_percent_per_10s": 0
     },
     "skills": [
       "ranged_bolt"
@@ -984,7 +1016,7 @@
       "gold": 58,
       "exp": 58
     },
-    "collision_radius": 18.0,
+    "collision_radius": 18,
     "attack_skill": {
       "type": "metal_bolt",
       "display_name": "Kim Mang Liên Nỗ",
@@ -1007,7 +1039,7 @@
       "attack_range": 40,
       "crit_rate": 0.03,
       "crit_damage": 1.45,
-      "regen_percent_per_10s": 0.0
+      "regen_percent_per_10s": 0
     },
     "skills": [
       "melee_hit"
@@ -1034,7 +1066,7 @@
       "gold": 65,
       "exp": 65
     },
-    "collision_radius": 20.0,
+    "collision_radius": 20,
     "attack_skill": {
       "type": "metal_punch",
       "display_name": "Toái Kim Bạo Quyền",
@@ -1065,7 +1097,7 @@
       "attack_range": 64,
       "crit_rate": 0.02,
       "crit_damage": 1.55,
-      "regen_percent_per_10s": 0.0
+      "regen_percent_per_10s": 0
     },
     "skills": [
       "melee_hit"
@@ -1076,9 +1108,9 @@
         "display_name": "Phản Kích Khiên Tháp",
         "params": {
           "reflect_percent_received": 0.05,
-          "duration_seconds": 4.0,
-          "cooldown_seconds": 10.0,
-          "initial_delay_seconds": 3.0
+          "duration_seconds": 4,
+          "cooldown_seconds": 10,
+          "initial_delay_seconds": 3
         }
       }
     ],
@@ -1086,7 +1118,7 @@
       "gold": 74,
       "exp": 74
     },
-    "collision_radius": 34.0,
+    "collision_radius": 34,
     "attack_skill": {
       "type": "metal_punch",
       "display_name": "Toái Kim Bạo Quyền",
@@ -1117,7 +1149,7 @@
       "attack_range": 68,
       "crit_rate": 0.02,
       "crit_damage": 1.65,
-      "regen_percent_per_10s": 0.0
+      "regen_percent_per_10s": 0
     },
     "skills": [
       "melee_hit"
@@ -1142,12 +1174,12 @@
       "gold": 95,
       "exp": 95
     },
-    "collision_radius": 34.0,
+    "collision_radius": 34,
     "attack_skill": {
       "type": "earth_punch",
       "display_name": "Hám Địa Bạo Quyền",
       "radius": 85,
-      "damage_multiplier": 1.0,
+      "damage_multiplier": 1,
       "effects": [
         {
           "id": "stun",
@@ -1173,7 +1205,7 @@
       "attack_range": 36,
       "crit_rate": 0.07,
       "crit_damage": 1.65,
-      "regen_percent_per_10s": 0.0
+      "regen_percent_per_10s": 0
     },
     "skills": [
       "melee_hit"
@@ -1192,12 +1224,12 @@
       "gold": 85,
       "exp": 85
     },
-    "collision_radius": 16.0,
+    "collision_radius": 16,
     "attack_skill": {
       "type": "earth_punch",
       "display_name": "Hám Địa Bạo Quyền",
       "radius": 85,
-      "damage_multiplier": 1.0,
+      "damage_multiplier": 1,
       "effects": [
         {
           "id": "stun",
@@ -1224,7 +1256,7 @@
       "projectile_speed": 360,
       "crit_rate": 0.04,
       "crit_damage": 1.7,
-      "regen_percent_per_10s": 0.0
+      "regen_percent_per_10s": 0
     },
     "skills": [
       "ranged_bolt"
@@ -1236,9 +1268,9 @@
         "display_name": "Trụ Đá Hộ Thân",
         "params": {
           "shield_percent_max_hp": 0.12,
-          "duration_seconds": 6.0,
-          "cooldown_seconds": 11.0,
-          "initial_delay_seconds": 2.0
+          "duration_seconds": 6,
+          "cooldown_seconds": 11,
+          "initial_delay_seconds": 2
         }
       }
     ],
@@ -1246,14 +1278,14 @@
       "gold": 105,
       "exp": 105
     },
-    "collision_radius": 18.0,
+    "collision_radius": 18,
     "attack_skill": {
       "type": "earth_orb",
       "display_name": "Ngưng Sa Bạo Châu",
       "range": 340,
       "radius": 65,
       "detonation_delay": 0.5,
-      "damage_multiplier": 1.0,
+      "damage_multiplier": 1,
       "effects": [
         {
           "id": "paralyze",
@@ -1279,7 +1311,7 @@
       "attack_range": 340,
       "crit_rate": 0.08,
       "crit_damage": 1.8,
-      "regen_percent_per_10s": 0.0,
+      "regen_percent_per_10s": 0,
       "projectile_speed": 360
     },
     "skills": [
@@ -1307,14 +1339,14 @@
       "gold": 120,
       "exp": 120
     },
-    "collision_radius": 20.0,
+    "collision_radius": 20,
     "attack_skill": {
       "type": "earth_orb",
       "display_name": "Ngưng Sa Bạo Châu",
       "range": 340,
       "radius": 65,
       "detonation_delay": 0.5,
-      "damage_multiplier": 1.0,
+      "damage_multiplier": 1,
       "effects": [
         {
           "id": "paralyze",
@@ -1330,6 +1362,8 @@
     "element": "earth",
     "attack_type": "melee",
     "visual_scale": 0.15,
+    "boss_visual_scale": 0.442,
+    "is_boss": true,
     "exp": 120,
     "attributes": {
       "hp": 400,
@@ -1340,7 +1374,7 @@
       "attack_range": 48,
       "crit_rate": 0.08,
       "crit_damage": 1.8,
-      "regen_percent_per_10s": 0.0
+      "regen_percent_per_10s": 0
     },
     "skills": [
       "melee_hit"
@@ -1367,10 +1401,10 @@
       "gold": 120,
       "exp": 120
     },
-    "collision_radius": 20.0,
+    "collision_radius": 20,
     "boss_skills": [
       {
-        "range": 650,
+        "range": 700,
         "warning_time": 0,
         "id": "ngu_hanh_lien_xung",
         "display_name": "Ngũ Hành Liên Xung",
@@ -1397,7 +1431,7 @@
         ]
       },
       {
-        "range": 650,
+        "range": 550,
         "warning_time": 0,
         "id": "can_khon_ngu_hoa_toa",
         "display_name": "Càn Khôn Ngũ Hóa Tỏa",
@@ -1522,7 +1556,7 @@
         "damage_multiplier": 0.5,
         "meteor_count": 3,
         "radius": 80,
-        "range": 480,
+        "range": 700,
         "warning_time": 0.8,
         "cooldown": 12,
         "scatter_radius": 85,
@@ -1543,7 +1577,7 @@
       "exp": 180,
       "level_up": 1
     },
-    "collision_radius": 26.0
+    "collision_radius": 26
   },
   {
     "id": "infernal_dragon",
@@ -1573,8 +1607,8 @@
     "attack_effects": [
       {
         "id": "burn",
-        "duration": 3.0,
-        "dps": 24.0,
+        "duration": 3,
+        "dps": 24,
         "tick_interval": 0.5
       }
     ],
@@ -1584,9 +1618,9 @@
         "display_name": "Long Lân Hỏa Ngục",
         "params": {
           "shield_percent_max_hp": 0.18,
-          "duration_seconds": 6.0,
-          "cooldown_seconds": 14.0,
-          "initial_delay_seconds": 4.0
+          "duration_seconds": 6,
+          "cooldown_seconds": 14,
+          "initial_delay_seconds": 4
         }
       }
     ],
@@ -1598,7 +1632,7 @@
         "damage_multiplier": 0.5,
         "meteor_count": 3,
         "radius": 80,
-        "range": 480,
+        "range": 700,
         "warning_time": 0.8,
         "cooldown": 12,
         "scatter_radius": 85,
@@ -1620,7 +1654,7 @@
         "damage_multiplier": 0.75,
         "radius": 100,
         "column_radius": 48,
-        "range": 480,
+        "range": 550,
         "warning_time": 0.8,
         "cooldown": 20,
         "duration": 4,
@@ -1666,7 +1700,7 @@
         "id": "defense_aura",
         "display_name": "Tán Rừng Hộ Mệnh",
         "params": {
-          "radius": 240.0,
+          "radius": 240,
           "def_multiplier": 1.25
         }
       }
@@ -1676,16 +1710,16 @@
         "id": "van_doc_xich_dang",
         "display_name": "Vạn Độc Xích Đằng",
         "type": "wood_swamp",
-        "duration": 4.0,
+        "duration": 4,
         "dot_interval": 0.5,
-        "thorn_delay": 2.0,
+        "thorn_delay": 2,
         "thorn_offset": 40,
         "thorn_multiplier": 0.5,
         "burst_multiplier": 0.1,
         "radius": 165,
-        "range": 500,
-        "warning_time": 0.0,
-        "cooldown": 12.0,
+        "range": 700,
+        "warning_time": 0,
+        "cooldown": 12,
         "effects": [
           {
             "id": "poison",
@@ -1704,7 +1738,7 @@
       "exp": 340,
       "level_up": 1
     },
-    "collision_radius": 30.0
+    "collision_radius": 30
   },
   {
     "id": "poison_hydra",
@@ -1734,8 +1768,8 @@
     "attack_effects": [
       {
         "id": "poison",
-        "duration": 4.0,
-        "dps": 10.0,
+        "duration": 4,
+        "dps": 10,
         "tick_interval": 0.5
       }
     ],
@@ -1753,16 +1787,16 @@
         "id": "van_doc_xich_dang",
         "display_name": "Vạn Độc Xích Đằng",
         "type": "wood_swamp",
-        "duration": 4.0,
+        "duration": 4,
         "dot_interval": 0.5,
-        "thorn_delay": 2.0,
+        "thorn_delay": 2,
         "thorn_offset": 45,
         "thorn_multiplier": 0.5,
         "burst_multiplier": 0.1,
         "radius": 195,
-        "range": 500,
-        "warning_time": 0.0,
-        "cooldown": 12.0,
+        "range": 700,
+        "warning_time": 0,
+        "cooldown": 12,
         "effects": [
           {
             "id": "poison",
@@ -1779,17 +1813,17 @@
         "id": "u_hon_phe_cot",
         "display_name": "U Hồn Phệ Cốt",
         "type": "wood_soul",
-        "charge_duration": 4.0,
-        "skull_offset": 125.0,
+        "charge_duration": 4,
+        "skull_offset": 125,
         "skull_count": 8,
         "skull_launch_interval": 0.15,
-        "skull_speed": 540.0,
+        "skull_speed": 540,
         "skull_multiplier": 0.35,
         "explosion_multiplier": 0.15,
         "radius": 150,
-        "range": 600,
-        "warning_time": 0.0,
-        "cooldown": 18.0,
+        "range": 550,
+        "warning_time": 0,
+        "cooldown": 18,
         "initial_cooldown": 3
       }
     ],
@@ -1798,7 +1832,7 @@
       "exp": 440,
       "level_up": 1
     },
-    "collision_radius": 32.0
+    "collision_radius": 32
   },
   {
     "id": "dreadnought_tank",
@@ -1836,8 +1870,8 @@
         "display_name": "Phản Chấn Thép",
         "params": {
           "reflect_percent_received": 0.05,
-          "duration_seconds": 4.0,
-          "cooldown_seconds": 11.0
+          "duration_seconds": 4,
+          "cooldown_seconds": 11
         }
       }
     ],
@@ -1846,7 +1880,7 @@
         "id": "bach_kim_toai_kich",
         "display_name": "Bạch Kim Toái Kích",
         "type": "metal_shatter",
-        "range": 430,
+        "range": 700,
         "radius": 145,
         "warning_time": 0,
         "cooldown": 9,
@@ -1882,7 +1916,7 @@
       "exp": 560,
       "level_up": 1
     },
-    "collision_radius": 30.0
+    "collision_radius": 30
   },
   {
     "id": "mecha_overlord",
@@ -1915,8 +1949,8 @@
         "params": {
           "hp_below_pct": 0.2,
           "shield_percent_max_hp": 0.2,
-          "duration_seconds": 6.0,
-          "cooldown_seconds": 0.0,
+          "duration_seconds": 6,
+          "cooldown_seconds": 0,
           "max_triggers": 1
         }
       },
@@ -1942,7 +1976,7 @@
         "id": "bach_kim_toai_kich",
         "display_name": "Bạch Kim Toái Kích",
         "type": "metal_shatter",
-        "range": 430,
+        "range": 700,
         "radius": 145,
         "warning_time": 0,
         "cooldown": 9,
@@ -1976,7 +2010,7 @@
         "id": "bach_ho_pha_son_quyen",
         "display_name": "Bạch Hổ Phá Sơn Quyền",
         "type": "metal_fist",
-        "range": 430,
+        "range": 550,
         "radius": 160,
         "warning_time": 0,
         "cooldown": 10,
@@ -2005,7 +2039,7 @@
       "exp": 720,
       "level_up": 1
     },
-    "collision_radius": 32.0
+    "collision_radius": 32
   },
   {
     "id": "earth_titan",
@@ -2049,10 +2083,10 @@
     ],
     "boss_skills": [
       {
-        "range": 650,
+        "range": 700,
         "radius": 180,
         "warning_time": 0,
-        "lock_duration": 2.0,
+        "lock_duration": 2,
         "slow_percent": 0.5,
         "attack_slow_percent": 0.3,
         "id": "sa_thach_toai_kich",
@@ -2086,7 +2120,7 @@
       "exp": 900,
       "level_up": 1
     },
-    "collision_radius": 30.0
+    "collision_radius": 30
   },
   {
     "id": "primordial_god",
@@ -2106,7 +2140,7 @@
       "attack_range": 400,
       "projectile_speed": 380,
       "crit_rate": 0.1,
-      "crit_damage": 2.0,
+      "crit_damage": 2,
       "regen_percent_per_10s": 0.012
     },
     "skills": [
@@ -2151,8 +2185,8 @@
           "hp_below_pct": 0.2,
           "shield_percent_max_hp": 0.15,
           "heal_percent_max_hp": 0.15,
-          "duration_seconds": 6.0,
-          "cooldown_seconds": 0.0,
+          "duration_seconds": 6,
+          "cooldown_seconds": 0,
           "max_triggers": 1
         }
       },
@@ -2161,17 +2195,17 @@
         "display_name": "Kim Cương Phản Chấn",
         "params": {
           "reflect_percent_received": 0.02,
-          "duration_seconds": 3.0,
-          "cooldown_seconds": 15.0
+          "duration_seconds": 3,
+          "cooldown_seconds": 15
         }
       }
     ],
     "boss_skills": [
       {
-        "range": 650,
+        "range": 700,
         "radius": 180,
         "warning_time": 0,
-        "lock_duration": 2.0,
+        "lock_duration": 2,
         "slow_percent": 0.5,
         "attack_slow_percent": 0.3,
         "id": "sa_thach_toai_kich",
@@ -2200,10 +2234,10 @@
         ]
       },
       {
-        "range": 650,
+        "range": 550,
         "radius": 180,
         "warning_time": 0,
-        "lock_duration": 2.0,
+        "lock_duration": 2,
         "slow_percent": 0.5,
         "attack_slow_percent": 0.3,
         "id": "hoang_long_pha_dia",
@@ -2223,7 +2257,7 @@
         "effects": [
           {
             "id": "stun",
-            "duration": 1.0
+            "duration": 1
           }
         ]
       }
@@ -2233,7 +2267,7 @@
       "exp": 1200,
       "level_up": 1
     },
-    "collision_radius": 32.0
+    "collision_radius": 32
   },
   {
     "id": "dummy_boss",
@@ -2250,9 +2284,9 @@
       "move_speed": 15,
       "attack_speed": 0.5,
       "attack_range": 420,
-      "crit_rate": 0.0,
-      "crit_damage": 1.0,
-      "regen_percent_per_10s": 0.0
+      "crit_rate": 0,
+      "crit_damage": 1,
+      "regen_percent_per_10s": 0
     },
     "skills": [
       "melee_hit"
@@ -2264,7 +2298,8 @@
         "type": "slam_aoe",
         "damage": 1,
         "radius": 40,
-        "cooldown": 15.0
+        "cooldown": 15,
+        "range": 700
       }
     ],
     "reward": {
@@ -2272,6 +2307,1234 @@
       "exp": 100,
       "level_up": 1
     },
-    "collision_radius": 22.0
+    "collision_radius": 22
+  },
+  {
+    "id": "arc6_steam_automaton",
+    "display_name": "Người Máy Hơi Nước · Quy Khư",
+    "element": "metal",
+    "attack_type": "melee",
+    "visual_scale": 0.15,
+    "exp": 65,
+    "attributes": {
+      "hp": 280,
+      "atk": 30,
+      "def": 12,
+      "move_speed": 60,
+      "attack_speed": 0.8,
+      "attack_range": 40,
+      "crit_rate": 0.03,
+      "crit_damage": 1.45,
+      "regen_percent_per_10s": 0
+    },
+    "skills": [
+      "melee_hit"
+    ],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Van Xả Áp",
+        "params": {
+          "duration_multiplier": 0.25,
+          "effect_ids": [
+            "slow",
+            "freeze",
+            "stun",
+            "holy_stun",
+            "knockback",
+            "knockback_light"
+          ],
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "defense_buff",
+        "display_name": "Kim Cương Hộ Thể",
+        "params": {
+          "def_flat": 0,
+          "def_multiplier": 1.12,
+          "duration_seconds": null
+        }
+      }
+    ],
+    "reward": {
+      "gold": 65,
+      "exp": 65
+    },
+    "collision_radius": 20,
+    "attack_skill": {
+      "type": "metal_punch",
+      "display_name": "Toái Kim Bạo Quyền",
+      "radius": 85,
+      "damage_multiplier": 1,
+      "effects": [
+        {
+          "id": "stun",
+          "duration": 0.3,
+          "chance": 0.2
+        }
+      ]
+    },
+    "source_enemy_id": "steam_automaton",
+    "arc6_role": "normal",
+    "balance_reference_level": 35
+  },
+  {
+    "id": "arc6_iron_crossbowman",
+    "display_name": "Xạ Thủ Nỏ Sắt · Quy Khư",
+    "element": "metal",
+    "attack_type": "ranged",
+    "visual_scale": 0.145,
+    "exp": 58,
+    "attributes": {
+      "hp": 210,
+      "atk": 44,
+      "def": 8,
+      "move_speed": 46,
+      "attack_speed": 0.65,
+      "attack_range": 320,
+      "projectile_speed": 400,
+      "crit_rate": 0.06,
+      "crit_damage": 1.55,
+      "regen_percent_per_10s": 0
+    },
+    "skills": [
+      "ranged_bolt"
+    ],
+    "attack_effects": [
+      {
+        "id": "paralyze",
+        "duration": 0.2,
+        "chance": 0.1
+      }
+    ],
+    "generic_skills": [
+      {
+        "id": "pierce_guard",
+        "display_name": "Giáp Tấm Đan Xen",
+        "params": {
+          "damage_multiplier": 0.75
+        }
+      },
+      {
+        "id": "defense_buff",
+        "display_name": "Kim Cương Hộ Thể",
+        "params": {
+          "def_flat": 0,
+          "def_multiplier": 1.12,
+          "duration_seconds": null
+        }
+      }
+    ],
+    "reward": {
+      "gold": 58,
+      "exp": 58
+    },
+    "collision_radius": 18,
+    "attack_skill": {
+      "type": "metal_bolt",
+      "display_name": "Kim Mang Liên Nỗ",
+      "damage_multiplier": 1
+    },
+    "source_enemy_id": "iron_crossbowman",
+    "arc6_role": "ranger",
+    "balance_reference_level": 35
+  },
+  {
+    "id": "arc6_shield_sentinel",
+    "display_name": "Hiệp Sĩ Khiên Tháp · Quy Khư",
+    "element": "metal",
+    "attack_type": "melee",
+    "visual_scale": 0.155,
+    "exp": 74,
+    "attributes": {
+      "hp": 420,
+      "atk": 64,
+      "def": 38,
+      "move_speed": 32,
+      "attack_speed": 0.45,
+      "attack_range": 64,
+      "crit_rate": 0.02,
+      "crit_damage": 1.55,
+      "regen_percent_per_10s": 0
+    },
+    "skills": [
+      "melee_hit"
+    ],
+    "generic_skills": [
+      {
+        "id": "damage_reflect",
+        "display_name": "Phản Kích Khiên Tháp",
+        "params": {
+          "reflect_percent_received": 0.05,
+          "duration_seconds": 4,
+          "cooldown_seconds": 10,
+          "initial_delay_seconds": 3
+        }
+      },
+      {
+        "id": "defense_buff",
+        "display_name": "Kim Cương Hộ Thể",
+        "params": {
+          "def_flat": 0,
+          "def_multiplier": 1.12,
+          "duration_seconds": null
+        }
+      }
+    ],
+    "reward": {
+      "gold": 74,
+      "exp": 74
+    },
+    "collision_radius": 34,
+    "attack_skill": {
+      "type": "metal_punch",
+      "display_name": "Toái Kim Bạo Quyền",
+      "radius": 85,
+      "damage_multiplier": 1,
+      "effects": [
+        {
+          "id": "stun",
+          "duration": 0.3,
+          "chance": 0.2
+        }
+      ]
+    },
+    "source_enemy_id": "shield_sentinel",
+    "arc6_role": "tank",
+    "balance_reference_level": 35
+  },
+  {
+    "id": "arc6_frost_lancer",
+    "display_name": "Frost Lancer · Quy Khư",
+    "element": "water",
+    "attack_type": "melee",
+    "visual_scale": 0.4095,
+    "exp": 6,
+    "attributes": {
+      "hp": 380,
+      "atk": 24,
+      "def": 8,
+      "move_speed": 65,
+      "attack_speed": 0.8,
+      "attack_range": 85,
+      "crit_rate": 0.05,
+      "crit_damage": 1.45,
+      "regen_percent_per_10s": 0
+    },
+    "skills": [
+      "bang_tru_chan_dia"
+    ],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Hàn Lưu Vô Tướng",
+        "params": {
+          "duration_multiplier": 0.85,
+          "effect_ids": [
+            "slow",
+            "freeze",
+            "stun",
+            "holy_stun",
+            "root",
+            "knockback",
+            "knockback_light"
+          ],
+          "duration_seconds": null
+        }
+      }
+    ],
+    "reward": {
+      "gold": 7,
+      "exp": 6
+    },
+    "collision_radius": 22,
+    "attack_skill": {
+      "id": "bang_tru_chan_dia",
+      "display_name": "Băng Trụ Chấn Địa",
+      "type": "ice_pillar",
+      "damage_multiplier": 1,
+      "radius": 82,
+      "effects": [
+        {
+          "id": "freeze",
+          "duration": 0.5,
+          "chance": 0.15
+        },
+        {
+          "id": "attack_slow",
+          "duration": 1.5,
+          "attack_speed_percent": 0.2,
+          "chance": 0.2
+        }
+      ]
+    },
+    "source_enemy_id": "frost_lancer",
+    "arc6_role": "normal",
+    "balance_reference_level": 35
+  },
+  {
+    "id": "arc6_snow_mage",
+    "display_name": "Snow Mage · Quy Khư",
+    "element": "water",
+    "attack_type": "ranged",
+    "visual_scale": 0.4095,
+    "exp": 3,
+    "attributes": {
+      "hp": 140,
+      "atk": 30,
+      "def": 3,
+      "move_speed": 46,
+      "attack_speed": 0.65,
+      "attack_range": 290,
+      "projectile_speed": 320,
+      "crit_rate": 0.04,
+      "crit_damage": 1.4,
+      "regen_percent_per_10s": 0
+    },
+    "skills": [
+      "bang_dan"
+    ],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Hàn Lưu Vô Tướng",
+        "params": {
+          "duration_multiplier": 0.85,
+          "effect_ids": [
+            "slow",
+            "freeze",
+            "stun",
+            "holy_stun",
+            "root",
+            "knockback",
+            "knockback_light"
+          ],
+          "duration_seconds": null
+        }
+      }
+    ],
+    "reward": {
+      "gold": 2,
+      "exp": 3
+    },
+    "collision_radius": 18,
+    "attack_effects": [
+      {
+        "id": "slow",
+        "duration": 1.5,
+        "slow_percent": 0.2
+      },
+      {
+        "id": "attack_slow",
+        "duration": 1.5,
+        "attack_speed_percent": 0.2,
+        "chance": 0.2
+      }
+    ],
+    "attack_skill": {
+      "id": "bang_dan",
+      "display_name": "Băng Đạn",
+      "type": "ice_bolt",
+      "damage_multiplier": 1,
+      "radius": 0
+    },
+    "source_enemy_id": "snow_mage",
+    "arc6_role": "ranger",
+    "balance_reference_level": 35
+  },
+  {
+    "id": "arc6_frost_knight",
+    "display_name": "Hàn Giáp Vệ · Quy Khư",
+    "element": "water",
+    "attack_type": "melee",
+    "visual_scale": 0.4095,
+    "exp": 6,
+    "attributes": {
+      "hp": 480,
+      "atk": 26,
+      "def": 12,
+      "move_speed": 40,
+      "attack_speed": 0.5,
+      "attack_range": 52,
+      "crit_rate": 0.04,
+      "crit_damage": 1.55,
+      "regen_percent_per_10s": 0
+    },
+    "skills": [
+      "tia_doc"
+    ],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Hàn Lưu Vô Tướng",
+        "params": {
+          "duration_multiplier": 0.85,
+          "effect_ids": [
+            "slow",
+            "freeze",
+            "stun",
+            "holy_stun",
+            "root",
+            "knockback",
+            "knockback_light"
+          ],
+          "duration_seconds": null
+        }
+      }
+    ],
+    "reward": {
+      "gold": 6,
+      "exp": 6
+    },
+    "collision_radius": 22,
+    "source_enemy_id": "frost_knight",
+    "arc6_role": "tank",
+    "balance_reference_level": 35
+  },
+  {
+    "id": "arc6_spore_crawler",
+    "display_name": "Bọ Bào Tử Độc · Quy Khư",
+    "element": "wood",
+    "attack_type": "melee",
+    "visual_scale": 0.14,
+    "exp": 28,
+    "attributes": {
+      "hp": 230,
+      "atk": 24,
+      "def": 7,
+      "move_speed": 62,
+      "attack_speed": 0.8,
+      "attack_range": 38,
+      "crit_rate": 0.03,
+      "crit_damage": 1.35,
+      "regen_percent_per_10s": 0
+    },
+    "skills": [
+      "tia_doc"
+    ],
+    "generic_skills": [
+      {
+        "id": "damage_reflect",
+        "display_name": "Giáp Bào Tử",
+        "params": {
+          "reflect_percent_received": 0.04,
+          "duration_seconds": 4,
+          "cooldown_seconds": 10,
+          "initial_delay_seconds": 3
+        }
+      },
+      {
+        "id": "regeneration",
+        "display_name": "Sinh Tức Bất Diệt",
+        "params": {
+          "percent_max_hp_per_sec": 0.004,
+          "duration_seconds": null
+        }
+      }
+    ],
+    "reward": {
+      "gold": 28,
+      "exp": 28
+    },
+    "collision_radius": 20,
+    "attack_effects": [
+      {
+        "id": "poison",
+        "duration": 3,
+        "dps_multiplier": 0.1,
+        "tick_interval": 0.5
+      }
+    ],
+    "attack_skill": {
+      "id": "tia_doc",
+      "display_name": "Tia Độc",
+      "type": "wood_bolt",
+      "damage_multiplier": 1,
+      "range": 250
+    },
+    "source_enemy_id": "spore_crawler",
+    "arc6_role": "normal",
+    "balance_reference_level": 35
+  },
+  {
+    "id": "arc6_thorn_spitter",
+    "display_name": "Cây Bắn Gai · Quy Khư",
+    "element": "wood",
+    "attack_type": "ranged",
+    "visual_scale": 0.145,
+    "exp": 31,
+    "attributes": {
+      "hp": 170,
+      "atk": 36,
+      "def": 4,
+      "move_speed": 46,
+      "attack_speed": 0.65,
+      "attack_range": 310,
+      "projectile_speed": 320,
+      "crit_rate": 0.04,
+      "crit_damage": 1.45,
+      "regen_percent_per_10s": 0
+    },
+    "skills": [
+      "tia_doc"
+    ],
+    "attack_effects": [
+      {
+        "id": "poison",
+        "duration": 3,
+        "dps_multiplier": 0.1,
+        "tick_interval": 0.5
+      }
+    ],
+    "generic_skills": [
+      {
+        "id": "damage_shield",
+        "display_name": "Vỏ Gai",
+        "params": {
+          "shield_percent_max_hp": 0.18,
+          "duration_seconds": 6,
+          "cooldown_seconds": 10,
+          "initial_delay_seconds": 2
+        }
+      },
+      {
+        "id": "regeneration",
+        "display_name": "Sinh Tức Bất Diệt",
+        "params": {
+          "percent_max_hp_per_sec": 0.004,
+          "duration_seconds": null
+        }
+      }
+    ],
+    "reward": {
+      "gold": 31,
+      "exp": 31
+    },
+    "collision_radius": 18,
+    "attack_skill": {
+      "id": "tia_doc",
+      "display_name": "Tia Độc",
+      "type": "wood_bolt",
+      "damage_multiplier": 1,
+      "range": 310
+    },
+    "source_enemy_id": "thorn_spitter",
+    "arc6_role": "ranger",
+    "balance_reference_level": 35
+  },
+  {
+    "id": "arc6_ent_protector",
+    "display_name": "Cây Cổ Thụ Hộ Vệ · Quy Khư",
+    "element": "wood",
+    "attack_type": "melee",
+    "visual_scale": 0.155,
+    "exp": 42,
+    "attributes": {
+      "hp": 345,
+      "atk": 52,
+      "def": 25,
+      "move_speed": 34,
+      "attack_speed": 0.45,
+      "attack_range": 64,
+      "crit_rate": 0.03,
+      "crit_damage": 1.55,
+      "regen_percent_per_10s": 0
+    },
+    "skills": [
+      "day_leo_hut_mau"
+    ],
+    "generic_skills": [
+      {
+        "id": "defense_aura",
+        "display_name": "Vỏ Cây Cộng Sinh",
+        "params": {
+          "radius": 180,
+          "def_multiplier": 1.3
+        }
+      },
+      {
+        "id": "regeneration",
+        "display_name": "Nhựa Cổ Thụ",
+        "params": {
+          "percent_max_hp_per_sec": 0.015
+        }
+      },
+      {
+        "id": "defense_buff",
+        "display_name": "Thiết Mộc Kết Giáp",
+        "params": {
+          "def_flat": 0,
+          "def_multiplier": 1.1,
+          "duration_seconds": null
+        }
+      }
+    ],
+    "reward": {
+      "gold": 42,
+      "exp": 42
+    },
+    "collision_radius": 34,
+    "attack_skill": {
+      "id": "day_leo_hut_mau",
+      "display_name": "Dây Leo Hút Máu",
+      "type": "wood_vine",
+      "damage_multiplier": 1,
+      "radius": 72,
+      "range": 170,
+      "lifesteal_percent": 0.2,
+      "effects": [
+        {
+          "id": "root",
+          "duration": 3
+        },
+        {
+          "id": "poison",
+          "duration": 3,
+          "dps_multiplier": 0.1,
+          "tick_interval": 0.5
+        }
+      ]
+    },
+    "source_enemy_id": "ent_protector",
+    "arc6_role": "tank",
+    "balance_reference_level": 35
+  },
+  {
+    "id": "arc6_flame_imp",
+    "display_name": "Quỷ Lửa Tro Tàn · Quy Khư",
+    "element": "fire",
+    "attack_type": "melee",
+    "visual_scale": 0.14,
+    "exp": 10,
+    "attributes": {
+      "hp": 160,
+      "atk": 18,
+      "def": 4,
+      "move_speed": 74,
+      "attack_speed": 1,
+      "attack_range": 36,
+      "crit_rate": 0.04,
+      "crit_damage": 1.35,
+      "regen_percent_per_10s": 0
+    },
+    "skills": [
+      "lieu_hoa_tam_tram"
+    ],
+    "generic_skills": [
+      {
+        "id": "haste",
+        "display_name": "Tro Tàn Bùng Cháy",
+        "params": {
+          "hp_below_pct": 0.5,
+          "move_speed_multiplier": 1.45
+        }
+      },
+      {
+        "id": "defense_buff",
+        "display_name": "Dung Nham Kết Giáp",
+        "params": {
+          "def_flat": 0,
+          "def_multiplier": 1.1,
+          "duration_seconds": null
+        }
+      }
+    ],
+    "reward": {
+      "gold": 10,
+      "exp": 10
+    },
+    "collision_radius": 20,
+    "attack_skill": {
+      "id": "lieu_hoa_tam_tram",
+      "display_name": "Liệt Hỏa Tam Trảm",
+      "type": "fire_claw",
+      "damage_multiplier": 1,
+      "radius": 64
+    },
+    "source_enemy_id": "flame_imp",
+    "arc6_role": "normal",
+    "balance_reference_level": 35
+  },
+  {
+    "id": "arc6_pyromancer",
+    "display_name": "Pháp Sư Hỏa Ngục · Quy Khư",
+    "element": "fire",
+    "attack_type": "ranged",
+    "visual_scale": 0.145,
+    "exp": 16,
+    "attributes": {
+      "hp": 120,
+      "atk": 26,
+      "def": 3,
+      "move_speed": 46,
+      "attack_speed": 0.65,
+      "attack_range": 320,
+      "projectile_speed": 340,
+      "crit_rate": 0.05,
+      "crit_damage": 1.45,
+      "regen_percent_per_10s": 0
+    },
+    "skills": [
+      "xich_viem_chau"
+    ],
+    "attack_effects": [
+      {
+        "id": "burn",
+        "duration": 3,
+        "dps": 12,
+        "tick_interval": 0.5
+      }
+    ],
+    "generic_skills": [
+      {
+        "id": "damage_shield",
+        "display_name": "Hỏa Thuẫn",
+        "params": {
+          "shield_percent_max_hp": 0.2,
+          "duration_seconds": 6,
+          "cooldown_seconds": 10,
+          "initial_delay_seconds": 1.5
+        }
+      },
+      {
+        "id": "haste",
+        "display_name": "Tàn Hỏa Bạo Phát",
+        "params": {
+          "hp_below_pct": 0.35,
+          "move_speed_multiplier": 1.15,
+          "duration_seconds": null
+        }
+      }
+    ],
+    "reward": {
+      "gold": 16,
+      "exp": 16
+    },
+    "collision_radius": 18,
+    "attack_skill": {
+      "id": "xich_viem_chau",
+      "display_name": "Xích Viêm Châu",
+      "type": "fire_ball",
+      "damage_multiplier": 1,
+      "radius": 0
+    },
+    "source_enemy_id": "pyromancer",
+    "arc6_role": "ranger",
+    "balance_reference_level": 35
+  },
+  {
+    "id": "arc6_lava_brute",
+    "display_name": "Đao Phủ Dung Nham · Quy Khư",
+    "element": "fire",
+    "attack_type": "melee",
+    "visual_scale": 0.16,
+    "exp": 22,
+    "attributes": {
+      "hp": 240,
+      "atk": 38,
+      "def": 18,
+      "move_speed": 34,
+      "attack_speed": 0.45,
+      "attack_range": 68,
+      "crit_rate": 0.03,
+      "crit_damage": 1.55,
+      "regen_percent_per_10s": 0
+    },
+    "skills": [
+      "chan_nguc_viem_dap"
+    ],
+    "generic_skills": [
+      {
+        "id": "defense_buff",
+        "display_name": "Giáp Nham Thạch",
+        "params": {
+          "def_multiplier": 1.3,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "haste",
+        "display_name": "Tàn Hỏa Bạo Phát",
+        "params": {
+          "hp_below_pct": 0.35,
+          "move_speed_multiplier": 1.15,
+          "duration_seconds": null
+        }
+      }
+    ],
+    "reward": {
+      "gold": 22,
+      "exp": 22
+    },
+    "collision_radius": 34,
+    "attack_skill": {
+      "id": "chan_nguc_viem_dap",
+      "display_name": "Chấn Ngục Viêm Đạp",
+      "type": "fire_stomp",
+      "damage_multiplier": 1,
+      "radius": 90,
+      "pulse_count": 2,
+      "pulse_interval": 0.5,
+      "pulse_multiplier": 0.2,
+      "pulse_radius_multiplier": 1.5,
+      "stun_chance": 0.2,
+      "stun_duration": 0.3
+    },
+    "source_enemy_id": "lava_brute",
+    "arc6_role": "tank",
+    "balance_reference_level": 35
+  },
+  {
+    "id": "arc6_snow_skeleton",
+    "display_name": "Snow Skeleton · Quy Khư",
+    "element": "earth",
+    "attack_type": "melee",
+    "visual_scale": 0.4095,
+    "exp": 2,
+    "attributes": {
+      "hp": 190,
+      "atk": 20,
+      "def": 5,
+      "move_speed": 62,
+      "attack_speed": 0.8,
+      "attack_range": 38,
+      "crit_rate": 0.03,
+      "crit_damage": 1.35,
+      "regen_percent_per_10s": 0
+    },
+    "skills": [
+      "bang_vuot"
+    ],
+    "generic_skills": [
+      {
+        "id": "damage_shield",
+        "display_name": "Địa Mạch Hộ Thân",
+        "params": {
+          "shield_percent_max_hp": 0.1,
+          "shield_flat_hp": 0,
+          "duration_seconds": null,
+          "cooldown_seconds": 0,
+          "initial_delay_seconds": 0
+        }
+      }
+    ],
+    "reward": {
+      "gold": 1,
+      "exp": 2
+    },
+    "collision_radius": 20,
+    "attack_skill": {
+      "id": "bang_vuot",
+      "display_name": "Băng Vuốt",
+      "type": "ice_claw",
+      "damage_multiplier": 1,
+      "radius": 64
+    },
+    "source_enemy_id": "snow_skeleton",
+    "arc6_role": "normal",
+    "balance_reference_level": 35
+  },
+  {
+    "id": "arc6_seismic_shaman",
+    "display_name": "Pháp Sư Địa Chấn · Quy Khư",
+    "element": "earth",
+    "attack_type": "ranged",
+    "visual_scale": 0.145,
+    "exp": 105,
+    "attributes": {
+      "hp": 300,
+      "atk": 60,
+      "def": 12,
+      "move_speed": 44,
+      "attack_speed": 0.6,
+      "attack_range": 340,
+      "projectile_speed": 360,
+      "crit_rate": 0.04,
+      "crit_damage": 1.7,
+      "regen_percent_per_10s": 0
+    },
+    "skills": [
+      "ranged_bolt"
+    ],
+    "attack_effects": [],
+    "generic_skills": [
+      {
+        "id": "damage_shield",
+        "display_name": "Trụ Đá Hộ Thân",
+        "params": {
+          "shield_percent_max_hp": 0.12,
+          "duration_seconds": 6,
+          "cooldown_seconds": 11,
+          "initial_delay_seconds": 2
+        }
+      },
+      {
+        "id": "defense_buff",
+        "display_name": "Địa Mạch Kiên Giáp",
+        "params": {
+          "def_flat": 0,
+          "def_multiplier": 1.12,
+          "duration_seconds": null
+        }
+      }
+    ],
+    "reward": {
+      "gold": 105,
+      "exp": 105
+    },
+    "collision_radius": 18,
+    "attack_skill": {
+      "type": "earth_orb",
+      "display_name": "Ngưng Sa Bạo Châu",
+      "range": 340,
+      "radius": 65,
+      "detonation_delay": 0.5,
+      "damage_multiplier": 1,
+      "effects": [
+        {
+          "id": "paralyze",
+          "duration": 0.2,
+          "chance": 0.2
+        }
+      ]
+    },
+    "source_enemy_id": "seismic_shaman",
+    "arc6_role": "ranger",
+    "balance_reference_level": 35
+  },
+  {
+    "id": "arc6_granite_colossus",
+    "display_name": "Khổng Lồ Đá Hoa Cương · Quy Khư",
+    "element": "earth",
+    "attack_type": "melee",
+    "visual_scale": 0.155,
+    "exp": 95,
+    "attributes": {
+      "hp": 600,
+      "atk": 85,
+      "def": 58,
+      "move_speed": 30,
+      "attack_speed": 0.42,
+      "attack_range": 68,
+      "crit_rate": 0.02,
+      "crit_damage": 1.65,
+      "regen_percent_per_10s": 0
+    },
+    "skills": [
+      "melee_hit"
+    ],
+    "generic_skills": [
+      {
+        "id": "max_hp_buff",
+        "display_name": "Lõi Hoa Cương",
+        "params": {
+          "max_hp_multiplier": 1.15
+        }
+      },
+      {
+        "id": "regeneration",
+        "display_name": "Tái Tạo Địa Mạch",
+        "params": {
+          "percent_max_hp_per_sec": 0.005
+        }
+      },
+      {
+        "id": "damage_shield",
+        "display_name": "Địa Mạch Hộ Thân",
+        "params": {
+          "shield_percent_max_hp": 0.1,
+          "shield_flat_hp": 0,
+          "duration_seconds": null,
+          "cooldown_seconds": 0,
+          "initial_delay_seconds": 0
+        }
+      }
+    ],
+    "reward": {
+      "gold": 95,
+      "exp": 95
+    },
+    "collision_radius": 34,
+    "attack_skill": {
+      "type": "earth_punch",
+      "display_name": "Hám Địa Bạo Quyền",
+      "radius": 85,
+      "damage_multiplier": 1,
+      "effects": [
+        {
+          "id": "stun",
+          "duration": 0.5,
+          "chance": 0.15
+        }
+      ]
+    },
+    "source_enemy_id": "granite_colossus",
+    "arc6_role": "tank",
+    "balance_reference_level": 35
+  },
+  {
+    "id": "arc6_wraith_mid",
+    "display_name": "Tàn Ảnh Ngũ Tố",
+    "element": "earth",
+    "attack_type": "melee",
+    "visual_scale": 0.15,
+    "exp": 120,
+    "attributes": {
+      "hp": 6500,
+      "atk": 105,
+      "def": 45,
+      "move_speed": 28,
+      "attack_speed": 0.8,
+      "attack_range": 85,
+      "crit_rate": 0.08,
+      "crit_damage": 1.8,
+      "regen_percent_per_10s": 0
+    },
+    "skills": [
+      "melee_hit"
+    ],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Hỗn Mang Vô Tướng",
+        "params": {
+          "duration_multiplier": 0.5,
+          "effect_ids": [
+            "slow",
+            "freeze",
+            "stun",
+            "holy_stun",
+            "knockback",
+            "knockback_light"
+          ],
+          "duration_seconds": null
+        }
+      }
+    ],
+    "reward": {
+      "gold": 120,
+      "exp": 120
+    },
+    "collision_radius": 34,
+    "boss_skills": [
+      {
+        "range": 700,
+        "warning_time": 0,
+        "id": "ngu_hanh_lien_xung",
+        "display_name": "Ngũ Hành Liên Xung",
+        "type": "wraith_volley",
+        "cooldown": 9,
+        "initial_cooldown": 2,
+        "radius": 38,
+        "charge_duration": 0.7,
+        "volley_interval": 0.18,
+        "projectile_speed": 620,
+        "projectile_lifetime": 3,
+        "hit_radius": 16,
+        "damage_multiplier": 0.45,
+        "impact_multiplier": 0.12,
+        "impact_radius": 65,
+        "earth_multiplier": 0.25,
+        "earth_radius": 95,
+        "elements": [
+          "metal",
+          "water",
+          "wood",
+          "fire",
+          "earth"
+        ]
+      },
+      {
+        "range": 550,
+        "warning_time": 0,
+        "id": "can_khon_ngu_hoa_toa",
+        "display_name": "Càn Khôn Ngũ Hóa Tỏa",
+        "type": "wraith_binding",
+        "cooldown": 15,
+        "initial_cooldown": 5,
+        "radius": 155,
+        "charge_duration": 0.8,
+        "duration": 2.8,
+        "pull_speed": 100,
+        "tick_interval": 0.5,
+        "damage_multiplier": 0.12,
+        "effects": [
+          {
+            "id": "root",
+            "duration": 2
+          },
+          {
+            "id": "silence",
+            "duration": 2
+          }
+        ]
+      }
+    ],
+    "is_boss": true,
+    "source_enemy_id": "primordial_wraith",
+    "balance_reference_level": 35,
+    "boss_visual_scale": 0.442
+  },
+  {
+    "id": "arc6_wraith_final",
+    "display_name": "Quy Khư Nguyên Linh",
+    "element": "earth",
+    "attack_type": "melee",
+    "visual_scale": 0.15,
+    "exp": 120,
+    "attributes": {
+      "hp": 6500,
+      "atk": 105,
+      "def": 45,
+      "move_speed": 28,
+      "attack_speed": 0.8,
+      "attack_range": 85,
+      "crit_rate": 0.08,
+      "crit_damage": 1.8,
+      "regen_percent_per_10s": 0
+    },
+    "skills": [
+      "melee_hit"
+    ],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Hỗn Mang Vô Tướng",
+        "params": {
+          "duration_multiplier": 0.5,
+          "effect_ids": [
+            "slow",
+            "freeze",
+            "stun",
+            "holy_stun",
+            "knockback",
+            "knockback_light"
+          ],
+          "duration_seconds": null
+        }
+      }
+    ],
+    "reward": {
+      "gold": 120,
+      "exp": 120
+    },
+    "collision_radius": 34,
+    "boss_skills": [
+      {
+        "range": 700,
+        "warning_time": 0,
+        "id": "ngu_hanh_lien_xung",
+        "display_name": "Ngũ Hành Liên Xung",
+        "type": "wraith_volley",
+        "cooldown": 9,
+        "initial_cooldown": 2,
+        "radius": 38,
+        "charge_duration": 0.7,
+        "volley_interval": 0.18,
+        "projectile_speed": 620,
+        "projectile_lifetime": 3,
+        "hit_radius": 16,
+        "damage_multiplier": 0.45,
+        "impact_multiplier": 0.12,
+        "impact_radius": 65,
+        "earth_multiplier": 0.25,
+        "earth_radius": 95,
+        "elements": [
+          "metal",
+          "water",
+          "wood",
+          "fire",
+          "earth"
+        ]
+      },
+      {
+        "range": 550,
+        "warning_time": 0,
+        "id": "can_khon_ngu_hoa_toa",
+        "display_name": "Càn Khôn Ngũ Hóa Tỏa",
+        "type": "wraith_binding",
+        "cooldown": 15,
+        "initial_cooldown": 5,
+        "radius": 155,
+        "charge_duration": 0.8,
+        "duration": 2.8,
+        "pull_speed": 100,
+        "tick_interval": 0.5,
+        "damage_multiplier": 0.12,
+        "effects": [
+          {
+            "id": "root",
+            "duration": 2
+          },
+          {
+            "id": "silence",
+            "duration": 2
+          }
+        ]
+      },
+      {
+        "range": 650,
+        "warning_time": 0,
+        "id": "ngu_nguyen_diet_gioi_tran",
+        "display_name": "Ngũ Nguyên Diệt Giới Trận",
+        "type": "wraith_calamity",
+        "cooldown": 21,
+        "initial_cooldown": 9,
+        "radius": 235,
+        "charge_duration": 1.3,
+        "duration": 4,
+        "tick_interval": 0.5,
+        "damage_multiplier": 0.24,
+        "pulse_multiplier": 0.45,
+        "pulse_radius_multiplier": 1.15,
+        "effects": [
+          {
+            "id": "bleed",
+            "duration": 3,
+            "dps_multiplier": 0.05
+          },
+          {
+            "id": "burn",
+            "duration": 3,
+            "dps_multiplier": 0.05
+          },
+          {
+            "id": "armor_break",
+            "duration": 4,
+            "defense_percent": 0.2
+          }
+        ]
+      },
+      {
+        "range": 650,
+        "warning_time": 0,
+        "id": "thai_so_hon_don_kich",
+        "display_name": "Thái Sơ Hỗn Độn Kích",
+        "type": "wraith_ultimate",
+        "cooldown": 28,
+        "initial_cooldown": 14,
+        "radius": 200,
+        "charge_duration": 1.8,
+        "slam_duration": 0.45,
+        "implosion_duration": 0.5,
+        "damage_multiplier": 1.4,
+        "pulse_count": 5,
+        "pulse_interval": 0.22,
+        "pulse_multiplier": 0.25,
+        "pulse_radius_multiplier": 1.5,
+        "pillar_multiplier": 0.5,
+        "effects": [
+          {
+            "id": "stun",
+            "duration": 0.5
+          }
+        ]
+      }
+    ],
+    "is_boss": true,
+    "source_enemy_id": "primordial_wraith",
+    "balance_reference_level": 35,
+    "boss_visual_scale": 0.442
   }
 ]

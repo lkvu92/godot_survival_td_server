@@ -1,3 +1,5 @@
+- [Arc 6 Ngũ Tố Quy Khư plan](ARC6_NGU_TO_QUY_KHU_PLAN.md) and [C221](contracts/C221_ARC6_NGU_TO_QUY_KHU.md): mixed-element existing-engine campaign.
+- [C220 Tactical support cards](contracts/C220_TACTICAL_SUPPORT_CARDS.md): three-tier support, status accuracy and healing reduction.
 - [C176 local readiness](reports/C176_LOCAL_READINESS.md): local config v4 and native Nakama/PostgreSQL smoke PASS.
 
 - [Skill hero — thông số hiện hành 2026-10-24](HERO_SKILLS_CURRENT.md): đủ 5 hero, 20 skill; bảng level, cơ chế/asset và phần % HP Hero 5 đã chốt đủ 5 cấp.
@@ -48,7 +50,7 @@
 
 - [System Settings — quảng cáo nhận thưởng](SYSTEM_SETTINGS.md): trường cấu hình, mặc định, quota, ví dụ chỉnh và publish.
 
-- [C134 Result ads and System config](contracts/C134_RESULT_AD_SYSTEM_CONFIG.md): victory x2 rewards (five/day) and centralized ad amounts/limits.
+- [C134 Result ads and System config](contracts/C134_RESULT_AD_SYSTEM_CONFIG.md): v1.0.1, stamina ads +15 (three/day), victory x2 rewards (five/day) and centralized ad amounts/limits.
 
 - [C109 Store catalog](contracts/C109_STORE_CATALOG_PURCHASE_ORDER.md) v1.1.2: Production verifier package and read-only Google credentials; resource rewards and 30 daily claim windows unchanged.
 
@@ -221,4 +223,28 @@ C197 v1.1.0: fixed golden phantom, 0.5s protection, actual-hit repeat damage and
 - C204 v1.2.0: visible world aura above map; remove Law HUD text.
 
 - C204 v1.3.0: no Law effects on Home/Profile/Tower/hero-select avatars.
-- [C218 Campaign wave pressure](contracts/C218_CAMPAIGN_WAVE_PRESSURE.md) v1.0.0: configured campaign creep growth and stage lengths.
+- [C218 Campaign wave pressure](contracts/C218_CAMPAIGN_WAVE_PRESSURE.md) v2.3.1 IN_PROGRESS: Godot runtime checkpoint calibrator W4/W9/W14/W19 dùng một hero đồng hệ mỗi Arc, kế thừa lower bound Normal → Epic → Legend và checkpoint JSON riêng từng Arc; full-catalog recommendation chưa chạy `--write`. [Kế hoạch triển khai](C218_CAMPAIGN_PRESSURE_IMPLEMENTATION_PLAN.md).
+
+- [C130 v1.4.0](contracts/C130_CONSUMABLE_USE.md): Đột phá dùng vật phẩm chiến đấu và một Hồi Sinh Phù mỗi lượt; server kiểm tra encounter, cooldown, thời hạn và giao dịch chống trừ lặp.
+
+- [C130 v1.5.0](contracts/C130_CONSUMABLE_USE.md): dialog bổ sung thể lực ưu tiên dùng nhanh Thể Lực Đan trong kho, mặc định tối đa 2 viên, chọn số lượng và xem trước thể lực nhận.
+
+- C110 v2.2.1: shared EXP settlement initializes milestone breakthrough previews immediately, including sweep rewards.
+
+- [C222 Boss skill ranges](contracts/C222_BOSS_SKILL_RANGE.md): skill 1 range 700, skill 2 range 550.
+
+- C144 v1.4.4: result summaries preserve campaign/tower sweep ticket rewards separately from ad-multiplied loot.
+
+- C196 v1.2.0: Hero4 Skill2 piercing and linear distance damage 100%?30%.
+
+- [C223 VIP card Auto/Manual](contracts/C223_AUTO_CARD_PICK.md): VIP4 local preference and offered-card priority.
+
+- C157 v1.0.1: ghost_medium (Arc2 final boss) receives both Water boss skills.
+
+- C223 v1.1.0: horizontal utility actions, clean skill levels and centered cooldown labels.
+
+- [C224 VIP benefits and milestone mail](contracts/C224_VIP_BENEFITS_MILESTONES.md): +10% per VIP, one-time gifts1–9 and Home preview.
+
+- C224 v1.1.1: Home VIP handles paired mouse/touch release without closing its new dialog.
+
+- C223 v1.1.1: gameplay actions use one aligned vertical column with equal spacing.

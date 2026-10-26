@@ -3,7 +3,15 @@ function parseJsonObject(value: any): any {
     return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
 }
 
-const STAMINA_CAP_RESOURCE = 30;
+function staminaMax(nk: nkruntime.Nakama): number {
+    return Math.max(1, Math.floor(Number(getRemoteConfigValue(nk, "system", "stamina_max", 30))));
+}
+function staminaStorageMax(nk: nkruntime.Nakama): number {
+    return Math.max(staminaMax(nk), Math.floor(Number(getRemoteConfigValue(nk, "system", "stamina_storage_max", 200))));
+}
+function staminaClamp(nk: nkruntime.Nakama, value: number): number {
+    return Math.max(0, Math.min(staminaStorageMax(nk), Number(value) || 0));
+}
 
 function elementUpgradeRequirement(nk: nkruntime.Nakama, elementName: string, level: number): any {
     const tiers = level < 10 ? "low" : (level < 20 ? "medium" : "high");
@@ -158,8 +166,9 @@ const purchaseStamina: nkruntime.RpcFunction = (
     nk: nkruntime.Nakama,
     _payload: string
 ): string => {
-    const staminaAmount = 15;
-    const prices = [30, 40, 50];
+    const staminaAmount = Math.max(1, Math.floor(Number(getRemoteConfigValue(nk, "system", "stamina_purchase_amount", 15))));
+    const rawPrices = getRemoteConfigValue(nk, "system", "stamina_purchase_prices", [30, 40, 50, 60, 70]);
+    const prices = (Array.isArray(rawPrices) ? rawPrices : []).map(Number).filter((value: number) => Number.isSafeInteger(value) && value > 0);
     const today = new Date().toISOString().slice(0, 10);
     const stored = nk.storageRead([
         { collection: "player_profiles", key: "main", userId: ctx.userId }
@@ -180,7 +189,7 @@ const purchaseStamina: nkruntime.RpcFunction = (
             purchases_today: purchasesToday
         });
     }
-    if (Number(profile.stamina || 0) >= STAMINA_CAP_RESOURCE) return JSON.stringify({ success: false, message: "Stamina is already full" });
+    if (staminaClamp(nk, profile.stamina) >= staminaStorageMax(nk)) return JSON.stringify({ success: false, message: "Stamina storage is already full" });
     const gemCost = prices[purchasesToday];
     const debit = debitResource(profile, "gems", gemCost);
     if (!debit.success) {
@@ -192,8 +201,8 @@ const purchaseStamina: nkruntime.RpcFunction = (
             gems: Number(parseJsonObject(profile.resources).gems || 0)
         });
     }
-    const currentStamina = Math.max(0, Math.min(STAMINA_CAP_RESOURCE, Number(profile.stamina || 0)));
-    const staminaAdded = Math.max(0, Math.min(staminaAmount, STAMINA_CAP_RESOURCE - currentStamina));
+    const currentStamina = staminaClamp(nk, profile.stamina);
+    const staminaAdded = Math.max(0, Math.min(staminaAmount, staminaStorageMax(nk) - currentStamina));
     profile.stamina = currentStamina + staminaAdded;
     profile.stamina_purchase_day = today;
     profile.stamina_purchases_today = purchasesToday + 1;

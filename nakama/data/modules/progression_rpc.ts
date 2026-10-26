@@ -105,7 +105,7 @@ function startTrialTower(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: n
     Object.assign(attrs,thanLuanStats(profile,thanLuanConfig(nk)));
     if(!(attrs.hp>0)||!(attrs.atk>0)||Object.keys(attrs).some(k=>!Number.isFinite(attrs[k])))return fail('CONFIG_INVALID','Chỉ số nhân vật không hợp lệ.');
     const prep=config.preparation;
-    if(!prep||prep.combat_level!==20||prep.upgrade_count!==19||prep.countdown_sec!==5||!Array.isArray(prep.supports)||prep.supports.length!==5)
+    if(!prep||prep.combat_level!==20||prep.upgrade_count!==19||prep.countdown_sec!==5||!Array.isArray(prep.supports)||prep.supports.length<5||prep.supports.some((c:any)=>!towerSupportValid(c)))
         return fail('CONFIG_INVALID','Chưa cấu hình chuẩn bị tháp.');
     const skillRows=nk.sqlQuery('SELECT id,display_name,criteria_unlock,hero_level_unlock,levels FROM game_skills WHERE id IN (SELECT jsonb_array_elements_text(skill_pool) FROM game_heroes WHERE id=$1) ORDER BY id',[req.hero_id]);
     const draftCatalog:any[]=skillRows.filter((s:any)=>cpArray(s.levels).length>0&&Number(s.hero_level_unlock||1)<=level&&Number(cpObject(s.criteria_unlock).level||1)<=20).map((s:any)=>({
@@ -129,12 +129,25 @@ function startTrialTower(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: n
     return JSON.stringify({success:true,run});
 }
 
+function towerSupportValid(c:any):boolean {
+    if(!c||typeof c.id!=='string'||!c.id||!c.effect||!Number.isFinite(c.effect.value)||c.effect.value<=0||!Number.isFinite(c.priority))return false;
+    const e=c.effect;
+    if(e.type==='tactical_stat') {
+        const stats:any={deep_wound:'deep_wound_reduction',effect_accuracy:'effect_accuracy',effect_resistance:'harmful_effect_resistance',control_tenacity:'control_duration_reduction',healing_power:'healing_received_bonus'};
+        if(!stats[c.support_family]||stats[c.support_family]!==e.stat||!['common','rare','legendary'].includes(c.tier)||e.value>1)return false;
+        return c.support_family!=='deep_wound'||(Number.isFinite(e.duration)&&e.duration>0&&Number.isFinite(e.chance)&&e.chance>0&&e.chance<=1);
+    }
+    return e.type==='cooldown_reduction'?e.value<=1:e.type==='stat_percent'&&['atk','def','hp','attack_speed'].includes(e.stat);
+}
+
 function towerDraftLegal(c:any,levels:any):boolean {
+    if(c.effect&&c.effect.type==='tactical_stat')return Number(c.effect.value)>Number(levels['support:'+c.effect.stat]||0);
     return !c.skill_id || ((levels[c.skill_id]||0)<c.max_level&&(!c.required_skill||levels[c.required_skill]>0));
 }
 
 function towerDraftApply(c:any,levels:any):void {
     if(c.skill_id)levels[c.skill_id]=(levels[c.skill_id]||0)+1;
+    else if(c.effect&&c.effect.type==='tactical_stat')levels['support:'+c.effect.stat]=c.effect.value;
 }
 
 function prepareTrialTower(ctx:nkruntime.Context,_logger:nkruntime.Logger,nk:nkruntime.Nakama,payload:string):string {
@@ -374,6 +387,8 @@ function cultivationPhase2Encounter(state: any): void {
 	state.encounter_seed = Math.floor(Math.random() * 2147483647);
 	state.skill_set = skills;
 	state.started_at = Date.now();
+	state.item_cooldowns = {};
+	state.item_revives = 0;
 }
 
 // Returns true when migration or interrupted-run recovery changed the profile.
@@ -541,6 +556,15 @@ function progressionApplyUser(nk: nkruntime.Nakama, profile: any, awarded: numbe
     profile.exp = exp;
     profile.next_level_exp = next;
     profile.progression_version = PROGRESSION_VERSION;
+    // Sweeps and every other EXP source must return a usable milestone preview.
+    // Existing previews are retained; this does not reroll attempts or encounters.
+    cultivationEnsurePreview(nk, profile);
+    // Every actual account-level gain restores the active stamina bar, while
+    // preserving the configured storage ceiling as the authoritative bound.
+    if (gained > 0) {
+        profile.stamina = staminaClamp(nk, Math.max(Number(profile.stamina || 0), staminaMax(nk)));
+        profile.last_stamina_update = Math.floor(Date.now() / 1000);
+    }
     return { level, exp, next_level_exp: next, levels_gained: gained };
 }
 
@@ -967,12 +991,17 @@ const awardStageProgression: nkruntime.RpcFunction = (
         hero_id: heroId, base_exp: awardedExp, first_clear_bonus_exp: boostedFirstClearBonusExp,
         base_loot: loot.slice(), claimed: false };
     if(won&&!isTrainingStage){
+        const ticketLootStart = loot.length;
         const quantity=stageTicketQuantity(nk);
         if(quantity>0){if(!serverGrantInventoryItem(nk,inventoryItems,SWEEP_TICKET,quantity))throw new Error('SWEEP_TICKET_CONFIG_MISSING');loot.push({item_id:SWEEP_TICKET,quantity});}
-        if(stageRows[0].is_boss===true&&/^stage_[1-5]_10$/.test(stageId)&&Math.random()<Number(towerSweepConfig(nk).boss_ticket_rates[difficultyId]||0)){
+        if(campaignFinalBossStage(stageId,stageRows[0].is_boss)&&Math.random()<Number(towerSweepConfig(nk).boss_ticket_rates[difficultyId]||0)){
             if(!serverGrantInventoryItem(nk,inventoryItems,TOWER_SWEEP_TICKET,1))throw Error('TOWER_TICKET_CONFIG_MISSING');
             loot.push({item_id:TOWER_SWEEP_TICKET,quantity:1});
         }
+        // Result HUD uses stage_reward.total_loot after the initial loot event.
+        // Persist ticket lines separately so summaries retain them without ads
+        // multiplying or granting them a second time.
+        run.stage_reward.fixed_loot = loot.slice(ticketLootStart);
     }
 
     nk.storageWrite([
@@ -1017,7 +1046,8 @@ function stageRewardSummary(run: any): any {
     return { run_id: String(run.run_id || ""), eligible: snapshot.eligible === true, claimed: snapshot.claimed === true,
         multiplier: factor, total_exp: Math.max(0, Number(snapshot.base_exp || 0)) * factor,
         first_clear_bonus_exp: Math.max(0, Number(snapshot.first_clear_bonus_exp || 0)) * factor,
-        total_loot: (Array.isArray(snapshot.base_loot) ? snapshot.base_loot : []).map((r: any) => Object.assign({}, r, { quantity: Number(r.quantity) * factor })) };
+        total_loot: (Array.isArray(snapshot.base_loot) ? snapshot.base_loot : []).map((r: any) => Object.assign({}, r, { quantity: Number(r.quantity) * factor }))
+            .concat((Array.isArray(snapshot.fixed_loot) ? snapshot.fixed_loot : []).map((r:any)=>Object.assign({},r))) };
 }
 
 function readSettledRewardRun(nk: nkruntime.Nakama, userId: string, runId: string): any {

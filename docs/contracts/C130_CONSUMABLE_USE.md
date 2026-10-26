@@ -1,8 +1,8 @@
 # C130 — Consumable use and permanent cultivation sources
 
-- Version: `1.3.0`
-- Status: `IN_PROGRESS`
-- Date: `2026-10-17`
+- Version: `1.5.0`
+- Status: `ACTIVE`
+- Date: `2026-10-25`
 
 ## Scope and authority
 Complete C129 item activation without changing prices. Rename/reroll retain their dedicated actions.
@@ -52,7 +52,7 @@ Left HUD vertical ScrollBarUI hosts inventory-style UiItemSlot rarity frames wit
 Tap uses one. Paused/dead/finished/offline/empty/unsupported items are disabled.
 During a purchase/use network transaction temporarily freeze simulation; restore only the pause owned by that transaction, preventing death or manual pause racing a committed effect.
 Combat effects use separate temporary modifiers; refresh duration without stacking; timers use simulation delta and stop on pause. Existing skill/card stats are never rewritten.
-Revive is excluded from the living-item bar. On lethal damage in a normal stage, offer a dedicated confirmation before defeat settlement; one per server run, 50% HP and 3 seconds invulnerability. Cancel settles defeat. Tribulation consumables/revive remain disabled until a compatible authoritative run exists.
+Revive is excluded from the living-item bar. On lethal damage in a normal stage, offer a dedicated confirmation before defeat settlement; one per server run, 50% HP and 3 seconds invulnerability. Cancel settles defeat. Tribulation consumables and inventory revive use the active authoritative breakthrough encounter; rewarded-ad revive remains normal-stage-only.
 Run validates identity/status/expiry, cooldown and one-revive limit. As with existing talisman combat, HP/death are client-simulated, not server-authoritative; request state checks are not anti-cheat proof.
 
 ## Acceptance
@@ -78,3 +78,25 @@ Build backend, client/server static checks. Additive config patch generator only
 ## C144 integration (2026-10-20)
 
 C144 adds campaign_sweep_ticket using consumable atlas index zero. Reserved sweep tickets/stamina cannot be consumed by other actions; profile and inventory writes use observed CAS versions. Ordinary exclusive ticket drops are outside grade/ad multipliers and never occur on sweep; see C144_STAGE_SWEEP.md.
+
+## Tribulation consumables v1.4.0
+
+CombatItemBar resolves its combat identity to breakthrough.encounter_id during tribulation, otherwise server_run_id. The existing use_consumable request carries this identity in run_id (no new endpoint). The server requires in_tribulation=true, matching nonempty encounter_id and a finite positive started_at within one hour. It stores item_cooldowns and item_revives on breakthrough, reset when each encounter starts. Normal-stage IDs are rejected while tribulation is active. After settlement/expiry, new requests cannot debit inventory.
+Inventory/profile/receipt writes remain atomic with profile CAS; no stage-run write is made for tribulation. Receipt replay stays idempotent. Combat effects and the one inventory-revive limit match normal stages; rewarded ads are unavailable in tribulation. Permanent items remain outside-combat-only. Client retains pause/dead/offline/finished guards and applies receipts once. No offline fallback or local debit.
+
+| Version | Date | Change |
+|---|---|---|
+| 1.4.0 | 2026-10-25 | Enable encounter-bound combat items and one inventory revive in breakthrough; preserve cooldown, CAS and replay validation. |
+
+Validation (2026-10-25): backend build/runtime packaging PASS; complete client and server static runners PASS (including 47 Python checks). Compiled consumable tests PASS for normal stages and all tribulation effects, wrong/expired/settled encounters, cooldown, replay, CAS rollback, revive limit and per-encounter reset. Godot headless C130 runtime PASS, including inventory-revive availability on desktop/mobile and disabled tribulation ad revive. Real viewport input PASS in campaign and tribulation, including scrolling and pause guard. Gate score: 9/10; live server/Android acceptance remains untested. No production deployment or config/data changes performed. Rebuild/deploy the backend runtime together with the updated client; existing item definitions require no reseeding.
+
+## Quick stamina elixir v1.5.0
+
+StaminaPurchaseDialog shows an inventory-first Thể Lực Đan option when owned, before ads and Gems. Initial quantity is min(2, inventory quantity), clamped to the current usable capacity (ceil((30-stamina)/effect.value)) and RPC limit 99. Minus/plus controls adjust quantity, with owned count and actual capped stamina gain preview. Full stamina/offline/missing or disabled effect blocks use. No second confirmation is needed. The dialog stays open after success and emits stamina_claimed with the authoritative gain so CharacterSelect/Home update immediately; starting a stage remains explicit.
+Use calls existing UserContext.use_consumable(energy_elixir, quantity), without run_id. The existing server transaction owns inventory debit, stamina cap, replay and CAS; no local grant or new RPC. While any use/purchase/ad request is pending, all actions, quantity controls and dismissal are disabled; availability signals cannot re-enable them. Failure leaves quantity/retry identity intact. Options scroll within a viewport-fitted modal on short screens. Online-only rules and existing ad/Gem prices remain unchanged.
+
+| Version | Date | Change |
+|---|---|---|
+| 1.5.0 | 2026-10-25 | Add quick inventory elixir use, quantity/default/gain preview and shared transaction guards to stamina dialog. |
+
+Quick-use validation (2026-10-25): Godot fixture PASS for 0/1/2/8 stock defaults, quantity controls, capped gain at stamina=20, full/offline guards, concurrent-click suppression across availability refresh, failed request without debit and successful authoritative-state/claimed signal refresh. Production RPC call remains use_consumable; UI fixture substitutes its response without network/player mutations. Desktop/mobile and 420x600 geometry PASS; OpenGL rendered preview inspected at temp/quick-stamina-elixir.png. Existing stamina modal layering/close-reopen, System rewarded amount/quota UI, client static checks and compiled server consumable tests PASS. Gate score 9/10; live account/Android transaction not exercised. This addition requires only the updated client; no new backend/config deployment.

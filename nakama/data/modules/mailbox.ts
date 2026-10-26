@@ -56,6 +56,39 @@ function deliverMail(nk:nkruntime.Nakama,userId:string,input:any):any {
     if(!(nk as any).__mailBatch)mailPush(nk,userId,row.id);
     return {id:row.id,idempotent:false};
 }
+
+function vipEnsureMilestoneMails(nk:nkruntime.Nakama,userId:string,vip:any):number[] {
+    if(!vip || !vip.configured || Number(vip.level)<1)return [];
+    const config=vipBenefitsConfig(nk),sent:number[]=[];
+    for(const milestone of config.milestone_rewards) {
+        if(milestone.level>vip.level)break;
+        const source='vip_milestone:'+milestone.level,id=mailId(nk,source);
+        const marker={collection:'player_mail_deliveries',key:id,userId};
+        if(nk.storageRead([marker]).length){sent.push(milestone.level);continue;}
+        const totals:any={};
+        for(const reward of milestone.rewards) {
+            if(reward.type==='item')totals[reward.id]=Number(totals[reward.id]||0)+reward.amount;
+            else if(reward.type==='random_item_bundle') {
+                const item=reward.pool[Math.floor(Math.random()*reward.pool.length)];
+                totals[item]=Number(totals[item]||0)+reward.amount;
+            }
+            else for(let i=0;i<reward.amount;i++) {
+                const item=reward.pool[Math.floor(Math.random()*reward.pool.length)];
+                totals[item]=Number(totals[item]||0)+1;
+            }
+        }
+        const attachments=Object.keys(totals).map(item=>({type:'item',id:item,amount:totals[item]}));
+        try {
+            deliverMail(nk,userId,{source_id:source,source_type:'vip_milestone',title:'Quà đạt VIP '+milestone.level,
+                body:'Chúc mừng đạt VIP '+milestone.level+'. Quà mốc chỉ gửi một lần. Vật phẩm ngẫu nhiên đã được chốt khi gửi thư.',attachments});
+        } catch(error) {
+            // A concurrent reconciliation may have committed this exact source.
+            if(!nk.storageRead([marker]).length)throw error;
+        }
+        sent.push(milestone.level);
+    }
+    return sent;
+}
 function mailVisibleSql():string {return "COALESCE((value->>'deleted_at_ms')::BIGINT,0)=0 AND (value->>'purge_at_ms' IS NULL OR (value->>'purge_at_ms')::BIGINT>$3)";}
 function mailSummary(nk:nkruntime.Nakama,userId:string,now:number):any {
     const rows=nk.sqlQuery(`SELECT COUNT(*) FILTER(WHERE value->>'read_at_ms' IS NULL)::INT AS unread_count,

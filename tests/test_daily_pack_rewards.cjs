@@ -17,6 +17,8 @@ const packs = [
 ];
 const items = JSON.parse(fs.readFileSync(path.join(root, 'data/items.json'), 'utf8'));
 const context = vm.createContext({});
+vm.runInContext(fs.readFileSync(path.join(root, 'nakama/data/modules/build/resource_rpc.js'), 'utf8'), context);
+context.getRemoteConfigValue = (_nk, _section, _key, fallback) => fallback;
 vm.runInContext(fs.readFileSync(path.join(root, 'nakama/data/modules/build/monetization_rpc.js'), 'utf8'), context);
 const grant = vm.runInContext('applyPurchaseStorageRewards', context);
 const clone = value => JSON.parse(JSON.stringify(value));

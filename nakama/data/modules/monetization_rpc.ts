@@ -237,6 +237,36 @@ function vipProgress(exp: number, config: any, environment: string): any {
         remaining_exp: maxed ? 0 : Math.max(0, next - exp), maxed, environment, configured: !!config };
 }
 
+function vipBenefitsConfig(nk:nkruntime.Nakama):any {
+    const config=vipConfig(nk);
+    if(!config || !Number.isFinite(config.reward_bonus_per_level) || config.reward_bonus_per_level<0 || config.reward_bonus_per_level>1
+        || !Array.isArray(config.milestone_rewards) || config.milestone_rewards.length!==12)throw Error('VIP_BENEFITS_CONFIG_INVALID');
+    config.milestone_rewards.forEach((m:any,index:number)=>{
+        if(m.level!==index+1 || !Array.isArray(m.rewards) || !m.rewards.length || m.rewards.length>20)throw Error('VIP_MILESTONE_CONFIG_INVALID');
+        m.rewards.forEach((r:any)=>{
+            if(!r || !Number.isSafeInteger(r.amount) || r.amount<1 || r.amount>1000)throw Error('VIP_MILESTONE_AMOUNT_INVALID');
+            if(r.type==='item' && typeof r.id==='string' && /^[a-z0-9_]+$/.test(r.id))return;
+            if(r.type==='random_items' && Array.isArray(r.pool) && r.pool.length===5 && new Set(r.pool).size===5
+                && r.pool.every((id:any)=>typeof id==='string' && /^(?:(?:stone|rune)_(?:metal|water|wood|fire|earth)_(?:low|medium|high)|(?:metal|water|wood|fire|earth)_aptitude_fruit)$/.test(id)))return;
+            if(r.type==='random_item_bundle' && Array.isArray(r.pool) && r.pool.length>0 && r.pool.length<=100 && new Set(r.pool).size===r.pool.length
+                && r.pool.every((id:any)=>typeof id==='string' && /^talisman_fragment_[0-9]+$/.test(id)))return;
+            throw Error('VIP_MILESTONE_REWARD_INVALID');
+        });
+    });
+    return config;
+}
+
+function vipScaleRewardGrants(nk:nkruntime.Nakama,grants:any[],level:number):any[] {
+    const config=vipBenefitsConfig(nk);
+    if(!Number.isSafeInteger(level)||level<0||level>config.max_level||!Array.isArray(grants))throw Error('VIP_REWARD_INPUT_INVALID');
+    return grants.map((grant:any)=>{
+        if(!grant || !Number.isSafeInteger(grant.amount)||grant.amount<1)throw Error('VIP_REWARD_AMOUNT_INVALID');
+        const amount=Math.floor(grant.amount*(1+level*config.reward_bonus_per_level)+1e-9);
+        if(!Number.isSafeInteger(amount))throw Error('VIP_REWARD_AMOUNT_INVALID');
+        return Object.assign({},grant,{amount});
+    });
+}
+
 function readVipProgress(nk: nkruntime.Nakama, userId: string, mode: string): any {
     const config = vipConfig(nk);
     if (!config) return vipProgress(0, null, mode);
@@ -299,10 +329,12 @@ function buildMonetizationResponse(nk: nkruntime.Nakama, userId: string, mode: s
     const row = readEntitlementRow(nk, userId);
     const serverTime = Number(row.server_time || Math.floor(Date.now() / 1000));
     const expiresAt = Number(row.no_ads_expires_at || 0);
+    const vip=readVipProgress(nk,userId,mode);
+    if(typeof vipEnsureMilestoneMails==='function')vip.milestone_mail_levels=vipEnsureMilestoneMails(nk,userId,vip);
     return {
         mode,
         user_id: userId,
-        vip: readVipProgress(nk, userId, mode),
+        vip,
         server_time: serverTime,
         no_ads: {
             active: expiresAt > serverTime,
@@ -486,7 +518,7 @@ const claimDailyPack: nkruntime.RpcFunction = (ctx, _logger, nk, payload) => {
             if (reward.reward_type === "currency" && ["gold", "gems"].indexOf(reward.reward_id) >= 0) {
                 profile.resources[reward.reward_id] = Math.max(0, Number(profile.resources[reward.reward_id] || 0)) + reward.quantity;
             } else if (reward.reward_type === "stamina" && reward.reward_id === "stamina") {
-                profile.stamina = Math.max(0, Number(profile.stamina || 0)) + reward.quantity;
+                profile.stamina = staminaClamp(nk, Number(profile.stamina || 0) + reward.quantity);
                 profile.last_stamina_update = Math.floor(now / 1000);
             } else if (reward.reward_type === "item") {
                 addStoreInventoryItem(nk, inventory.items, String(reward.reward_id), reward.quantity);
@@ -549,7 +581,7 @@ function applyPurchaseStorageRewards(
         });
         profile.resources = resources;
         rewards.filter(line => line.reward_type === "stamina").forEach(line => {
-            profile.stamina = Math.max(Number(profile.stamina || 0), Math.min(30, Math.max(0, Number(profile.stamina || 0)) + Number(line.quantity)));
+            profile.stamina = staminaClamp(nk, Number(profile.stamina || 0) + Number(line.quantity));
         });
         const entitlements = profile.iap_entitlements || {};
         rewards.filter(line => line.reward_type === "entitlement" && line.reward_id !== "no_ads_seconds").forEach(line => {
@@ -1178,7 +1210,8 @@ function grantPreparedReward(nk: nkruntime.Nakama, userId: string, adSessionId: 
         : [];
     if (rewardIds.indexOf(adSessionId) < 0) {
         if (String(reward.reward_type) === "stamina") {
-            profile.stamina = Math.max(Number(profile.stamina || 0), Math.min(30, Math.max(0, Number(profile.stamina || 0)) + Number(reward.reward_amount || 0)));
+            const configuredAmount = Math.max(0, Math.floor(Number(getRemoteConfigValue(nk, "system", "stamina_ad_reward", reward.reward_amount || 0))));
+            profile.stamina = staminaClamp(nk, Number(profile.stamina || 0) + configuredAmount);
         } else {
             const resources = profile.resources || {};
             resources[String(reward.reward_type)] = Math.max(0, Number(resources[String(reward.reward_type)] || 0)) + Number(reward.reward_amount || 0);

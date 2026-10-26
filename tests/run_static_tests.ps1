@@ -7,6 +7,18 @@ try {
     }
     & node --check nakama/data/build/index.js
     if ($LASTEXITCODE -ne 0) { throw 'Runtime syntax failed' }
+    & node tests/test_arc6_backend.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Arc 6 backend integration failed' }
+    & node tests/test_breakthrough_preview.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Immediate breakthrough preview regression failed' }
+    & node tests/test_vip_benefits.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'VIP benefits and milestone mail regression failed' }
+    & node tests/test_arc6_catalog.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Arc 6 catalog regression failed' }
+    & node tests/test_tactical_support.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Tactical support regression failed' }
+    & node tests/test_status_icon_metadata.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Status icon metadata regression failed' }
     & node tests/test_arc_mode_unlocks.cjs
     if ($LASTEXITCODE -ne 0) { throw 'Arc difficulty unlock regression failed' }
     & node tests/test_feature_unlocks.cjs
@@ -88,6 +100,10 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Campaign wave EXP regression failed' }
     & node tests/test_campaign_wave_pressure.cjs
     if ($LASTEXITCODE -ne 0) { throw 'Campaign wave pressure regression failed' }
+    & node tests/test_campaign_pressure_engine.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Campaign pressure engine regression failed' }
+    & node tests/test_campaign_opening_relief.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Campaign opening-relief regression failed' }
 } finally {
     Pop-Location
 }

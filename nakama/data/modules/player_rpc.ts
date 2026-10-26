@@ -435,13 +435,14 @@ const loadPlayerProfile: nkruntime.RpcFunction = (
         const last = hasLastStaminaUpdate
             ? Math.max(0, Number(result.profile.last_stamina_update))
             : now;
-        const currentStamina = Math.max(0, Number(result.profile.stamina || 0));
-        const ticks = currentStamina < 30 && now > last ? Math.floor((now - last) / interval) : 0;
+        const currentStamina = staminaClamp(nk, result.profile.stamina);
+        const staminaMaxValue = staminaMax(nk);
+        const ticks = currentStamina < staminaMaxValue && now > last ? Math.floor((now - last) / interval) : 0;
         if (ticks > 0 && amount > 0) {
-            result.profile.stamina = Math.min(30, currentStamina + ticks * amount);
-            result.profile.last_stamina_update = result.profile.stamina >= 30 ? now : last + ticks * interval;
+            result.profile.stamina = Math.min(staminaMaxValue, currentStamina + ticks * amount);
+            result.profile.last_stamina_update = result.profile.stamina >= staminaMaxValue ? now : last + ticks * interval;
 			profileChanged = true;
-		} else if (currentStamina >= 30 && last !== now) {
+        } else if (currentStamina >= staminaMaxValue && last !== now) {
 			result.profile.stamina = currentStamina;
 			result.profile.last_stamina_update = now;
 			profileChanged = true;
@@ -451,7 +452,7 @@ const loadPlayerProfile: nkruntime.RpcFunction = (
         }
         const appliedLast = Math.max(0, Number(result.profile.last_stamina_update || now));
         const elapsedInTick = Math.max(0, now - appliedLast) % interval;
-        const canRegenerate = Number(result.profile.stamina || 0) < 30 && amount > 0;
+        const canRegenerate = Number(result.profile.stamina || 0) < staminaMaxValue && amount > 0;
         result.stamina_regen = {
             amount: canRegenerate ? amount : 0,
             interval_sec: interval,

@@ -1,10 +1,10 @@
 # C134 Victory reward multiplier and System ad configuration
 
-Version: 1.0.0 | Status: IN_PROGRESS | Updated: 2026-10-18
+Version: 1.0.1 | Status: IN_PROGRESS | Updated: 2026-10-26
 
 ## Authority and configuration
 
-All rewarded placements read the published `system.rewarded_ads` JSON in remote_config_settings (module=system,key=rewarded_ads,value_type=json), not hardcoded amounts or the legacy game_content_configs/rewarded_ads row. Keep the existing schema `{schema_version,placements,daily_mission}`; placements provide type, amount, optional daily_limit/run_limit, item_id and enabled. Defaults preserve stamina +5/3 per UTC day, fragment mission 3 views for 1 fragment, one charm per day each, card reroll 3/run, revive 1/run; new stage_reward_x2_ad gives multiplier 2 with 5 successful rewards per UTC day. Missing/invalid config fails closed; zero limits/disabled placements block new claims. Server quotas and current UI use the same published settings. A generated targeted SQL patch bootstraps this system setting from the existing active ad catalog plus the new placement, then requires immutable config publication. No player reseed.
+All rewarded placements read the published `system.rewarded_ads` JSON in remote_config_settings (module=system,key=rewarded_ads,value_type=json), not hardcoded amounts or the legacy game_content_configs/rewarded_ads row. Keep the existing schema `{schema_version,placements,daily_mission}`; placements provide type, amount, optional daily_limit/run_limit, item_id and enabled. Defaults provide stamina +15/3 per UTC day, fragment mission 3 views for 1 fragment, one charm per day each, card reroll 3/run, revive 1/run; new stage_reward_x2_ad gives multiplier 2 with 5 successful rewards per UTC day. Missing/invalid config fails closed; zero limits/disabled placements block new claims. Server quotas and current UI use the same published settings. A generated targeted SQL patch bootstraps this system setting from the existing active ad catalog plus the new placement, then requires immutable config publication. No player reseed.
 
 ## Victory multiplier
 
@@ -18,6 +18,7 @@ Existing prepare/confirm rewarded RPCs gain stage_reward_x2_ad context and canon
 
 | Version | Date | Change |
 |---|---|---|
+| 1.0.1 | 2026-10-26 | User-approved stamina ad default +15; canonical seed aligned with System bootstrap and settings documentation. Daily quota stays three. |
 | 1.0.0 | 2026-10-18 | Initial server-authoritative victory multiplier, five/day default and centralized System ad configuration. |
 
 ## Local validation (2026-10-18)

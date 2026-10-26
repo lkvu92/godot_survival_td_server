@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "placements": {
-    "stamina_dialog_ad": {"type": "stamina", "amount": 5, "daily_limit": 3},
+    "stamina_dialog_ad": {"type": "stamina", "amount": 15, "daily_limit": 3},
     "daily_mission_talisman_fragment_ad": {"type": "daily_fragment", "amount": 1, "daily_limit": 3},
     "card_reroll_ad": {"type": "card_reroll", "amount": 1, "run_limit": 3},
     "combat_revive_ad": {"type": "combat_revive", "amount": 1, "run_limit": 1},

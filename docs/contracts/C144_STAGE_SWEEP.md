@@ -1,8 +1,14 @@
 # C144 Stage grades and campaign sweep
 
-Version: 1.4.1 | Status: ACTIVE | Date: 2026-10-20
+Version: 1.4.4 | Status: ACTIVE | Date: 2026-10-26
 
 ## Authority and schema
+
+Revision 1.4.4: Settlement persists non-multipliable campaign/tower ticket grants in `run.stage_reward.fixed_loot`. `stageRewardSummary.total_loot` includes these lines once both before and after ad claims. Only `base_loot` is multiplied or granted again. Older records without `fixed_loot` remain readable; never reconstruct or regrant missing historical rolls. Existing RPC payloads gain no required request fields; authenticated online settlement remains mandatory.
+
+| Version | Date | Change |
+|---|---|---|
+| 1.4.4 | 2026-10-26 | Preserve ticket grants in result summaries without applying grade/ad multipliers or granting twice. |
 
 No Redis. Server configuration owns grading (S >90%, A >80%, B >70%, C >60%, D otherwise on victory), quantity multipliers 1/.9/.8/.7/.6, fixed base quantities, 90-second rounds, one campaign ticket plus one stamina per successful round. Defeat has no grade. Best grades are keyed by stage and difficulty; historical ungraded clears never imply S. Current run grade determines ordinary rewards; only exact S mode permits sweep. Training/admin stages excluded. Grading HP is the current defended objective: existing campaign has no separate base actor and defeats on player death, so use hero remaining HP/max HP. Future base-defense content must explicitly configure its objective. HP report must be bounded and bound to the active run; existing client combat authority limitations must be documented.
 

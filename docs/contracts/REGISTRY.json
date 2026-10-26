@@ -1,6 +1,11 @@
 {
   "contracts": [
-    {"id":"C218_CAMPAIGN_WAVE_PRESSURE","version":"1.0.0","status":"ACTIVE","updated_at":"2026-10-25","contract_file":"docs/contracts/C218_CAMPAIGN_WAVE_PRESSURE.md"},
+    {"id":"C224_VIP_BENEFITS_MILESTONES","version":"1.1.1","status":"IN_PROGRESS","updated_at":"2026-10-26","contract_file":"docs/contracts/C224_VIP_BENEFITS_MILESTONES.md"},
+    {"id":"C223_AUTO_CARD_PICK","version":"1.1.1","status":"IN_PROGRESS","updated_at":"2026-10-26","contract_file":"docs/contracts/C223_AUTO_CARD_PICK.md"},
+    {"id":"C222_BOSS_SKILL_RANGE","version":"1.0.0","status":"IN_PROGRESS","updated_at":"2026-10-26","contract_file":"docs/contracts/C222_BOSS_SKILL_RANGE.md"},
+    {"id":"C221_ARC6_NGU_TO_QUY_KHU","version":"1.0.0","status":"IN_PROGRESS","updated_at":"2026-10-26","contract_file":"docs/contracts/C221_ARC6_NGU_TO_QUY_KHU.md"},
+    {"id":"C220_TACTICAL_SUPPORT_CARDS","version":"1.0.1","status":"ACTIVE","updated_at":"2026-10-26","contract_file":"docs/contracts/C220_TACTICAL_SUPPORT_CARDS.md"},
+    {"id":"C218_CAMPAIGN_WAVE_PRESSURE","version":"2.3.1","status":"IN_PROGRESS","updated_at":"2026-10-26","contract_file":"docs/contracts/C218_CAMPAIGN_WAVE_PRESSURE.md"},
     {
       "id": "C204_LAW_BATTLE_ENTRY",
       "version": "1.3.0",
@@ -59,7 +64,7 @@
     },
     {
       "id": "C196_HERO4_SKILL_REBALANCE",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "status": "ACTIVE",
       "updated_at": "2026-10-24",
       "contract_file": "docs/contracts/C196_HERO4_SKILL_REBALANCE.md"
@@ -297,9 +302,9 @@
     },
     {
       "id": "C157_CREEP_ICE_SKILLS",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "status": "ACTIVE",
-      "updated_at": "2026-10-21",
+      "updated_at": "2026-10-26",
       "contract_file": "docs/contracts/C157_CREEP_ICE_SKILLS.md"
     },
     {
@@ -360,9 +365,9 @@
     },
     {
       "id": "C110_CULTIVATION_TRIBULATION",
-      "version": "2.2.0",
+      "version": "2.2.1",
       "status": "ACTIVE",
-      "updated_at": "2026-10-21",
+      "updated_at": "2026-10-26",
       "contract_file": "docs/contracts/C110_CULTIVATION_TRIBULATION.md"
     },
     {
@@ -383,9 +388,9 @@
     },
     {
       "id": "C144_STAGE_SWEEP",
-      "version": "1.4.3",
+      "version": "1.4.4",
       "status": "ACTIVE",
-      "updated_at": "2026-10-23",
+      "updated_at": "2026-10-26",
       "contract_file": "docs/contracts/C144_STAGE_SWEEP.md"
     },
     {
@@ -439,9 +444,9 @@
     },
     {
       "id": "C134_RESULT_AD_SYSTEM_CONFIG",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "status": "IN_PROGRESS",
-      "updated_at": "2026-10-18",
+      "updated_at": "2026-10-26",
       "contract_file": "docs/contracts/C134_RESULT_AD_SYSTEM_CONFIG.md"
     },
     {
@@ -481,9 +486,9 @@
     },
     {
       "id": "C130_CONSUMABLE_USE",
-      "version": "1.3.0",
-      "status": "IN_PROGRESS",
-      "updated_at": "2026-10-22",
+      "version": "1.5.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-25",
       "contract_file": "docs/contracts/C130_CONSUMABLE_USE.md"
     },
     {

@@ -116,6 +116,12 @@ function checkinStatusFor(state: any, campaign: any, window: any): any {
     };
 }
 
+function vipCheckinStatus(nk:nkruntime.Nakama,status:any,level:number):any {
+    const config=vipBenefitsConfig(nk);
+    return Object.assign({},status,{vip_level:level,vip_reward_multiplier:1+level*config.reward_bonus_per_level,
+        days:status.days.map((day:any)=>Object.assign({},day,{base_grants:day.grants,grants:vipScaleRewardGrants(nk,day.grants,level)}))});
+}
+
 function checkinGrantItem(items: any[], itemId: string, amount: number): boolean {
     if (!itemId || amount <= 0) return false;
     const existing = items.find((entry: any) => entry && String(entry.item_id || "") === itemId && entry.unique !== true);
@@ -138,7 +144,7 @@ function checkinApplyGrants(nk: nkruntime.Nakama, profile: any, items: any[], gr
             profile.resources[id] = Math.max(0, Number(profile.resources[id] || 0)) + amount;
             issued.push({ type, id, amount });
         } else if (type === "stamina") {
-            profile.stamina = Math.max(Number(profile.stamina || 0), Math.min(30, Math.max(0, Number(profile.stamina || 0)) + amount));
+            profile.stamina = staminaClamp(nk, Number(profile.stamina || 0) + amount);
             issued.push({ type, amount });
         } else if (type === "item" || type === "random_item") {
             let itemId = String(raw.id || "");
@@ -179,7 +185,8 @@ const dailyCheckinStatus: nkruntime.RpcFunction = (ctx, _logger, nk, _payload): 
             value: stored.state, permissionRead: 1, permissionWrite: 0, version: "*" }]);
         if (created.length !== 1) return JSON.stringify({ success: false, active: false, message: "Could not initialize check-in campaign" });
     }
-    return JSON.stringify(Object.assign({ success: true }, checkinStatusFor(stored.state, selected.campaign, selected.window)));
+    const vip=readVipProgress(nk,ctx.userId,monetizationMode(ctx));
+    return JSON.stringify(Object.assign({ success: true }, vipCheckinStatus(nk,checkinStatusFor(stored.state, selected.campaign, selected.window),vip.level)));
 };
 
 const dailyCheckinClaim: nkruntime.RpcFunction = (ctx, _logger, nk, payload): string => {
@@ -202,7 +209,8 @@ const dailyCheckinClaim: nkruntime.RpcFunction = (ctx, _logger, nk, payload): st
     if (!profileObject || !inventoryObject) return JSON.stringify({ success: false, message: "Player data is incomplete" });
     const stored = checkinReadState(nk, ctx.userId, selected.campaign, selected.window);
     const state = stored.state;
-    const status = checkinStatusFor(state, selected.campaign, selected.window);
+    const authoritativeVip=readVipProgress(nk,ctx.userId,monetizationMode(ctx));
+    const status = vipCheckinStatus(nk,checkinStatusFor(state, selected.campaign, selected.window),authoritativeVip.level);
     const requestedDay = Math.floor(Number(req.day || 0));
     if (requestedDay <= 0 || requestedDay > status.today_day) return JSON.stringify({ success: false, message: "Reward is not available yet", state: status });
     if (status.claimed_days.indexOf(requestedDay) >= 0) return JSON.stringify({ success: false, message: "Reward was already claimed", state: status });
@@ -219,7 +227,7 @@ const dailyCheckinClaim: nkruntime.RpcFunction = (ctx, _logger, nk, payload): st
     profile.resources = profile.resources || {};
     if (Number(profile.resources.gems || 0) < cost) return JSON.stringify({ success: false, message: "Not enough gems for catch-up", gem_cost: cost, state: status });
     profile.resources.gems = Math.max(0, Number(profile.resources.gems || 0) - cost);
-    const grants = checkinApplyGrants(nk, profile, items, day.grants);
+    const grants = checkinApplyGrants(nk, profile, items, vipScaleRewardGrants(nk,day.grants,authoritativeVip.level));
     if (!grants) return JSON.stringify({ success: false, message: "Invalid reward configuration" });
     const claimDate = checkinDayText(checkinLocalDay(now));
     const nextState = { campaign_id: selected.campaign.campaign_id, started_at_ms: selected.window.start_ms,
@@ -239,5 +247,5 @@ const dailyCheckinClaim: nkruntime.RpcFunction = (ctx, _logger, nk, payload): st
     }
     return JSON.stringify({ success: true, day: requestedDay, campaign_id: selected.campaign.campaign_id,
         claim_mode: claimMode, gem_cost: cost, grants, profile, inventory: items,
-        state: checkinStatusFor(nextState, selected.campaign, selected.window) });
+        state: vipCheckinStatus(nk,checkinStatusFor(nextState, selected.campaign, selected.window),authoritativeVip.level) });
 };

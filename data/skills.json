@@ -3099,7 +3099,7 @@
     "deployment": {
       "type": "line_area"
     },
-    "description": "Piercing boomerang glaives fly out and return; each level adds one glaive with a 10 degree fan step.",
+    "description": "Piercing boomerang glaives hit each enemy once per outward/return leg. Damage decreases linearly from100% near launch to30% at maximum range.",
     "vfx_frames": [
       "hero_4_skill_2_frame_0",
       "hero_4_skill_2_frame_1",
@@ -3124,14 +3124,16 @@
           "cooldown": 6.5,
           "radius": 30,
           "pierce": 999,
-          "vfx_scale": 0.09
+          "vfx_scale": 0.09,
+          "damage_min_range_multiplier": 0.3
         },
         "description_rows": [
           "Piercing return",
           "Damage 85% ATK",
           "Slow 15%",
           "Glaives 1",
-          "CD 6.5s"
+          "CD 6.5s",
+          "Distance damage100% to30% at max range"
         ],
         "effects": [
           {
@@ -3153,14 +3155,16 @@
           "cooldown": 6,
           "radius": 31,
           "pierce": 999,
-          "vfx_scale": 0.095
+          "vfx_scale": 0.095,
+          "damage_min_range_multiplier": 0.3
         },
         "description_rows": [
           "Piercing return",
           "Damage 95% ATK",
           "Slow 17.5%",
           "Glaives 2",
-          "CD 6s"
+          "CD 6s",
+          "Distance damage100% to30% at max range"
         ],
         "effects": [
           {
@@ -3182,14 +3186,16 @@
           "cooldown": 5.5,
           "radius": 32,
           "pierce": 999,
-          "vfx_scale": 0.0975
+          "vfx_scale": 0.0975,
+          "damage_min_range_multiplier": 0.3
         },
         "description_rows": [
           "Piercing return",
           "Damage 105% ATK",
           "Slow 20%",
           "Glaives 3",
-          "CD 5.5s"
+          "CD 5.5s",
+          "Distance damage100% to30% at max range"
         ],
         "effects": [
           {
@@ -3211,14 +3217,16 @@
           "cooldown": 5,
           "radius": 33,
           "pierce": 999,
-          "vfx_scale": 0.1
+          "vfx_scale": 0.1,
+          "damage_min_range_multiplier": 0.3
         },
         "description_rows": [
           "Piercing return",
           "Damage 115% ATK",
           "Slow 22.5%",
           "Glaives 4",
-          "CD 5s"
+          "CD 5s",
+          "Distance damage100% to30% at max range"
         ],
         "effects": [
           {
@@ -3240,14 +3248,16 @@
           "cooldown": 4.5,
           "radius": 34,
           "pierce": 999,
-          "vfx_scale": 0.105
+          "vfx_scale": 0.105,
+          "damage_min_range_multiplier": 0.3
         },
         "description_rows": [
           "Piercing return",
           "Damage 125% ATK",
           "Slow 25%",
           "Glaives 5",
-          "CD 4.5s"
+          "CD 4.5s",
+          "Distance damage100% to30% at max range"
         ],
         "effects": [
           {

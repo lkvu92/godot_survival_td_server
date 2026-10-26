@@ -30,3 +30,15 @@ Tẩy Linh Quả tính: nền mới + cấp hiện tại × tăng trưởng mớ
 
 Không tiêu hao khi lỗi/không đủ đồ/không đạt điều kiện. Mất phản hồi: thử lại cùng request ID, không trừ hai lần. Không cấp thưởng local khi offline.
 
+
+## Vật phẩm trong Đột phá (C130 v1.4.0)
+
+Danh sách vật phẩm bên trái dùng được cả trong gameplay thường và Đột phá/Thiên Kiếp. Mỗi lần bấm dùng một vật phẩm; chỉ áp dụng hiệu ứng sau khi server xác nhận trừ đồ. Thuốc hồi máu không dùng khi HP đầy. Khi tạm dừng, đã chết, kết thúc lượt hoặc mất kết nối, thao tác sử dụng bị khóa.
+
+Đan dược và phù chiến đấu giữ nguyên hiệu ứng/cooldown theo cấu hình server. Mỗi lượt Đột phá có cooldown riêng và được dùng tối đa một Hồi Sinh Phù khi chết (50% HP, miễn sát thương 3 giây theo cấu hình hiện tại); hủy hồi sinh sẽ kết thúc thất bại. Hồi sinh bằng quảng cáo chỉ áp dụng cho gameplay thường. Vật phẩm vĩnh viễn vẫn chỉ dùng ngoài trận.
+
+Server kiểm tra đúng mã lượt Thiên Kiếp đang hoạt động, thời hạn một giờ và giao dịch chống trừ lặp. Lượt mới khởi tạo lại cooldown/số lần hồi sinh; lượt đã quyết toán không thể dùng thêm vật phẩm.
+
+## Dùng nhanh Thể Lực Đan
+
+Khi hết thể lực hoặc bấm bổ sung thể lực, dialog hiển thị Thể Lực Đan ở đầu nếu có trong kho. Mặc định chọn min(2, số đan sở hữu); nút −/+ điều chỉnh số lượng và dòng +N THỂ LỰC hiển thị lượng thực nhận. Nếu thể lực đã hồi một phần, số viên được giới hạn theo phần còn thiếu để tránh dùng thừa. Bấm SỬ DỤNG để dùng ngay, không cần mở túi hay xác nhận lần nữa. Server xác nhận trừ đồ trước khi giao diện cập nhật. Dialog vẫn mở; đóng bằng X rồi bấm bắt đầu ải như bình thường. Quảng cáo và mua bằng Ngọc vẫn có ở phía dưới.

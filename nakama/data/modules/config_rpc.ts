@@ -524,6 +524,17 @@ function validateReleaseSnapshot(nk:nkruntime.Nakama,snapshot:any):string|null {
         catch(_error){return JSON.stringify({status:'error',code:422,message:'Missing or invalid system.stage_sweep'});}
     }
     if (!validRewardedAdsConfig(snapshot.system.rewarded_ads)) return JSON.stringify({ status: "error", code: 422, message: "Missing or invalid system.rewarded_ads" });
+    const staminaMaxValue = Number(snapshot.system.stamina_max);
+    const staminaStorageValue = Number(snapshot.system.stamina_storage_max);
+    const staminaAdReward = Number(snapshot.system.stamina_ad_reward);
+    const staminaPurchaseAmount = Number(snapshot.system.stamina_purchase_amount);
+    const staminaPrices = snapshot.system.stamina_purchase_prices;
+    if (!Number.isSafeInteger(staminaMaxValue) || staminaMaxValue < 1
+        || !Number.isSafeInteger(staminaStorageValue) || staminaStorageValue < staminaMaxValue
+        || !Number.isSafeInteger(staminaAdReward) || staminaAdReward < 0
+        || !Number.isSafeInteger(staminaPurchaseAmount) || staminaPurchaseAmount < 1
+        || !Array.isArray(staminaPrices) || staminaPrices.length < 1 || staminaPrices.some((price:any) => !Number.isSafeInteger(price) || price < 1))
+        return JSON.stringify({status:'error',code:422,message:'Invalid stamina economy settings'});
     if (snapshot.system.leaderboard_rewards !== undefined && (!validWeeklyLeaderboardConfig(snapshot.system.leaderboard_rewards)
         || !weeklyConfigItemsExist(nk,snapshot.system.leaderboard_rewards))) return JSON.stringify({status:"error",code:422,message:"Invalid system.leaderboard_rewards or unknown reward items"});
     const latestVersion = String(snapshot.system.latest_app_version || "");

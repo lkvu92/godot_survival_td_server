@@ -193,7 +193,7 @@ function eventRewardTracks(quest: any): any {
     return { normal, vip };
 }
 
-function eventView(campaign: any, occurrence: any, state: any, profile: any, compliance: any): any {
+function eventView(nk:nkruntime.Nakama,campaign: any, occurrence: any, state: any, profile: any, compliance: any): any {
     const requirements = eventRequirements(campaign, profile);
     const claimed = eventObject(state.claimed);
     const quests = campaign.quests.map((quest: any) => {
@@ -201,6 +201,8 @@ function eventView(campaign: any, occurrence: any, state: any, profile: any, com
         const target = Math.max(1, Number(quest.target || 1));
         const progress = eventQuestProgress(quest, state, profile, compliance);
         const tracks = eventRewardTracks(quest);
+        tracks.normal=vipScaleRewardGrants(nk,tracks.normal,Number(profile.vip||0));
+        tracks.vip.grants=vipScaleRewardGrants(nk,tracks.vip.grants,Number(profile.vip||0));
         const questClaims = eventObject(claimed[id]);
         return { quest_id: id, name: String(quest.name || id), type: String(quest.type || ""),
             target, progress: Math.min(progress, target), completed: progress >= target,
@@ -300,7 +302,7 @@ function eventApplyGrants(nk: nkruntime.Nakama, profile: any, items: any[], gran
             profile.resources[id] = Math.max(0, Number(profile.resources[id] || 0)) + amount;
             issued.push({ type, id, amount });
         } else if (type === "stamina") {
-            profile.stamina = Math.max(Number(profile.stamina || 0), Math.min(30, Math.max(0, Number(profile.stamina || 0)) + amount));
+            profile.stamina = staminaClamp(nk, Number(profile.stamina || 0) + amount);
             issued.push({ type, amount });
         } else if (type === "item" || type === "random_item") {
             let id = String(grant.id || "");
@@ -334,7 +336,7 @@ const eventList: nkruntime.RpcFunction = (ctx, _logger, nk, _payload): string =>
         const occurrence = eventOccurrence(campaign, now);
         if (!occurrence) continue;
         const stored = eventReadState(nk, ctx.userId, campaign, occurrence);
-        const view = eventView(campaign, occurrence, stored.state, profile, compliance);
+        const view = eventView(nk,campaign, occurrence, stored.state, profile, compliance);
         if (occurrence.phase === "upcoming") upcomingEvents.push(view); else activeEvents.push(view);
     }
     const newestFirst = (a: any, b: any) => Number(b.starts_at_ms) - Number(a.starts_at_ms);
@@ -384,7 +386,7 @@ const eventClaim: nkruntime.RpcFunction = (ctx, _logger, nk, payload): string =>
     if (track === "vip" && Number(profile.vip || 0) < Number(tracks.vip.required_vip || 1)) {
         return JSON.stringify({ success: false, message: "VIP requirement is not met" });
     }
-    const issued = eventApplyGrants(nk, profile, items, grants);
+    const issued = eventApplyGrants(nk, profile, items, vipScaleRewardGrants(nk,grants,Number(profile.vip||0)));
     if (!issued) return JSON.stringify({ success: false, message: "Invalid event reward configuration" });
     questClaims[track] = true;
     stored.state.claimed[questId] = questClaims;
@@ -400,5 +402,5 @@ const eventClaim: nkruntime.RpcFunction = (ctx, _logger, nk, payload): string =>
     if (writes.length !== 3) return JSON.stringify({ success: false, message: "Could not persist event reward" });
     return JSON.stringify({ success: true, event_id: eventId, occurrence_id: occurrenceId, quest_id: questId,
         track, grants: issued, profile, inventory: items,
-        event: eventView(campaign, occurrence, stored.state, profile, compliance) });
+        event: eventView(nk,campaign, occurrence, stored.state, profile, compliance) });
 };

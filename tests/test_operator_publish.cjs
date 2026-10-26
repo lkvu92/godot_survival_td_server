@@ -7,6 +7,7 @@ c.validRewardedAdsConfig=x=>!!x;
 const token='a'.repeat(64),ctx={env:{CONFIG_PUBLISH_TOKEN:token}},rpc=get('operatorConfigRelease');
 let inserts=[],queries=0;
 const draft={min_app_version:'1.1.0',latest_app_version:'1.1.0',ads_enabled:false,payment_enabled:false,rewarded_ads:{},stage_sweep:clone(get('SWEEP_DEFAULTS')),tower_sweep:clone(get('TOWER_SWEEP_DEFAULTS'))};
+Object.assign(draft,{stamina_max:30,stamina_storage_max:200,stamina_ad_reward:15,stamina_purchase_amount:15,stamina_purchase_prices:[30,40,50,60,70]});
 draft.feature_unlocks=clone(get('FEATURE_DEFAULTS'));draft.realm_milestones=clone(get('REALM_MILESTONE_DEFAULTS'));
 let active={version:6,config:{system:clone(draft)}};
 const nk={sqlQuery(sql){queries++;if(sql.includes('remote_config_settings'))return Object.entries(draft).map(([key,v])=>({module:'system',key,value_type:typeof v==='boolean'?'bool':typeof v==='string'?'string':'json',value:typeof v==='string'?v:JSON.stringify(v)}));if(sql.includes('remote_config_releases'))return [{config_version:active.version,snapshot:active.config}];throw Error(sql);},sqlExec(sql,args){inserts.push(args);}};

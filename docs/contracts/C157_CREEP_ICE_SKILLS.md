@@ -1,8 +1,8 @@
 # C157 — Arc 2 ice creep skills
 
-- Version: `1.0.0`
+- Version: `1.0.1`
 - Status: `ACTIVE`
-- Updated: `2026-10-21`
+- Updated: `2026-10-26`
 
 ## Authoritative mapping
 
@@ -19,3 +19,11 @@ All percentages are caster ATK. Damage uses the shared combat resolver. Ice asse
 ## Changelog
 
 - `1.0.0` (2026-10-21): Added Arc 2 regular and boss ice-skill data, cast phases, VFX registration and attack-speed slow status.
+
+## Revision 1.0.1 ? final Arc2 boss mapping
+
+After C139 the final boss of displayed Arc2 is ghost_medium at stage_1_10 wave20. It receives the existing ghost_low ice_trinity and ice_linglong definitions, with C222 cast ranges700/550. Boss stats, rewards, stage entries and all skill timings/damage/effects are preserved. Existing enemies.boss_skills transport and Enemy dispatch apply; no RPC/client changes or offline fallback.
+
+| Version | Date | Change |
+|---|---|---|
+| 1.0.1 | 2026-10-26 | Attach both existing Water skills to actual final Arc2 boss ghost_medium. |

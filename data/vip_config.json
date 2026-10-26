@@ -1,19 +1,55 @@
 {
-  "version": 1,
+  "version": 3,
   "max_level": 12,
   "levels": [
-    {"level": 1, "min_exp": 500},
-    {"level": 2, "min_exp": 1000},
-    {"level": 3, "min_exp": 2000},
-    {"level": 4, "min_exp": 4000},
-    {"level": 5, "min_exp": 8000},
-    {"level": 6, "min_exp": 16000},
-    {"level": 7, "min_exp": 32000},
-    {"level": 8, "min_exp": 64000},
-    {"level": 9, "min_exp": 128000},
-    {"level": 10, "min_exp": 256000},
-    {"level": 11, "min_exp": 512000},
-    {"level": 12, "min_exp": 1024000}
+    {
+      "level": 1,
+      "min_exp": 500
+    },
+    {
+      "level": 2,
+      "min_exp": 1000
+    },
+    {
+      "level": 3,
+      "min_exp": 2000
+    },
+    {
+      "level": 4,
+      "min_exp": 4000
+    },
+    {
+      "level": 5,
+      "min_exp": 8000
+    },
+    {
+      "level": 6,
+      "min_exp": 16000
+    },
+    {
+      "level": 7,
+      "min_exp": 32000
+    },
+    {
+      "level": 8,
+      "min_exp": 64000
+    },
+    {
+      "level": 9,
+      "min_exp": 128000
+    },
+    {
+      "level": 10,
+      "min_exp": 256000
+    },
+    {
+      "level": 11,
+      "min_exp": 512000
+    },
+    {
+      "level": 12,
+      "min_exp": 1024000
+    }
   ],
   "product_exp": {
     "remove_ads_1d": 100,
@@ -31,5 +67,646 @@
     "gem_chest": 2000,
     "gold_vault": 1000,
     "first_topup_pack": 1000
-  }
+  },
+  "reward_bonus_per_level": 0.1,
+  "milestone_rewards": [
+    {
+      "level": 1,
+      "rewards": [
+        {
+          "type": "item",
+          "id": "healing_elixir",
+          "amount": 10
+        },
+        {
+          "type": "item",
+          "id": "shield_elixir",
+          "amount": 10
+        },
+        {
+          "type": "item",
+          "id": "energy_elixir",
+          "amount": 3
+        },
+        {
+          "type": "item",
+          "id": "campaign_sweep_ticket",
+          "amount": 30
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "rewards": [
+        {
+          "type": "item",
+          "id": "healing_elixir",
+          "amount": 10
+        },
+        {
+          "type": "item",
+          "id": "energy_elixir",
+          "amount": 5
+        },
+        {
+          "type": "item",
+          "id": "exp_boost_card_10",
+          "amount": 2
+        },
+        {
+          "type": "item",
+          "id": "campaign_sweep_ticket",
+          "amount": 60
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "rewards": [
+        {
+          "type": "item",
+          "id": "healing_elixir",
+          "amount": 15
+        },
+        {
+          "type": "item",
+          "id": "energy_elixir",
+          "amount": 8
+        },
+        {
+          "type": "item",
+          "id": "exp_boost_card_10",
+          "amount": 2
+        },
+        {
+          "type": "random_items",
+          "pool": [
+            "stone_metal_low",
+            "stone_water_low",
+            "stone_wood_low",
+            "stone_fire_low",
+            "stone_earth_low"
+          ],
+          "amount": 50,
+          "label": "Rune hạ phẩm ngẫu nhiên"
+        },
+        {
+          "type": "item",
+          "id": "campaign_sweep_ticket",
+          "amount": 100
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "rewards": [
+        {
+          "type": "item",
+          "id": "healing_elixir",
+          "amount": 20
+        },
+        {
+          "type": "item",
+          "id": "energy_elixir",
+          "amount": 11
+        },
+        {
+          "type": "item",
+          "id": "exp_boost_card_25",
+          "amount": 2
+        },
+        {
+          "type": "random_items",
+          "pool": [
+            "stone_metal_low",
+            "stone_water_low",
+            "stone_wood_low",
+            "stone_fire_low",
+            "stone_earth_low"
+          ],
+          "amount": 100,
+          "label": "Rune hạ phẩm ngẫu nhiên"
+        },
+        {
+          "type": "item",
+          "id": "campaign_sweep_ticket",
+          "amount": 150
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "rewards": [
+        {
+          "type": "item",
+          "id": "healing_elixir",
+          "amount": 25
+        },
+        {
+          "type": "item",
+          "id": "energy_elixir",
+          "amount": 14
+        },
+        {
+          "type": "item",
+          "id": "exp_boost_card_25",
+          "amount": 2
+        },
+        {
+          "type": "random_items",
+          "pool": [
+            "stone_metal_low",
+            "stone_water_low",
+            "stone_wood_low",
+            "stone_fire_low",
+            "stone_earth_low"
+          ],
+          "amount": 150,
+          "label": "Rune hạ phẩm ngẫu nhiên"
+        },
+        {
+          "type": "item",
+          "id": "campaign_sweep_ticket",
+          "amount": 150
+        },
+        {
+          "type": "item",
+          "id": "element_enlightenment_charm",
+          "amount": 2
+        }
+      ]
+    },
+    {
+      "level": 6,
+      "rewards": [
+        {
+          "type": "item",
+          "id": "healing_elixir",
+          "amount": 30
+        },
+        {
+          "type": "item",
+          "id": "energy_elixir",
+          "amount": 17
+        },
+        {
+          "type": "item",
+          "id": "exp_boost_card_25",
+          "amount": 2
+        },
+        {
+          "type": "random_items",
+          "pool": [
+            "stone_metal_medium",
+            "stone_water_medium",
+            "stone_wood_medium",
+            "stone_fire_medium",
+            "stone_earth_medium"
+          ],
+          "amount": 50,
+          "label": "Rune trung phẩm ngẫu nhiên"
+        },
+        {
+          "type": "item",
+          "id": "campaign_sweep_ticket",
+          "amount": 150
+        },
+        {
+          "type": "item",
+          "id": "element_enlightenment_charm",
+          "amount": 2
+        },
+        {
+          "type": "item",
+          "id": "talisman_enhance_charm",
+          "amount": 2
+        }
+      ]
+    },
+    {
+      "level": 7,
+      "rewards": [
+        {
+          "type": "item",
+          "id": "healing_elixir",
+          "amount": 30
+        },
+        {
+          "type": "item",
+          "id": "energy_elixir",
+          "amount": 20
+        },
+        {
+          "type": "item",
+          "id": "exp_boost_card_25",
+          "amount": 2
+        },
+        {
+          "type": "random_items",
+          "pool": [
+            "stone_metal_medium",
+            "stone_water_medium",
+            "stone_wood_medium",
+            "stone_fire_medium",
+            "stone_earth_medium"
+          ],
+          "amount": 100,
+          "label": "Rune trung phẩm ngẫu nhiên"
+        },
+        {
+          "type": "item",
+          "id": "campaign_sweep_ticket",
+          "amount": 150
+        },
+        {
+          "type": "item",
+          "id": "element_enlightenment_charm",
+          "amount": 2
+        },
+        {
+          "type": "item",
+          "id": "talisman_enhance_charm",
+          "amount": 2
+        },
+        {
+          "type": "random_items",
+          "pool": [
+            "metal_aptitude_fruit",
+            "water_aptitude_fruit",
+            "wood_aptitude_fruit",
+            "fire_aptitude_fruit",
+            "earth_aptitude_fruit"
+          ],
+          "amount": 1,
+          "label": "Linh quả ngũ hành ngẫu nhiên"
+        }
+      ]
+    },
+    {
+      "level": 8,
+      "rewards": [
+        {
+          "type": "item",
+          "id": "healing_elixir",
+          "amount": 35
+        },
+        {
+          "type": "item",
+          "id": "energy_elixir",
+          "amount": 23
+        },
+        {
+          "type": "item",
+          "id": "exp_boost_card_25",
+          "amount": 3
+        },
+        {
+          "type": "random_items",
+          "pool": [
+            "rune_metal_high",
+            "rune_water_high",
+            "rune_wood_high",
+            "rune_fire_high",
+            "rune_earth_high"
+          ],
+          "amount": 50,
+          "label": "Rune thượng phẩm ngẫu nhiên"
+        },
+        {
+          "type": "item",
+          "id": "campaign_sweep_ticket",
+          "amount": 150
+        },
+        {
+          "type": "item",
+          "id": "element_enlightenment_charm",
+          "amount": 2
+        },
+        {
+          "type": "item",
+          "id": "talisman_enhance_charm",
+          "amount": 2
+        },
+        {
+          "type": "random_items",
+          "pool": [
+            "metal_aptitude_fruit",
+            "water_aptitude_fruit",
+            "wood_aptitude_fruit",
+            "fire_aptitude_fruit",
+            "earth_aptitude_fruit"
+          ],
+          "amount": 3,
+          "label": "Linh quả ngũ hành ngẫu nhiên"
+        }
+      ]
+    },
+    {
+      "level": 9,
+      "rewards": [
+        {
+          "type": "item",
+          "id": "healing_elixir",
+          "amount": 35
+        },
+        {
+          "type": "item",
+          "id": "energy_elixir",
+          "amount": 23
+        },
+        {
+          "type": "item",
+          "id": "exp_boost_card_25",
+          "amount": 3
+        },
+        {
+          "type": "random_items",
+          "pool": [
+            "rune_metal_high",
+            "rune_water_high",
+            "rune_wood_high",
+            "rune_fire_high",
+            "rune_earth_high"
+          ],
+          "amount": 100,
+          "label": "Rune thượng phẩm ngẫu nhiên"
+        },
+        {
+          "type": "item",
+          "id": "campaign_sweep_ticket",
+          "amount": 150
+        },
+        {
+          "type": "item",
+          "id": "element_enlightenment_charm",
+          "amount": 2
+        },
+        {
+          "type": "item",
+          "id": "talisman_enhance_charm",
+          "amount": 2
+        },
+        {
+          "type": "random_items",
+          "pool": [
+            "metal_aptitude_fruit",
+            "water_aptitude_fruit",
+            "wood_aptitude_fruit",
+            "fire_aptitude_fruit",
+            "earth_aptitude_fruit"
+          ],
+          "amount": 3,
+          "label": "Linh quả ngũ hành ngẫu nhiên"
+        },
+        {
+          "type": "item",
+          "id": "spirit_root_reset",
+          "amount": 2
+        }
+      ]
+    },
+    {
+      "level": 10,
+      "rewards": [
+        {
+          "type": "item",
+          "id": "healing_elixir",
+          "amount": 35
+        },
+        {
+          "type": "item",
+          "id": "energy_elixir",
+          "amount": 23
+        },
+        {
+          "type": "item",
+          "id": "exp_boost_card_25",
+          "amount": 3
+        },
+        {
+          "type": "random_items",
+          "pool": [
+            "rune_metal_high",
+            "rune_water_high",
+            "rune_wood_high",
+            "rune_fire_high",
+            "rune_earth_high"
+          ],
+          "amount": 100,
+          "label": "Rune thượng phẩm ngẫu nhiên"
+        },
+        {
+          "type": "item",
+          "id": "campaign_sweep_ticket",
+          "amount": 150
+        },
+        {
+          "type": "item",
+          "id": "element_enlightenment_charm",
+          "amount": 2
+        },
+        {
+          "type": "item",
+          "id": "talisman_enhance_charm",
+          "amount": 2
+        },
+        {
+          "type": "random_items",
+          "pool": [
+            "metal_aptitude_fruit",
+            "water_aptitude_fruit",
+            "wood_aptitude_fruit",
+            "fire_aptitude_fruit",
+            "earth_aptitude_fruit"
+          ],
+          "amount": 3,
+          "label": "Linh quả ngũ hành ngẫu nhiên"
+        },
+        {
+          "type": "item",
+          "id": "spirit_root_reset",
+          "amount": 2
+        },
+        {
+          "type": "random_item_bundle",
+          "amount": 50,
+          "pool": [
+            "talisman_fragment_16",
+            "talisman_fragment_17",
+            "talisman_fragment_18",
+            "talisman_fragment_19",
+            "talisman_fragment_20",
+            "talisman_fragment_21",
+            "talisman_fragment_22",
+            "talisman_fragment_23",
+            "talisman_fragment_24",
+            "talisman_fragment_25"
+          ],
+          "label": "Mảnh pháp bảo trung cấp ngẫu nhiên (một loại)"
+        }
+      ]
+    },
+    {
+      "level": 11,
+      "rewards": [
+        {
+          "type": "item",
+          "id": "healing_elixir",
+          "amount": 40
+        },
+        {
+          "type": "item",
+          "id": "energy_elixir",
+          "amount": 26
+        },
+        {
+          "type": "item",
+          "id": "exp_boost_card_25",
+          "amount": 4
+        },
+        {
+          "type": "random_items",
+          "pool": [
+            "rune_metal_high",
+            "rune_water_high",
+            "rune_wood_high",
+            "rune_fire_high",
+            "rune_earth_high"
+          ],
+          "amount": 100,
+          "label": "Rune thượng phẩm ngẫu nhiên"
+        },
+        {
+          "type": "item",
+          "id": "campaign_sweep_ticket",
+          "amount": 150
+        },
+        {
+          "type": "item",
+          "id": "element_enlightenment_charm",
+          "amount": 8
+        },
+        {
+          "type": "item",
+          "id": "talisman_enhance_charm",
+          "amount": 8
+        },
+        {
+          "type": "random_items",
+          "pool": [
+            "metal_aptitude_fruit",
+            "water_aptitude_fruit",
+            "wood_aptitude_fruit",
+            "fire_aptitude_fruit",
+            "earth_aptitude_fruit"
+          ],
+          "amount": 3,
+          "label": "Linh quả ngũ hành ngẫu nhiên"
+        },
+        {
+          "type": "item",
+          "id": "spirit_root_reset",
+          "amount": 3
+        },
+        {
+          "type": "random_item_bundle",
+          "amount": 70,
+          "pool": [
+            "talisman_fragment_16",
+            "talisman_fragment_17",
+            "talisman_fragment_18",
+            "talisman_fragment_19",
+            "talisman_fragment_20",
+            "talisman_fragment_21",
+            "talisman_fragment_22",
+            "talisman_fragment_23",
+            "talisman_fragment_24",
+            "talisman_fragment_25"
+          ],
+          "label": "Mảnh pháp bảo trung cấp ngẫu nhiên (một loại)"
+        }
+      ]
+    },
+    {
+      "level": 12,
+      "rewards": [
+        {
+          "type": "item",
+          "id": "healing_elixir",
+          "amount": 45
+        },
+        {
+          "type": "item",
+          "id": "energy_elixir",
+          "amount": 30
+        },
+        {
+          "type": "item",
+          "id": "exp_boost_card_25",
+          "amount": 4
+        },
+        {
+          "type": "random_items",
+          "pool": [
+            "rune_metal_high",
+            "rune_water_high",
+            "rune_wood_high",
+            "rune_fire_high",
+            "rune_earth_high"
+          ],
+          "amount": 100,
+          "label": "Rune thượng phẩm ngẫu nhiên"
+        },
+        {
+          "type": "item",
+          "id": "campaign_sweep_ticket",
+          "amount": 150
+        },
+        {
+          "type": "item",
+          "id": "element_enlightenment_charm",
+          "amount": 10
+        },
+        {
+          "type": "item",
+          "id": "talisman_enhance_charm",
+          "amount": 10
+        },
+        {
+          "type": "random_items",
+          "pool": [
+            "metal_aptitude_fruit",
+            "water_aptitude_fruit",
+            "wood_aptitude_fruit",
+            "fire_aptitude_fruit",
+            "earth_aptitude_fruit"
+          ],
+          "amount": 5,
+          "label": "Linh quả ngũ hành ngẫu nhiên"
+        },
+        {
+          "type": "item",
+          "id": "spirit_root_reset",
+          "amount": 4
+        },
+        {
+          "type": "random_item_bundle",
+          "amount": 100,
+          "pool": [
+            "talisman_fragment_16",
+            "talisman_fragment_17",
+            "talisman_fragment_18",
+            "talisman_fragment_19",
+            "talisman_fragment_20",
+            "talisman_fragment_21",
+            "talisman_fragment_22",
+            "talisman_fragment_23",
+            "talisman_fragment_24",
+            "talisman_fragment_25"
+          ],
+          "label": "Mảnh pháp bảo trung cấp ngẫu nhiên (một loại)"
+        }
+      ]
+    }
+  ]
 }

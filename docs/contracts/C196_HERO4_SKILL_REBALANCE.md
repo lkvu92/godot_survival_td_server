@@ -1,6 +1,6 @@
 # C196 Hero 4 poison skill rebalance
 
-Version: 1.1.0
+Version: 1.2.0
 Status: ACTIVE
 
 ## Schema and server authority
@@ -48,3 +48,13 @@ Multiply Skill3 vfx_scale and explosion_vfx_scale by0.6 at every level: reduce i
 | 1.1.0 | 2026-10-24 | Reduce Skill3 trap and explosion visual sizes40%. |
 
 Validation1.1.0: exact five-level visual scale curves, TestHero4PoisonTraps and both static suites PASS. Gate score9/10. No publication/deployment.
+
+## Revision 1.2.0 ? 2026-10-26: Skill 2 piercing distance falloff
+
+H?i Ho?n ??c Lu?n pierces all hostile actors intersecting each swept movement segment, once per target on each outward/return leg. The outbound endpoint is clamped to the configured range. Skill stats add damage_min_range_multiplier=0.30 at every level. Direct damage multiplier is lerp(1,minimum,clamp(distance from original launch point to target / effective max range,0,1)); return hits use the same spatial curve, rising again toward the original launch point. The origin is snapshotted, so caster movement cannot change existing projectiles. No target-count attenuation or frame-dependent damage. Existing damage coefficients, slow, count, speed, cooldown, range and visuals remain. Projectile pool setup clears this option for other skills. Server config remains authoritative; no RPC changes or offline fallback.
+
+| Version | Date | Change |
+|---|---|---|
+| 1.2.0 | 2026-10-26 | Skill2 swept piercing on both legs and linear direct damage 100% to30% at max range. |
+
+Validation1.2.0: TestHero4Piercing PASS for all five level options, multiple targets crossed in one frame, exact100/82.5/65/47.5/30% spatial damage, returning-leg hits, endpoint clamp, off-line exclusion and pool option reset. Client static PASS. Local config version33 contains minimum multiplier0.3. Separate TestHero4Vortex fails its pre-existing dummy stun-distribution assertion; that test path and status behavior were not changed in this revision.

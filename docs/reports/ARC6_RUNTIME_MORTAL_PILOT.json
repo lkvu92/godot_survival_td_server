@@ -1,0 +1,854 @@
+{
+  "version": 1,
+  "model": "godot_full_run_neutral_offered_cards_survival_v1",
+  "mortal": true,
+  "reference_level": 35,
+  "seeds": [
+    221
+  ],
+  "heroes": [
+    "hero_1"
+  ],
+  "modes": [
+    "normal",
+    "epic",
+    "legend"
+  ],
+  "target_wave": 20,
+  "require_max_skills": false,
+  "loadout": "no equipment, cultivation or elemental affinity",
+  "movement": "stationary auto attacks and offered-card policy",
+  "summary": [
+    {
+      "stage_id": "stage_6_01",
+      "level_id": "normal",
+      "cases": 1,
+      "passed": 0,
+      "failed": [
+        {
+          "hero": "hero_1",
+          "seed": 221,
+          "reason": "hero_died",
+          "run_level": 15
+        }
+      ],
+      "max_reference_power": 7498
+    },
+    {
+      "stage_id": "stage_6_01",
+      "level_id": "epic",
+      "cases": 1,
+      "passed": 0,
+      "failed": [
+        {
+          "hero": "hero_1",
+          "seed": 221,
+          "reason": "hero_died",
+          "run_level": 6
+        }
+      ],
+      "max_reference_power": 7498
+    },
+    {
+      "stage_id": "stage_6_01",
+      "level_id": "legend",
+      "cases": 1,
+      "passed": 0,
+      "failed": [
+        {
+          "hero": "hero_1",
+          "seed": 221,
+          "reason": "hero_died",
+          "run_level": 5
+        }
+      ],
+      "max_reference_power": 7498
+    },
+    {
+      "stage_id": "stage_6_05",
+      "level_id": "normal",
+      "cases": 1,
+      "passed": 0,
+      "failed": [
+        {
+          "hero": "hero_1",
+          "seed": 221,
+          "reason": "hero_died",
+          "run_level": 13
+        }
+      ],
+      "max_reference_power": 7498
+    },
+    {
+      "stage_id": "stage_6_05",
+      "level_id": "epic",
+      "cases": 1,
+      "passed": 0,
+      "failed": [
+        {
+          "hero": "hero_1",
+          "seed": 221,
+          "reason": "hero_died",
+          "run_level": 5
+        }
+      ],
+      "max_reference_power": 7498
+    },
+    {
+      "stage_id": "stage_6_05",
+      "level_id": "legend",
+      "cases": 1,
+      "passed": 0,
+      "failed": [
+        {
+          "hero": "hero_1",
+          "seed": 221,
+          "reason": "hero_died",
+          "run_level": 2
+        }
+      ],
+      "max_reference_power": 7498
+    },
+    {
+      "stage_id": "stage_6_10",
+      "level_id": "normal",
+      "cases": 1,
+      "passed": 0,
+      "failed": [
+        {
+          "hero": "hero_1",
+          "seed": 221,
+          "reason": "hero_died",
+          "run_level": 10
+        }
+      ],
+      "max_reference_power": 7498
+    },
+    {
+      "stage_id": "stage_6_10",
+      "level_id": "epic",
+      "cases": 1,
+      "passed": 0,
+      "failed": [
+        {
+          "hero": "hero_1",
+          "seed": 221,
+          "reason": "hero_died",
+          "run_level": 6
+        }
+      ],
+      "max_reference_power": 7498
+    },
+    {
+      "stage_id": "stage_6_10",
+      "level_id": "legend",
+      "cases": 1,
+      "passed": 0,
+      "failed": [
+        {
+          "hero": "hero_1",
+          "seed": 221,
+          "reason": "hero_died",
+          "run_level": 1
+        }
+      ],
+      "max_reference_power": 7498
+    }
+  ],
+  "results": [
+    {
+      "base_combat_power": 7498,
+      "base_stats": {
+        "atk": 268.915367095721,
+        "attack_range": 350,
+        "attack_speed": 2.94101404803302,
+        "crit_damage": 2.18,
+        "crit_rate": 0.23,
+        "def": 44.6636154069333,
+        "hp": 4789.49449777142,
+        "move_speed": 392.72155612748,
+        "regen_percent_per_10s": 0.0980000000000001
+      },
+      "checkpoint_skills": [
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_1_skill_1"
+        },
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_1_skill_2"
+        },
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_1_skill_3"
+        }
+      ],
+      "checkpoints": [
+        {
+          "hp": 4823.09449777142,
+          "max_hp": 4823.09449777142,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_1_skill_1"
+            }
+          ],
+          "skills_max": true,
+          "wave": 4
+        },
+        {
+          "hp": 4268.23167900939,
+          "max_hp": 4865.09449777141,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_1_skill_1"
+            },
+            {
+              "actual": 4,
+              "max": 5,
+              "skill_id": "hero_1_skill_2"
+            }
+          ],
+          "skills_max": false,
+          "wave": 9
+        },
+        {
+          "hp": 4907.09449777141,
+          "max_hp": 4907.09449777141,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_1_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_1_skill_2"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_1_skill_3"
+            }
+          ],
+          "skills_max": true,
+          "wave": 14
+        }
+      ],
+      "difficulty": "normal",
+      "elapsed_game_seconds": 726.949999999969,
+      "expected_skill_count": 4,
+      "hero_id": "hero_1",
+      "hp": 0,
+      "max_hp": 4907.09449777141,
+      "mortal": true,
+      "persistent_level": 35,
+      "reason": "hero_died",
+      "require_max_skills": false,
+      "run_level": 15,
+      "runtime_stats": {
+        "atk": 274.952867095721,
+        "attack_range": 350,
+        "attack_speed": 3.04601404803302,
+        "crit_damage": 2.46,
+        "crit_rate": 0.3,
+        "def": 46.2386154069333,
+        "hp": 4907.09449777141,
+        "move_speed": 402.52155612748,
+        "regen_percent_per_10s": 0.1
+      },
+      "seed": 221,
+      "stage_id": "stage_6_01",
+      "status": "FAIL",
+      "target_wave": 20,
+      "case_index": 0,
+      "process_exit": 2,
+      "requested": {
+        "stage": "stage_6_01",
+        "mode": "normal",
+        "hero": "hero_1",
+        "seed": 221
+      }
+    },
+    {
+      "base_combat_power": 7498,
+      "base_stats": {
+        "atk": 268.915367095721,
+        "attack_range": 350,
+        "attack_speed": 2.94101404803302,
+        "crit_damage": 2.18,
+        "crit_rate": 0.23,
+        "def": 44.6636154069333,
+        "hp": 4789.49449777142,
+        "move_speed": 392.72155612748,
+        "regen_percent_per_10s": 0.0980000000000001
+      },
+      "checkpoint_skills": [
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_1_skill_1"
+        }
+      ],
+      "checkpoints": [
+        {
+          "hp": 3337.3189425742,
+          "max_hp": 4823.09449777142,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_1_skill_1"
+            }
+          ],
+          "skills_max": true,
+          "wave": 4
+        }
+      ],
+      "difficulty": "epic",
+      "elapsed_game_seconds": 234.149999999997,
+      "expected_skill_count": 4,
+      "hero_id": "hero_1",
+      "hp": 0,
+      "max_hp": 4831.49449777141,
+      "mortal": true,
+      "persistent_level": 35,
+      "reason": "hero_died",
+      "require_max_skills": false,
+      "run_level": 6,
+      "runtime_stats": {
+        "atk": 271.071617095721,
+        "attack_range": 350,
+        "attack_speed": 2.97851404803302,
+        "crit_damage": 2.28,
+        "crit_rate": 0.255,
+        "def": 45.2261154069333,
+        "hp": 4831.49449777141,
+        "move_speed": 396.22155612748,
+        "regen_percent_per_10s": 0.1
+      },
+      "seed": 221,
+      "stage_id": "stage_6_01",
+      "status": "FAIL",
+      "target_wave": 20,
+      "case_index": 1,
+      "process_exit": 2,
+      "requested": {
+        "stage": "stage_6_01",
+        "mode": "epic",
+        "hero": "hero_1",
+        "seed": 221
+      }
+    },
+    {
+      "base_combat_power": 7498,
+      "base_stats": {
+        "atk": 268.915367095721,
+        "attack_range": 350,
+        "attack_speed": 2.94101404803302,
+        "crit_damage": 2.18,
+        "crit_rate": 0.23,
+        "def": 44.6636154069333,
+        "hp": 4789.49449777142,
+        "move_speed": 392.72155612748,
+        "regen_percent_per_10s": 0.0980000000000001
+      },
+      "checkpoint_skills": [
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_1_skill_1"
+        }
+      ],
+      "checkpoints": [
+        {
+          "hp": 884.547688023244,
+          "max_hp": 4823.09449777142,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_1_skill_1"
+            }
+          ],
+          "skills_max": true,
+          "wave": 4
+        }
+      ],
+      "difficulty": "legend",
+      "elapsed_game_seconds": 173.75,
+      "expected_skill_count": 4,
+      "hero_id": "hero_1",
+      "hp": 0,
+      "max_hp": 4823.09449777142,
+      "mortal": true,
+      "persistent_level": 35,
+      "reason": "hero_died",
+      "require_max_skills": false,
+      "run_level": 5,
+      "runtime_stats": {
+        "atk": 270.640367095721,
+        "attack_range": 350,
+        "attack_speed": 2.97101404803302,
+        "crit_damage": 2.26,
+        "crit_rate": 0.25,
+        "def": 45.1136154069333,
+        "hp": 4823.09449777142,
+        "move_speed": 395.52155612748,
+        "regen_percent_per_10s": 0.1
+      },
+      "seed": 221,
+      "stage_id": "stage_6_01",
+      "status": "FAIL",
+      "target_wave": 20,
+      "case_index": 2,
+      "process_exit": 2,
+      "requested": {
+        "stage": "stage_6_01",
+        "mode": "legend",
+        "hero": "hero_1",
+        "seed": 221
+      }
+    },
+    {
+      "base_combat_power": 7498,
+      "base_stats": {
+        "atk": 268.915367095721,
+        "attack_range": 350,
+        "attack_speed": 2.94101404803302,
+        "crit_damage": 2.18,
+        "crit_rate": 0.23,
+        "def": 44.6636154069333,
+        "hp": 4789.49449777142,
+        "move_speed": 392.72155612748,
+        "regen_percent_per_10s": 0.0980000000000001
+      },
+      "checkpoint_skills": [
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_1_skill_1"
+        },
+        {
+          "actual": 4,
+          "max": 5,
+          "skill_id": "hero_1_skill_2"
+        }
+      ],
+      "checkpoints": [
+        {
+          "hp": 4367.25593808514,
+          "max_hp": 4823.09449777142,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_1_skill_1"
+            }
+          ],
+          "skills_max": true,
+          "wave": 4
+        },
+        {
+          "hp": 4285.32660333954,
+          "max_hp": 4865.09449777141,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_1_skill_1"
+            },
+            {
+              "actual": 4,
+              "max": 5,
+              "skill_id": "hero_1_skill_2"
+            }
+          ],
+          "skills_max": false,
+          "wave": 9
+        }
+      ],
+      "difficulty": "normal",
+      "elapsed_game_seconds": 644.149999999974,
+      "expected_skill_count": 4,
+      "hero_id": "hero_1",
+      "hp": 0,
+      "max_hp": 4890.29449777141,
+      "mortal": true,
+      "persistent_level": 35,
+      "reason": "hero_died",
+      "require_max_skills": false,
+      "run_level": 13,
+      "runtime_stats": {
+        "atk": 274.090367095721,
+        "attack_range": 350,
+        "attack_speed": 3.03101404803302,
+        "crit_damage": 2.42,
+        "crit_rate": 0.29,
+        "def": 46.0136154069333,
+        "hp": 4890.29449777141,
+        "move_speed": 401.12155612748,
+        "regen_percent_per_10s": 0.1
+      },
+      "seed": 221,
+      "stage_id": "stage_6_05",
+      "status": "FAIL",
+      "target_wave": 20,
+      "case_index": 3,
+      "process_exit": 2,
+      "requested": {
+        "stage": "stage_6_05",
+        "mode": "normal",
+        "hero": "hero_1",
+        "seed": 221
+      }
+    },
+    {
+      "base_combat_power": 7498,
+      "base_stats": {
+        "atk": 268.915367095721,
+        "attack_range": 350,
+        "attack_speed": 2.94101404803302,
+        "crit_damage": 2.18,
+        "crit_rate": 0.23,
+        "def": 44.6636154069333,
+        "hp": 4789.49449777142,
+        "move_speed": 392.72155612748,
+        "regen_percent_per_10s": 0.0980000000000001
+      },
+      "checkpoint_skills": [
+        {
+          "actual": 4,
+          "max": 5,
+          "skill_id": "hero_1_skill_1"
+        }
+      ],
+      "checkpoints": [
+        {
+          "hp": 2826.15614882642,
+          "max_hp": 4823.09449777142,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 4,
+              "max": 5,
+              "skill_id": "hero_1_skill_1"
+            }
+          ],
+          "skills_max": false,
+          "wave": 4
+        }
+      ],
+      "difficulty": "epic",
+      "elapsed_game_seconds": 195.216666666666,
+      "expected_skill_count": 4,
+      "hero_id": "hero_1",
+      "hp": 0,
+      "max_hp": 4823.09449777142,
+      "mortal": true,
+      "persistent_level": 35,
+      "reason": "hero_died",
+      "require_max_skills": false,
+      "run_level": 5,
+      "runtime_stats": {
+        "atk": 270.640367095721,
+        "attack_range": 350,
+        "attack_speed": 2.97101404803302,
+        "crit_damage": 2.26,
+        "crit_rate": 0.25,
+        "def": 45.1136154069333,
+        "hp": 4823.09449777142,
+        "move_speed": 395.52155612748,
+        "regen_percent_per_10s": 0.1
+      },
+      "seed": 221,
+      "stage_id": "stage_6_05",
+      "status": "FAIL",
+      "target_wave": 20,
+      "case_index": 4,
+      "process_exit": 2,
+      "requested": {
+        "stage": "stage_6_05",
+        "mode": "epic",
+        "hero": "hero_1",
+        "seed": 221
+      }
+    },
+    {
+      "base_combat_power": 7498,
+      "base_stats": {
+        "atk": 268.915367095721,
+        "attack_range": 350,
+        "attack_speed": 2.94101404803302,
+        "crit_damage": 2.18,
+        "crit_rate": 0.23,
+        "def": 44.6636154069333,
+        "hp": 4789.49449777142,
+        "move_speed": 392.72155612748,
+        "regen_percent_per_10s": 0.0980000000000001
+      },
+      "difficulty": "legend",
+      "elapsed_game_seconds": 89.3500000000011,
+      "expected_skill_count": 4,
+      "hero_id": "hero_1",
+      "hp": 0,
+      "max_hp": 4797.89449777142,
+      "mortal": true,
+      "persistent_level": 35,
+      "reason": "hero_died",
+      "require_max_skills": false,
+      "run_level": 2,
+      "runtime_stats": {
+        "atk": 269.346617095721,
+        "attack_range": 350,
+        "attack_speed": 2.94851404803302,
+        "crit_damage": 2.2,
+        "crit_rate": 0.235,
+        "def": 44.7761154069333,
+        "hp": 4797.89449777142,
+        "move_speed": 393.42155612748,
+        "regen_percent_per_10s": 0.1
+      },
+      "seed": 221,
+      "stage_id": "stage_6_05",
+      "status": "FAIL",
+      "target_wave": 20,
+      "case_index": 5,
+      "process_exit": 2,
+      "requested": {
+        "stage": "stage_6_05",
+        "mode": "legend",
+        "hero": "hero_1",
+        "seed": 221
+      }
+    },
+    {
+      "base_combat_power": 7498,
+      "base_stats": {
+        "atk": 268.915367095721,
+        "attack_range": 350,
+        "attack_speed": 2.94101404803302,
+        "crit_damage": 2.18,
+        "crit_rate": 0.23,
+        "def": 44.6636154069333,
+        "hp": 4789.49449777142,
+        "move_speed": 392.72155612748,
+        "regen_percent_per_10s": 0.0980000000000001
+      },
+      "checkpoint_skills": [
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_1_skill_1"
+        },
+        {
+          "actual": 4,
+          "max": 5,
+          "skill_id": "hero_1_skill_2"
+        }
+      ],
+      "checkpoints": [
+        {
+          "hp": 4823.09449777142,
+          "max_hp": 4823.09449777142,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_1_skill_1"
+            }
+          ],
+          "skills_max": true,
+          "wave": 4
+        },
+        {
+          "hp": 2097.69153304646,
+          "max_hp": 4865.09449777141,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_1_skill_1"
+            },
+            {
+              "actual": 4,
+              "max": 5,
+              "skill_id": "hero_1_skill_2"
+            }
+          ],
+          "skills_max": false,
+          "wave": 9
+        }
+      ],
+      "difficulty": "normal",
+      "elapsed_game_seconds": 505.216666666648,
+      "expected_skill_count": 4,
+      "hero_id": "hero_1",
+      "hp": 0,
+      "max_hp": 4865.09449777141,
+      "mortal": true,
+      "persistent_level": 35,
+      "reason": "hero_died",
+      "require_max_skills": false,
+      "run_level": 10,
+      "runtime_stats": {
+        "atk": 272.796617095721,
+        "attack_range": 350,
+        "attack_speed": 3.00851404803302,
+        "crit_damage": 2.36,
+        "crit_rate": 0.275,
+        "def": 45.6761154069333,
+        "hp": 4865.09449777141,
+        "move_speed": 399.02155612748,
+        "regen_percent_per_10s": 0.1
+      },
+      "seed": 221,
+      "stage_id": "stage_6_10",
+      "status": "FAIL",
+      "target_wave": 20,
+      "case_index": 6,
+      "process_exit": 2,
+      "requested": {
+        "stage": "stage_6_10",
+        "mode": "normal",
+        "hero": "hero_1",
+        "seed": 221
+      }
+    },
+    {
+      "base_combat_power": 7498,
+      "base_stats": {
+        "atk": 268.915367095721,
+        "attack_range": 350,
+        "attack_speed": 2.94101404803302,
+        "crit_damage": 2.18,
+        "crit_rate": 0.23,
+        "def": 44.6636154069333,
+        "hp": 4789.49449777142,
+        "move_speed": 392.72155612748,
+        "regen_percent_per_10s": 0.0980000000000001
+      },
+      "checkpoint_skills": [
+        {
+          "actual": 4,
+          "max": 5,
+          "skill_id": "hero_1_skill_1"
+        }
+      ],
+      "checkpoints": [
+        {
+          "hp": 1749.50808386085,
+          "max_hp": 4823.09449777142,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 4,
+              "max": 5,
+              "skill_id": "hero_1_skill_1"
+            }
+          ],
+          "skills_max": false,
+          "wave": 4
+        }
+      ],
+      "difficulty": "epic",
+      "elapsed_game_seconds": 242.549999999996,
+      "expected_skill_count": 4,
+      "hero_id": "hero_1",
+      "hp": 0,
+      "max_hp": 4831.49449777141,
+      "mortal": true,
+      "persistent_level": 35,
+      "reason": "hero_died",
+      "require_max_skills": false,
+      "run_level": 6,
+      "runtime_stats": {
+        "atk": 271.071617095721,
+        "attack_range": 350,
+        "attack_speed": 2.97851404803302,
+        "crit_damage": 2.28,
+        "crit_rate": 0.255,
+        "def": 45.2261154069333,
+        "hp": 4831.49449777141,
+        "move_speed": 396.22155612748,
+        "regen_percent_per_10s": 0.1
+      },
+      "seed": 221,
+      "stage_id": "stage_6_10",
+      "status": "FAIL",
+      "target_wave": 20,
+      "case_index": 7,
+      "process_exit": 2,
+      "requested": {
+        "stage": "stage_6_10",
+        "mode": "epic",
+        "hero": "hero_1",
+        "seed": 221
+      }
+    },
+    {
+      "base_combat_power": 7498,
+      "base_stats": {
+        "atk": 268.915367095721,
+        "attack_range": 350,
+        "attack_speed": 2.94101404803302,
+        "crit_damage": 2.18,
+        "crit_rate": 0.23,
+        "def": 44.6636154069333,
+        "hp": 4789.49449777142,
+        "move_speed": 392.72155612748,
+        "regen_percent_per_10s": 0.0980000000000001
+      },
+      "difficulty": "legend",
+      "elapsed_game_seconds": 36.8166666666666,
+      "expected_skill_count": 4,
+      "hero_id": "hero_1",
+      "hp": 0,
+      "max_hp": 4789.49449777142,
+      "mortal": true,
+      "persistent_level": 35,
+      "reason": "hero_died",
+      "require_max_skills": false,
+      "run_level": 1,
+      "runtime_stats": {
+        "atk": 268.915367095721,
+        "attack_range": 350,
+        "attack_speed": 2.94101404803302,
+        "crit_damage": 2.18,
+        "crit_rate": 0.23,
+        "def": 44.6636154069333,
+        "hp": 4789.49449777142,
+        "move_speed": 392.72155612748,
+        "regen_percent_per_10s": 0.0980000000000001
+      },
+      "seed": 221,
+      "stage_id": "stage_6_10",
+      "status": "FAIL",
+      "target_wave": 20,
+      "case_index": 8,
+      "process_exit": 2,
+      "requested": {
+        "stage": "stage_6_10",
+        "mode": "legend",
+        "hero": "hero_1",
+        "seed": 221
+      }
+    }
+  ]
+}

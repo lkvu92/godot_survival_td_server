@@ -1,6 +1,6 @@
 const fs = require('node:fs');
 const path = require('node:path');
-const {ROLES} = require('./campaign_wave_roles.cjs');
+const {isCampaignArc} = require('./campaign_wave_roles.cjs');
 const REQUIREMENTS = [25, 35, 50, 70, 95, 125, 160, 205, 255, 315, 385, 465, 560, 670, 800, 950, 1120, 1310, 1520];
 
 function getWaveExp(wave) {
@@ -34,7 +34,7 @@ function allocate(entries, target, parts) {
 function rebalanceWaveExp(stages) {
   let changed = 0;
   for (const stage of stages) {
-    if (!ROLES[stage.arc_id]) continue;
+    if (!isCampaignArc(stage.arc_id)) continue;
     for (const [index, wave] of stage.waves.entries()) {
       const target = getWaveExp(index + 1);
       const current = wave.entries.reduce((sum, e) => sum + e.count * Number(e.modifiers?.exp || 0), 0);
