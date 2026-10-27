@@ -36,6 +36,30 @@ docker compose -f docker-compose.local.yml --env-file .env.local --profile ident
 
 ## Run / reverse proxy
 
+Normal VPS deployment from the `server` repository uses `./deploy.sh deploy`.
+It builds and starts identity automatically when `nakama/.env` contains
+`ACCOUNT_IDENTITY_ENABLED=true`, then checks health and SMTP authentication.
+VPS does **not** read `.env.local`. Configure the Gmail settings above privately
+on the VPS; a local SMTP configuration is not transferred by a git pull.
+An explicitly disabled identity configuration prints a warning.
+
+To update identity on an existing stack without publishing/seeding game data:
+
+```bash
+./deploy.sh identity
+./deploy.sh logs account-identity
+```
+
+The identity command validates configuration before mutations, regenerates the
+private runtime config, recreates Nakama to reload the bridge key, builds/starts
+identity and checks health/SMTP authentication without sending mail. Deploy the
+current runtime build with normal `deploy` when TypeScript also changes.
+It fails with instructions if identity is disabled. Configure the `/account/`
+proxy described below as well; container health alone does not verify the proxy.
+
+For local development use `./deploylocal.ps1 start` from `server`, which reads
+`nakama/.env.local` and selects the identity profile in the same way.
+
 From `server/nakama` (production values must already exist privately):
 
 ```powershell

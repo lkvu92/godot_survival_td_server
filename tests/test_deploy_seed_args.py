@@ -133,6 +133,20 @@ exit 0
         result, calls = self.execute(["deploy"])
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertFalse(any("src/verify-smtp.js" in call for call in calls))
+        self.assertIn('account-identity is DISABLED',result.stdout)
+
+    def test_identity_command_builds_service_without_seeding(self):
+        result,calls=self.execute(['identity'],identity=True)
+        self.assertEqual(result.returncode,0,result.stderr)
+        self.assertIn(['docker','compose','--profile','identity','up','-d','--build','account-identity'],calls)
+        self.assertTrue(any('src/verify-smtp.js' in call for call in calls))
+        self.assertFalse(any('--seed' in call for call in calls))
+
+    def test_identity_command_rejects_disabled_config_before_mutations(self):
+        result,calls=self.execute(['identity'])
+        self.assertNotEqual(result.returncode,0)
+        self.assertIn('nakama/.env',result.stdout)
+        self.assertFalse(any(call[0]=='docker' for call in calls))
 
     def test_smtp_failure_prevents_publication_and_success(self):
         result, calls = self.execute(["deploy"], identity=True, smtp_failure=23)

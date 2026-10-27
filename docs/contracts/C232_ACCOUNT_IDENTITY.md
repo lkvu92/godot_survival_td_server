@@ -1,6 +1,6 @@
 # C232 — Verified email registration and account deletion
 
-Version: 1.2.2 · Status: IN_PROGRESS · Updated: 2026-10-28
+Version: 1.2.3 · Status: IN_PROGRESS · Updated: 2026-10-28
 
 ## Behavior
 
@@ -57,6 +57,7 @@ Meaningful integration tests on PostgreSQL/Nakama 3.24.2 and mock SMTP: A/B emai
 
 | Version | Date | Change |
 |---|---|---|
+| 1.2.3 | 2026-10-28 | VPS identity deployment command without seeding; explicit warning for disabled identity and production configuration instructions. |
 | 1.2.2 | 2026-10-28 | Login account-support/deletion and receipt buttons reuse the same UiSkin server-select action asset as login/register, with readable sizing. |
 | 1.2.1 | 2026-10-28 | Validate links before showing credentials; explicit existing-email conflict; preserve Gmail OAuth proof path. |
 | 1.2.0 | 2026-10-28 | Automatic identity profile selection, shared safe configuration validation and health/SMTP checks in local/VPS deployment scripts. |

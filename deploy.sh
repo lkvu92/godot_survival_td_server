@@ -17,7 +17,11 @@ select_identity_profile() {
     profile="$(python3 identity_config.py)"
     case "$profile" in
         identity) IDENTITY_ENABLED=true; PROFILE_ARGS=(--profile identity) ;;
-        none) IDENTITY_ENABLED=false; PROFILE_ARGS=() ;;
+        none)
+            IDENTITY_ENABLED=false; PROFILE_ARGS=()
+            echo "[WARN] account-identity is DISABLED. Email registration/verification/deletion are unavailable."
+            echo "[WARN] Configure nakama/.env (not .env.local): ACCOUNT_IDENTITY_ENABLED=true plus SMTP and identity keys."
+            ;;
         *) echo "[ERROR] Invalid identity profile inspection result."; exit 1 ;;
     esac
     echo "[INFO] Account identity enabled: ${IDENTITY_ENABLED}"
@@ -87,6 +91,23 @@ cmd_start() {
     start_services
 }
 
+cmd_identity() {
+    ensure_secrets
+    select_identity_profile
+    if [ "$IDENTITY_ENABLED" != true ]; then
+        echo "[ERROR] Identity deployment requires ACCOUNT_IDENTITY_ENABLED=true in nakama/.env and valid SMTP configuration."
+        return 1
+    fi
+    python3 configure_runtime.py
+    # Reload the shared bridge secret before the identity service uses it.
+    docker compose --profile identity up -d --no-deps --force-recreate nakama
+    wait_for_nakama
+    docker compose --profile identity up -d --build account-identity
+    wait_for_identity
+    echo "[SUCCESS] account-identity deployed; health and SMTP authentication verified."
+    echo "[INFO] Route public /account/ to survival-td-account-identity:8080; block /account/internal/."
+}
+
 cmd_stop() {
     echo "[INFO] Stopping containers..."
     docker compose --profile identity down
@@ -154,6 +175,9 @@ if [ "$#" -gt 0 ]; then
 fi
 
 case "${ACTION}" in
+    identity)
+        cmd_identity
+        ;;
     deploy|up|start)
         cmd_start
         echo ""
@@ -184,7 +208,7 @@ case "${ACTION}" in
         cmd_health
         ;;
     *)
-        echo "Usage: $0 {deploy|start|stop|restart|seed|publish|build|logs|status} [seed options]"
+        echo "Usage: $0 {deploy|identity|start|stop|restart|seed|publish|build|logs|status} [seed options]"
         echo "Example: $0 publish [--settings FILE]"
         exit 1
         ;;

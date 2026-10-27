@@ -276,3 +276,5 @@ C197 v1.1.0: fixed golden phantom, 0.5s protection, actual-hit repeat damage and
 - C232 v1.2.1: validate email links before showing credentials; report registered email conflicts.
 
 - C232 v1.2.2: login account-deletion/support buttons share the login action asset.
+
+- C232 v1.2.3: VPS identity deploy command and explicit disabled-service diagnostics.
