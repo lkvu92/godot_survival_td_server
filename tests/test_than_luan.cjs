@@ -102,4 +102,4 @@ for(const level of [0,1,10,11,20,21,30,31,40,41,50]){
  if(level)assert(result.heroes.every(h=>h.breakdown.than_luan>0));
 }
 const output=path.resolve(root,'../tmp/than_luan_fixture.json');fs.mkdirSync(path.dirname(output),{recursive:true});fs.writeFileSync(output,JSON.stringify(fixture));
-console.log('PASS Thần Luân: 49 upgrades, exact costs, chance/charm caps, failed-attempt debits, immutable replays without RNG, revision/CAS fences, insufficient funds/charm, server isolation and rating fixtures');
+console.log('PASS Pháp Tắc: 49 upgrades, exact costs, chance/charm caps, failed-attempt debits, immutable replays without RNG, revision/CAS fences, insufficient funds/charm, server isolation and rating fixtures');

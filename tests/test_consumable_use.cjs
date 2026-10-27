@@ -21,7 +21,9 @@ function reset(){db={};conflict=false;row('player_profiles','main',{level:10,exp
 function request(id,request_id='one',extra={}){return JSON.parse(use({userId:'u'},{},nk,JSON.stringify({item_id:id,request_id,quantity:1,...extra})));}
 reset();assert(request('gold_talisman').success);assert.equal(profile().resources.gold,75010);assert.equal(qty('gold_talisman'),9);
 assert(request('gold_talisman').duplicate);assert.equal(profile().resources.gold,75010);assert(!request('energy_elixir').success);
-assert(request('energy_elixir','energy',{quantity:2}).success);assert.equal(profile().stamina,30);assert(!request('energy_elixir','full').success);assert.equal(qty('energy_elixir'),8);
+assert(request('energy_elixir','energy',{quantity:2}).success);assert.equal(profile().stamina,30);
+profile().stamina=vm.runInContext('staminaStorageMax',context)(nk);
+assert(!request('energy_elixir','full').success);assert.equal(qty('energy_elixir'),8);
 reset();assert(request('exp_talisman').success);assert(profile().exp>0);assert(!request('wind_aptitude_fruit','wind').success);
 reset();
 assert(request('exp_boost_card_10_1h','boost-exp-1h').success);
@@ -120,3 +122,32 @@ profile().breakthrough.encounter_id='next-encounter';
 assert(!request('healing_elixir','trib-old',trib).success);
 assert(request('attack_talisman','next-attack',{...trib,run_id:'next-encounter'}).success);
 console.log('PASS C130 tribulation: encounter binding, all combat effects, replay, cooldown, revive limit, expiry, settlement, reset and CAS');
+
+// Exact cooldown boundary without real sleeps, in both supported run types.
+context.testNow = Date.now();
+vm.runInContext('Date.now = () => testNow', context);
+for (const tribulationMode of [false, true]) {
+ reset();
+ let runId = 'cooldown-stage';
+ if (tribulationMode) {
+  profile().breakthrough.in_tribulation = true;
+  phase2(profile().breakthrough);
+  runId = profile().breakthrough.encounter_id;
+ } else row('player_stage_runs','active',{run_id:runId,status:'active',expires_at_ms:context.testNow+60000});
+ const state = () => tribulationMode ? profile().breakthrough : db['player_stage_runs:active'].value;
+ const useOptions = {run_id:runId,paused:false,alive:true};
+ const first = request('healing_elixir','heal-first',useOptions);
+ assert(first.success); assert.equal(first.effect.cooldown,5);
+ assert.equal(state().item_cooldowns.healing_elixir,context.testNow+5000);
+ assert(request('defense_talisman','def-first',useOptions).success);
+ assert.equal(state().item_cooldowns.defense_talisman,context.testNow+15000);
+ context.testNow += 4999;
+ assert(!request('healing_elixir','heal-early',useOptions).success);
+ assert.equal(qty('healing_elixir'),9);
+ assert(request('healing_elixir','heal-first',useOptions).duplicate);
+ context.testNow += 1;
+ assert(request('healing_elixir','heal-ready',useOptions).success);
+ assert.equal(qty('healing_elixir'),8);
+ assert(!request('defense_talisman','def-early',useOptions).success);
+}
+console.log('PASS C130 5s healing cooldown: exact boundary, independent 15s buff cooldown, replay and inventory in campaign/tribulation');

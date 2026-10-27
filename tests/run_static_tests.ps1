@@ -2,6 +2,12 @@ $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path $PSScriptRoot -Parent
 Push-Location $repoRoot
 try {
+    & node tests/test_mid_tier_talisman_config.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Mid-tier talisman config regression failed' }
+    & node tests/test_low_tier_talisman_balance.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Low-tier talisman balance regression failed' }
+    & node tests/test_campaign_spawn_formation.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Ordered campaign spawn formation regression failed' }
     Get-ChildItem data -Filter '*.json' -Recurse | ForEach-Object {
         Get-Content -LiteralPath $_.FullName -Raw -Encoding UTF8 | ConvertFrom-Json | Out-Null
     }
@@ -11,6 +17,8 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Arc 6 backend integration failed' }
     & node tests/test_breakthrough_preview.cjs
     if ($LASTEXITCODE -ne 0) { throw 'Immediate breakthrough preview regression failed' }
+    & node tests/test_hero4_revision13.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Hero4 balance revision 1.3 regression failed' }
     & node tests/test_vip_benefits.cjs
     if ($LASTEXITCODE -ne 0) { throw 'VIP benefits and milestone mail regression failed' }
     & node tests/test_arc6_catalog.cjs

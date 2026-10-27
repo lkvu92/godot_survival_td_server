@@ -15,7 +15,7 @@ function towerRewardEntries(nk:nkruntime.Nakama,rewards:any[],profile:any,floor:
     if(!Array.isArray(rewards))throw Error('TOWER_REWARD_INVALID');
     return rewards.map(r=>{
         if(!r||['exp','gold','gems','item'].indexOf(r.kind)<0)throw Error('TOWER_REWARD_INVALID');
-        if(r.kind==='exp'&&(!Number.isInteger(profile.level)||profile.level<1||profile.level>50))throw Error('TOWER_PROFILE_LEVEL_INVALID');
+        if(r.kind==='exp'&&(!Number.isInteger(profile.level)||profile.level<1||profile.level>PROGRESSION_MAX_LEVEL))throw Error('TOWER_PROFILE_LEVEL_INVALID');
         const amount=r.kind==='exp'?Math.ceil(progressionNextUserExp(nk,Number(profile.level||1))*0.005*Number(profile.level||1)*floor/100/5000)*5000:Number(r.amount);
         if(!Number.isSafeInteger(amount)||amount<0||(r.kind==='item'&&!r.item_id))throw Error('TOWER_REWARD_INVALID');
         return Object.assign({},r,{amount,label:r.kind==='exp'?amount+' EXP':r.label});

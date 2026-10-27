@@ -5736,7 +5736,7 @@ function startTrialTower(ctx, logger, nk, payload) {
   if (!towerRow || Number(towerRow.value.tickets || 0) < 1) return fail("NO_TOWER_ENTRIES", "Kh\xF4ng c\xF2n l\u01B0\u1EE3t v\xE0o th\xE1p.");
   const catalog = readCombatPowerCatalog(nk), hero = catalog.heroes.find((v) => v.id === req.hero_id), state = cpArray(h.value.heroes).find((v) => v.hero_id === req.hero_id);
   if (!hero || !state || state.owned !== true) return fail("HERO_NOT_OWNED", "B\u1EA1n ch\u01B0a s\u1EDF h\u1EEFu nh\xE2n v\u1EADt n\xE0y.");
-  const level = Math.max(1, Math.min(50, Number(state.level) || 1));
+  const level = Math.max(1, Math.min(PROGRESSION_MAX_LEVEL, Number(state.level) || 1));
   const storedAttributes = cpObject(state.current_attribute);
   const demonAttributes = Object.assign({}, Object.keys(storedAttributes).length ? storedAttributes : progressionHeroAttributes(nk, req.hero_id, level));
   const heroElementProfile = { affinities: Object.assign({}, cpObject(profile.element_affinities)), levels: Object.assign({}, cpObject(profile.elements)) };
@@ -5956,7 +5956,7 @@ function finishTrialTower(ctx, _logger, nk, payload) {
   return JSON.stringify(Object.assign({ success: true, result: req.result, highest_cleared: tower.highest_cleared, rewards: run.tower_rewards || [], rewards_granted: run.tower_rewards !== void 0, profile }, rewardState));
 }
 const PROGRESSION_VERSION = 2;
-const PROGRESSION_MAX_LEVEL = 50;
+const PROGRESSION_MAX_LEVEL = 70;
 const PROGRESSION_HERO_BASE_EXP = 1e3;
 const PROGRESSION_USER_BASE_EXP = 5e3;
 const PROGRESSION_POWER_C = 750;
@@ -6406,7 +6406,7 @@ function getThanLuanState(ctx, _logger, nk, _payload) {
     if (thanLuanReconcile(profile, config)) nk.storageWrite([{ collection: "player_profiles", key: "main", userId: ctx.userId, value: profile, version: p.version, permissionRead: 1, permissionWrite: 0 }]);
     return JSON.stringify(thanLuanResponse(profile, cpObject(inv.value), config));
   } catch (_e) {
-    return JSON.stringify({ success: false, code: "STATE_UNAVAILABLE", message: "Ch\u01B0a t\u1EA3i \u0111\u01B0\u1EE3c Th\u1EA7n Lu\xE2n. H\xE3y th\u1EED l\u1EA1i." });
+    return JSON.stringify({ success: false, code: "STATE_UNAVAILABLE", message: "Ch\u01B0a t\u1EA3i \u0111\u01B0\u1EE3c Ph\xE1p T\u1EAFc. H\xE3y th\u1EED l\u1EA1i." });
   }
 }
 function upgradeThanLuan(ctx, _logger, nk, payload) {
@@ -6423,7 +6423,7 @@ function upgradeThanLuan(ctx, _logger, nk, payload) {
   try {
     config = thanLuanConfig(nk);
   } catch (_e) {
-    return fail("CONFIG_INVALID", "C\u1EA5u h\xECnh Th\u1EA7n Lu\xE2n ch\u01B0a s\u1EB5n s\xE0ng.");
+    return fail("CONFIG_INVALID", "C\u1EA5u h\xECnh Ph\xE1p T\u1EAFc ch\u01B0a s\u1EB5n s\xE0ng.");
   }
   const receiptRef = { collection: "player_item_requests", key: "than_luan_" + req.request_id, userId: ctx.userId };
   const rows = nk.storageRead([{ collection: "player_profiles", key: "main", userId: ctx.userId }, { collection: "player_inventory", key: "items", userId: ctx.userId }, receiptRef]);
@@ -6433,9 +6433,9 @@ function upgradeThanLuan(ctx, _logger, nk, payload) {
   try {
     thanLuanReconcile(profile, config);
   } catch (_e) {
-    return fail("STATE_INVALID", "Ti\u1EBFn \u0111\u1ED9 Th\u1EA7n Lu\xE2n kh\xF4ng h\u1EE3p l\u1EC7.");
+    return fail("STATE_INVALID", "Ti\u1EBFn \u0111\u1ED9 Ph\xE1p T\u1EAFc kh\xF4ng h\u1EE3p l\u1EC7.");
   }
-  if (Number(profile.level || 1) < config.unlock_level) return fail("FEATURE_LOCKED", "Th\u1EA7n Lu\xE2n m\u1EDF \u1EDF Lv.30.");
+  if (Number(profile.level || 1) < config.unlock_level) return fail("FEATURE_LOCKED", "Ph\xE1p T\u1EAFc m\u1EDF \u1EDF Lv.30.");
   if (receipt) {
     if (receipt.value.expected_level !== req.expected_level || receipt.value.expected_revision !== req.expected_revision || receipt.value.use_charm !== req.use_charm) return fail("REQUEST_CONFLICT", "M\xE3 y\xEAu c\u1EA7u \u0111\xE3 \u0111\u01B0\u1EE3c d\xF9ng.");
     return JSON.stringify(Object.assign(thanLuanResponse(profile, inventory, config), receipt.value.outcome, { duplicate: true }));
@@ -6493,7 +6493,7 @@ function upgradeThanLuan(ctx, _logger, nk, payload) {
     try {
       writePlayerLeaderboardRecords(nk, ctx.userId, profile, profile.display_name);
     } catch (_e) {
-      _logger.warn("Than Luan committed; leaderboard refresh deferred until profile sync.");
+      _logger.warn("Phap Tac committed; leaderboard refresh deferred until profile sync.");
     }
   }
   return JSON.stringify(Object.assign(thanLuanResponse(profile, inventory, config), outcome));
@@ -9176,8 +9176,10 @@ var __spreadValues = (a, b) => {
   return a;
 };
 function getLeaderboardRealmTitle(level) {
-  const safeLvl = Math.max(1, Math.min(50, Math.floor(level)));
+  const safeLvl = Math.max(1, Math.min(PROGRESSION_MAX_LEVEL, Math.floor(level)));
   const tier = Math.max(1, Math.min(10, (safeLvl - 1) % 10 + 1));
+  if (safeLvl >= 61) return `B\xE1n Ti\xEAn T\u1EA7ng ${tier}`;
+  if (safeLvl >= 51) return `\u0110\u1ED9 Ki\u1EBFp T\u1EA7ng ${tier}`;
   if (safeLvl >= 41) return `H\xF3a Th\u1EA7n T\u1EA7ng ${tier}`;
   if (safeLvl >= 31) return `Nguy\xEAn Anh T\u1EA7ng ${tier}`;
   if (safeLvl >= 21) return `K\u1EBFt \u0110an T\u1EA7ng ${tier}`;
@@ -9232,7 +9234,7 @@ function syncAllStoredProfilesToLeaderboards(nk, logger) {
   }
 }
 function writePlayerLeaderboardRecords(nk, userId, profile, displayName, weeklyActive = true) {
-  const level = Math.max(1, Math.min(50, Number(profile.level || 1)));
+  const level = Math.max(1, Math.min(PROGRESSION_MAX_LEVEL, Number(profile.level || 1)));
   const vip = Number(profile.vip || (profile.vip_progress ? profile.vip_progress.level : 0) || 0);
   const heroId = String(profile.avatar_url || "hero_1");
   let name = String(displayName || profile.display_name || "").trim();
@@ -9706,7 +9708,7 @@ function towerRewardEntries(nk, rewards, profile, floor) {
   if (!Array.isArray(rewards)) throw Error("TOWER_REWARD_INVALID");
   return rewards.map((r) => {
     if (!r || ["exp", "gold", "gems", "item"].indexOf(r.kind) < 0) throw Error("TOWER_REWARD_INVALID");
-    if (r.kind === "exp" && (!Number.isInteger(profile.level) || profile.level < 1 || profile.level > 50)) throw Error("TOWER_PROFILE_LEVEL_INVALID");
+    if (r.kind === "exp" && (!Number.isInteger(profile.level) || profile.level < 1 || profile.level > PROGRESSION_MAX_LEVEL)) throw Error("TOWER_PROFILE_LEVEL_INVALID");
     const amount = r.kind === "exp" ? Math.ceil(progressionNextUserExp(nk, Number(profile.level || 1)) * 5e-3 * Number(profile.level || 1) * floor / 100 / 5e3) * 5e3 : Number(r.amount);
     if (!Number.isSafeInteger(amount) || amount < 0 || r.kind === "item" && !r.item_id) throw Error("TOWER_REWARD_INVALID");
     return Object.assign({}, r, { amount, label: r.kind === "exp" ? amount + " EXP" : r.label });
@@ -10452,12 +10454,12 @@ const FEATURE_DEFAULTS = {
       "required_user_level": 30,
       "enabled": true,
       "release_status": "released",
-      "display_name": "Ph\xE1p t\u1EAFc",
-      "description": "B\u1ED3i d\u01B0\u1EE1ng Th\u1EA7n Lu\xE2n b\u1EB1ng M\u1EA3nh ph\xE1p t\u1EAFc t\u1EEB T\xE2m Ma Th\xE1p \u0111\u1EC3 t\u0103ng kh\u1EA3 n\u0103ng sinh t\u1ED3n.",
+      "display_name": "Ph\xE1p T\u1EAFc",
+      "description": "B\u1ED3i d\u01B0\u1EE1ng Ph\xE1p T\u1EAFc b\u1EB1ng M\u1EA3nh ph\xE1p t\u1EAFc t\u1EEB T\xE2m Ma Th\xE1p \u0111\u1EC3 t\u0103ng kh\u1EA3 n\u0103ng sinh t\u1ED3n.",
       "tour_id": "than_luan_v1",
       "tour_mode": "dismiss_any",
-      "mail_title": "\u0110\xE3 khai m\u1EDF: Ph\xE1p t\u1EAFc",
-      "mail_body": "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu \u0111\u1EA1t c\u1EA5p {level}! Ph\xE1p t\u1EAFc \u0111\xE3 khai m\u1EDF.\n\nB\u1ED3i d\u01B0\u1EE1ng Th\u1EA7n Lu\xE2n b\u1EB1ng M\u1EA3nh ph\xE1p t\u1EAFc t\u1EEB T\xE2m Ma Th\xE1p \u0111\u1EC3 t\u0103ng kh\u1EA3 n\u0103ng sinh t\u1ED3n.\n\nTr\u1EDF v\u1EC1 Trang ch\u1EE7 \u0111\u1EC3 kh\xE1m ph\xE1 ch\u1EE9c n\u0103ng m\u1EDBi."
+      "mail_title": "\u0110\xE3 khai m\u1EDF: Ph\xE1p T\u1EAFc",
+      "mail_body": "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu \u0111\u1EA1t c\u1EA5p {level}! Ph\xE1p T\u1EAFc \u0111\xE3 khai m\u1EDF.\n\nB\u1ED3i d\u01B0\u1EE1ng Ph\xE1p T\u1EAFc b\u1EB1ng M\u1EA3nh ph\xE1p t\u1EAFc t\u1EEB T\xE2m Ma Th\xE1p \u0111\u1EC3 t\u0103ng kh\u1EA3 n\u0103ng sinh t\u1ED3n.\n\nTr\u1EDF v\u1EC1 Trang ch\u1EE7 \u0111\u1EC3 kh\xE1m ph\xE1 ch\u1EE9c n\u0103ng m\u1EDBi."
     },
     "guild_war": {
       "required_user_level": null,
@@ -10494,26 +10496,52 @@ const FEATURE_DEFAULTS = {
     }
   }
 };
-const REALM_MILESTONE_DEFAULTS = { schema_version: 1, milestones: {
-  "10": { title: "Ch\xFAc m\u1EEBng \u0111\u1ED9t ph\xE1 \u2014 Lv.10", body: "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu v\u01B0\u1EE3t thi\xEAn ki\u1EBFp, b\u01B0\u1EDBc v\xE0o c\u1EA3nh gi\u1EDBi m\u1EDBi! Ti\xEAn l\u1ED9 t\u1EEB \u0111\xE2y r\u1ED9ng m\u1EDF, nh\u01B0ng m\u1ED7i mi\u1EC1n \u0111\u1EA5t \u0111\u1EC1u \u1EA9n ch\u1EE9a nh\xE2n qu\u1EA3. H\xE3y v\u1EEFng \u0111\u1EA1o t\xE2m, t\xEDch l\u0169y c\u0103n c\u01A1 v\xE0 th\u1EED s\u1EE9c v\u1EDBi nh\u1EEFng th\u1EED th\xE1ch kh\u1EAFc nghi\u1EC7t h\u01A1n." },
-  "20": { title: "Ch\xFAc m\u1EEBng \u0111\u1ED9t ph\xE1 \u2014 Lv.20", body: "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu \u0111\u1ED9t ph\xE1 th\xE0nh c\xF4ng! Khi linh l\u1EF1c d\u1EA7n tinh thu\u1EA7n, ng\u0169 h\xE0nh c\u0169ng h\xE9 l\u1ED9 quy lu\u1EADt t\u01B0\u01A1ng sinh t\u01B0\u01A1ng kh\u1EAFc. Th\u1EA5u hi\u1EC3u linh c\u0103n s\u1EBD gi\xFAp \u0111\u1EA1o h\u1EEFu \u0111i xa h\u01A1n tr\xEAn con \u0111\u01B0\u1EDDng tu luy\u1EC7n." },
-  "30": { title: "Ch\xFAc m\u1EEBng \u0111\u1ED9t ph\xE1 \u2014 Lv.30", body: "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu v\u01B0\u1EE3t th\xEAm m\u1ED9t t\u1EA7ng thi\xEAn \u0111\u1EA1o! S\u1EE9c m\u1EA1nh c\u1EA7n \u0111\u01B0\u1EE3c t\xF4i luy\u1EC7n qua th\u1EF1c chi\u1EBFn; Th\xE1p Th\xED Luy\u1EC7n \u0111ang ch\u1EDD nh\u1EEFng ng\u01B0\u1EDDi \u0111\u1EE7 b\u1EA3n l\u0129nh. H\xE3y chu\u1EA9n b\u1ECB ph\xE1p b\u1EA3o, gi\u1EEF t\xE2m s\xE1ng v\xE0 ti\u1EBFn t\u1EEBng b\u01B0\u1EDBc v\u1EEFng v\xE0ng." },
-  "40": { title: "Ch\xFAc m\u1EEBng \u0111\u1ED9t ph\xE1 \u2014 Lv.40", body: "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu \u0111\u1EB7t ch\xE2n t\u1EDBi c\u1EA3nh gi\u1EDBi cao h\u01A1n! C\xE0ng g\u1EA7n thi\xEAn \u0111\u1EA1o, ng\u01B0\u1EDDi tu h\xE0nh c\xE0ng nh\u1EADn ra s\u1EE9c m\u1EA1nh lu\xF4n \u0111i c\xF9ng tr\xE1ch nhi\u1EC7m. Ph\xEDa sau nh\u1EEFng cu\u1ED9c tranh \u0111\u1EA5u c\xF2n c\xF3 b\xED m\u1EADt c\u1EE7a th\u1EBF gi\u1EDBi n\xE0y \u0111ang ch\u1EDD \u0111\u01B0\u1EE3c kh\xE1m ph\xE1." },
-  "50": { title: "Ch\xFAc m\u1EEBng \u0111\u1ED9t ph\xE1 \u2014 Lv.50", body: "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu ch\u1EA1m t\u1EDBi \u0111\u1EC9nh cao hi\u1EC7n t\u1EA1i! \u0110\u1EC9nh n\xFAi h\xF4m nay c\xF3 th\u1EC3 ch\u1EC9 l\xE0 kh\u1EDFi \u0111\u1EA7u c\u1EE7a m\u1ED9t ch\xE2n tr\u1EDDi kh\xE1c. Truy\u1EC1n thuy\u1EBFt k\u1EC3 r\u1EB1ng ngo\xE0i g\xF4ng c\xF9m thi\xEAn \u0111\u1EA1o c\xF2n c\xF3 v\u1EA1n gi\u1EDBi ch\u01B0 thi\xEAn \u2014 h\xE3y gi\u1EEF v\u1EEFng \u0111\u1EA1o t\xE2m, ch\u1EDD ng\xE0y ti\xEAn l\u1ED9 ti\u1EBFp t\u1EE5c r\u1ED9ng m\u1EDF." }
-} };
+const REALM_MILESTONE_DEFAULTS = {
+  "schema_version": 1,
+  "milestones": {
+    "10": {
+      "title": "Ch\xFAc m\u1EEBng \u0111\u1ED9t ph\xE1 \u2014 Lv.10",
+      "body": "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu v\u01B0\u1EE3t thi\xEAn ki\u1EBFp, b\u01B0\u1EDBc v\xE0o c\u1EA3nh gi\u1EDBi m\u1EDBi! Ti\xEAn l\u1ED9 t\u1EEB \u0111\xE2y r\u1ED9ng m\u1EDF, nh\u01B0ng m\u1ED7i mi\u1EC1n \u0111\u1EA5t \u0111\u1EC1u \u1EA9n ch\u1EE9a nh\xE2n qu\u1EA3. H\xE3y v\u1EEFng \u0111\u1EA1o t\xE2m, t\xEDch l\u0169y c\u0103n c\u01A1 v\xE0 th\u1EED s\u1EE9c v\u1EDBi nh\u1EEFng th\u1EED th\xE1ch kh\u1EAFc nghi\u1EC7t h\u01A1n."
+    },
+    "20": {
+      "title": "Ch\xFAc m\u1EEBng \u0111\u1ED9t ph\xE1 \u2014 Lv.20",
+      "body": "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu \u0111\u1ED9t ph\xE1 th\xE0nh c\xF4ng! Khi linh l\u1EF1c d\u1EA7n tinh thu\u1EA7n, ng\u0169 h\xE0nh c\u0169ng h\xE9 l\u1ED9 quy lu\u1EADt t\u01B0\u01A1ng sinh t\u01B0\u01A1ng kh\u1EAFc. Th\u1EA5u hi\u1EC3u linh c\u0103n s\u1EBD gi\xFAp \u0111\u1EA1o h\u1EEFu \u0111i xa h\u01A1n tr\xEAn con \u0111\u01B0\u1EDDng tu luy\u1EC7n."
+    },
+    "30": {
+      "title": "Ch\xFAc m\u1EEBng \u0111\u1ED9t ph\xE1 \u2014 Lv.30",
+      "body": "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu v\u01B0\u1EE3t th\xEAm m\u1ED9t t\u1EA7ng thi\xEAn \u0111\u1EA1o! S\u1EE9c m\u1EA1nh c\u1EA7n \u0111\u01B0\u1EE3c t\xF4i luy\u1EC7n qua th\u1EF1c chi\u1EBFn; Th\xE1p Th\xED Luy\u1EC7n \u0111ang ch\u1EDD nh\u1EEFng ng\u01B0\u1EDDi \u0111\u1EE7 b\u1EA3n l\u0129nh. H\xE3y chu\u1EA9n b\u1ECB ph\xE1p b\u1EA3o, gi\u1EEF t\xE2m s\xE1ng v\xE0 ti\u1EBFn t\u1EEBng b\u01B0\u1EDBc v\u1EEFng v\xE0ng."
+    },
+    "40": {
+      "title": "Ch\xFAc m\u1EEBng \u0111\u1ED9t ph\xE1 \u2014 Lv.40",
+      "body": "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu \u0111\u1EB7t ch\xE2n t\u1EDBi c\u1EA3nh gi\u1EDBi cao h\u01A1n! C\xE0ng g\u1EA7n thi\xEAn \u0111\u1EA1o, ng\u01B0\u1EDDi tu h\xE0nh c\xE0ng nh\u1EADn ra s\u1EE9c m\u1EA1nh lu\xF4n \u0111i c\xF9ng tr\xE1ch nhi\u1EC7m. Ph\xEDa sau nh\u1EEFng cu\u1ED9c tranh \u0111\u1EA5u c\xF2n c\xF3 b\xED m\u1EADt c\u1EE7a th\u1EBF gi\u1EDBi n\xE0y \u0111ang ch\u1EDD \u0111\u01B0\u1EE3c kh\xE1m ph\xE1."
+    },
+    "50": {
+      "title": "Ch\xFAc m\u1EEBng \u0111\u1ED9t ph\xE1 \u2014 Lv.50",
+      "body": "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu \u0111\u1ED9t ph\xE1 th\xE0nh c\xF4ng! Ti\xEAn l\u1ED9 ti\u1EBFp t\u1EE5c r\u1ED9ng m\u1EDF t\u1EDBi \u0110\u1ED9 Ki\u1EBFp v\xE0 B\xE1n Ti\xEAn. H\xE3y ti\u1EBFp t\u1EE5c t\xEDch l\u0169y c\u0103n c\u01A1, chu\u1EA9n b\u1ECB cho nh\u1EEFng t\u1EA7ng thi\xEAn ki\u1EBFp ti\u1EBFp theo."
+    },
+    "60": {
+      "title": "Ch\xFAc m\u1EEBng \u0111\u1ED9t ph\xE1 \u2014 Lv.60 \u2014 \u0110\u1ED9 Ki\u1EBFp k\u1EF3",
+      "body": "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu v\u01B0\u1EE3t thi\xEAn ki\u1EBFp, \u0111\u1EA1t c\u1EA5p 60 \u0110\u1ED9 Ki\u1EBFp k\u1EF3! H\xE3y gi\u1EEF v\u1EEFng \u0111\u1EA1o t\xE2m v\xE0 ti\u1EBFp t\u1EE5c t\xF4i luy\u1EC7n c\u0103n c\u01A1."
+    },
+    "70": {
+      "title": "Ch\xFAc m\u1EEBng \u0111\u1ED9t ph\xE1 \u2014 Lv.70 \u2014 B\xE1n Ti\xEAn",
+      "body": "Ch\xFAc m\u1EEBng \u0111\u1EA1o h\u1EEFu v\u01B0\u1EE3t thi\xEAn ki\u1EBFp, \u0111\u1EA1t c\u1EA5p 70 B\xE1n Ti\xEAn! H\xE3y gi\u1EEF v\u1EEFng \u0111\u1EA1o t\xE2m v\xE0 ti\u1EBFp t\u1EE5c t\xF4i luy\u1EC7n c\u0103n c\u01A1."
+    }
+  }
+};
 function featureValidateConfig(config, realms) {
   if (!config || config.schema_version !== 1 || !config.features || Array.isArray(config.features) || !realms || realms.schema_version !== 1 || !realms.milestones) throw Error("FEATURE_CONFIG_INVALID");
   const tours = [];
   for (const id of FEATURE_IDS) {
     const f = config.features[id];
-    if (!f || typeof f.enabled !== "boolean" || ["planned", "released"].indexOf(f.release_status) < 0 || f.required_user_level !== null && (!Number.isSafeInteger(f.required_user_level) || f.required_user_level < 1 || f.required_user_level > 50) || f.enabled && (f.required_user_level === null || f.release_status !== "released") || typeof f.display_name !== "string" || !f.display_name.trim() || f.display_name.length > 100 || typeof f.description !== "string" || f.description.length > 2e3 || typeof f.tour_id !== "string" || f.tour_id !== "" && !/^[a-z][a-z0-9_]{0,79}$/.test(f.tour_id) || ["dismiss_any", "guided"].indexOf(f.tour_mode) < 0 || typeof f.mail_title !== "string" || !f.mail_title.trim() || f.mail_title.length > 160 || typeof f.mail_body !== "string" || !f.mail_body.trim() || f.mail_body.length > 1e4) throw Error("FEATURE_CONFIG_INVALID:" + id);
+    if (!f || typeof f.enabled !== "boolean" || ["planned", "released"].indexOf(f.release_status) < 0 || f.required_user_level !== null && (!Number.isSafeInteger(f.required_user_level) || f.required_user_level < 1 || f.required_user_level > 70) || f.enabled && (f.required_user_level === null || f.release_status !== "released") || typeof f.display_name !== "string" || !f.display_name.trim() || f.display_name.length > 100 || typeof f.description !== "string" || f.description.length > 2e3 || typeof f.tour_id !== "string" || f.tour_id !== "" && !/^[a-z][a-z0-9_]{0,79}$/.test(f.tour_id) || ["dismiss_any", "guided"].indexOf(f.tour_mode) < 0 || typeof f.mail_title !== "string" || !f.mail_title.trim() || f.mail_title.length > 160 || typeof f.mail_body !== "string" || !f.mail_body.trim() || f.mail_body.length > 1e4) throw Error("FEATURE_CONFIG_INVALID:" + id);
     if (f.tour_id) {
       if (tours.indexOf(f.tour_id) >= 0) throw Error("DUPLICATE_TOUR");
       tours.push(f.tour_id);
     }
   }
   if (Object.keys(config.features).some((id) => FEATURE_IDS.indexOf(id) < 0)) throw Error("UNKNOWN_FEATURE");
-  for (const level of ["10", "20", "30", "40", "50"]) {
+  for (const level of ["10", "20", "30", "40", "50", "60", "70"]) {
     const r = realms.milestones[level];
     if (!r || typeof r.title !== "string" || !r.title.trim() || r.title.length > 160 || typeof r.body !== "string" || !r.body.trim() || r.body.length > 1e4) throw Error("REALM_CONFIG_INVALID");
   }
@@ -10566,7 +10594,7 @@ function featureRuntime(base, userId) {
       if (migrating && f.tour_id && state.completed_tours.indexOf(f.tour_id) < 0) state.completed_tours.push(f.tour_id);
     });
     const history = profile.value.breakthrough && profile.value.breakthrough.history;
-    if (Array.isArray(history)) for (const level of ["10", "20", "30", "40", "50"]) {
+    if (Array.isArray(history)) for (const level of ["10", "20", "30", "40", "50", "60", "70"]) {
       if (!history.some((h) => Number(h.level) === Number(level))) continue;
       const r = c.realms[level];
       send({ source_id: "realm_breakthrough:" + level, source_type: "realm_breakthrough", title: r.title, body: r.body });

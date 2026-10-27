@@ -1,6 +1,6 @@
 # C139 — ĐẢO THỨ TỰ ARC 1 & ARC 2: TỐI ƯU HÓA TRẢI NGHIỆM KHỞI ĐẦU KHẮC HỆ NGŨ HÀNH (ONBOARDING ELEMENTAL COUNTER)
 
-- **Version**: 1.0.1
+- **Version**: 1.1.0
 - **Trạng thái**: ACTIVE
 - **Ngày hiệu lực**: 2026-10-19
 - **Phạm vi tác động**: `server/data/`, `server/nakama/data/modules/`, `client/src/core/`, `client/src/assets/`, `client/tests/`
@@ -12,8 +12,8 @@
 1. **Cơ chế Ngũ Hành Khắc Hệ**:
    - Hero tân thủ mặc định mở khóa ban đầu là `hero_1` (**Băng Tuyết Thánh Nữ**), sở hữu thuộc tính nguyên tố **Thủy** (`water`).
    - Theo ma trận khắc hệ (`matchup_modifier_pct` trong `progression.json` và `CombatFormulaService.gd`):
-     - `water` tấn công `fire`: **+50% Sát thương** (Khắc chế).
-     - `fire` tấn công `water`: **-50% Sát thương** (Hero nhận giảm 50% sát thương từ quái Hỏa).
+     - `water` tấn công `fire`: **+30% Sát thương** (Khắc chế).
+     - `fire` tấn công `water`: **-30% Sát thương** (Hero nhận giảm 30% sát thương từ quái Hỏa).
      - `water` tấn công `water`: **0% Sát thương** (Đồng hệ, không có thưởng sát thương).
 
 2. **Vấn đề của thiết kế cũ**:

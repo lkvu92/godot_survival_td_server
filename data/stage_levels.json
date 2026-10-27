@@ -278,7 +278,10 @@
       }
     ],
     "boss_loot_table": [],
-    "gold_reward": 120
+    "gold_reward": 120,
+    "stage_rules": {
+      "recommendation_status": "STALE_ARC2_LEVEL_SPREAD_V1"
+    }
   },
   {
     "id": "stage_frozen_frontier_epic",
@@ -357,7 +360,10 @@
       }
     ],
     "boss_loot_table": [],
-    "gold_reward": 215
+    "gold_reward": 215,
+    "stage_rules": {
+      "recommendation_status": "STALE_ARC2_LEVEL_SPREAD_V1"
+    }
   },
   {
     "id": "stage_frozen_frontier_legend",
@@ -481,7 +487,10 @@
       }
     ],
     "boss_loot_table": [],
-    "gold_reward": 360
+    "gold_reward": 360,
+    "stage_rules": {
+      "recommendation_status": "STALE_ARC2_LEVEL_SPREAD_V1"
+    }
   },
   {
     "id": "stage_1_02_normal",
@@ -553,7 +562,10 @@
       }
     ],
     "boss_loot_table": [],
-    "gold_reward": 130
+    "gold_reward": 130,
+    "stage_rules": {
+      "recommendation_status": "STALE_ARC2_LEVEL_SPREAD_V1"
+    }
   },
   {
     "id": "stage_1_02_epic",
@@ -632,7 +644,10 @@
       }
     ],
     "boss_loot_table": [],
-    "gold_reward": 235
+    "gold_reward": 235,
+    "stage_rules": {
+      "recommendation_status": "STALE_ARC2_LEVEL_SPREAD_V1"
+    }
   },
   {
     "id": "stage_1_02_legend",
@@ -756,7 +771,10 @@
       }
     ],
     "boss_loot_table": [],
-    "gold_reward": 390
+    "gold_reward": 390,
+    "stage_rules": {
+      "recommendation_status": "STALE_ARC2_LEVEL_SPREAD_V1"
+    }
   },
   {
     "id": "stage_1_03_normal",
@@ -828,7 +846,10 @@
       }
     ],
     "boss_loot_table": [],
-    "gold_reward": 135
+    "gold_reward": 135,
+    "stage_rules": {
+      "recommendation_status": "STALE_ARC2_LEVEL_SPREAD_V1"
+    }
   },
   {
     "id": "stage_1_03_epic",
@@ -907,7 +928,10 @@
       }
     ],
     "boss_loot_table": [],
-    "gold_reward": 245
+    "gold_reward": 245,
+    "stage_rules": {
+      "recommendation_status": "STALE_ARC2_LEVEL_SPREAD_V1"
+    }
   },
   {
     "id": "stage_1_03_legend",
@@ -1031,7 +1055,10 @@
       }
     ],
     "boss_loot_table": [],
-    "gold_reward": 400
+    "gold_reward": 400,
+    "stage_rules": {
+      "recommendation_status": "STALE_ARC2_LEVEL_SPREAD_V1"
+    }
   },
   {
     "id": "stage_1_04_normal",
@@ -1103,7 +1130,10 @@
       }
     ],
     "boss_loot_table": [],
-    "gold_reward": 145
+    "gold_reward": 145,
+    "stage_rules": {
+      "recommendation_status": "STALE_ARC2_LEVEL_SPREAD_V1"
+    }
   },
   {
     "id": "stage_1_04_epic",
@@ -1182,7 +1212,10 @@
       }
     ],
     "boss_loot_table": [],
-    "gold_reward": 260
+    "gold_reward": 260,
+    "stage_rules": {
+      "recommendation_status": "STALE_ARC2_LEVEL_SPREAD_V1"
+    }
   },
   {
     "id": "stage_1_04_legend",
@@ -1306,7 +1339,10 @@
       }
     ],
     "boss_loot_table": [],
-    "gold_reward": 440
+    "gold_reward": 440,
+    "stage_rules": {
+      "recommendation_status": "STALE_ARC2_LEVEL_SPREAD_V1"
+    }
   },
   {
     "id": "stage_1_05_normal",
@@ -1438,7 +1474,10 @@
         "base_quantity": 1
       }
     ],
-    "gold_reward": 160
+    "gold_reward": 160,
+    "stage_rules": {
+      "recommendation_status": "STALE_ARC2_LEVEL_SPREAD_V1"
+    }
   },
   {
     "id": "stage_1_05_epic",
@@ -1577,7 +1616,10 @@
         "base_quantity": 5
       }
     ],
-    "gold_reward": 290
+    "gold_reward": 290,
+    "stage_rules": {
+      "recommendation_status": "STALE_ARC2_LEVEL_SPREAD_V1"
+    }
   },
   {
     "id": "stage_1_05_legend",
@@ -1806,7 +1848,10 @@
         "base_quantity": 10
       }
     ],
-    "gold_reward": 480
+    "gold_reward": 480,
+    "stage_rules": {
+      "recommendation_status": "STALE_ARC2_LEVEL_SPREAD_V1"
+    }
   },
   {
     "id": "stage_1_06_normal",
@@ -1878,7 +1923,10 @@
       }
     ],
     "boss_loot_table": [],
-    "gold_reward": 160
+    "gold_reward": 160,
+    "stage_rules": {
+      "recommendation_status": "STALE_ARC2_LEVEL_SPREAD_V1"
+    }
   },
   {
     "id": "stage_1_06_epic",
@@ -1957,7 +2005,10 @@
       }
     ],
     "boss_loot_table": [],
-    "gold_reward": 290
+    "gold_reward": 290,
+    "stage_rules": {
+      "recommendation_status": "STALE_ARC2_LEVEL_SPREAD_V1"
+    }
   },
   {
     "id": "stage_1_06_legend",
@@ -2081,7 +2132,10 @@
       }
     ],
     "boss_loot_table": [],
-    "gold_reward": 480
+    "gold_reward": 480,
+    "stage_rules": {
+      "recommendation_status": "STALE_ARC2_LEVEL_SPREAD_V1"
+    }
   },
   {
     "id": "stage_1_07_normal",
@@ -2153,7 +2207,10 @@
       }
     ],
     "boss_loot_table": [],
-    "gold_reward": 170
+    "gold_reward": 170,
+    "stage_rules": {
+      "recommendation_status": "STALE_ARC2_LEVEL_SPREAD_V1"
+    }
   },
   {
     "id": "stage_1_07_epic",
@@ -2232,7 +2289,10 @@
       }
     ],
     "boss_loot_table": [],
-    "gold_reward": 305
+    "gold_reward": 305,
+    "stage_rules": {
+      "recommendation_status": "STALE_ARC2_LEVEL_SPREAD_V1"
+    }
   },
   {
     "id": "stage_1_07_legend",
@@ -2356,7 +2416,10 @@
       }
     ],
     "boss_loot_table": [],
-    "gold_reward": 510
+    "gold_reward": 510,
+    "stage_rules": {
+      "recommendation_status": "STALE_ARC2_LEVEL_SPREAD_V1"
+    }
   },
   {
     "id": "stage_1_08_normal",
@@ -2428,7 +2491,10 @@
       }
     ],
     "boss_loot_table": [],
-    "gold_reward": 175
+    "gold_reward": 175,
+    "stage_rules": {
+      "recommendation_status": "STALE_ARC2_LEVEL_SPREAD_V1"
+    }
   },
   {
     "id": "stage_1_08_epic",
@@ -2507,7 +2573,10 @@
       }
     ],
     "boss_loot_table": [],
-    "gold_reward": 315
+    "gold_reward": 315,
+    "stage_rules": {
+      "recommendation_status": "STALE_ARC2_LEVEL_SPREAD_V1"
+    }
   },
   {
     "id": "stage_1_08_legend",
@@ -2631,7 +2700,10 @@
       }
     ],
     "boss_loot_table": [],
-    "gold_reward": 520
+    "gold_reward": 520,
+    "stage_rules": {
+      "recommendation_status": "STALE_ARC2_LEVEL_SPREAD_V1"
+    }
   },
   {
     "id": "stage_1_09_normal",
@@ -2703,7 +2775,10 @@
       }
     ],
     "boss_loot_table": [],
-    "gold_reward": 185
+    "gold_reward": 185,
+    "stage_rules": {
+      "recommendation_status": "STALE_ARC2_LEVEL_SPREAD_V1"
+    }
   },
   {
     "id": "stage_1_09_epic",
@@ -2782,7 +2857,10 @@
       }
     ],
     "boss_loot_table": [],
-    "gold_reward": 335
+    "gold_reward": 335,
+    "stage_rules": {
+      "recommendation_status": "STALE_ARC2_LEVEL_SPREAD_V1"
+    }
   },
   {
     "id": "stage_1_09_legend",
@@ -2906,7 +2984,10 @@
       }
     ],
     "boss_loot_table": [],
-    "gold_reward": 560
+    "gold_reward": 560,
+    "stage_rules": {
+      "recommendation_status": "STALE_ARC2_LEVEL_SPREAD_V1"
+    }
   },
   {
     "id": "stage_1_10_normal",
@@ -3038,7 +3119,10 @@
         "base_quantity": 3
       }
     ],
-    "gold_reward": 205
+    "gold_reward": 205,
+    "stage_rules": {
+      "recommendation_status": "STALE_ARC2_LEVEL_SPREAD_V1"
+    }
   },
   {
     "id": "stage_1_10_epic",
@@ -3177,7 +3261,10 @@
         "base_quantity": 8
       }
     ],
-    "gold_reward": 370
+    "gold_reward": 370,
+    "stage_rules": {
+      "recommendation_status": "STALE_ARC2_LEVEL_SPREAD_V1"
+    }
   },
   {
     "id": "stage_1_10_legend",
@@ -3368,7 +3455,10 @@
         "base_quantity": 1
       }
     ],
-    "gold_reward": 620
+    "gold_reward": 620,
+    "stage_rules": {
+      "recommendation_status": "STALE_ARC2_LEVEL_SPREAD_V1"
+    }
   },
   {
     "id": "stage_flame_frontier_normal",
@@ -16023,7 +16113,7 @@
     "stage_id": "stage_6_01",
     "level_id": "normal",
     "display_name": "Normal",
-    "description": "Ngũ Tố Quy Khư · Normal. Đội hình năm hệ, cân bằng từ mốc Lv.35.",
+    "description": "Ngũ Tố Quy Khư · Normal. Đội hình năm hệ, cân bằng theo mốc Lv.51.",
     "order": 1,
     "recommended_power": 13978,
     "exp_multiplier": 1,
@@ -16090,14 +16180,15 @@
     "boss_loot_table": [],
     "gold_reward": 655,
     "stage_rules": {
-      "balance_reference_level": 35,
+      "balance_reference_level": 51,
       "recommendation": {
         "model": "godot_full_run_neutral_offered_cards_survival_v1",
         "reference_hero_level": 40,
         "passed": 15,
         "cases": 15,
         "minimum_power_search": false,
-        "requires_range_reaudit": true
+        "requires_range_reaudit": true,
+        "requires_balance_reaudit": true
       }
     }
   },
@@ -16106,7 +16197,7 @@
     "stage_id": "stage_6_01",
     "level_id": "epic",
     "display_name": "Epic",
-    "description": "Ngũ Tố Quy Khư · Epic. Đội hình năm hệ, cân bằng từ mốc Lv.35.",
+    "description": "Ngũ Tố Quy Khư · Epic. Đội hình năm hệ, cân bằng theo mốc Lv.51.",
     "order": 2,
     "recommended_power": 22832,
     "exp_multiplier": 1.5,
@@ -16180,14 +16271,15 @@
     "boss_loot_table": [],
     "gold_reward": 1180,
     "stage_rules": {
-      "balance_reference_level": 35,
+      "balance_reference_level": 51,
       "recommendation": {
         "model": "godot_full_run_neutral_offered_cards_survival_v1",
         "reference_hero_level": 45,
         "passed": 15,
         "cases": 15,
         "minimum_power_search": false,
-        "requires_range_reaudit": true
+        "requires_range_reaudit": true,
+        "requires_balance_reaudit": true
       }
     }
   },
@@ -16196,7 +16288,7 @@
     "stage_id": "stage_6_01",
     "level_id": "legend",
     "display_name": "Legend",
-    "description": "Ngũ Tố Quy Khư · Legend. Đội hình năm hệ, cân bằng từ mốc Lv.35.",
+    "description": "Ngũ Tố Quy Khư · Legend. Đội hình năm hệ, cân bằng theo mốc Lv.51.",
     "order": 3,
     "recommended_power": 27835,
     "exp_multiplier": 2.25,
@@ -16315,14 +16407,15 @@
     "boss_loot_table": [],
     "gold_reward": 1965,
     "stage_rules": {
-      "balance_reference_level": 35,
+      "balance_reference_level": 51,
       "recommendation": {
         "model": "godot_full_run_neutral_offered_cards_survival_v1",
         "reference_hero_level": 47,
         "passed": 15,
         "cases": 15,
         "minimum_power_search": false,
-        "requires_range_reaudit": true
+        "requires_range_reaudit": true,
+        "requires_balance_reaudit": true
       }
     }
   },
@@ -16331,7 +16424,7 @@
     "stage_id": "stage_6_02",
     "level_id": "normal",
     "display_name": "Normal",
-    "description": "Ngũ Tố Quy Khư · Normal. Đội hình năm hệ, cân bằng từ mốc Lv.35.",
+    "description": "Ngũ Tố Quy Khư · Normal. Đội hình năm hệ, cân bằng theo mốc Lv.52.",
     "order": 1,
     "recommended_power": 13978,
     "exp_multiplier": 1,
@@ -16398,14 +16491,15 @@
     "boss_loot_table": [],
     "gold_reward": 670,
     "stage_rules": {
-      "balance_reference_level": 35,
+      "balance_reference_level": 52,
       "recommendation": {
         "model": "godot_full_run_neutral_offered_cards_survival_v1",
         "reference_hero_level": 40,
         "passed": 15,
         "cases": 15,
         "minimum_power_search": false,
-        "requires_range_reaudit": true
+        "requires_range_reaudit": true,
+        "requires_balance_reaudit": true
       }
     }
   },
@@ -16414,7 +16508,7 @@
     "stage_id": "stage_6_02",
     "level_id": "epic",
     "display_name": "Epic",
-    "description": "Ngũ Tố Quy Khư · Epic. Đội hình năm hệ, cân bằng từ mốc Lv.35.",
+    "description": "Ngũ Tố Quy Khư · Epic. Đội hình năm hệ, cân bằng theo mốc Lv.52.",
     "order": 2,
     "recommended_power": 22832,
     "exp_multiplier": 1.5,
@@ -16488,14 +16582,15 @@
     "boss_loot_table": [],
     "gold_reward": 1205,
     "stage_rules": {
-      "balance_reference_level": 35,
+      "balance_reference_level": 52,
       "recommendation": {
         "model": "godot_full_run_neutral_offered_cards_survival_v1",
         "reference_hero_level": 45,
         "passed": 15,
         "cases": 15,
         "minimum_power_search": false,
-        "requires_range_reaudit": true
+        "requires_range_reaudit": true,
+        "requires_balance_reaudit": true
       }
     }
   },
@@ -16504,7 +16599,7 @@
     "stage_id": "stage_6_02",
     "level_id": "legend",
     "display_name": "Legend",
-    "description": "Ngũ Tố Quy Khư · Legend. Đội hình năm hệ, cân bằng từ mốc Lv.35.",
+    "description": "Ngũ Tố Quy Khư · Legend. Đội hình năm hệ, cân bằng theo mốc Lv.52.",
     "order": 3,
     "recommended_power": 27835,
     "exp_multiplier": 2.25,
@@ -16623,14 +16718,15 @@
     "boss_loot_table": [],
     "gold_reward": 2005,
     "stage_rules": {
-      "balance_reference_level": 35,
+      "balance_reference_level": 52,
       "recommendation": {
         "model": "godot_full_run_neutral_offered_cards_survival_v1",
         "reference_hero_level": 47,
         "passed": 15,
         "cases": 15,
         "minimum_power_search": false,
-        "requires_range_reaudit": true
+        "requires_range_reaudit": true,
+        "requires_balance_reaudit": true
       }
     }
   },
@@ -16639,7 +16735,7 @@
     "stage_id": "stage_6_03",
     "level_id": "normal",
     "display_name": "Normal",
-    "description": "Ngũ Tố Quy Khư · Normal. Đội hình năm hệ, cân bằng từ mốc Lv.35.",
+    "description": "Ngũ Tố Quy Khư · Normal. Đội hình năm hệ, cân bằng theo mốc Lv.53.",
     "order": 1,
     "recommended_power": 13978,
     "exp_multiplier": 1,
@@ -16706,14 +16802,15 @@
     "boss_loot_table": [],
     "gold_reward": 685,
     "stage_rules": {
-      "balance_reference_level": 35,
+      "balance_reference_level": 53,
       "recommendation": {
         "model": "godot_full_run_neutral_offered_cards_survival_v1",
         "reference_hero_level": 40,
         "passed": 15,
         "cases": 15,
         "minimum_power_search": false,
-        "requires_range_reaudit": true
+        "requires_range_reaudit": true,
+        "requires_balance_reaudit": true
       }
     }
   },
@@ -16722,7 +16819,7 @@
     "stage_id": "stage_6_03",
     "level_id": "epic",
     "display_name": "Epic",
-    "description": "Ngũ Tố Quy Khư · Epic. Đội hình năm hệ, cân bằng từ mốc Lv.35.",
+    "description": "Ngũ Tố Quy Khư · Epic. Đội hình năm hệ, cân bằng theo mốc Lv.53.",
     "order": 2,
     "recommended_power": 22832,
     "exp_multiplier": 1.5,
@@ -16796,14 +16893,15 @@
     "boss_loot_table": [],
     "gold_reward": 1230,
     "stage_rules": {
-      "balance_reference_level": 35,
+      "balance_reference_level": 53,
       "recommendation": {
         "model": "godot_full_run_neutral_offered_cards_survival_v1",
         "reference_hero_level": 45,
         "passed": 15,
         "cases": 15,
         "minimum_power_search": false,
-        "requires_range_reaudit": true
+        "requires_range_reaudit": true,
+        "requires_balance_reaudit": true
       }
     }
   },
@@ -16812,7 +16910,7 @@
     "stage_id": "stage_6_03",
     "level_id": "legend",
     "display_name": "Legend",
-    "description": "Ngũ Tố Quy Khư · Legend. Đội hình năm hệ, cân bằng từ mốc Lv.35.",
+    "description": "Ngũ Tố Quy Khư · Legend. Đội hình năm hệ, cân bằng theo mốc Lv.53.",
     "order": 3,
     "recommended_power": 27835,
     "exp_multiplier": 2.25,
@@ -16931,14 +17029,15 @@
     "boss_loot_table": [],
     "gold_reward": 2055,
     "stage_rules": {
-      "balance_reference_level": 35,
+      "balance_reference_level": 53,
       "recommendation": {
         "model": "godot_full_run_neutral_offered_cards_survival_v1",
         "reference_hero_level": 47,
         "passed": 15,
         "cases": 15,
         "minimum_power_search": false,
-        "requires_range_reaudit": true
+        "requires_range_reaudit": true,
+        "requires_balance_reaudit": true
       }
     }
   },
@@ -16947,7 +17046,7 @@
     "stage_id": "stage_6_04",
     "level_id": "normal",
     "display_name": "Normal",
-    "description": "Ngũ Tố Quy Khư · Normal. Đội hình năm hệ, cân bằng từ mốc Lv.35.",
+    "description": "Ngũ Tố Quy Khư · Normal. Đội hình năm hệ, cân bằng theo mốc Lv.54.",
     "order": 1,
     "recommended_power": 15410,
     "exp_multiplier": 1,
@@ -17014,14 +17113,15 @@
     "boss_loot_table": [],
     "gold_reward": 705,
     "stage_rules": {
-      "balance_reference_level": 35,
+      "balance_reference_level": 54,
       "recommendation": {
         "model": "godot_full_run_neutral_offered_cards_survival_v1",
         "reference_hero_level": 41,
         "passed": 15,
         "cases": 15,
         "minimum_power_search": false,
-        "requires_range_reaudit": true
+        "requires_range_reaudit": true,
+        "requires_balance_reaudit": true
       }
     }
   },
@@ -17030,7 +17130,7 @@
     "stage_id": "stage_6_04",
     "level_id": "epic",
     "display_name": "Epic",
-    "description": "Ngũ Tố Quy Khư · Epic. Đội hình năm hệ, cân bằng từ mốc Lv.35.",
+    "description": "Ngũ Tố Quy Khư · Epic. Đội hình năm hệ, cân bằng theo mốc Lv.54.",
     "order": 2,
     "recommended_power": 25207,
     "exp_multiplier": 1.5,
@@ -17104,14 +17204,15 @@
     "boss_loot_table": [],
     "gold_reward": 1270,
     "stage_rules": {
-      "balance_reference_level": 35,
+      "balance_reference_level": 54,
       "recommendation": {
         "model": "godot_full_run_neutral_offered_cards_survival_v1",
         "reference_hero_level": 46,
         "passed": 15,
         "cases": 15,
         "minimum_power_search": false,
-        "requires_range_reaudit": true
+        "requires_range_reaudit": true,
+        "requires_balance_reaudit": true
       }
     }
   },
@@ -17120,7 +17221,7 @@
     "stage_id": "stage_6_04",
     "level_id": "legend",
     "display_name": "Legend",
-    "description": "Ngũ Tố Quy Khư · Legend. Đội hình năm hệ, cân bằng từ mốc Lv.35.",
+    "description": "Ngũ Tố Quy Khư · Legend. Đội hình năm hệ, cân bằng theo mốc Lv.54.",
     "order": 3,
     "recommended_power": 30744,
     "exp_multiplier": 2.25,
@@ -17239,14 +17340,15 @@
     "boss_loot_table": [],
     "gold_reward": 2115,
     "stage_rules": {
-      "balance_reference_level": 35,
+      "balance_reference_level": 54,
       "recommendation": {
         "model": "godot_full_run_neutral_offered_cards_survival_v1",
         "reference_hero_level": 48,
         "passed": 15,
         "cases": 15,
         "minimum_power_search": false,
-        "requires_range_reaudit": true
+        "requires_range_reaudit": true,
+        "requires_balance_reaudit": true
       }
     }
   },
@@ -17255,7 +17357,7 @@
     "stage_id": "stage_6_05",
     "level_id": "normal",
     "display_name": "Normal",
-    "description": "Ngũ Tố Quy Khư · Normal. Đội hình năm hệ, cân bằng từ mốc Lv.35.",
+    "description": "Ngũ Tố Quy Khư · Normal. Đội hình năm hệ, cân bằng theo mốc Lv.55.",
     "order": 1,
     "recommended_power": 15410,
     "exp_multiplier": 1,
@@ -17382,14 +17484,15 @@
     ],
     "gold_reward": 735,
     "stage_rules": {
-      "balance_reference_level": 35,
+      "balance_reference_level": 55,
       "recommendation": {
         "model": "godot_full_run_neutral_offered_cards_survival_v1",
         "reference_hero_level": 41,
         "passed": 15,
         "cases": 15,
         "minimum_power_search": false,
-        "requires_range_reaudit": true
+        "requires_range_reaudit": true,
+        "requires_balance_reaudit": true
       }
     }
   },
@@ -17398,7 +17501,7 @@
     "stage_id": "stage_6_05",
     "level_id": "epic",
     "display_name": "Epic",
-    "description": "Ngũ Tố Quy Khư · Epic. Đội hình năm hệ, cân bằng từ mốc Lv.35.",
+    "description": "Ngũ Tố Quy Khư · Epic. Đội hình năm hệ, cân bằng theo mốc Lv.55.",
     "order": 2,
     "recommended_power": 25207,
     "exp_multiplier": 1.5,
@@ -17532,14 +17635,15 @@
     ],
     "gold_reward": 1320,
     "stage_rules": {
-      "balance_reference_level": 35,
+      "balance_reference_level": 55,
       "recommendation": {
         "model": "godot_full_run_neutral_offered_cards_survival_v1",
         "reference_hero_level": 46,
         "passed": 15,
         "cases": 15,
         "minimum_power_search": false,
-        "requires_range_reaudit": true
+        "requires_range_reaudit": true,
+        "requires_balance_reaudit": true
       }
     }
   },
@@ -17548,7 +17652,7 @@
     "stage_id": "stage_6_05",
     "level_id": "legend",
     "display_name": "Legend",
-    "description": "Ngũ Tố Quy Khư · Legend. Đội hình năm hệ, cân bằng từ mốc Lv.35.",
+    "description": "Ngũ Tố Quy Khư · Legend. Đội hình năm hệ, cân bằng theo mốc Lv.55.",
     "order": 3,
     "recommended_power": 30744,
     "exp_multiplier": 2.25,
@@ -17772,14 +17876,15 @@
     ],
     "gold_reward": 2205,
     "stage_rules": {
-      "balance_reference_level": 35,
+      "balance_reference_level": 55,
       "recommendation": {
         "model": "godot_full_run_neutral_offered_cards_survival_v1",
         "reference_hero_level": 48,
         "passed": 15,
         "cases": 15,
         "minimum_power_search": false,
-        "requires_range_reaudit": true
+        "requires_range_reaudit": true,
+        "requires_balance_reaudit": true
       }
     }
   },
@@ -17788,7 +17893,7 @@
     "stage_id": "stage_6_06",
     "level_id": "normal",
     "display_name": "Normal",
-    "description": "Ngũ Tố Quy Khư · Normal. Đội hình năm hệ, cân bằng từ mốc Lv.35.",
+    "description": "Ngũ Tố Quy Khư · Normal. Đội hình năm hệ, cân bằng theo mốc Lv.56.",
     "order": 1,
     "recommended_power": 15410,
     "exp_multiplier": 1,
@@ -17855,14 +17960,15 @@
     "boss_loot_table": [],
     "gold_reward": 735,
     "stage_rules": {
-      "balance_reference_level": 35,
+      "balance_reference_level": 56,
       "recommendation": {
         "model": "godot_full_run_neutral_offered_cards_survival_v1",
         "reference_hero_level": 41,
         "passed": 15,
         "cases": 15,
         "minimum_power_search": false,
-        "requires_range_reaudit": true
+        "requires_range_reaudit": true,
+        "requires_balance_reaudit": true
       }
     }
   },
@@ -17871,7 +17977,7 @@
     "stage_id": "stage_6_06",
     "level_id": "epic",
     "display_name": "Epic",
-    "description": "Ngũ Tố Quy Khư · Epic. Đội hình năm hệ, cân bằng từ mốc Lv.35.",
+    "description": "Ngũ Tố Quy Khư · Epic. Đội hình năm hệ, cân bằng theo mốc Lv.56.",
     "order": 2,
     "recommended_power": 25207,
     "exp_multiplier": 1.5,
@@ -17945,14 +18051,15 @@
     "boss_loot_table": [],
     "gold_reward": 1320,
     "stage_rules": {
-      "balance_reference_level": 35,
+      "balance_reference_level": 56,
       "recommendation": {
         "model": "godot_full_run_neutral_offered_cards_survival_v1",
         "reference_hero_level": 46,
         "passed": 15,
         "cases": 15,
         "minimum_power_search": false,
-        "requires_range_reaudit": true
+        "requires_range_reaudit": true,
+        "requires_balance_reaudit": true
       }
     }
   },
@@ -17961,7 +18068,7 @@
     "stage_id": "stage_6_06",
     "level_id": "legend",
     "display_name": "Legend",
-    "description": "Ngũ Tố Quy Khư · Legend. Đội hình năm hệ, cân bằng từ mốc Lv.35.",
+    "description": "Ngũ Tố Quy Khư · Legend. Đội hình năm hệ, cân bằng theo mốc Lv.56.",
     "order": 3,
     "recommended_power": 30744,
     "exp_multiplier": 2.25,
@@ -18080,14 +18187,15 @@
     "boss_loot_table": [],
     "gold_reward": 2205,
     "stage_rules": {
-      "balance_reference_level": 35,
+      "balance_reference_level": 56,
       "recommendation": {
         "model": "godot_full_run_neutral_offered_cards_survival_v1",
         "reference_hero_level": 48,
         "passed": 15,
         "cases": 15,
         "minimum_power_search": false,
-        "requires_range_reaudit": true
+        "requires_range_reaudit": true,
+        "requires_balance_reaudit": true
       }
     }
   },
@@ -18096,7 +18204,7 @@
     "stage_id": "stage_6_07",
     "level_id": "normal",
     "display_name": "Normal",
-    "description": "Ngũ Tố Quy Khư · Normal. Đội hình năm hệ, cân bằng từ mốc Lv.35.",
+    "description": "Ngũ Tố Quy Khư · Normal. Đội hình năm hệ, cân bằng theo mốc Lv.57.",
     "order": 1,
     "recommended_power": 16995,
     "exp_multiplier": 1,
@@ -18163,14 +18271,15 @@
     "boss_loot_table": [],
     "gold_reward": 750,
     "stage_rules": {
-      "balance_reference_level": 35,
+      "balance_reference_level": 57,
       "recommendation": {
         "model": "godot_full_run_neutral_offered_cards_survival_v1",
         "reference_hero_level": 42,
         "passed": 15,
         "cases": 15,
         "minimum_power_search": false,
-        "requires_range_reaudit": true
+        "requires_range_reaudit": true,
+        "requires_balance_reaudit": true
       }
     }
   },
@@ -18179,7 +18288,7 @@
     "stage_id": "stage_6_07",
     "level_id": "epic",
     "display_name": "Epic",
-    "description": "Ngũ Tố Quy Khư · Epic. Đội hình năm hệ, cân bằng từ mốc Lv.35.",
+    "description": "Ngũ Tố Quy Khư · Epic. Đội hình năm hệ, cân bằng theo mốc Lv.57.",
     "order": 2,
     "recommended_power": 27835,
     "exp_multiplier": 1.5,
@@ -18253,14 +18362,15 @@
     "boss_loot_table": [],
     "gold_reward": 1350,
     "stage_rules": {
-      "balance_reference_level": 35,
+      "balance_reference_level": 57,
       "recommendation": {
         "model": "godot_full_run_neutral_offered_cards_survival_v1",
         "reference_hero_level": 47,
         "passed": 15,
         "cases": 15,
         "minimum_power_search": false,
-        "requires_range_reaudit": true
+        "requires_range_reaudit": true,
+        "requires_balance_reaudit": true
       }
     }
   },
@@ -18269,7 +18379,7 @@
     "stage_id": "stage_6_07",
     "level_id": "legend",
     "display_name": "Legend",
-    "description": "Ngũ Tố Quy Khư · Legend. Đội hình năm hệ, cân bằng từ mốc Lv.35.",
+    "description": "Ngũ Tố Quy Khư · Legend. Đội hình năm hệ, cân bằng theo mốc Lv.57.",
     "order": 3,
     "recommended_power": 33965,
     "exp_multiplier": 2.25,
@@ -18388,14 +18498,15 @@
     "boss_loot_table": [],
     "gold_reward": 2245,
     "stage_rules": {
-      "balance_reference_level": 35,
+      "balance_reference_level": 57,
       "recommendation": {
         "model": "godot_full_run_neutral_offered_cards_survival_v1",
         "reference_hero_level": 49,
         "passed": 15,
         "cases": 15,
         "minimum_power_search": false,
-        "requires_range_reaudit": true
+        "requires_range_reaudit": true,
+        "requires_balance_reaudit": true
       }
     }
   },
@@ -18404,7 +18515,7 @@
     "stage_id": "stage_6_08",
     "level_id": "normal",
     "display_name": "Normal",
-    "description": "Ngũ Tố Quy Khư · Normal. Đội hình năm hệ, cân bằng từ mốc Lv.35.",
+    "description": "Ngũ Tố Quy Khư · Normal. Đội hình năm hệ, cân bằng theo mốc Lv.58.",
     "order": 1,
     "recommended_power": 16995,
     "exp_multiplier": 1,
@@ -18471,14 +18582,15 @@
     "boss_loot_table": [],
     "gold_reward": 765,
     "stage_rules": {
-      "balance_reference_level": 35,
+      "balance_reference_level": 58,
       "recommendation": {
         "model": "godot_full_run_neutral_offered_cards_survival_v1",
         "reference_hero_level": 42,
         "passed": 15,
         "cases": 15,
         "minimum_power_search": false,
-        "requires_range_reaudit": true
+        "requires_range_reaudit": true,
+        "requires_balance_reaudit": true
       }
     }
   },
@@ -18487,7 +18599,7 @@
     "stage_id": "stage_6_08",
     "level_id": "epic",
     "display_name": "Epic",
-    "description": "Ngũ Tố Quy Khư · Epic. Đội hình năm hệ, cân bằng từ mốc Lv.35.",
+    "description": "Ngũ Tố Quy Khư · Epic. Đội hình năm hệ, cân bằng theo mốc Lv.58.",
     "order": 2,
     "recommended_power": 27835,
     "exp_multiplier": 1.5,
@@ -18561,14 +18673,15 @@
     "boss_loot_table": [],
     "gold_reward": 1375,
     "stage_rules": {
-      "balance_reference_level": 35,
+      "balance_reference_level": 58,
       "recommendation": {
         "model": "godot_full_run_neutral_offered_cards_survival_v1",
         "reference_hero_level": 47,
         "passed": 15,
         "cases": 15,
         "minimum_power_search": false,
-        "requires_range_reaudit": true
+        "requires_range_reaudit": true,
+        "requires_balance_reaudit": true
       }
     }
   },
@@ -18577,7 +18690,7 @@
     "stage_id": "stage_6_08",
     "level_id": "legend",
     "display_name": "Legend",
-    "description": "Ngũ Tố Quy Khư · Legend. Đội hình năm hệ, cân bằng từ mốc Lv.35.",
+    "description": "Ngũ Tố Quy Khư · Legend. Đội hình năm hệ, cân bằng theo mốc Lv.58.",
     "order": 3,
     "recommended_power": 33965,
     "exp_multiplier": 2.25,
@@ -18696,14 +18809,15 @@
     "boss_loot_table": [],
     "gold_reward": 2295,
     "stage_rules": {
-      "balance_reference_level": 35,
+      "balance_reference_level": 58,
       "recommendation": {
         "model": "godot_full_run_neutral_offered_cards_survival_v1",
         "reference_hero_level": 49,
         "passed": 15,
         "cases": 15,
         "minimum_power_search": false,
-        "requires_range_reaudit": true
+        "requires_range_reaudit": true,
+        "requires_balance_reaudit": true
       }
     }
   },
@@ -18712,7 +18826,7 @@
     "stage_id": "stage_6_09",
     "level_id": "normal",
     "display_name": "Normal",
-    "description": "Ngũ Tố Quy Khư · Normal. Đội hình năm hệ, cân bằng từ mốc Lv.35.",
+    "description": "Ngũ Tố Quy Khư · Normal. Đội hình năm hệ, cân bằng theo mốc Lv.59.",
     "order": 1,
     "recommended_power": 16995,
     "exp_multiplier": 1,
@@ -18779,14 +18893,15 @@
     "boss_loot_table": [],
     "gold_reward": 785,
     "stage_rules": {
-      "balance_reference_level": 35,
+      "balance_reference_level": 59,
       "recommendation": {
         "model": "godot_full_run_neutral_offered_cards_survival_v1",
         "reference_hero_level": 42,
         "passed": 15,
         "cases": 15,
         "minimum_power_search": false,
-        "requires_range_reaudit": true
+        "requires_range_reaudit": true,
+        "requires_balance_reaudit": true
       }
     }
   },
@@ -18795,7 +18910,7 @@
     "stage_id": "stage_6_09",
     "level_id": "epic",
     "display_name": "Epic",
-    "description": "Ngũ Tố Quy Khư · Epic. Đội hình năm hệ, cân bằng từ mốc Lv.35.",
+    "description": "Ngũ Tố Quy Khư · Epic. Đội hình năm hệ, cân bằng theo mốc Lv.59.",
     "order": 2,
     "recommended_power": 27835,
     "exp_multiplier": 1.5,
@@ -18869,14 +18984,15 @@
     "boss_loot_table": [],
     "gold_reward": 1410,
     "stage_rules": {
-      "balance_reference_level": 35,
+      "balance_reference_level": 59,
       "recommendation": {
         "model": "godot_full_run_neutral_offered_cards_survival_v1",
         "reference_hero_level": 47,
         "passed": 15,
         "cases": 15,
         "minimum_power_search": false,
-        "requires_range_reaudit": true
+        "requires_range_reaudit": true,
+        "requires_balance_reaudit": true
       }
     }
   },
@@ -18885,7 +19001,7 @@
     "stage_id": "stage_6_09",
     "level_id": "legend",
     "display_name": "Legend",
-    "description": "Ngũ Tố Quy Khư · Legend. Đội hình năm hệ, cân bằng từ mốc Lv.35.",
+    "description": "Ngũ Tố Quy Khư · Legend. Đội hình năm hệ, cân bằng theo mốc Lv.59.",
     "order": 3,
     "recommended_power": 33965,
     "exp_multiplier": 2.25,
@@ -19004,14 +19120,15 @@
     "boss_loot_table": [],
     "gold_reward": 2355,
     "stage_rules": {
-      "balance_reference_level": 35,
+      "balance_reference_level": 59,
       "recommendation": {
         "model": "godot_full_run_neutral_offered_cards_survival_v1",
         "reference_hero_level": 49,
         "passed": 15,
         "cases": 15,
         "minimum_power_search": false,
-        "requires_range_reaudit": true
+        "requires_range_reaudit": true,
+        "requires_balance_reaudit": true
       }
     }
   },
@@ -19020,7 +19137,7 @@
     "stage_id": "stage_6_10",
     "level_id": "normal",
     "display_name": "Normal",
-    "description": "Ngũ Tố Quy Khư · Normal. Đội hình năm hệ, cân bằng từ mốc Lv.35.",
+    "description": "Ngũ Tố Quy Khư · Normal. Đội hình năm hệ, cân bằng theo mốc Lv.60.",
     "order": 1,
     "recommended_power": 18747,
     "exp_multiplier": 1,
@@ -19147,14 +19264,15 @@
     ],
     "gold_reward": 840,
     "stage_rules": {
-      "balance_reference_level": 35,
+      "balance_reference_level": 60,
       "recommendation": {
         "model": "godot_full_run_neutral_offered_cards_survival_v1",
         "reference_hero_level": 43,
         "passed": 15,
         "cases": 15,
         "minimum_power_search": false,
-        "requires_range_reaudit": true
+        "requires_range_reaudit": true,
+        "requires_balance_reaudit": true
       }
     }
   },
@@ -19163,7 +19281,7 @@
     "stage_id": "stage_6_10",
     "level_id": "epic",
     "display_name": "Epic",
-    "description": "Ngũ Tố Quy Khư · Epic. Đội hình năm hệ, cân bằng từ mốc Lv.35.",
+    "description": "Ngũ Tố Quy Khư · Epic. Đội hình năm hệ, cân bằng theo mốc Lv.60.",
     "order": 2,
     "recommended_power": 30744,
     "exp_multiplier": 1.5,
@@ -19297,14 +19415,15 @@
     ],
     "gold_reward": 1510,
     "stage_rules": {
-      "balance_reference_level": 35,
+      "balance_reference_level": 60,
       "recommendation": {
         "model": "godot_full_run_neutral_offered_cards_survival_v1",
         "reference_hero_level": 48,
         "passed": 15,
         "cases": 15,
         "minimum_power_search": false,
-        "requires_range_reaudit": true
+        "requires_range_reaudit": true,
+        "requires_balance_reaudit": true
       }
     }
   },
@@ -19313,7 +19432,7 @@
     "stage_id": "stage_6_10",
     "level_id": "legend",
     "display_name": "Legend",
-    "description": "Ngũ Tố Quy Khư · Legend. Đội hình năm hệ, cân bằng từ mốc Lv.35.",
+    "description": "Ngũ Tố Quy Khư · Legend. Đội hình năm hệ, cân bằng theo mốc Lv.60.",
     "order": 3,
     "recommended_power": 37530,
     "exp_multiplier": 2.25,
@@ -19499,14 +19618,15 @@
     ],
     "gold_reward": 2525,
     "stage_rules": {
-      "balance_reference_level": 35,
+      "balance_reference_level": 60,
       "recommendation": {
         "model": "godot_full_run_neutral_offered_cards_survival_v1",
         "reference_hero_level": 50,
         "passed": 14,
         "cases": 15,
         "minimum_power_search": false,
-        "requires_range_reaudit": true
+        "requires_range_reaudit": true,
+        "requires_balance_reaudit": true
       }
     }
   }

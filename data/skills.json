@@ -2939,7 +2939,7 @@
       {
         "level": 1,
         "stats": {
-          "damage_pct": 40,
+          "damage_pct": 20,
           "speed_pct": 230,
           "range": 680,
           "projectile_count": 1,
@@ -2950,8 +2950,8 @@
         },
         "description_rows": [
           "Single target",
-          "Damage 40% ATK",
-          "Poison 25% ATK/s for 2s",
+          "Damage 20% ATK",
+          "Poison 12.5% ATK/s for 2s",
           "Darts 1",
           "CD 2.4s"
         ],
@@ -2959,14 +2959,14 @@
           {
             "id": "poison",
             "duration": 2,
-            "dps_pct": 25
+            "dps_pct": 12.5
           }
         ]
       },
       {
         "level": 2,
         "stats": {
-          "damage_pct": 45,
+          "damage_pct": 22.5,
           "speed_pct": 244,
           "range": 700,
           "projectile_count": 2,
@@ -2977,8 +2977,8 @@
         },
         "description_rows": [
           "Single target",
-          "Damage 45% ATK",
-          "Poison 30% ATK/s for 2s",
+          "Damage 22.5% ATK",
+          "Poison 15% ATK/s for 2s",
           "Darts 2",
           "CD 2.2s"
         ],
@@ -2986,14 +2986,14 @@
           {
             "id": "poison",
             "duration": 2,
-            "dps_pct": 30
+            "dps_pct": 15
           }
         ]
       },
       {
         "level": 3,
         "stats": {
-          "damage_pct": 50,
+          "damage_pct": 25,
           "speed_pct": 258,
           "range": 720,
           "projectile_count": 2,
@@ -3004,8 +3004,8 @@
         },
         "description_rows": [
           "Single target",
-          "Damage 50% ATK",
-          "Poison 35% ATK/s for 2s",
+          "Damage 25% ATK",
+          "Poison 17.5% ATK/s for 2s",
           "Darts 2",
           "CD 2s"
         ],
@@ -3013,14 +3013,14 @@
           {
             "id": "poison",
             "duration": 2,
-            "dps_pct": 35
+            "dps_pct": 17.5
           }
         ]
       },
       {
         "level": 4,
         "stats": {
-          "damage_pct": 55,
+          "damage_pct": 27.5,
           "speed_pct": 274,
           "range": 740,
           "projectile_count": 3,
@@ -3031,8 +3031,8 @@
         },
         "description_rows": [
           "Single target",
-          "Damage 55% ATK",
-          "Poison 40% ATK/s for 2s",
+          "Damage 27.5% ATK",
+          "Poison 20% ATK/s for 2s",
           "Darts 3",
           "CD 1.8s"
         ],
@@ -3040,14 +3040,14 @@
           {
             "id": "poison",
             "duration": 2,
-            "dps_pct": 40
+            "dps_pct": 20
           }
         ]
       },
       {
         "level": 5,
         "stats": {
-          "damage_pct": 60,
+          "damage_pct": 30,
           "speed_pct": 292,
           "range": 760,
           "projectile_count": 3,
@@ -3058,8 +3058,8 @@
         },
         "description_rows": [
           "Single target",
-          "Damage 60% ATK",
-          "Poison 45% ATK/s for 2s",
+          "Damage 30% ATK",
+          "Poison 22.5% ATK/s for 2s",
           "Darts 3",
           "CD 1.6s"
         ],
@@ -3067,7 +3067,7 @@
           {
             "id": "poison",
             "duration": 2,
-            "dps_pct": 45
+            "dps_pct": 22.5
           }
         ]
       }
@@ -3099,7 +3099,7 @@
     "deployment": {
       "type": "line_area"
     },
-    "description": "Piercing boomerang glaives hit each enemy once per outward/return leg. Damage decreases linearly from100% near launch to30% at maximum range.",
+    "description": "Piercing return: half damage is direct and half is poison over 2s. Both decrease linearly from 100% near launch to 30% at maximum range. Poison uses existing strongest-value/refresh rules.",
     "vfx_frames": [
       "hero_4_skill_2_frame_0",
       "hero_4_skill_2_frame_1",
@@ -3115,7 +3115,7 @@
       {
         "level": 1,
         "stats": {
-          "damage_pct": 85,
+          "damage_pct": 42.5,
           "speed_pct": 248,
           "range": 700,
           "projectile_count": 1,
@@ -3124,29 +3124,36 @@
           "cooldown": 6.5,
           "radius": 30,
           "pierce": 999,
-          "vfx_scale": 0.09,
+          "vfx_scale": 0.117,
           "damage_min_range_multiplier": 0.3
         },
         "description_rows": [
           "Piercing return",
-          "Damage 85% ATK",
+          "Damage 42.5% ATK",
           "Slow 15%",
           "Glaives 1",
           "CD 6.5s",
-          "Distance damage100% to30% at max range"
+          "Distance damage100% to30% at max range",
+          "Poison 21.25% ATK/s for 2s; same distance falloff"
         ],
         "effects": [
           {
             "id": "slow",
             "duration": 1.5,
             "slow_percent": 0.15
+          },
+          {
+            "id": "poison",
+            "duration": 2,
+            "dps_pct": 21.25,
+            "scale_dps_with_range": true
           }
         ]
       },
       {
         "level": 2,
         "stats": {
-          "damage_pct": 95,
+          "damage_pct": 47.5,
           "speed_pct": 261,
           "range": 720,
           "projectile_count": 2,
@@ -3155,29 +3162,36 @@
           "cooldown": 6,
           "radius": 31,
           "pierce": 999,
-          "vfx_scale": 0.095,
+          "vfx_scale": 0.1235,
           "damage_min_range_multiplier": 0.3
         },
         "description_rows": [
           "Piercing return",
-          "Damage 95% ATK",
+          "Damage 47.5% ATK",
           "Slow 17.5%",
           "Glaives 2",
           "CD 6s",
-          "Distance damage100% to30% at max range"
+          "Distance damage100% to30% at max range",
+          "Poison 23.75% ATK/s for 2s; same distance falloff"
         ],
         "effects": [
           {
             "id": "slow",
             "duration": 1.75,
             "slow_percent": 0.175
+          },
+          {
+            "id": "poison",
+            "duration": 2,
+            "dps_pct": 23.75,
+            "scale_dps_with_range": true
           }
         ]
       },
       {
         "level": 3,
         "stats": {
-          "damage_pct": 105,
+          "damage_pct": 52.5,
           "speed_pct": 275,
           "range": 740,
           "projectile_count": 3,
@@ -3186,29 +3200,36 @@
           "cooldown": 5.5,
           "radius": 32,
           "pierce": 999,
-          "vfx_scale": 0.0975,
+          "vfx_scale": 0.12675,
           "damage_min_range_multiplier": 0.3
         },
         "description_rows": [
           "Piercing return",
-          "Damage 105% ATK",
+          "Damage 52.5% ATK",
           "Slow 20%",
           "Glaives 3",
           "CD 5.5s",
-          "Distance damage100% to30% at max range"
+          "Distance damage100% to30% at max range",
+          "Poison 26.25% ATK/s for 2s; same distance falloff"
         ],
         "effects": [
           {
             "id": "slow",
             "duration": 2,
             "slow_percent": 0.2
+          },
+          {
+            "id": "poison",
+            "duration": 2,
+            "dps_pct": 26.25,
+            "scale_dps_with_range": true
           }
         ]
       },
       {
         "level": 4,
         "stats": {
-          "damage_pct": 115,
+          "damage_pct": 57.5,
           "speed_pct": 291,
           "range": 760,
           "projectile_count": 4,
@@ -3217,29 +3238,36 @@
           "cooldown": 5,
           "radius": 33,
           "pierce": 999,
-          "vfx_scale": 0.1,
+          "vfx_scale": 0.13,
           "damage_min_range_multiplier": 0.3
         },
         "description_rows": [
           "Piercing return",
-          "Damage 115% ATK",
+          "Damage 57.5% ATK",
           "Slow 22.5%",
           "Glaives 4",
           "CD 5s",
-          "Distance damage100% to30% at max range"
+          "Distance damage100% to30% at max range",
+          "Poison 28.75% ATK/s for 2s; same distance falloff"
         ],
         "effects": [
           {
             "id": "slow",
             "duration": 2.25,
             "slow_percent": 0.225
+          },
+          {
+            "id": "poison",
+            "duration": 2,
+            "dps_pct": 28.75,
+            "scale_dps_with_range": true
           }
         ]
       },
       {
         "level": 5,
         "stats": {
-          "damage_pct": 125,
+          "damage_pct": 62.5,
           "speed_pct": 310,
           "range": 780,
           "projectile_count": 5,
@@ -3248,22 +3276,29 @@
           "cooldown": 4.5,
           "radius": 34,
           "pierce": 999,
-          "vfx_scale": 0.105,
+          "vfx_scale": 0.1365,
           "damage_min_range_multiplier": 0.3
         },
         "description_rows": [
           "Piercing return",
-          "Damage 125% ATK",
+          "Damage 62.5% ATK",
           "Slow 25%",
           "Glaives 5",
           "CD 4.5s",
-          "Distance damage100% to30% at max range"
+          "Distance damage100% to30% at max range",
+          "Poison 31.25% ATK/s for 2s; same distance falloff"
         ],
         "effects": [
           {
             "id": "slow",
             "duration": 2.5,
             "slow_percent": 0.25
+          },
+          {
+            "id": "poison",
+            "duration": 2,
+            "dps_pct": 31.25,
+            "scale_dps_with_range": true
           }
         ]
       }
@@ -3321,7 +3356,7 @@
       {
         "level": 1,
         "stats": {
-          "damage_pct": 100.1,
+          "damage_pct": 50.05,
           "range": 725,
           "cooldown": 8.8,
           "radius": 85,
@@ -3337,8 +3372,8 @@
         },
         "description_rows": [
           "Trap burst",
-          "Damage 100.1% ATK",
-          "Poison 45% ATK/s for 3s",
+          "Damage 50.05% ATK",
+          "Poison 61.683% ATK/s for 3s",
           "Slow 10%",
           "Area 85; trigger 125",
           "Max traps 3; lifetime 12.5s",
@@ -3347,8 +3382,8 @@
         "effects": [
           {
             "id": "poison",
-            "duration": 3.0,
-            "dps_pct": 45
+            "duration": 3,
+            "dps_pct": 61.683333333
           },
           {
             "id": "slow",
@@ -3360,7 +3395,7 @@
       {
         "level": 2,
         "stats": {
-          "damage_pct": 107.6,
+          "damage_pct": 53.8,
           "range": 750,
           "cooldown": 8.2,
           "radius": 95,
@@ -3376,8 +3411,8 @@
         },
         "description_rows": [
           "Trap burst",
-          "Damage 107.6% ATK",
-          "Poison 55% ATK/s for 3.5s",
+          "Damage 53.8% ATK",
+          "Poison 70.371% ATK/s for 3.5s",
           "Slow 15%",
           "Area 95; trigger 145",
           "Max traps 4; lifetime 15s",
@@ -3387,7 +3422,7 @@
           {
             "id": "poison",
             "duration": 3.5,
-            "dps_pct": 55
+            "dps_pct": 70.371428571
           },
           {
             "id": "slow",
@@ -3399,7 +3434,7 @@
       {
         "level": 3,
         "stats": {
-          "damage_pct": 116,
+          "damage_pct": 58,
           "range": 775,
           "cooldown": 7.6,
           "radius": 105,
@@ -3415,8 +3450,8 @@
         },
         "description_rows": [
           "Trap burst",
-          "Damage 116% ATK",
-          "Poison 65% ATK/s for 4s",
+          "Damage 58% ATK",
+          "Poison 79.5% ATK/s for 4s",
           "Slow 20%",
           "Area 105; trigger 165",
           "Max traps 5; lifetime 17.5s",
@@ -3425,8 +3460,8 @@
         "effects": [
           {
             "id": "poison",
-            "duration": 4.0,
-            "dps_pct": 65
+            "duration": 4,
+            "dps_pct": 79.5
           },
           {
             "id": "slow",
@@ -3438,7 +3473,7 @@
       {
         "level": 4,
         "stats": {
-          "damage_pct": 126.5,
+          "damage_pct": 63.25,
           "range": 800,
           "cooldown": 7,
           "radius": 115,
@@ -3454,8 +3489,8 @@
         },
         "description_rows": [
           "Trap burst",
-          "Damage 126.5% ATK",
-          "Poison 75% ATK/s for 4.5s",
+          "Damage 63.25% ATK",
+          "Poison 89.056% ATK/s for 4.5s",
           "Slow 25%",
           "Area 115; trigger 185",
           "Max traps 6; lifetime 20s",
@@ -3465,7 +3500,7 @@
           {
             "id": "poison",
             "duration": 4.5,
-            "dps_pct": 75
+            "dps_pct": 89.055555556
           },
           {
             "id": "slow",
@@ -3477,7 +3512,7 @@
       {
         "level": 5,
         "stats": {
-          "damage_pct": 140,
+          "damage_pct": 70,
           "range": 825,
           "cooldown": 6.2,
           "radius": 125,
@@ -3493,8 +3528,8 @@
         },
         "description_rows": [
           "Trap burst",
-          "Damage 140% ATK",
-          "Poison 85% ATK/s for 5s",
+          "Damage 70% ATK",
+          "Poison 99% ATK/s for 5s",
           "Slow 30%",
           "Area 125; trigger 205",
           "Max traps 9; lifetime 25s",
@@ -3503,8 +3538,8 @@
         "effects": [
           {
             "id": "poison",
-            "duration": 5.0,
-            "dps_pct": 85
+            "duration": 5,
+            "dps_pct": 99
           },
           {
             "id": "slow",
@@ -3532,7 +3567,7 @@
     "display_name": "Vạn Độc Thần Phong",
     "category": "combat",
     "createria_unlock": {
-      "level": 10,
+      "level": 15,
       "wave": 1
     },
     "skill_class": "active",
@@ -5608,11 +5643,11 @@
     "deployment": {
       "type": "line_area"
     },
-    "description": "Xích Viêm Trảm: Chém hai trảm kích thành chữ X xuyên qua mục tiêu; mỗi tia gây 150% Công Kích, vùng giao tâm gây tổng cộng 400% Công Kích.",
+    "description": "Xích Viêm Trảm: Hai tia chữ X xuyên mục tiêu: 60% ATK mỗi tia; Vùng giao tâm: tổng tối đa 150% ATK mỗi mục tiêu.",
     "cast_config": {
       "viewport_height_ratio": 0.9,
-      "damage_per_slash_pct": 150,
-      "center_damage_pct": 400,
+      "damage_per_slash_pct": 60,
+      "center_damage_pct": 150,
       "speed": 540,
       "vfx_scale": 0.51,
       "frame_duration": 0.07,
@@ -5622,9 +5657,8 @@
       "vfx_layer": 66
     },
     "description_rows": [
-      "Hai trảm kích chữ X, mỗi tia gây 150% Công Kích",
-      "Vùng giao tâm gây tổng cộng 400% Công Kích",
-      "Xuyên mục tiêu, tầm bay 90% chiều cao chiến trường"
+      "Hai tia chữ X xuyên mục tiêu: 60% ATK mỗi tia",
+      "Vùng giao tâm: tổng tối đa 150% ATK mỗi mục tiêu"
     ],
     "vfx_frames": [
       "skill_xich_viem_tram_0",
@@ -5641,85 +5675,85 @@
       {
         "level": 1,
         "stats": {
-          "damage_pct": 160,
-          "cooldown": 28,
+          "damage_pct": 150,
+          "cooldown": 30,
           "range": 1500,
           "radius": 0,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.51
         },
         "description_rows": [
-          "Cấp 1: Xích Viêm Trảm",
-          "Mỗi tia 150% Công Kích; giao tâm tổng 400%",
-          "Thời gian hồi chiêu: 28.0s"
+          "Hai tia chữ X xuyên mục tiêu: 60% ATK mỗi tia",
+          "Vùng giao tâm: tổng tối đa 150% ATK mỗi mục tiêu",
+          "Hồi chiêu: 30 giây"
         ],
         "effects": []
       },
       {
         "level": 2,
         "stats": {
-          "damage_pct": 200,
-          "cooldown": 26.5,
+          "damage_pct": 150,
+          "cooldown": 29,
           "range": 1500,
           "radius": 0,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.51
         },
         "description_rows": [
-          "Cấp 2: Xích Viêm Trảm",
-          "Mỗi tia 150% Công Kích; giao tâm tổng 400%",
-          "Thời gian hồi chiêu: 26.5s"
+          "Hai tia chữ X xuyên mục tiêu: 60% ATK mỗi tia",
+          "Vùng giao tâm: tổng tối đa 150% ATK mỗi mục tiêu",
+          "Hồi chiêu: 29 giây"
         ],
         "effects": []
       },
       {
         "level": 3,
         "stats": {
-          "damage_pct": 240,
-          "cooldown": 25,
+          "damage_pct": 150,
+          "cooldown": 28,
           "range": 1500,
           "radius": 0,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.51
         },
         "description_rows": [
-          "Cấp 3: Xích Viêm Trảm",
-          "Mỗi tia 150% Công Kích; giao tâm tổng 400%",
-          "Thời gian hồi chiêu: 25.0s"
+          "Hai tia chữ X xuyên mục tiêu: 60% ATK mỗi tia",
+          "Vùng giao tâm: tổng tối đa 150% ATK mỗi mục tiêu",
+          "Hồi chiêu: 28 giây"
         ],
         "effects": []
       },
       {
         "level": 4,
         "stats": {
-          "damage_pct": 280,
-          "cooldown": 23.5,
+          "damage_pct": 150,
+          "cooldown": 27,
           "range": 1500,
           "radius": 0,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.51
         },
         "description_rows": [
-          "Cấp 4: Xích Viêm Trảm",
-          "Mỗi tia 150% Công Kích; giao tâm tổng 400%",
-          "Thời gian hồi chiêu: 23.5s"
+          "Hai tia chữ X xuyên mục tiêu: 60% ATK mỗi tia",
+          "Vùng giao tâm: tổng tối đa 150% ATK mỗi mục tiêu",
+          "Hồi chiêu: 27 giây"
         ],
         "effects": []
       },
       {
         "level": 5,
         "stats": {
-          "damage_pct": 320,
-          "cooldown": 22,
+          "damage_pct": 150,
+          "cooldown": 26,
           "range": 1500,
           "radius": 0,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.51
         },
         "description_rows": [
-          "Cấp 5: Xích Viêm Trảm",
-          "Mỗi tia 150% Công Kích; giao tâm tổng 400%",
-          "Thời gian hồi chiêu: 22.0s"
+          "Hai tia chữ X xuyên mục tiêu: 60% ATK mỗi tia",
+          "Vùng giao tâm: tổng tối đa 150% ATK mỗi mục tiêu",
+          "Hồi chiêu: 26 giây"
         ],
         "effects": []
       }
@@ -5750,139 +5784,116 @@
     "deployment": {
       "type": "single_target"
     },
-    "description": "Bách Luyện Phá Giáp: Chém một tia sáng mạnh vào tâm mục tiêu, gây ngẫu nhiên 200%-800% Công Kích và bỏ qua 30% phòng ngự.",
+    "description": "Bách Luyện Phá Giáp: Một mục tiêu: ngẫu nhiên 140–180% ATK; Bỏ qua 15% phòng ngự mục tiêu.",
     "cast_config": {
       "viewport_height_ratio": 0.9,
-      "damage_min_pct": 200,
-      "damage_max_pct": 800,
-      "defense_ignore_pct": 0.3,
-      "vfx_scale": 0.28,
+      "damage_min_pct": 140,
+      "damage_max_pct": 180,
+      "defense_ignore_pct": 0.15,
+      "vfx_scale": 0.5,
       "vfx_duration": 0.5,
       "vfx_layer": 66
     },
     "description_rows": [
-      "Sát thương ngẫu nhiên 200%-800% Công Kích",
-      "Bỏ qua 30% phòng ngự",
-      "Tầm thi triển: 90% chiều cao chiến trường"
+      "Một mục tiêu: ngẫu nhiên 140–180% ATK",
+      "Bỏ qua 15% phòng ngự mục tiêu"
     ],
     "vfx_frames": [
-      "skill_bach_luyen_pha_giap_0"
+      "skill_bach_luyen_pha_giap_0",
+      "skill_bach_luyen_pha_giap_1",
+      "skill_bach_luyen_pha_giap_2",
+      "skill_bach_luyen_pha_giap_3",
+      "skill_bach_luyen_pha_giap_4",
+      "skill_bach_luyen_pha_giap_5",
+      "skill_bach_luyen_pha_giap_6",
+      "skill_bach_luyen_pha_giap_7",
+      "skill_bach_luyen_pha_giap_8"
     ],
     "levels": [
       {
         "level": 1,
         "stats": {
-          "damage_pct": 180,
-          "cooldown": 27,
+          "damage_pct": 160,
+          "cooldown": 30,
           "range": 1500,
           "radius": 0,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.5
         },
         "description_rows": [
-          "Cấp 1: Bách Luyện Phá Giáp",
-          "Sát thương 180% Công Kích",
-          "Thời gian hồi chiêu: 27.0s"
+          "Một mục tiêu: ngẫu nhiên 140–180% ATK",
+          "Bỏ qua 15% phòng ngự mục tiêu",
+          "Hồi chiêu: 30 giây"
         ],
-        "effects": [
-          {
-            "id": "armor_break",
-            "duration": 4,
-            "defense_reduction_pct": 0.25
-          }
-        ]
+        "effects": []
       },
       {
         "level": 2,
         "stats": {
-          "damage_pct": 225,
-          "cooldown": 25.5,
+          "damage_pct": 160,
+          "cooldown": 29,
           "range": 1500,
           "radius": 0,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.5
         },
         "description_rows": [
-          "Cấp 2: Bách Luyện Phá Giáp",
-          "Sát thương 225% Công Kích",
-          "Thời gian hồi chiêu: 25.5s"
+          "Một mục tiêu: ngẫu nhiên 140–180% ATK",
+          "Bỏ qua 15% phòng ngự mục tiêu",
+          "Hồi chiêu: 29 giây"
         ],
-        "effects": [
-          {
-            "id": "armor_break",
-            "duration": 4,
-            "defense_reduction_pct": 0.25
-          }
-        ]
+        "effects": []
       },
       {
         "level": 3,
         "stats": {
-          "damage_pct": 270,
-          "cooldown": 24,
+          "damage_pct": 160,
+          "cooldown": 28,
           "range": 1500,
           "radius": 0,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.5
         },
         "description_rows": [
-          "Cấp 3: Bách Luyện Phá Giáp",
-          "Sát thương 270% Công Kích",
-          "Thời gian hồi chiêu: 24.0s"
+          "Một mục tiêu: ngẫu nhiên 140–180% ATK",
+          "Bỏ qua 15% phòng ngự mục tiêu",
+          "Hồi chiêu: 28 giây"
         ],
-        "effects": [
-          {
-            "id": "armor_break",
-            "duration": 4,
-            "defense_reduction_pct": 0.25
-          }
-        ]
+        "effects": []
       },
       {
         "level": 4,
         "stats": {
-          "damage_pct": 315,
-          "cooldown": 22.5,
+          "damage_pct": 160,
+          "cooldown": 27,
           "range": 1500,
           "radius": 0,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.5
         },
         "description_rows": [
-          "Cấp 4: Bách Luyện Phá Giáp",
-          "Sát thương 315% Công Kích",
-          "Thời gian hồi chiêu: 22.5s"
+          "Một mục tiêu: ngẫu nhiên 140–180% ATK",
+          "Bỏ qua 15% phòng ngự mục tiêu",
+          "Hồi chiêu: 27 giây"
         ],
-        "effects": [
-          {
-            "id": "armor_break",
-            "duration": 4,
-            "defense_reduction_pct": 0.25
-          }
-        ]
+        "effects": []
       },
       {
         "level": 5,
         "stats": {
-          "damage_pct": 360,
-          "cooldown": 21,
+          "damage_pct": 160,
+          "cooldown": 26,
           "range": 1500,
           "radius": 0,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.5
         },
         "description_rows": [
-          "Cấp 5: Bách Luyện Phá Giáp",
-          "Sát thương 360% Công Kích",
-          "Thời gian hồi chiêu: 21.0s"
+          "Một mục tiêu: ngẫu nhiên 140–180% ATK",
+          "Bỏ qua 15% phòng ngự mục tiêu",
+          "Hồi chiêu: 26 giây"
         ],
-        "effects": [
-          {
-            "id": "armor_break",
-            "duration": 4,
-            "defense_reduction_pct": 0.25
-          }
-        ]
+        "effects": []
       }
     ],
     "sfx_events": [
@@ -5910,16 +5921,16 @@
     "deployment": {
       "type": "self_buff"
     },
-    "description": "Ô Thiết Hộ Bích: Tạo màn hộ thể trong 5 giây, tăng 20% phòng ngự và khiến đòn đánh nhận vào không thể chí mạng.",
+    "description": "Ô Thiết Hộ Bích: Trong 3 giây: tăng 15% DEF; Miễn sát thương chí mạng; vẫn nhận sát thương thường.",
     "cast_config": {
-      "duration": 5,
+      "duration": 3,
       "vfx_scale": 0.3,
       "vfx_offset_y": 28,
       "vfx_layer": 3,
       "effects": [
         {
           "id": "defense_up",
-          "defense_percent": 0.2
+          "defense_percent": 0.15
         },
         {
           "id": "critical_immunity"
@@ -5927,8 +5938,8 @@
       ]
     },
     "description_rows": [
-      "Trong 5 giây tăng 20% phòng ngự",
-      "Miễn nhiễm sát thương chí mạng trong thời gian hiệu lực"
+      "Trong 3 giây: tăng 15% DEF",
+      "Miễn sát thương chí mạng; vẫn nhận sát thương thường"
     ],
     "vfx_frames": [
       "skill_o_thiet_ho_bich_0",
@@ -5950,132 +5961,82 @@
           "range": 350,
           "radius": 0,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.3
         },
         "description_rows": [
-          "Cấp 1: Ô Thiết Hộ Bích",
-          "Tăng 20% DEF và miễn chí mạng trong 5 giây",
-          "Thời gian hồi chiêu: 30.0s"
+          "Trong 3 giây: tăng 15% DEF",
+          "Miễn sát thương chí mạng; vẫn nhận sát thương thường",
+          "Hồi chiêu: 30 giây"
         ],
-        "effects": [
-          {
-            "id": "defense_up",
-            "duration": 5,
-            "defense_percent": 0.2
-          },
-          {
-            "id": "critical_immunity",
-            "duration": 5
-          }
-        ]
+        "effects": []
       },
       {
         "level": 2,
         "stats": {
           "damage_pct": 0,
-          "cooldown": 28.5,
+          "cooldown": 29,
           "range": 350,
           "radius": 0,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.3
         },
         "description_rows": [
-          "Cấp 2: Ô Thiết Hộ Bích",
-          "Tăng 20% DEF và miễn chí mạng trong 5 giây",
-          "Thời gian hồi chiêu: 28.5s"
+          "Trong 3 giây: tăng 15% DEF",
+          "Miễn sát thương chí mạng; vẫn nhận sát thương thường",
+          "Hồi chiêu: 29 giây"
         ],
-        "effects": [
-          {
-            "id": "defense_up",
-            "duration": 5,
-            "defense_percent": 0.2
-          },
-          {
-            "id": "critical_immunity",
-            "duration": 5
-          }
-        ]
+        "effects": []
       },
       {
         "level": 3,
+        "stats": {
+          "damage_pct": 0,
+          "cooldown": 28,
+          "range": 350,
+          "radius": 0,
+          "projectile_count": 1,
+          "vfx_scale": 0.3
+        },
+        "description_rows": [
+          "Trong 3 giây: tăng 15% DEF",
+          "Miễn sát thương chí mạng; vẫn nhận sát thương thường",
+          "Hồi chiêu: 28 giây"
+        ],
+        "effects": []
+      },
+      {
+        "level": 4,
         "stats": {
           "damage_pct": 0,
           "cooldown": 27,
           "range": 350,
           "radius": 0,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.3
         },
         "description_rows": [
-          "Cấp 3: Ô Thiết Hộ Bích",
-          "Tăng 20% DEF và miễn chí mạng trong 5 giây",
-          "Thời gian hồi chiêu: 27.0s"
+          "Trong 3 giây: tăng 15% DEF",
+          "Miễn sát thương chí mạng; vẫn nhận sát thương thường",
+          "Hồi chiêu: 27 giây"
         ],
-        "effects": [
-          {
-            "id": "defense_up",
-            "duration": 5,
-            "defense_percent": 0.2
-          },
-          {
-            "id": "critical_immunity",
-            "duration": 5
-          }
-        ]
-      },
-      {
-        "level": 4,
-        "stats": {
-          "damage_pct": 0,
-          "cooldown": 25.5,
-          "range": 350,
-          "radius": 0,
-          "projectile_count": 1,
-          "vfx_scale": 0.35
-        },
-        "description_rows": [
-          "Cấp 4: Ô Thiết Hộ Bích",
-          "Tăng 20% DEF và miễn chí mạng trong 5 giây",
-          "Thời gian hồi chiêu: 25.5s"
-        ],
-        "effects": [
-          {
-            "id": "defense_up",
-            "duration": 5,
-            "defense_percent": 0.2
-          },
-          {
-            "id": "critical_immunity",
-            "duration": 5
-          }
-        ]
+        "effects": []
       },
       {
         "level": 5,
         "stats": {
           "damage_pct": 0,
-          "cooldown": 24,
+          "cooldown": 26,
           "range": 350,
           "radius": 0,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.3
         },
         "description_rows": [
-          "Cấp 5: Ô Thiết Hộ Bích",
-          "Tăng 20% DEF và miễn chí mạng trong 5 giây",
-          "Thời gian hồi chiêu: 24.0s"
+          "Trong 3 giây: tăng 15% DEF",
+          "Miễn sát thương chí mạng; vẫn nhận sát thương thường",
+          "Hồi chiêu: 26 giây"
         ],
-        "effects": [
-          {
-            "id": "defense_up",
-            "duration": 5,
-            "defense_percent": 0.2
-          },
-          {
-            "id": "critical_immunity",
-            "duration": 5
-          }
-        ]
+        "effects": []
       }
     ],
     "sfx_events": [
@@ -6103,9 +6064,9 @@
     "deployment": {
       "type": "self_buff"
     },
-    "description": "Thủy Ba Tẩy Lễ: Thanh tẩy tức thời và duy trì thủy kính 3 giây, chặn mọi hiệu ứng có hại mới và hồi 10% HP tối đa mỗi giây.",
+    "description": "Thủy Ba Tẩy Lễ: Thanh tẩy mọi hiệu ứng xấu ngay khi thi triển; Miễn hiệu ứng xấu trong 2 giây; Hồi 3% Max HP mỗi giây, tổng 6% Max HP.",
     "cast_config": {
-      "duration": 3,
+      "duration": 2,
       "cleanse_on_cast": true,
       "vfx_scale": 0.3,
       "vfx_offset_y": 28,
@@ -6114,13 +6075,14 @@
         {
           "id": "purify",
           "tick_interval": 1,
-          "hp_percent_per_sec": 0.1
+          "hp_percent_per_sec": 0.03
         }
       ]
     },
     "description_rows": [
-      "Xóa ngay toàn bộ hiệu ứng có hại",
-      "Trong 3 giây chặn debuff và hồi 10% HP tối đa mỗi giây"
+      "Thanh tẩy mọi hiệu ứng xấu ngay khi thi triển",
+      "Miễn hiệu ứng xấu trong 2 giây",
+      "Hồi 3% Max HP mỗi giây, tổng 6% Max HP"
     ],
     "vfx_frames": [
       "skill_thuy_ba_tay_le_0",
@@ -6138,121 +6100,91 @@
         "level": 1,
         "stats": {
           "damage_pct": 0,
-          "cooldown": 28,
+          "cooldown": 30,
           "range": 350,
           "radius": 0,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.3
         },
         "description_rows": [
-          "Cấp 1: Thủy Ba Tẩy Lễ",
-          "Thanh tẩy, chặn debuff và hồi 10% HP mỗi giây trong 3 giây",
-          "Thời gian hồi chiêu: 28.0s"
+          "Thanh tẩy mọi hiệu ứng xấu ngay khi thi triển",
+          "Miễn hiệu ứng xấu trong 2 giây",
+          "Hồi 3% Max HP mỗi giây, tổng 6% Max HP",
+          "Hồi chiêu: 30 giây"
         ],
-        "effects": [
-          {
-            "id": "purify",
-            "duration": 3,
-            "tick_interval": 1,
-            "hp_percent_per_sec": 0.1
-          }
-        ]
+        "effects": []
       },
       {
         "level": 2,
         "stats": {
           "damage_pct": 0,
-          "cooldown": 26.5,
+          "cooldown": 29,
           "range": 350,
           "radius": 0,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.3
         },
         "description_rows": [
-          "Cấp 2: Thủy Ba Tẩy Lễ",
-          "Thanh tẩy, chặn debuff và hồi 10% HP mỗi giây trong 3 giây",
-          "Thời gian hồi chiêu: 26.5s"
+          "Thanh tẩy mọi hiệu ứng xấu ngay khi thi triển",
+          "Miễn hiệu ứng xấu trong 2 giây",
+          "Hồi 3% Max HP mỗi giây, tổng 6% Max HP",
+          "Hồi chiêu: 29 giây"
         ],
-        "effects": [
-          {
-            "id": "purify",
-            "duration": 3,
-            "tick_interval": 1,
-            "hp_percent_per_sec": 0.1
-          }
-        ]
+        "effects": []
       },
       {
         "level": 3,
         "stats": {
           "damage_pct": 0,
-          "cooldown": 25,
+          "cooldown": 28,
           "range": 350,
           "radius": 0,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.3
         },
         "description_rows": [
-          "Cấp 3: Thủy Ba Tẩy Lễ",
-          "Thanh tẩy, chặn debuff và hồi 10% HP mỗi giây trong 3 giây",
-          "Thời gian hồi chiêu: 25.0s"
+          "Thanh tẩy mọi hiệu ứng xấu ngay khi thi triển",
+          "Miễn hiệu ứng xấu trong 2 giây",
+          "Hồi 3% Max HP mỗi giây, tổng 6% Max HP",
+          "Hồi chiêu: 28 giây"
         ],
-        "effects": [
-          {
-            "id": "purify",
-            "duration": 3,
-            "tick_interval": 1,
-            "hp_percent_per_sec": 0.1
-          }
-        ]
+        "effects": []
       },
       {
         "level": 4,
         "stats": {
           "damage_pct": 0,
-          "cooldown": 23.5,
+          "cooldown": 27,
           "range": 350,
           "radius": 0,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.3
         },
         "description_rows": [
-          "Cấp 4: Thủy Ba Tẩy Lễ",
-          "Thanh tẩy, chặn debuff và hồi 10% HP mỗi giây trong 3 giây",
-          "Thời gian hồi chiêu: 23.5s"
+          "Thanh tẩy mọi hiệu ứng xấu ngay khi thi triển",
+          "Miễn hiệu ứng xấu trong 2 giây",
+          "Hồi 3% Max HP mỗi giây, tổng 6% Max HP",
+          "Hồi chiêu: 27 giây"
         ],
-        "effects": [
-          {
-            "id": "purify",
-            "duration": 3,
-            "tick_interval": 1,
-            "hp_percent_per_sec": 0.1
-          }
-        ]
+        "effects": []
       },
       {
         "level": 5,
         "stats": {
           "damage_pct": 0,
-          "cooldown": 22,
+          "cooldown": 26,
           "range": 350,
           "radius": 0,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.3
         },
         "description_rows": [
-          "Cấp 5: Thủy Ba Tẩy Lễ",
-          "Thanh tẩy, chặn debuff và hồi 10% HP mỗi giây trong 3 giây",
-          "Thời gian hồi chiêu: 22.0s"
+          "Thanh tẩy mọi hiệu ứng xấu ngay khi thi triển",
+          "Miễn hiệu ứng xấu trong 2 giây",
+          "Hồi 3% Max HP mỗi giây, tổng 6% Max HP",
+          "Hồi chiêu: 26 giây"
         ],
-        "effects": [
-          {
-            "id": "purify",
-            "duration": 3,
-            "tick_interval": 1,
-            "hp_percent_per_sec": 0.1
-          }
-        ]
+        "effects": []
       }
     ],
     "sfx_events": [
@@ -6280,129 +6212,97 @@
     "deployment": {
       "type": "self_buff"
     },
-    "description": "Hồi Xuân Quyết: Triệu hồi ấn sinh mệnh dưới chân, hồi HP bằng 250% Công Kích pháp bảo.",
+    "description": "Hồi Xuân Quyết: Hồi tức thời 150% ATK chiến đấu; Không vượt quá HP tối đa.",
     "cast_config": {
-      "heal_atk_pct": 250,
-      "vfx_scale": 0.25,
+      "heal_atk_pct": 150,
+      "vfx_scale": 0.55,
       "vfx_duration": 0.65,
-      "vfx_offset_y": 18,
+      "vfx_offset_y": -45,
       "vfx_layer": 3
     },
     "description_rows": [
-      "Hồi HP bằng 250% Công Kích pháp bảo",
-      "Ấn sinh mệnh xuất hiện dưới chân nhân vật"
+      "Hồi tức thời 150% ATK chiến đấu",
+      "Không vượt quá HP tối đa"
     ],
     "vfx_frames": [
-      "skill_hoi_xuan_quyet_0"
+      "skill_hoi_xuan_quyet_0",
+      "skill_hoi_xuan_quyet_1",
+      "skill_hoi_xuan_quyet_2",
+      "skill_hoi_xuan_quyet_3",
+      "skill_hoi_xuan_quyet_4",
+      "skill_hoi_xuan_quyet_5",
+      "skill_hoi_xuan_quyet_6",
+      "skill_hoi_xuan_quyet_7",
+      "skill_hoi_xuan_quyet_8"
     ],
     "levels": [
       {
         "level": 1,
         "stats": {
           "damage_pct": 0,
-          "cooldown": 32,
+          "cooldown": 30,
           "range": 350,
           "radius": 0,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.55
         },
         "description_rows": [
-          "Cấp 1: Hồi Xuân Quyết",
-          "Hiệu ứng hỗ trợ phòng thủ cấp 1",
-          "Thời gian hồi chiêu: 32.0s"
+          "Hồi tức thời 150% ATK chiến đấu",
+          "Không vượt quá HP tối đa",
+          "Hồi chiêu: 30 giây"
         ],
-        "effects": [
-          {
-            "id": "heal_instant_pct",
-            "value": 0.25
-          },
-          {
-            "id": "regen",
-            "duration": 5,
-            "hp_percent_per_sec": 0.03
-          }
-        ]
+        "effects": []
       },
       {
         "level": 2,
-        "stats": {
-          "damage_pct": 0,
-          "cooldown": 30.5,
-          "range": 350,
-          "radius": 0,
-          "projectile_count": 1,
-          "vfx_scale": 0.35
-        },
-        "description_rows": [
-          "Cấp 2: Hồi Xuân Quyết",
-          "Hiệu ứng hỗ trợ phòng thủ cấp 2",
-          "Thời gian hồi chiêu: 30.5s"
-        ],
-        "effects": [
-          {
-            "id": "heal_instant_pct",
-            "value": 0.25
-          },
-          {
-            "id": "regen",
-            "duration": 5,
-            "hp_percent_per_sec": 0.03
-          }
-        ]
-      },
-      {
-        "level": 3,
         "stats": {
           "damage_pct": 0,
           "cooldown": 29,
           "range": 350,
           "radius": 0,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.55
         },
         "description_rows": [
-          "Cấp 3: Hồi Xuân Quyết",
-          "Hiệu ứng hỗ trợ phòng thủ cấp 3",
-          "Thời gian hồi chiêu: 29.0s"
+          "Hồi tức thời 150% ATK chiến đấu",
+          "Không vượt quá HP tối đa",
+          "Hồi chiêu: 29 giây"
         ],
-        "effects": [
-          {
-            "id": "heal_instant_pct",
-            "value": 0.25
-          },
-          {
-            "id": "regen",
-            "duration": 5,
-            "hp_percent_per_sec": 0.03
-          }
-        ]
+        "effects": []
+      },
+      {
+        "level": 3,
+        "stats": {
+          "damage_pct": 0,
+          "cooldown": 28,
+          "range": 350,
+          "radius": 0,
+          "projectile_count": 1,
+          "vfx_scale": 0.55
+        },
+        "description_rows": [
+          "Hồi tức thời 150% ATK chiến đấu",
+          "Không vượt quá HP tối đa",
+          "Hồi chiêu: 28 giây"
+        ],
+        "effects": []
       },
       {
         "level": 4,
         "stats": {
           "damage_pct": 0,
-          "cooldown": 27.5,
+          "cooldown": 27,
           "range": 350,
           "radius": 0,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.55
         },
         "description_rows": [
-          "Cấp 4: Hồi Xuân Quyết",
-          "Hiệu ứng hỗ trợ phòng thủ cấp 4",
-          "Thời gian hồi chiêu: 27.5s"
+          "Hồi tức thời 150% ATK chiến đấu",
+          "Không vượt quá HP tối đa",
+          "Hồi chiêu: 27 giây"
         ],
-        "effects": [
-          {
-            "id": "heal_instant_pct",
-            "value": 0.25
-          },
-          {
-            "id": "regen",
-            "duration": 5,
-            "hp_percent_per_sec": 0.03
-          }
-        ]
+        "effects": []
       },
       {
         "level": 5,
@@ -6412,24 +6312,14 @@
           "range": 350,
           "radius": 0,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.55
         },
         "description_rows": [
-          "Cấp 5: Hồi Xuân Quyết",
-          "Hiệu ứng hỗ trợ phòng thủ cấp 5",
-          "Thời gian hồi chiêu: 26.0s"
+          "Hồi tức thời 150% ATK chiến đấu",
+          "Không vượt quá HP tối đa",
+          "Hồi chiêu: 26 giây"
         ],
-        "effects": [
-          {
-            "id": "heal_instant_pct",
-            "value": 0.25
-          },
-          {
-            "id": "regen",
-            "duration": 5,
-            "hp_percent_per_sec": 0.03
-          }
-        ]
+        "effects": []
       }
     ],
     "sfx_events": [
@@ -6457,139 +6347,117 @@
     "deployment": {
       "type": "area"
     },
-    "description": "Liệt Địa Trọng Kích: Hy sinh 20% HP tối đa để gây 700% Công Kích trong vùng quanh mục tiêu; HP không thể giảm dưới 1.",
+    "description": "Liệt Địa Trọng Kích: Tiêu hao tối đa 10% Max HP, giữ tối thiểu 1 HP; Gây 180% ATK trong bán kính 120 tại mục tiêu.",
     "cast_config": {
       "range": 350,
-      "damage_pct": 700,
-      "radius": 170,
-      "self_max_hp_cost_pct": 0.2,
+      "damage_pct": 180,
+      "radius": 120,
+      "self_max_hp_cost_pct": 0.1,
       "minimum_hp": 1,
-      "vfx_scale": 0.22,
+      "vfx_scale": 0.65,
       "vfx_duration": 0.6,
       "vfx_layer": 5
     },
     "description_rows": [
-      "Sát thương AOE 700% Công Kích",
-      "Tiêu hao 20% HP tối đa (không thấp hơn 1 HP)"
+      "Tiêu hao tối đa 10% Max HP, giữ tối thiểu 1 HP",
+      "Gây 180% ATK trong bán kính 120 tại mục tiêu"
     ],
     "vfx_frames": [
-      "skill_liet_dia_trong_kich_0"
+      "skill_liet_dia_trong_kich_0",
+      "skill_liet_dia_trong_kich_1",
+      "skill_liet_dia_trong_kich_2",
+      "skill_liet_dia_trong_kich_3",
+      "skill_liet_dia_trong_kich_4",
+      "skill_liet_dia_trong_kich_5",
+      "skill_liet_dia_trong_kich_6",
+      "skill_liet_dia_trong_kich_7",
+      "skill_liet_dia_trong_kich_8"
     ],
     "levels": [
       {
         "level": 1,
         "stats": {
-          "damage_pct": 200,
-          "cooldown": 26,
+          "damage_pct": 180,
+          "cooldown": 30,
           "range": 350,
-          "radius": 260,
+          "radius": 120,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.65
         },
         "description_rows": [
-          "Cấp 1: Liệt Địa Trọng Kích",
-          "Sát thương 200% Công Kích",
-          "Thời gian hồi chiêu: 26.0s"
+          "Tiêu hao tối đa 10% Max HP, giữ tối thiểu 1 HP",
+          "Gây 180% ATK trong bán kính 120 tại mục tiêu",
+          "Hồi chiêu: 30 giây"
         ],
-        "effects": [
-          {
-            "id": "knockback_light",
-            "distance": 120,
-            "duration": 0.2
-          }
-        ]
+        "effects": []
       },
       {
         "level": 2,
         "stats": {
-          "damage_pct": 250,
-          "cooldown": 24.5,
+          "damage_pct": 180,
+          "cooldown": 29,
           "range": 350,
-          "radius": 260,
+          "radius": 120,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.65
         },
         "description_rows": [
-          "Cấp 2: Liệt Địa Trọng Kích",
-          "Sát thương 250% Công Kích",
-          "Thời gian hồi chiêu: 24.5s"
+          "Tiêu hao tối đa 10% Max HP, giữ tối thiểu 1 HP",
+          "Gây 180% ATK trong bán kính 120 tại mục tiêu",
+          "Hồi chiêu: 29 giây"
         ],
-        "effects": [
-          {
-            "id": "knockback_light",
-            "distance": 120,
-            "duration": 0.2
-          }
-        ]
+        "effects": []
       },
       {
         "level": 3,
         "stats": {
-          "damage_pct": 300,
-          "cooldown": 23,
+          "damage_pct": 180,
+          "cooldown": 28,
           "range": 350,
-          "radius": 260,
+          "radius": 120,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.65
         },
         "description_rows": [
-          "Cấp 3: Liệt Địa Trọng Kích",
-          "Sát thương 300% Công Kích",
-          "Thời gian hồi chiêu: 23.0s"
+          "Tiêu hao tối đa 10% Max HP, giữ tối thiểu 1 HP",
+          "Gây 180% ATK trong bán kính 120 tại mục tiêu",
+          "Hồi chiêu: 28 giây"
         ],
-        "effects": [
-          {
-            "id": "knockback_light",
-            "distance": 120,
-            "duration": 0.2
-          }
-        ]
+        "effects": []
       },
       {
         "level": 4,
         "stats": {
-          "damage_pct": 350,
-          "cooldown": 21.5,
+          "damage_pct": 180,
+          "cooldown": 27,
           "range": 350,
-          "radius": 260,
+          "radius": 120,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.65
         },
         "description_rows": [
-          "Cấp 4: Liệt Địa Trọng Kích",
-          "Sát thương 350% Công Kích",
-          "Thời gian hồi chiêu: 21.5s"
+          "Tiêu hao tối đa 10% Max HP, giữ tối thiểu 1 HP",
+          "Gây 180% ATK trong bán kính 120 tại mục tiêu",
+          "Hồi chiêu: 27 giây"
         ],
-        "effects": [
-          {
-            "id": "knockback_light",
-            "distance": 120,
-            "duration": 0.2
-          }
-        ]
+        "effects": []
       },
       {
         "level": 5,
         "stats": {
-          "damage_pct": 400,
-          "cooldown": 20,
+          "damage_pct": 180,
+          "cooldown": 26,
           "range": 350,
-          "radius": 260,
+          "radius": 120,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.65
         },
         "description_rows": [
-          "Cấp 5: Liệt Địa Trọng Kích",
-          "Sát thương 400% Công Kích",
-          "Thời gian hồi chiêu: 20.0s"
+          "Tiêu hao tối đa 10% Max HP, giữ tối thiểu 1 HP",
+          "Gây 180% ATK trong bán kính 120 tại mục tiêu",
+          "Hồi chiêu: 26 giây"
         ],
-        "effects": [
-          {
-            "id": "knockback_light",
-            "distance": 120,
-            "duration": 0.2
-          }
-        ]
+        "effects": []
       }
     ],
     "sfx_events": [
@@ -6617,143 +6485,120 @@
     "deployment": {
       "type": "line_area"
     },
-    "description": "Hàn Băng Thần Châm: Bắn 3 tia hàn băng song song; mỗi tia gây 200% Công Kích và có 40% đóng băng 1 giây.",
+    "description": "Hàn Băng Thần Châm: Ba tia song song, mỗi tia gây 45% ATK; Mỗi hit có 20% đóng băng 0.5 giây.",
     "cast_config": {
       "range": 1500,
       "projectile_count": 3,
       "parallel_spacing": 34,
-      "damage_pct": 200,
+      "damage_pct": 45,
       "speed": 760,
       "hit_radius": 18,
       "pierce": 0,
       "status_id": "freeze",
-      "status_chance": 0.4,
-      "status_duration": 1,
+      "status_chance": 0.2,
+      "status_duration": 0.5,
       "vfx_scale": 0.18
     },
     "description_rows": [
-      "3 tia hàn băng song song",
-      "Mỗi tia gây 200% Công Kích",
-      "Mỗi tia có 40% đóng băng 1 giây"
+      "Ba tia song song, mỗi tia gây 45% ATK",
+      "Mỗi hit có 20% đóng băng 0.5 giây"
     ],
     "vfx_frames": [
-      "skill_han_bang_than_cham_0"
+      "skill_han_bang_than_cham_0",
+      "skill_han_bang_than_cham_1",
+      "skill_han_bang_than_cham_2",
+      "skill_han_bang_than_cham_3",
+      "skill_han_bang_than_cham_4",
+      "skill_han_bang_than_cham_5",
+      "skill_han_bang_than_cham_6",
+      "skill_han_bang_than_cham_7",
+      "skill_han_bang_than_cham_8"
     ],
     "levels": [
       {
         "level": 1,
         "stats": {
-          "damage_pct": 130,
-          "cooldown": 25,
+          "damage_pct": 45,
+          "cooldown": 30,
           "range": 1500,
           "radius": 0,
-          "projectile_count": 6,
-          "vfx_scale": 0.35
+          "projectile_count": 3,
+          "vfx_scale": 0.18
         },
         "description_rows": [
-          "Cấp 1: Hàn Băng Thần Châm",
-          "Sát thương 130% Công Kích",
-          "Thời gian hồi chiêu: 25.0s"
+          "Ba tia song song, mỗi tia gây 45% ATK",
+          "Mỗi hit có 20% đóng băng 0.5 giây",
+          "Hồi chiêu: 30 giây"
         ],
-        "effects": [
-          {
-            "id": "slow",
-            "duration": 2,
-            "slow_percent": 0.2
-          }
-        ]
+        "effects": []
       },
       {
         "level": 2,
         "stats": {
-          "damage_pct": 163,
-          "cooldown": 23.5,
+          "damage_pct": 45,
+          "cooldown": 29,
           "range": 1500,
           "radius": 0,
-          "projectile_count": 7,
-          "vfx_scale": 0.35
+          "projectile_count": 3,
+          "vfx_scale": 0.18
         },
         "description_rows": [
-          "Cấp 2: Hàn Băng Thần Châm",
-          "Sát thương 163% Công Kích",
-          "Thời gian hồi chiêu: 23.5s"
+          "Ba tia song song, mỗi tia gây 45% ATK",
+          "Mỗi hit có 20% đóng băng 0.5 giây",
+          "Hồi chiêu: 29 giây"
         ],
-        "effects": [
-          {
-            "id": "slow",
-            "duration": 2,
-            "slow_percent": 0.2
-          }
-        ]
+        "effects": []
       },
       {
         "level": 3,
         "stats": {
-          "damage_pct": 195,
-          "cooldown": 22,
+          "damage_pct": 45,
+          "cooldown": 28,
           "range": 1500,
           "radius": 0,
-          "projectile_count": 8,
-          "vfx_scale": 0.35
+          "projectile_count": 3,
+          "vfx_scale": 0.18
         },
         "description_rows": [
-          "Cấp 3: Hàn Băng Thần Châm",
-          "Sát thương 195% Công Kích",
-          "Thời gian hồi chiêu: 22.0s"
+          "Ba tia song song, mỗi tia gây 45% ATK",
+          "Mỗi hit có 20% đóng băng 0.5 giây",
+          "Hồi chiêu: 28 giây"
         ],
-        "effects": [
-          {
-            "id": "slow",
-            "duration": 2,
-            "slow_percent": 0.2
-          }
-        ]
+        "effects": []
       },
       {
         "level": 4,
         "stats": {
-          "damage_pct": 228,
-          "cooldown": 20.5,
+          "damage_pct": 45,
+          "cooldown": 27,
           "range": 1500,
           "radius": 0,
-          "projectile_count": 9,
-          "vfx_scale": 0.35
+          "projectile_count": 3,
+          "vfx_scale": 0.18
         },
         "description_rows": [
-          "Cấp 4: Hàn Băng Thần Châm",
-          "Sát thương 228% Công Kích",
-          "Thời gian hồi chiêu: 20.5s"
+          "Ba tia song song, mỗi tia gây 45% ATK",
+          "Mỗi hit có 20% đóng băng 0.5 giây",
+          "Hồi chiêu: 27 giây"
         ],
-        "effects": [
-          {
-            "id": "slow",
-            "duration": 2,
-            "slow_percent": 0.2
-          }
-        ]
+        "effects": []
       },
       {
         "level": 5,
         "stats": {
-          "damage_pct": 260,
-          "cooldown": 19,
+          "damage_pct": 45,
+          "cooldown": 26,
           "range": 1500,
           "radius": 0,
-          "projectile_count": 10,
-          "vfx_scale": 0.35
+          "projectile_count": 3,
+          "vfx_scale": 0.18
         },
         "description_rows": [
-          "Cấp 5: Hàn Băng Thần Châm",
-          "Sát thương 260% Công Kích",
-          "Thời gian hồi chiêu: 19.0s"
+          "Ba tia song song, mỗi tia gây 45% ATK",
+          "Mỗi hit có 20% đóng băng 0.5 giây",
+          "Hồi chiêu: 26 giây"
         ],
-        "effects": [
-          {
-            "id": "slow",
-            "duration": 2,
-            "slow_percent": 0.2
-          }
-        ]
+        "effects": []
       }
     ],
     "sfx_events": [
@@ -6781,23 +6626,22 @@
     "deployment": {
       "type": "line_area"
     },
-    "description": "Hỏa Diễm Tản: Phóng hỏa khí bán nguyệt xuyên mọi mục tiêu trên đường, gây 300% Công Kích và đẩy lùi.",
+    "description": "Hỏa Diễm Tản: Sóng lửa xuyên mục tiêu, gây 90% ATK; Đẩy lùi 50 đơn vị.",
     "cast_config": {
       "range": 650,
-      "damage_pct": 300,
+      "damage_pct": 90,
       "speed": 360,
       "hit_radius": 48,
       "status_id": "knockback",
       "status_chance": 1,
       "status_duration": 0.25,
-      "knockback_distance": 90,
+      "knockback_distance": 50,
       "vfx_scale": 0.65,
       "frame_duration": 0.07
     },
     "description_rows": [
-      "Xuyên và gây 300% Công Kích lên mọi mục tiêu",
-      "Đẩy lùi mục tiêu trúng đòn",
-      "Hoạt ảnh chạy một lần và giữ frame cuối"
+      "Sóng lửa xuyên mục tiêu, gây 90% ATK",
+      "Đẩy lùi 50 đơn vị"
     ],
     "vfx_frames": [
       "skill_hoa_diem_tan_0",
@@ -6814,117 +6658,87 @@
       {
         "level": 1,
         "stats": {
-          "damage_pct": 170,
-          "cooldown": 28,
+          "damage_pct": 90,
+          "cooldown": 30,
           "range": 650,
-          "radius": 350,
+          "radius": 0,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.65
         },
         "description_rows": [
-          "Cấp 1: Hỏa Diễm Tản",
-          "Sát thương 170% Công Kích",
-          "Thời gian hồi chiêu: 28.0s"
+          "Sóng lửa xuyên mục tiêu, gây 90% ATK",
+          "Đẩy lùi 50 đơn vị",
+          "Hồi chiêu: 30 giây"
         ],
-        "effects": [
-          {
-            "id": "burn",
-            "duration": 3,
-            "dps_percent_atk": 0.35
-          }
-        ]
+        "effects": []
       },
       {
         "level": 2,
         "stats": {
-          "damage_pct": 213,
-          "cooldown": 26.5,
+          "damage_pct": 90,
+          "cooldown": 29,
           "range": 650,
-          "radius": 350,
+          "radius": 0,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.65
         },
         "description_rows": [
-          "Cấp 2: Hỏa Diễm Tản",
-          "Sát thương 213% Công Kích",
-          "Thời gian hồi chiêu: 26.5s"
+          "Sóng lửa xuyên mục tiêu, gây 90% ATK",
+          "Đẩy lùi 50 đơn vị",
+          "Hồi chiêu: 29 giây"
         ],
-        "effects": [
-          {
-            "id": "burn",
-            "duration": 3,
-            "dps_percent_atk": 0.35
-          }
-        ]
+        "effects": []
       },
       {
         "level": 3,
         "stats": {
-          "damage_pct": 255,
-          "cooldown": 25,
+          "damage_pct": 90,
+          "cooldown": 28,
           "range": 650,
-          "radius": 350,
+          "radius": 0,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.65
         },
         "description_rows": [
-          "Cấp 3: Hỏa Diễm Tản",
-          "Sát thương 255% Công Kích",
-          "Thời gian hồi chiêu: 25.0s"
+          "Sóng lửa xuyên mục tiêu, gây 90% ATK",
+          "Đẩy lùi 50 đơn vị",
+          "Hồi chiêu: 28 giây"
         ],
-        "effects": [
-          {
-            "id": "burn",
-            "duration": 3,
-            "dps_percent_atk": 0.35
-          }
-        ]
+        "effects": []
       },
       {
         "level": 4,
         "stats": {
-          "damage_pct": 298,
-          "cooldown": 23.5,
+          "damage_pct": 90,
+          "cooldown": 27,
           "range": 650,
-          "radius": 350,
+          "radius": 0,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.65
         },
         "description_rows": [
-          "Cấp 4: Hỏa Diễm Tản",
-          "Sát thương 298% Công Kích",
-          "Thời gian hồi chiêu: 23.5s"
+          "Sóng lửa xuyên mục tiêu, gây 90% ATK",
+          "Đẩy lùi 50 đơn vị",
+          "Hồi chiêu: 27 giây"
         ],
-        "effects": [
-          {
-            "id": "burn",
-            "duration": 3,
-            "dps_percent_atk": 0.35
-          }
-        ]
+        "effects": []
       },
       {
         "level": 5,
         "stats": {
-          "damage_pct": 340,
-          "cooldown": 22,
+          "damage_pct": 90,
+          "cooldown": 26,
           "range": 650,
-          "radius": 350,
+          "radius": 0,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.65
         },
         "description_rows": [
-          "Cấp 5: Hỏa Diễm Tản",
-          "Sát thương 340% Công Kích",
-          "Thời gian hồi chiêu: 22.0s"
+          "Sóng lửa xuyên mục tiêu, gây 90% ATK",
+          "Đẩy lùi 50 đơn vị",
+          "Hồi chiêu: 26 giây"
         ],
-        "effects": [
-          {
-            "id": "burn",
-            "duration": 3,
-            "dps_percent_atk": 0.35
-          }
-        ]
+        "effects": []
       }
     ],
     "sfx_events": [
@@ -6952,163 +6766,120 @@
     "deployment": {
       "type": "area"
     },
-    "description": "Kim Cang Định Tâm: Hồn chuông giáng xuống mục tiêu, gây AOE 150% Công Kích; mỗi địch có 40% bị choáng 0.5 giây.",
+    "description": "Kim Cang Định Tâm: Chuông chạm đất gây 70% ATK, bán kính 100; Mỗi mục tiêu có 25% choáng 0.35 giây.",
     "cast_config": {
       "range": 350,
-      "damage_pct": 150,
-      "radius": 145,
+      "damage_pct": 70,
+      "radius": 100,
       "status_id": "stun",
-      "status_chance": 0.4,
-      "status_duration": 0.5,
+      "status_chance": 0.25,
+      "status_duration": 0.35,
       "fall_height": 260,
       "fall_duration": 0.38,
-      "vfx_offset_y": -76,
-      "vfx_scale": 0.22,
+      "vfx_offset_y": -50,
+      "vfx_scale": 0.6,
       "vfx_layer": 66
     },
     "description_rows": [
-      "Sát thương AOE 150% Công Kích",
-      "Mỗi mục tiêu có 40% choáng 0.5 giây",
-      "Hồn chuông rơi từ trên xuống tâm mục tiêu"
+      "Chuông chạm đất gây 70% ATK, bán kính 100",
+      "Mỗi mục tiêu có 25% choáng 0.35 giây"
     ],
     "vfx_frames": [
-      "skill_kim_cang_dinh_tam_0"
+      "skill_kim_cang_dinh_tam_0",
+      "skill_kim_cang_dinh_tam_1",
+      "skill_kim_cang_dinh_tam_2",
+      "skill_kim_cang_dinh_tam_3",
+      "skill_kim_cang_dinh_tam_4",
+      "skill_kim_cang_dinh_tam_5",
+      "skill_kim_cang_dinh_tam_6",
+      "skill_kim_cang_dinh_tam_7",
+      "skill_kim_cang_dinh_tam_8"
     ],
     "levels": [
       {
         "level": 1,
         "stats": {
-          "damage_pct": 0,
+          "damage_pct": 70,
           "cooldown": 30,
           "range": 350,
-          "radius": 0,
+          "radius": 100,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.6
         },
         "description_rows": [
-          "Cấp 1: Kim Cang Định Tâm",
-          "Hiệu ứng hỗ trợ phòng thủ cấp 1",
-          "Thời gian hồi chiêu: 30.0s"
+          "Chuông chạm đất gây 70% ATK, bán kính 100",
+          "Mỗi mục tiêu có 25% choáng 0.35 giây",
+          "Hồi chiêu: 30 giây"
         ],
-        "effects": [
-          {
-            "id": "control_immune",
-            "duration": 4
-          },
-          {
-            "id": "defense_up",
-            "duration": 4,
-            "defense_bonus_pct": 0.35
-          }
-        ]
+        "effects": []
       },
       {
         "level": 2,
         "stats": {
-          "damage_pct": 0,
-          "cooldown": 28.5,
+          "damage_pct": 70,
+          "cooldown": 29,
           "range": 350,
-          "radius": 0,
+          "radius": 100,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.6
         },
         "description_rows": [
-          "Cấp 2: Kim Cang Định Tâm",
-          "Hiệu ứng hỗ trợ phòng thủ cấp 2",
-          "Thời gian hồi chiêu: 28.5s"
+          "Chuông chạm đất gây 70% ATK, bán kính 100",
+          "Mỗi mục tiêu có 25% choáng 0.35 giây",
+          "Hồi chiêu: 29 giây"
         ],
-        "effects": [
-          {
-            "id": "control_immune",
-            "duration": 4
-          },
-          {
-            "id": "defense_up",
-            "duration": 4,
-            "defense_bonus_pct": 0.35
-          }
-        ]
+        "effects": []
       },
       {
         "level": 3,
         "stats": {
-          "damage_pct": 0,
-          "cooldown": 27,
+          "damage_pct": 70,
+          "cooldown": 28,
           "range": 350,
-          "radius": 0,
+          "radius": 100,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.6
         },
         "description_rows": [
-          "Cấp 3: Kim Cang Định Tâm",
-          "Hiệu ứng hỗ trợ phòng thủ cấp 3",
-          "Thời gian hồi chiêu: 27.0s"
+          "Chuông chạm đất gây 70% ATK, bán kính 100",
+          "Mỗi mục tiêu có 25% choáng 0.35 giây",
+          "Hồi chiêu: 28 giây"
         ],
-        "effects": [
-          {
-            "id": "control_immune",
-            "duration": 4
-          },
-          {
-            "id": "defense_up",
-            "duration": 4,
-            "defense_bonus_pct": 0.35
-          }
-        ]
+        "effects": []
       },
       {
         "level": 4,
         "stats": {
-          "damage_pct": 0,
-          "cooldown": 25.5,
+          "damage_pct": 70,
+          "cooldown": 27,
           "range": 350,
-          "radius": 0,
+          "radius": 100,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.6
         },
         "description_rows": [
-          "Cấp 4: Kim Cang Định Tâm",
-          "Hiệu ứng hỗ trợ phòng thủ cấp 4",
-          "Thời gian hồi chiêu: 25.5s"
+          "Chuông chạm đất gây 70% ATK, bán kính 100",
+          "Mỗi mục tiêu có 25% choáng 0.35 giây",
+          "Hồi chiêu: 27 giây"
         ],
-        "effects": [
-          {
-            "id": "control_immune",
-            "duration": 4
-          },
-          {
-            "id": "defense_up",
-            "duration": 4,
-            "defense_bonus_pct": 0.35
-          }
-        ]
+        "effects": []
       },
       {
         "level": 5,
         "stats": {
-          "damage_pct": 0,
-          "cooldown": 24,
+          "damage_pct": 70,
+          "cooldown": 26,
           "range": 350,
-          "radius": 0,
+          "radius": 100,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.6
         },
         "description_rows": [
-          "Cấp 5: Kim Cang Định Tâm",
-          "Hiệu ứng hỗ trợ phòng thủ cấp 5",
-          "Thời gian hồi chiêu: 24.0s"
+          "Chuông chạm đất gây 70% ATK, bán kính 100",
+          "Mỗi mục tiêu có 25% choáng 0.35 giây",
+          "Hồi chiêu: 26 giây"
         ],
-        "effects": [
-          {
-            "id": "control_immune",
-            "duration": 4
-          },
-          {
-            "id": "defense_up",
-            "duration": 4,
-            "defense_bonus_pct": 0.35
-          }
-        ]
+        "effects": []
       }
     ],
     "sfx_events": [
@@ -7136,13 +6907,13 @@
     "deployment": {
       "type": "multi_target"
     },
-    "description": "Tật Phong Tiễn: Bắn liên tiếp 3 mũi tên, mũi sau lớn và mạnh hơn mũi trước đồng thời đẩy lùi mục tiêu xa hơn.",
+    "description": "Tật Phong Tiễn: Ba mũi tên gây 25% / 45% / 70% ATK; Đẩy lùi tăng dần: 20 / 35 / 50.",
     "cast_config": {
       "viewport_height_ratio": 0.9,
       "damage_pct_by_shot": [
-        50,
-        100,
-        200
+        25,
+        45,
+        70
       ],
       "scale_by_shot": [
         1.0,
@@ -7150,9 +6921,9 @@
         1.69
       ],
       "knockback_by_shot": [
-        40,
-        80,
-        120
+        20,
+        35,
+        50
       ],
       "shot_interval": 0.12,
       "knockback_duration": 0.18,
@@ -7162,9 +6933,8 @@
       "frame_duration": 0.06
     },
     "description_rows": [
-      "Ba mũi tên gây lần lượt 50%, 100%, 200% Công Kích",
-      "Kích thước lần lượt 100%, 130%, 169%",
-      "Đẩy lùi lần lượt 40, 80, 120; tầm bắn 90% chiều cao chiến trường"
+      "Ba mũi tên gây 25% / 45% / 70% ATK",
+      "Đẩy lùi tăng dần: 20 / 35 / 50"
     ],
     "vfx_frames": [
       "skill_tat_phong_tien_0",
@@ -7181,51 +6951,51 @@
       {
         "level": 1,
         "stats": {
-          "damage_pct": 80,
-          "cooldown": 25,
+          "damage_pct": 140,
+          "cooldown": 30,
           "range": 1500,
           "radius": 0,
-          "projectile_count": 5,
-          "vfx_scale": 0.35
+          "projectile_count": 3,
+          "vfx_scale": 0.18
         },
         "description_rows": [
-          "Cấp 1: Tật Phong Tiễn",
-          "Ba mũi gây 50% / 100% / 200% Công Kích",
-          "Thời gian hồi chiêu: 25.0s"
+          "Ba mũi tên gây 25% / 45% / 70% ATK",
+          "Đẩy lùi tăng dần: 20 / 35 / 50",
+          "Hồi chiêu: 30 giây"
         ],
         "effects": []
       },
       {
         "level": 2,
         "stats": {
-          "damage_pct": 100,
-          "cooldown": 23.5,
+          "damage_pct": 140,
+          "cooldown": 29,
           "range": 1500,
           "radius": 0,
-          "projectile_count": 6,
-          "vfx_scale": 0.35
+          "projectile_count": 3,
+          "vfx_scale": 0.18
         },
         "description_rows": [
-          "Cấp 2: Tật Phong Tiễn",
-          "Ba mũi gây 50% / 100% / 200% Công Kích",
-          "Thời gian hồi chiêu: 23.5s"
+          "Ba mũi tên gây 25% / 45% / 70% ATK",
+          "Đẩy lùi tăng dần: 20 / 35 / 50",
+          "Hồi chiêu: 29 giây"
         ],
         "effects": []
       },
       {
         "level": 3,
         "stats": {
-          "damage_pct": 120,
-          "cooldown": 22,
+          "damage_pct": 140,
+          "cooldown": 28,
           "range": 1500,
           "radius": 0,
-          "projectile_count": 7,
-          "vfx_scale": 0.35
+          "projectile_count": 3,
+          "vfx_scale": 0.18
         },
         "description_rows": [
-          "Cấp 3: Tật Phong Tiễn",
-          "Ba mũi gây 50% / 100% / 200% Công Kích",
-          "Thời gian hồi chiêu: 22.0s"
+          "Ba mũi tên gây 25% / 45% / 70% ATK",
+          "Đẩy lùi tăng dần: 20 / 35 / 50",
+          "Hồi chiêu: 28 giây"
         ],
         "effects": []
       },
@@ -7233,33 +7003,33 @@
         "level": 4,
         "stats": {
           "damage_pct": 140,
-          "cooldown": 20.5,
+          "cooldown": 27,
           "range": 1500,
           "radius": 0,
-          "projectile_count": 8,
-          "vfx_scale": 0.35
+          "projectile_count": 3,
+          "vfx_scale": 0.18
         },
         "description_rows": [
-          "Cấp 4: Tật Phong Tiễn",
-          "Ba mũi gây 50% / 100% / 200% Công Kích",
-          "Thời gian hồi chiêu: 20.5s"
+          "Ba mũi tên gây 25% / 45% / 70% ATK",
+          "Đẩy lùi tăng dần: 20 / 35 / 50",
+          "Hồi chiêu: 27 giây"
         ],
         "effects": []
       },
       {
         "level": 5,
         "stats": {
-          "damage_pct": 160,
-          "cooldown": 19,
+          "damage_pct": 140,
+          "cooldown": 26,
           "range": 1500,
           "radius": 0,
-          "projectile_count": 9,
-          "vfx_scale": 0.35
+          "projectile_count": 3,
+          "vfx_scale": 0.18
         },
         "description_rows": [
-          "Cấp 5: Tật Phong Tiễn",
-          "Ba mũi gây 50% / 100% / 200% Công Kích",
-          "Thời gian hồi chiêu: 19.0s"
+          "Ba mũi tên gây 25% / 45% / 70% ATK",
+          "Đẩy lùi tăng dần: 20 / 35 / 50",
+          "Hồi chiêu: 26 giây"
         ],
         "effects": []
       }
@@ -7289,23 +7059,23 @@
     "deployment": {
       "type": "self_buff"
     },
-    "description": "Thái Sơn Hộ Thể: Triệu hồi đại ấn hộ thể trong 5 giây, tăng 40% phòng ngự và cộng thêm 200 phòng ngự.",
+    "description": "Thái Sơn Hộ Thể: Trong 3 giây: DEF = DEF cơ sở × 1.3; Không cộng DEF phẳng.",
     "cast_config": {
-      "duration": 5,
+      "duration": 3,
       "vfx_scale": 0.3,
       "vfx_offset_y": 28,
       "vfx_layer": 3,
       "effects": [
         {
           "id": "defense_up",
-          "defense_percent": 0.4,
-          "defense_flat": 200
+          "defense_percent": 0.3,
+          "defense_flat": 0
         }
       ]
     },
     "description_rows": [
-      "Trong 5 giây tăng 40% phòng ngự",
-      "Cộng thêm 200 phòng ngự sau phần tăng theo tỷ lệ"
+      "Trong 3 giây: DEF = DEF cơ sở × 1.3",
+      "Không cộng DEF phẳng"
     ],
     "vfx_frames": [
       "skill_thai_son_ho_the_0",
@@ -7327,117 +7097,82 @@
           "range": 350,
           "radius": 0,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.3
         },
         "description_rows": [
-          "Cấp 1: Thái Sơn Hộ Thể",
-          "Trong 5 giây: DEF = DEF gốc × 1.4 + 200",
-          "Thời gian hồi chiêu: 30.0s"
+          "Trong 3 giây: DEF = DEF cơ sở × 1.3",
+          "Không cộng DEF phẳng",
+          "Hồi chiêu: 30 giây"
         ],
-        "effects": [
-          {
-            "id": "defense_up",
-            "duration": 5,
-            "defense_percent": 0.4,
-            "defense_flat": 200
-          }
-        ]
+        "effects": []
       },
       {
         "level": 2,
         "stats": {
           "damage_pct": 0,
-          "cooldown": 28.5,
+          "cooldown": 29,
           "range": 350,
           "radius": 0,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.3
         },
         "description_rows": [
-          "Cấp 2: Thái Sơn Hộ Thể",
-          "Trong 5 giây: DEF = DEF gốc × 1.4 + 200",
-          "Thời gian hồi chiêu: 28.5s"
+          "Trong 3 giây: DEF = DEF cơ sở × 1.3",
+          "Không cộng DEF phẳng",
+          "Hồi chiêu: 29 giây"
         ],
-        "effects": [
-          {
-            "id": "defense_up",
-            "duration": 5,
-            "defense_percent": 0.4,
-            "defense_flat": 200
-          }
-        ]
+        "effects": []
       },
       {
         "level": 3,
+        "stats": {
+          "damage_pct": 0,
+          "cooldown": 28,
+          "range": 350,
+          "radius": 0,
+          "projectile_count": 1,
+          "vfx_scale": 0.3
+        },
+        "description_rows": [
+          "Trong 3 giây: DEF = DEF cơ sở × 1.3",
+          "Không cộng DEF phẳng",
+          "Hồi chiêu: 28 giây"
+        ],
+        "effects": []
+      },
+      {
+        "level": 4,
         "stats": {
           "damage_pct": 0,
           "cooldown": 27,
           "range": 350,
           "radius": 0,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.3
         },
         "description_rows": [
-          "Cấp 3: Thái Sơn Hộ Thể",
-          "Trong 5 giây: DEF = DEF gốc × 1.4 + 200",
-          "Thời gian hồi chiêu: 27.0s"
+          "Trong 3 giây: DEF = DEF cơ sở × 1.3",
+          "Không cộng DEF phẳng",
+          "Hồi chiêu: 27 giây"
         ],
-        "effects": [
-          {
-            "id": "defense_up",
-            "duration": 5,
-            "defense_percent": 0.4,
-            "defense_flat": 200
-          }
-        ]
-      },
-      {
-        "level": 4,
-        "stats": {
-          "damage_pct": 0,
-          "cooldown": 25.5,
-          "range": 350,
-          "radius": 0,
-          "projectile_count": 1,
-          "vfx_scale": 0.35
-        },
-        "description_rows": [
-          "Cấp 4: Thái Sơn Hộ Thể",
-          "Trong 5 giây: DEF = DEF gốc × 1.4 + 200",
-          "Thời gian hồi chiêu: 25.5s"
-        ],
-        "effects": [
-          {
-            "id": "defense_up",
-            "duration": 5,
-            "defense_percent": 0.4,
-            "defense_flat": 200
-          }
-        ]
+        "effects": []
       },
       {
         "level": 5,
         "stats": {
           "damage_pct": 0,
-          "cooldown": 24,
+          "cooldown": 26,
           "range": 350,
           "radius": 0,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.3
         },
         "description_rows": [
-          "Cấp 5: Thái Sơn Hộ Thể",
-          "Trong 5 giây: DEF = DEF gốc × 1.4 + 200",
-          "Thời gian hồi chiêu: 24.0s"
+          "Trong 3 giây: DEF = DEF cơ sở × 1.3",
+          "Không cộng DEF phẳng",
+          "Hồi chiêu: 26 giây"
         ],
-        "effects": [
-          {
-            "id": "defense_up",
-            "duration": 5,
-            "defense_percent": 0.4,
-            "defense_flat": 200
-          }
-        ]
+        "effects": []
       }
     ],
     "sfx_events": [
@@ -7465,111 +7200,118 @@
     "deployment": {
       "type": "multi_target"
     },
-    "description": "Cửu Thiên Lôi Giật: Giáng liên tiếp 3 đạo lôi vào chân mục tiêu ngẫu nhiên; mỗi tia gây 100% Công Kích và có 40% choáng 0.5 giây.",
+    "description": "Cửu Thiên Lôi Giật: Ba tia sét chọn lại mục tiêu, mỗi tia 35% ATK; Mỗi hit có 20% choáng 0.3 giây.",
     "cast_config": {
       "range": 350,
       "strike_count": 3,
       "strike_interval": 0.18,
-      "damage_pct": 100,
+      "damage_pct": 35,
       "status_id": "stun",
-      "status_chance": 0.4,
-      "status_duration": 0.5,
-      "vfx_scale": 0.26,
+      "status_chance": 0.2,
+      "status_duration": 0.3,
+      "vfx_scale": 0.65,
       "vfx_offset_y": -80,
       "vfx_duration": 0.35,
       "vfx_layer": 66
     },
     "description_rows": [
-      "3 tia sét liên tiếp vào mục tiêu ngẫu nhiên",
-      "Mỗi tia gây 100% Công Kích",
-      "Mỗi tia có 40% choáng 0.5 giây"
+      "Ba tia sét chọn lại mục tiêu, mỗi tia 35% ATK",
+      "Mỗi hit có 20% choáng 0.3 giây"
     ],
     "vfx_frames": [
-      "skill_cuu_thien_loi_giat_0"
+      "skill_cuu_thien_loi_giat_0",
+      "skill_cuu_thien_loi_giat_1",
+      "skill_cuu_thien_loi_giat_2",
+      "skill_cuu_thien_loi_giat_3",
+      "skill_cuu_thien_loi_giat_4",
+      "skill_cuu_thien_loi_giat_5",
+      "skill_cuu_thien_loi_giat_6",
+      "skill_cuu_thien_loi_giat_7",
+      "skill_cuu_thien_loi_giat_8"
     ],
     "levels": [
       {
         "level": 1,
         "stats": {
-          "damage_pct": 190,
-          "cooldown": 26,
+          "damage_pct": 35,
+          "cooldown": 30,
           "range": 350,
           "radius": 0,
-          "projectile_count": 1,
-          "vfx_scale": 0.35
+          "projectile_count": 3,
+          "vfx_scale": 0.65
         },
         "description_rows": [
-          "Cấp 1: Cửu Thiên Lôi Giật",
-          "Sát thương 190% Công Kích",
-          "Thời gian hồi chiêu: 26.0s"
+          "Ba tia sét chọn lại mục tiêu, mỗi tia 35% ATK",
+          "Mỗi hit có 20% choáng 0.3 giây",
+          "Hồi chiêu: 30 giây"
         ],
         "effects": []
       },
       {
         "level": 2,
         "stats": {
-          "damage_pct": 238,
-          "cooldown": 24.5,
+          "damage_pct": 35,
+          "cooldown": 29,
           "range": 350,
           "radius": 0,
-          "projectile_count": 1,
-          "vfx_scale": 0.35
+          "projectile_count": 3,
+          "vfx_scale": 0.65
         },
         "description_rows": [
-          "Cấp 2: Cửu Thiên Lôi Giật",
-          "Sát thương 238% Công Kích",
-          "Thời gian hồi chiêu: 24.5s"
+          "Ba tia sét chọn lại mục tiêu, mỗi tia 35% ATK",
+          "Mỗi hit có 20% choáng 0.3 giây",
+          "Hồi chiêu: 29 giây"
         ],
         "effects": []
       },
       {
         "level": 3,
         "stats": {
-          "damage_pct": 285,
-          "cooldown": 23,
+          "damage_pct": 35,
+          "cooldown": 28,
           "range": 350,
           "radius": 0,
-          "projectile_count": 1,
-          "vfx_scale": 0.35
+          "projectile_count": 3,
+          "vfx_scale": 0.65
         },
         "description_rows": [
-          "Cấp 3: Cửu Thiên Lôi Giật",
-          "Sát thương 285% Công Kích",
-          "Thời gian hồi chiêu: 23.0s"
+          "Ba tia sét chọn lại mục tiêu, mỗi tia 35% ATK",
+          "Mỗi hit có 20% choáng 0.3 giây",
+          "Hồi chiêu: 28 giây"
         ],
         "effects": []
       },
       {
         "level": 4,
         "stats": {
-          "damage_pct": 333,
-          "cooldown": 21.5,
+          "damage_pct": 35,
+          "cooldown": 27,
           "range": 350,
           "radius": 0,
-          "projectile_count": 1,
-          "vfx_scale": 0.35
+          "projectile_count": 3,
+          "vfx_scale": 0.65
         },
         "description_rows": [
-          "Cấp 4: Cửu Thiên Lôi Giật",
-          "Sát thương 333% Công Kích",
-          "Thời gian hồi chiêu: 21.5s"
+          "Ba tia sét chọn lại mục tiêu, mỗi tia 35% ATK",
+          "Mỗi hit có 20% choáng 0.3 giây",
+          "Hồi chiêu: 27 giây"
         ],
         "effects": []
       },
       {
         "level": 5,
         "stats": {
-          "damage_pct": 380,
-          "cooldown": 20,
+          "damage_pct": 35,
+          "cooldown": 26,
           "range": 350,
           "radius": 0,
-          "projectile_count": 1,
-          "vfx_scale": 0.35
+          "projectile_count": 3,
+          "vfx_scale": 0.65
         },
         "description_rows": [
-          "Cấp 5: Cửu Thiên Lôi Giật",
-          "Sát thương 380% Công Kích",
-          "Thời gian hồi chiêu: 20.0s"
+          "Ba tia sét chọn lại mục tiêu, mỗi tia 35% ATK",
+          "Mỗi hit có 20% choáng 0.3 giây",
+          "Hồi chiêu: 26 giây"
         ],
         "effects": []
       }
@@ -7599,136 +7341,116 @@
     "deployment": {
       "type": "single_target"
     },
-    "description": "Huyết Đằng Hộ Mệnh: Đánh vào tâm mục tiêu gây 250% Công Kích và hồi HP bằng 30% sát thương thực gây ra.",
+    "description": "Huyết Đằng Hộ Mệnh: Một mục tiêu: 100% ATK; Hồi 20% sát thương thực trừ vào HP mục tiêu.",
     "cast_config": {
       "range": 350,
-      "damage_pct": 250,
-      "lifesteal_pct": 0.3,
-      "vfx_scale": 0.16,
-      "vfx_duration": 0.5
+      "damage_pct": 100,
+      "lifesteal_pct": 0.2,
+      "vfx_scale": 0.3,
+      "vfx_duration": 0.63,
+      "impact_delay": 0.21,
+      "vfx_layer": 65
     },
     "description_rows": [
-      "Gây 250% Công Kích lên một mục tiêu",
-      "Hồi HP bằng 30% sát thương thực gây ra"
+      "Một mục tiêu: 100% ATK",
+      "Hồi 20% sát thương thực trừ vào HP mục tiêu"
     ],
     "vfx_frames": [
-      "skill_huyet_dang_ho_menh_0"
+      "skill_huyet_dang_ho_menh_0",
+      "skill_huyet_dang_ho_menh_1",
+      "skill_huyet_dang_ho_menh_2",
+      "skill_huyet_dang_ho_menh_3",
+      "skill_huyet_dang_ho_menh_4",
+      "skill_huyet_dang_ho_menh_5",
+      "skill_huyet_dang_ho_menh_6",
+      "skill_huyet_dang_ho_menh_7",
+      "skill_huyet_dang_ho_menh_8"
     ],
     "levels": [
       {
         "level": 1,
         "stats": {
-          "damage_pct": 120,
-          "cooldown": 28,
+          "damage_pct": 100,
+          "cooldown": 30,
           "range": 350,
           "radius": 0,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.3
         },
         "description_rows": [
-          "Cấp 1: Huyết Đằng Hộ Mệnh",
-          "Sát thương 120% Công Kích",
-          "Thời gian hồi chiêu: 28.0s"
+          "Một mục tiêu: 100% ATK",
+          "Hồi 20% sát thương thực trừ vào HP mục tiêu",
+          "Hồi chiêu: 30 giây"
         ],
-        "effects": [
-          {
-            "id": "lifesteal",
-            "duration": 3,
-            "lifesteal_pct": 0.5
-          }
-        ]
+        "effects": []
       },
       {
         "level": 2,
         "stats": {
-          "damage_pct": 150,
-          "cooldown": 26.5,
+          "damage_pct": 100,
+          "cooldown": 29,
           "range": 350,
           "radius": 0,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.3
         },
         "description_rows": [
-          "Cấp 2: Huyết Đằng Hộ Mệnh",
-          "Sát thương 150% Công Kích",
-          "Thời gian hồi chiêu: 26.5s"
+          "Một mục tiêu: 100% ATK",
+          "Hồi 20% sát thương thực trừ vào HP mục tiêu",
+          "Hồi chiêu: 29 giây"
         ],
-        "effects": [
-          {
-            "id": "lifesteal",
-            "duration": 3,
-            "lifesteal_pct": 0.5
-          }
-        ]
+        "effects": []
       },
       {
         "level": 3,
         "stats": {
-          "damage_pct": 180,
-          "cooldown": 25,
+          "damage_pct": 100,
+          "cooldown": 28,
           "range": 350,
           "radius": 0,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.3
         },
         "description_rows": [
-          "Cấp 3: Huyết Đằng Hộ Mệnh",
-          "Sát thương 180% Công Kích",
-          "Thời gian hồi chiêu: 25.0s"
+          "Một mục tiêu: 100% ATK",
+          "Hồi 20% sát thương thực trừ vào HP mục tiêu",
+          "Hồi chiêu: 28 giây"
         ],
-        "effects": [
-          {
-            "id": "lifesteal",
-            "duration": 3,
-            "lifesteal_pct": 0.5
-          }
-        ]
+        "effects": []
       },
       {
         "level": 4,
         "stats": {
-          "damage_pct": 210,
-          "cooldown": 23.5,
+          "damage_pct": 100,
+          "cooldown": 27,
           "range": 350,
           "radius": 0,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.3
         },
         "description_rows": [
-          "Cấp 4: Huyết Đằng Hộ Mệnh",
-          "Sát thương 210% Công Kích",
-          "Thời gian hồi chiêu: 23.5s"
+          "Một mục tiêu: 100% ATK",
+          "Hồi 20% sát thương thực trừ vào HP mục tiêu",
+          "Hồi chiêu: 27 giây"
         ],
-        "effects": [
-          {
-            "id": "lifesteal",
-            "duration": 3,
-            "lifesteal_pct": 0.5
-          }
-        ]
+        "effects": []
       },
       {
         "level": 5,
         "stats": {
-          "damage_pct": 240,
-          "cooldown": 22,
+          "damage_pct": 100,
+          "cooldown": 26,
           "range": 350,
           "radius": 0,
           "projectile_count": 1,
-          "vfx_scale": 0.35
+          "vfx_scale": 0.3
         },
         "description_rows": [
-          "Cấp 5: Huyết Đằng Hộ Mệnh",
-          "Sát thương 240% Công Kích",
-          "Thời gian hồi chiêu: 22.0s"
+          "Một mục tiêu: 100% ATK",
+          "Hồi 20% sát thương thực trừ vào HP mục tiêu",
+          "Hồi chiêu: 26 giây"
         ],
-        "effects": [
-          {
-            "id": "lifesteal",
-            "duration": 3,
-            "lifesteal_pct": 0.5
-          }
-        ]
+        "effects": []
       }
     ],
     "sfx_events": [
@@ -7756,22 +7478,24 @@
     "deployment": {
       "type": "self_buff"
     },
-    "description": "Quang Mang Hộ Thể: Ba quang mang liên tục xoay quanh hero ở bán kính bằng 1/4 chiều cao màn hình, xuyên mục tiêu và gây 35% Công Kích khi va chạm.",
+    "description": "Quang Mang Hộ Thể: Nội tại: ba cầu xoay quanh hero, 8% ATK mỗi va chạm; Bán kính bằng 25% chiều cao chiến trường, một vòng 4 giây; Cùng mục tiêu: tối đa một hit mỗi 0.5 giây; Mỗi cầu chỉ đánh lại cùng mục tiêu sau 1.5 giây.",
     "cast_config": {
       "orb_count": 3,
       "radius_viewport_height_ratio": 0.25,
-      "revolution_duration": 3.0,
-      "damage_pct": 35,
+      "revolution_duration": 4,
+      "damage_pct": 8,
       "contact_radius": 34,
-      "contact_cooldown": 0.35,
+      "contact_cooldown": 1.5,
       "vfx_scale": 0.24,
       "frame_duration": 0.08,
-      "vfx_layer": 4
+      "vfx_layer": 4,
+      "target_contact_cooldown": 0.5
     },
     "description_rows": [
-      "Nội tại: tạo 3 quang mang cách nhau 120 độ",
-      "Bán kính quỹ đạo bằng 1/4 chiều cao màn hình",
-      "Xuyên mục tiêu, mỗi va chạm gây 35% Công Kích"
+      "Nội tại: ba cầu xoay quanh hero, 8% ATK mỗi va chạm",
+      "Bán kính bằng 25% chiều cao chiến trường, một vòng 4 giây",
+      "Cùng mục tiêu: tối đa một hit mỗi 0.5 giây",
+      "Mỗi cầu chỉ đánh lại cùng mục tiêu sau 1.5 giây"
     ],
     "vfx_frames": [
       "skill_mang_quang_ho_linh_0",
@@ -7788,85 +7512,90 @@
       {
         "level": 1,
         "stats": {
-          "damage_pct": 0,
-          "cooldown": 30,
+          "damage_pct": 8,
+          "cooldown": 0,
           "range": 350,
           "radius": 0,
-          "projectile_count": 1,
-          "vfx_scale": 0.35
+          "projectile_count": 3,
+          "vfx_scale": 0.24
         },
         "description_rows": [
-          "Cấp 1: Quang Mang Hộ Thể",
-          "Nội tại: 3 quang mang xuyên mục tiêu, 35% Công Kích mỗi va chạm",
-          "Bán kính quỹ đạo: 1/4 chiều cao màn hình"
+          "Nội tại: ba cầu xoay quanh hero, 8% ATK mỗi va chạm",
+          "Bán kính bằng 25% chiều cao chiến trường, một vòng 4 giây",
+          "Cùng mục tiêu: tối đa một hit mỗi 0.5 giây",
+          "Mỗi cầu chỉ đánh lại cùng mục tiêu sau 1.5 giây"
         ],
         "effects": []
       },
       {
         "level": 2,
         "stats": {
-          "damage_pct": 0,
-          "cooldown": 28.5,
+          "damage_pct": 8,
+          "cooldown": 0,
           "range": 350,
           "radius": 0,
-          "projectile_count": 1,
-          "vfx_scale": 0.35
+          "projectile_count": 3,
+          "vfx_scale": 0.24
         },
         "description_rows": [
-          "Cấp 2: Quang Mang Hộ Thể",
-          "Nội tại: 3 quang mang xuyên mục tiêu, 35% Công Kích mỗi va chạm",
-          "Bán kính quỹ đạo: 1/4 chiều cao màn hình"
+          "Nội tại: ba cầu xoay quanh hero, 8% ATK mỗi va chạm",
+          "Bán kính bằng 25% chiều cao chiến trường, một vòng 4 giây",
+          "Cùng mục tiêu: tối đa một hit mỗi 0.5 giây",
+          "Mỗi cầu chỉ đánh lại cùng mục tiêu sau 1.5 giây"
         ],
         "effects": []
       },
       {
         "level": 3,
         "stats": {
-          "damage_pct": 0,
-          "cooldown": 27,
+          "damage_pct": 8,
+          "cooldown": 0,
           "range": 350,
           "radius": 0,
-          "projectile_count": 1,
-          "vfx_scale": 0.35
+          "projectile_count": 3,
+          "vfx_scale": 0.24
         },
         "description_rows": [
-          "Cấp 3: Quang Mang Hộ Thể",
-          "Nội tại: 3 quang mang xuyên mục tiêu, 35% Công Kích mỗi va chạm",
-          "Bán kính quỹ đạo: 1/4 chiều cao màn hình"
+          "Nội tại: ba cầu xoay quanh hero, 8% ATK mỗi va chạm",
+          "Bán kính bằng 25% chiều cao chiến trường, một vòng 4 giây",
+          "Cùng mục tiêu: tối đa một hit mỗi 0.5 giây",
+          "Mỗi cầu chỉ đánh lại cùng mục tiêu sau 1.5 giây"
         ],
         "effects": []
       },
       {
         "level": 4,
         "stats": {
-          "damage_pct": 0,
-          "cooldown": 25.5,
+          "damage_pct": 8,
+          "cooldown": 0,
           "range": 350,
           "radius": 0,
-          "projectile_count": 1,
-          "vfx_scale": 0.35
+          "projectile_count": 3,
+          "vfx_scale": 0.24
         },
         "description_rows": [
-          "Cấp 4: Quang Mang Hộ Thể",
-          "Nội tại: 3 quang mang xuyên mục tiêu, 35% Công Kích mỗi va chạm",
-          "Bán kính quỹ đạo: 1/4 chiều cao màn hình"
+          "Nội tại: ba cầu xoay quanh hero, 8% ATK mỗi va chạm",
+          "Bán kính bằng 25% chiều cao chiến trường, một vòng 4 giây",
+          "Cùng mục tiêu: tối đa một hit mỗi 0.5 giây",
+          "Mỗi cầu chỉ đánh lại cùng mục tiêu sau 1.5 giây"
         ],
         "effects": []
       },
       {
         "level": 5,
         "stats": {
-          "damage_pct": 0,
-          "cooldown": 24,
+          "damage_pct": 8,
+          "cooldown": 0,
           "range": 350,
           "radius": 0,
-          "projectile_count": 1,
-          "vfx_scale": 0.35
+          "projectile_count": 3,
+          "vfx_scale": 0.24
         },
         "description_rows": [
-          "Cấp 5: Quang Mang Hộ Thể",
-          "Nội tại: 3 quang mang xuyên mục tiêu, 35% Công Kích mỗi va chạm",
-          "Bán kính quỹ đạo: 1/4 chiều cao màn hình"
+          "Nội tại: ba cầu xoay quanh hero, 8% ATK mỗi va chạm",
+          "Bán kính bằng 25% chiều cao chiến trường, một vòng 4 giây",
+          "Cùng mục tiêu: tối đa một hit mỗi 0.5 giây",
+          "Mỗi cầu chỉ đánh lại cùng mục tiêu sau 1.5 giây"
         ],
         "effects": []
       }
@@ -7895,7 +7624,7 @@
     "deployment": {
       "type": "area"
     },
-    "description": "Ngưng tụ kiếm trận băng giá, đóng băng kẻ địch diện rộng trong 3 giây.",
+    "description": "Tuyết Lạc Băng Phong: Kiếm băng và băng trồi gây tổng 120% ATK; Đóng băng 3 giây theo kháng/miễn khống chế.",
     "vfx_frames": [
       "talisman_16_main_cold_ice_sword_0",
       "talisman_16_main_cold_ice_sword_1",
@@ -7920,9 +7649,9 @@
           "vfx_scale": 0.26
         },
         "description_rows": [
-          "Sát thương 120% Công Kích",
-          "Hồi chiêu 30s",
-          "Bán kính 100 · Đóng băng 3s"
+          "Kiếm băng và băng trồi gây tổng 120% ATK",
+          "Đóng băng 3 giây theo kháng/miễn khống chế",
+          "Hồi chiêu: 30s"
         ],
         "effects": [],
         "cast_config": {
@@ -7943,15 +7672,16 @@
                 "talisman_16_main_cold_ice_sword_8"
               ],
               "scale": [
-                0.9,
-                0.9
+                0.5760000000000001,
+                0.5760000000000001
               ],
               "duration": 0.62,
               "layer": 30,
               "pivot": [
-                128,
-                235
-              ]
+                200.0,
+                367.1875
+              ],
+              "coordinate_size": 400
             },
             "array": {
               "frames": [
@@ -7966,16 +7696,17 @@
                 "talisman_16_area_north_frost_array_8"
               ],
               "scale": [
-                0.8695652173913043,
-                0.8695652173913043
+                0.5565217391304348,
+                0.5565217391304348
               ],
               "duration": 0.85,
               "layer": 0,
               "pivot": [
-                128,
-                128
+                200.0,
+                200.0
               ],
-              "grow_from": 0.4
+              "grow_from": 0.4,
+              "coordinate_size": 400
             },
             "spikes": {
               "frames": [
@@ -7990,15 +7721,16 @@
                 "talisman_16_impact_ice_spike_cluster_8"
               ],
               "scale": [
-                0.8333333333333334,
-                0.8333333333333334
+                0.5333333333333333,
+                0.5333333333333333
               ],
               "duration": 0.65,
               "layer": 20,
               "pivot": [
-                128,
-                235
-              ]
+                200.0,
+                367.1875
+              ],
+              "coordinate_size": 400
             },
             "feet": {
               "frames": [
@@ -8014,7 +7746,8 @@
                 128,
                 128
               ],
-              "hold": true
+              "hold": true,
+              "coordinate_size": 256
             }
           }
         }
@@ -8031,9 +7764,9 @@
           "vfx_scale": 0.28
         },
         "description_rows": [
-          "Sát thương 150% Công Kích",
-          "Hồi chiêu 28.5s",
-          "Bán kính 110 · Đóng băng 3s"
+          "Kiếm băng và băng trồi gây tổng 150% ATK",
+          "Đóng băng 3 giây theo kháng/miễn khống chế",
+          "Hồi chiêu: 28.5s"
         ],
         "effects": [],
         "cast_config": {
@@ -8054,15 +7787,16 @@
                 "talisman_16_main_cold_ice_sword_8"
               ],
               "scale": [
-                0.9,
-                0.9
+                0.5760000000000001,
+                0.5760000000000001
               ],
               "duration": 0.62,
               "layer": 30,
               "pivot": [
-                128,
-                235
-              ]
+                200.0,
+                367.1875
+              ],
+              "coordinate_size": 400
             },
             "array": {
               "frames": [
@@ -8077,16 +7811,17 @@
                 "talisman_16_area_north_frost_array_8"
               ],
               "scale": [
-                0.9565217391304348,
-                0.9565217391304348
+                0.6121739130434782,
+                0.6121739130434782
               ],
               "duration": 0.85,
               "layer": 0,
               "pivot": [
-                128,
-                128
+                200.0,
+                200.0
               ],
-              "grow_from": 0.4
+              "grow_from": 0.4,
+              "coordinate_size": 400
             },
             "spikes": {
               "frames": [
@@ -8101,15 +7836,16 @@
                 "talisman_16_impact_ice_spike_cluster_8"
               ],
               "scale": [
-                0.9166666666666666,
-                0.9166666666666666
+                0.5866666666666667,
+                0.5866666666666667
               ],
               "duration": 0.65,
               "layer": 20,
               "pivot": [
-                128,
-                235
-              ]
+                200.0,
+                367.1875
+              ],
+              "coordinate_size": 400
             },
             "feet": {
               "frames": [
@@ -8125,7 +7861,8 @@
                 128,
                 128
               ],
-              "hold": true
+              "hold": true,
+              "coordinate_size": 256
             }
           }
         }
@@ -8142,9 +7879,9 @@
           "vfx_scale": 0.3
         },
         "description_rows": [
-          "Sát thương 180% Công Kích",
-          "Hồi chiêu 27s",
-          "Bán kính 120 · Đóng băng 3s"
+          "Kiếm băng và băng trồi gây tổng 180% ATK",
+          "Đóng băng 3 giây theo kháng/miễn khống chế",
+          "Hồi chiêu: 27s"
         ],
         "effects": [],
         "cast_config": {
@@ -8165,15 +7902,16 @@
                 "talisman_16_main_cold_ice_sword_8"
               ],
               "scale": [
-                0.9,
-                0.9
+                0.5760000000000001,
+                0.5760000000000001
               ],
               "duration": 0.62,
               "layer": 30,
               "pivot": [
-                128,
-                235
-              ]
+                200.0,
+                367.1875
+              ],
+              "coordinate_size": 400
             },
             "array": {
               "frames": [
@@ -8188,16 +7926,17 @@
                 "talisman_16_area_north_frost_array_8"
               ],
               "scale": [
-                1.0434782608695652,
-                1.0434782608695652
+                0.6678260869565217,
+                0.6678260869565217
               ],
               "duration": 0.85,
               "layer": 0,
               "pivot": [
-                128,
-                128
+                200.0,
+                200.0
               ],
-              "grow_from": 0.4
+              "grow_from": 0.4,
+              "coordinate_size": 400
             },
             "spikes": {
               "frames": [
@@ -8212,15 +7951,16 @@
                 "talisman_16_impact_ice_spike_cluster_8"
               ],
               "scale": [
-                1.0,
-                1.0
+                0.64,
+                0.64
               ],
               "duration": 0.65,
               "layer": 20,
               "pivot": [
-                128,
-                235
-              ]
+                200.0,
+                367.1875
+              ],
+              "coordinate_size": 400
             },
             "feet": {
               "frames": [
@@ -8236,7 +7976,8 @@
                 128,
                 128
               ],
-              "hold": true
+              "hold": true,
+              "coordinate_size": 256
             }
           }
         }
@@ -8253,9 +7994,9 @@
           "vfx_scale": 0.32
         },
         "description_rows": [
-          "Sát thương 210% Công Kích",
-          "Hồi chiêu 25.5s",
-          "Bán kính 130 · Đóng băng 3s"
+          "Kiếm băng và băng trồi gây tổng 210% ATK",
+          "Đóng băng 3 giây theo kháng/miễn khống chế",
+          "Hồi chiêu: 25.5s"
         ],
         "effects": [],
         "cast_config": {
@@ -8276,15 +8017,16 @@
                 "talisman_16_main_cold_ice_sword_8"
               ],
               "scale": [
-                0.9,
-                0.9
+                0.5760000000000001,
+                0.5760000000000001
               ],
               "duration": 0.62,
               "layer": 30,
               "pivot": [
-                128,
-                235
-              ]
+                200.0,
+                367.1875
+              ],
+              "coordinate_size": 400
             },
             "array": {
               "frames": [
@@ -8299,16 +8041,17 @@
                 "talisman_16_area_north_frost_array_8"
               ],
               "scale": [
-                1.1304347826086956,
-                1.1304347826086956
+                0.7234782608695651,
+                0.7234782608695651
               ],
               "duration": 0.85,
               "layer": 0,
               "pivot": [
-                128,
-                128
+                200.0,
+                200.0
               ],
-              "grow_from": 0.4
+              "grow_from": 0.4,
+              "coordinate_size": 400
             },
             "spikes": {
               "frames": [
@@ -8323,15 +8066,16 @@
                 "talisman_16_impact_ice_spike_cluster_8"
               ],
               "scale": [
-                1.0833333333333333,
-                1.0833333333333333
+                0.6933333333333332,
+                0.6933333333333332
               ],
               "duration": 0.65,
               "layer": 20,
               "pivot": [
-                128,
-                235
-              ]
+                200.0,
+                367.1875
+              ],
+              "coordinate_size": 400
             },
             "feet": {
               "frames": [
@@ -8347,7 +8091,8 @@
                 128,
                 128
               ],
-              "hold": true
+              "hold": true,
+              "coordinate_size": 256
             }
           }
         }
@@ -8364,9 +8109,9 @@
           "vfx_scale": 0.34
         },
         "description_rows": [
-          "Sát thương 240% Công Kích",
-          "Hồi chiêu 24s",
-          "Bán kính 140 · Đóng băng 3s"
+          "Kiếm băng và băng trồi gây tổng 240% ATK",
+          "Đóng băng 3 giây theo kháng/miễn khống chế",
+          "Hồi chiêu: 24s"
         ],
         "effects": [],
         "cast_config": {
@@ -8387,15 +8132,16 @@
                 "talisman_16_main_cold_ice_sword_8"
               ],
               "scale": [
-                0.9,
-                0.9
+                0.5760000000000001,
+                0.5760000000000001
               ],
               "duration": 0.62,
               "layer": 30,
               "pivot": [
-                128,
-                235
-              ]
+                200.0,
+                367.1875
+              ],
+              "coordinate_size": 400
             },
             "array": {
               "frames": [
@@ -8410,16 +8156,17 @@
                 "talisman_16_area_north_frost_array_8"
               ],
               "scale": [
-                1.2173913043478262,
-                1.2173913043478262
+                0.7791304347826088,
+                0.7791304347826088
               ],
               "duration": 0.85,
               "layer": 0,
               "pivot": [
-                128,
-                128
+                200.0,
+                200.0
               ],
-              "grow_from": 0.4
+              "grow_from": 0.4,
+              "coordinate_size": 400
             },
             "spikes": {
               "frames": [
@@ -8434,15 +8181,16 @@
                 "talisman_16_impact_ice_spike_cluster_8"
               ],
               "scale": [
-                1.1666666666666667,
-                1.1666666666666667
+                0.7466666666666667,
+                0.7466666666666667
               ],
               "duration": 0.65,
               "layer": 20,
               "pivot": [
-                128,
-                235
-              ]
+                200.0,
+                367.1875
+              ],
+              "coordinate_size": 400
             },
             "feet": {
               "frames": [
@@ -8458,7 +8206,8 @@
                 128,
                 128
               ],
-              "hold": true
+              "hold": true,
+              "coordinate_size": 256
             }
           }
         }
@@ -8499,15 +8248,16 @@
             "talisman_16_main_cold_ice_sword_8"
           ],
           "scale": [
-            0.9,
-            0.9
+            0.5760000000000001,
+            0.5760000000000001
           ],
           "duration": 0.62,
           "layer": 30,
           "pivot": [
-            128,
-            235
-          ]
+            200.0,
+            367.1875
+          ],
+          "coordinate_size": 400
         },
         "array": {
           "frames": [
@@ -8522,16 +8272,17 @@
             "talisman_16_area_north_frost_array_8"
           ],
           "scale": [
-            1.1,
-            1.1
+            0.7040000000000001,
+            0.7040000000000001
           ],
           "duration": 0.85,
           "layer": 0,
           "pivot": [
-            128,
-            128
+            200.0,
+            200.0
           ],
-          "grow_from": 0.4
+          "grow_from": 0.4,
+          "coordinate_size": 400
         },
         "spikes": {
           "frames": [
@@ -8546,15 +8297,16 @@
             "talisman_16_impact_ice_spike_cluster_8"
           ],
           "scale": [
-            0.9,
-            0.9
+            0.5760000000000001,
+            0.5760000000000001
           ],
           "duration": 0.65,
           "layer": 20,
           "pivot": [
-            128,
-            235
-          ]
+            200.0,
+            367.1875
+          ],
+          "coordinate_size": 400
         },
         "feet": {
           "frames": [
@@ -8570,10 +8322,15 @@
             128,
             128
           ],
-          "hold": true
+          "hold": true,
+          "coordinate_size": 256
         }
       }
-    }
+    },
+    "description_rows": [
+      "Kiếm băng và băng trồi gây tổng 120% ATK",
+      "Đóng băng 3 giây theo kháng/miễn khống chế"
+    ]
   },
   {
     "id": "skill_talisman_17",
@@ -8585,26 +8342,30 @@
     },
     "skill_class": "active",
     "activation": "manual",
-    "skill_type": "projectile",
+    "skill_type": "layered_talisman",
     "positioning": {
-      "type": "from_hero_to_enemy",
-      "hit_rule": "end_on_hit"
+      "type": "enemy_ground"
     },
     "deployment": {
-      "type": "multi_target"
+      "type": "area"
     },
-    "description": "Nhát chém gây vết thương sâu xé rách linh hồn, cấm hồi máu trong 6 giây.",
+    "description": "Phệ Hồn Trảm: Trảm khí xuyên tuyến hẹp, gây 150% ATK mỗi mục tiêu; Vết thương sâu: giảm hồi máu 50% trong 4 giây.",
     "vfx_frames": [
-      "skill_flame_0",
-      "skill_flame_1",
-      "skill_flame_2",
-      "skill_flame_3"
+      "talisman_17_nether_slash_0",
+      "talisman_17_nether_slash_1",
+      "talisman_17_nether_slash_2",
+      "talisman_17_nether_slash_3",
+      "talisman_17_nether_slash_4",
+      "talisman_17_nether_slash_5",
+      "talisman_17_nether_slash_6",
+      "talisman_17_nether_slash_7",
+      "talisman_17_nether_slash_8"
     ],
     "levels": [
       {
         "level": 1,
         "stats": {
-          "damage_pct": 120,
+          "damage_pct": 150,
           "speed_pct": 200,
           "range": 665,
           "projectile_count": 1,
@@ -8613,83 +8374,98 @@
           "vfx_scale": 0.26
         },
         "description_rows": [
-          "Sát thương 120% Công Kích",
-          "Hồi chiêu 30.0s",
-          "Số lượng mục tiêu: 1"
+          "Trảm khí xuyên tuyến hẹp, gây 150% ATK mỗi mục tiêu",
+          "Vết thương sâu: giảm hồi máu 50% trong 4 giây",
+          "Hồi chiêu: 30s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 150
+        }
       },
       {
         "level": 2,
         "stats": {
-          "damage_pct": 150,
+          "damage_pct": 165,
           "speed_pct": 200,
-          "range": 680,
+          "range": 665,
           "projectile_count": 1,
-          "cooldown": 28.5,
+          "cooldown": 29,
           "radius": 0,
           "vfx_scale": 0.28
         },
         "description_rows": [
-          "Sát thương 150% Công Kích",
-          "Hồi chiêu 28.5s",
-          "Số lượng mục tiêu: 1"
+          "Trảm khí xuyên tuyến hẹp, gây 165% ATK mỗi mục tiêu",
+          "Vết thương sâu: giảm hồi máu 50% trong 4 giây",
+          "Hồi chiêu: 29s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 165
+        }
       },
       {
         "level": 3,
         "stats": {
           "damage_pct": 180,
           "speed_pct": 200,
-          "range": 695,
-          "projectile_count": 2,
-          "cooldown": 27,
+          "range": 665,
+          "projectile_count": 1,
+          "cooldown": 28,
           "radius": 0,
           "vfx_scale": 0.3
         },
         "description_rows": [
-          "Sát thương 180% Công Kích",
-          "Hồi chiêu 27.0s",
-          "Số lượng mục tiêu: 2"
+          "Trảm khí xuyên tuyến hẹp, gây 180% ATK mỗi mục tiêu",
+          "Vết thương sâu: giảm hồi máu 50% trong 4 giây",
+          "Hồi chiêu: 28s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 180
+        }
       },
       {
         "level": 4,
         "stats": {
-          "damage_pct": 210,
+          "damage_pct": 195,
           "speed_pct": 200,
-          "range": 710,
-          "projectile_count": 2,
-          "cooldown": 25.5,
+          "range": 665,
+          "projectile_count": 1,
+          "cooldown": 27,
           "radius": 0,
           "vfx_scale": 0.32
         },
         "description_rows": [
-          "Sát thương 210% Công Kích",
-          "Hồi chiêu 25.5s",
-          "Số lượng mục tiêu: 2"
+          "Trảm khí xuyên tuyến hẹp, gây 195% ATK mỗi mục tiêu",
+          "Vết thương sâu: giảm hồi máu 50% trong 4 giây",
+          "Hồi chiêu: 27s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 195
+        }
       },
       {
         "level": 5,
         "stats": {
-          "damage_pct": 240,
+          "damage_pct": 210,
           "speed_pct": 200,
-          "range": 725,
-          "projectile_count": 3,
-          "cooldown": 24,
+          "range": 665,
+          "projectile_count": 1,
+          "cooldown": 26,
           "radius": 0,
           "vfx_scale": 0.34
         },
         "description_rows": [
-          "Sát thương 240% Công Kích",
-          "Hồi chiêu 24.0s",
-          "Số lượng mục tiêu: 3"
+          "Trảm khí xuyên tuyến hẹp, gây 210% ATK mỗi mục tiêu",
+          "Vết thương sâu: giảm hồi máu 50% trong 4 giây",
+          "Hồi chiêu: 26s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 210
+        }
       }
     ],
     "sfx_events": [
@@ -8697,7 +8473,121 @@
         "sfx_id": "talisman-skill-17",
         "timing": "cast"
       }
-    ]
+    ],
+    "description_rows": [
+      "Trảm khí xuyên tuyến hẹp, gây 150% ATK mỗi mục tiêu",
+      "Vết thương sâu: giảm hồi máu 50% trong 4 giây"
+    ],
+    "cast_config": {
+      "behavior": "nether_slash",
+      "range": 665,
+      "duration": 1.5,
+      "width": 44,
+      "healing_reduction": 0.5,
+      "debuff_duration": 4,
+      "effect_bindings": [
+        {
+          "id": "deep_wound",
+          "phase": "slash_contact",
+          "layer": "nether_slash",
+          "target": "hit_enemies",
+          "chance": 1,
+          "duration": 4,
+          "healing_reduction": 0.5,
+          "apply_once_per_cast_target": true
+        }
+      ],
+      "travel_duration": 0.65,
+      "release_at": 0.09,
+      "damage_pct": 150,
+      "layers": {
+        "nether_slash": {
+          "frames": [
+            "talisman_17_nether_slash_0",
+            "talisman_17_nether_slash_1",
+            "talisman_17_nether_slash_2",
+            "talisman_17_nether_slash_3",
+            "talisman_17_nether_slash_4",
+            "talisman_17_nether_slash_5",
+            "talisman_17_nether_slash_6",
+            "talisman_17_nether_slash_7",
+            "talisman_17_nether_slash_8"
+          ],
+          "pivot": [
+            200,
+            200
+          ],
+          "scale": [
+            0.5,
+            0.5
+          ],
+          "coordinate_size": 400,
+          "start_at": 0.09,
+          "duration": 0.65,
+          "cycle": 0.65,
+          "loop": false,
+          "hold": true,
+          "layer": 30
+        },
+        "nether_rift": {
+          "frames": [
+            "talisman_17_nether_rift_0",
+            "talisman_17_nether_rift_1",
+            "talisman_17_nether_rift_2",
+            "talisman_17_nether_rift_3",
+            "talisman_17_nether_rift_4",
+            "talisman_17_nether_rift_5",
+            "talisman_17_nether_rift_6",
+            "talisman_17_nether_rift_7",
+            "talisman_17_nether_rift_8"
+          ],
+          "pivot": [
+            200,
+            200
+          ],
+          "scale": [
+            0.5,
+            0.5
+          ],
+          "coordinate_size": 400,
+          "start_at": 0.12,
+          "duration": 0.7,
+          "cycle": 0.7,
+          "loop": false,
+          "hold": false,
+          "layer": 0
+        },
+        "torn_wraiths": {
+          "frames": [
+            "talisman_17_torn_wraiths_0",
+            "talisman_17_torn_wraiths_1",
+            "talisman_17_torn_wraiths_2",
+            "talisman_17_torn_wraiths_3",
+            "talisman_17_torn_wraiths_4",
+            "talisman_17_torn_wraiths_5",
+            "talisman_17_torn_wraiths_6",
+            "talisman_17_torn_wraiths_7",
+            "talisman_17_torn_wraiths_8"
+          ],
+          "pivot": [
+            200,
+            200
+          ],
+          "scale": [
+            0.5,
+            0.5
+          ],
+          "coordinate_size": 400,
+          "start_at": 0.22,
+          "duration": 0.65,
+          "cycle": 0.65,
+          "loop": false,
+          "hold": false,
+          "layer": 20
+        }
+      }
+    },
+    "element": "wood"
   },
   {
     "id": "skill_talisman_18",
@@ -8709,108 +8599,130 @@
     },
     "skill_class": "active",
     "activation": "manual",
-    "skill_type": "two_phase_aoe",
+    "skill_type": "layered_talisman",
     "positioning": {
-      "type": "from_hero_to_enemy",
-      "hit_rule": "penetrate"
+      "type": "enemy_ground"
     },
     "deployment": {
       "type": "area"
     },
-    "description": "Phóng ra cột sét tím hủy diệt từ trên cao đánh thẳng vào mục tiêu chỉ định.",
+    "description": "Tử Lôi Phá Diệt: Cột sét và điện lan gây tối đa 180% ATK lên mục tiêu chính; Cột sét có 35% gây tê liệt 0.5 giây; điện lan không roll lại.",
     "vfx_frames": [
-      "skill_meteor"
+      "talisman_18_lightning_pillar_0",
+      "talisman_18_lightning_pillar_1",
+      "talisman_18_lightning_pillar_2",
+      "talisman_18_lightning_pillar_3",
+      "talisman_18_lightning_pillar_4",
+      "talisman_18_lightning_pillar_5",
+      "talisman_18_lightning_pillar_6",
+      "talisman_18_lightning_pillar_7",
+      "talisman_18_lightning_pillar_8"
     ],
     "levels": [
       {
         "level": 1,
         "stats": {
-          "damage_pct": 140,
+          "damage_pct": 180,
           "speed_pct": 200,
           "range": 665,
           "projectile_count": 1,
           "cooldown": 30,
-          "radius": 120,
+          "radius": 110,
           "vfx_scale": 0.26
         },
         "description_rows": [
-          "Sát thương 140% Công Kích",
-          "Hồi chiêu 30.0s",
-          "Số lượng mục tiêu: 1"
+          "Cột sét và điện lan gây tối đa 180% ATK lên mục tiêu chính",
+          "Cột sét có 35% gây tê liệt 0.5 giây; điện lan không roll lại",
+          "Hồi chiêu: 30s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 180
+        }
       },
       {
         "level": 2,
         "stats": {
-          "damage_pct": 175,
+          "damage_pct": 195,
           "speed_pct": 200,
-          "range": 680,
+          "range": 665,
           "projectile_count": 1,
-          "cooldown": 28.5,
-          "radius": 120,
+          "cooldown": 29,
+          "radius": 110,
           "vfx_scale": 0.28
         },
         "description_rows": [
-          "Sát thương 175% Công Kích",
-          "Hồi chiêu 28.5s",
-          "Số lượng mục tiêu: 1"
+          "Cột sét và điện lan gây tối đa 195% ATK lên mục tiêu chính",
+          "Cột sét có 35% gây tê liệt 0.5 giây; điện lan không roll lại",
+          "Hồi chiêu: 29s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 195
+        }
       },
       {
         "level": 3,
         "stats": {
           "damage_pct": 210,
           "speed_pct": 200,
-          "range": 695,
-          "projectile_count": 2,
-          "cooldown": 27,
-          "radius": 120,
+          "range": 665,
+          "projectile_count": 1,
+          "cooldown": 28,
+          "radius": 110,
           "vfx_scale": 0.3
         },
         "description_rows": [
-          "Sát thương 210% Công Kích",
-          "Hồi chiêu 27.0s",
-          "Số lượng mục tiêu: 2"
+          "Cột sét và điện lan gây tối đa 210% ATK lên mục tiêu chính",
+          "Cột sét có 35% gây tê liệt 0.5 giây; điện lan không roll lại",
+          "Hồi chiêu: 28s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 210
+        }
       },
       {
         "level": 4,
         "stats": {
-          "damage_pct": 245,
+          "damage_pct": 225,
           "speed_pct": 200,
-          "range": 710,
-          "projectile_count": 2,
-          "cooldown": 25.5,
-          "radius": 120,
+          "range": 665,
+          "projectile_count": 1,
+          "cooldown": 27,
+          "radius": 110,
           "vfx_scale": 0.32
         },
         "description_rows": [
-          "Sát thương 245% Công Kích",
-          "Hồi chiêu 25.5s",
-          "Số lượng mục tiêu: 2"
+          "Cột sét và điện lan gây tối đa 225% ATK lên mục tiêu chính",
+          "Cột sét có 35% gây tê liệt 0.5 giây; điện lan không roll lại",
+          "Hồi chiêu: 27s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 225
+        }
       },
       {
         "level": 5,
         "stats": {
-          "damage_pct": 280,
+          "damage_pct": 240,
           "speed_pct": 200,
-          "range": 725,
-          "projectile_count": 3,
-          "cooldown": 24,
-          "radius": 120,
+          "range": 665,
+          "projectile_count": 1,
+          "cooldown": 26,
+          "radius": 110,
           "vfx_scale": 0.34
         },
         "description_rows": [
-          "Sát thương 280% Công Kích",
-          "Hồi chiêu 24.0s",
-          "Số lượng mục tiêu: 3"
+          "Cột sét và điện lan gây tối đa 240% ATK lên mục tiêu chính",
+          "Cột sét có 35% gây tê liệt 0.5 giây; điện lan không roll lại",
+          "Hồi chiêu: 26s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 240
+        }
       }
     ],
     "sfx_events": [
@@ -8818,7 +8730,125 @@
         "sfx_id": "talisman-skill-18",
         "timing": "cast"
       }
-    ]
+    ],
+    "description_rows": [
+      "Cột sét và điện lan gây tối đa 180% ATK lên mục tiêu chính",
+      "Cột sét có 35% gây tê liệt 0.5 giây; điện lan không roll lại"
+    ],
+    "cast_config": {
+      "behavior": "lightning_pillar",
+      "range": 665,
+      "duration": 1.5,
+      "radius": 110,
+      "phase_ratios": [
+        0.6666666666666666,
+        0.16666666666666666,
+        0.16666666666666666
+      ],
+      "field_ticks": 3,
+      "effect_bindings": [
+        {
+          "id": "paralyze",
+          "phase": "pillar_contact",
+          "layer": "lightning_pillar",
+          "target": "primary_target",
+          "chance": 0.35,
+          "duration": 0.5,
+          "apply_once_per_cast_target": true
+        }
+      ],
+      "impact_at": 0.25,
+      "field_at": 0.69,
+      "field_interval": 0.4,
+      "damage_pct": 180,
+      "layers": {
+        "lightning_pillar": {
+          "frames": [
+            "talisman_18_lightning_pillar_0",
+            "talisman_18_lightning_pillar_1",
+            "talisman_18_lightning_pillar_2",
+            "talisman_18_lightning_pillar_3",
+            "talisman_18_lightning_pillar_4",
+            "talisman_18_lightning_pillar_5",
+            "talisman_18_lightning_pillar_6",
+            "talisman_18_lightning_pillar_7",
+            "talisman_18_lightning_pillar_8"
+          ],
+          "pivot": [
+            200,
+            365
+          ],
+          "scale": [
+            0.5,
+            0.5
+          ],
+          "coordinate_size": 400,
+          "start_at": 0.09,
+          "duration": 0.54,
+          "cycle": 0.16,
+          "loop": false,
+          "hold": true,
+          "layer": 30
+        },
+        "ground_flash": {
+          "frames": [
+            "talisman_18_ground_flash_0",
+            "talisman_18_ground_flash_1",
+            "talisman_18_ground_flash_2",
+            "talisman_18_ground_flash_3",
+            "talisman_18_ground_flash_4",
+            "talisman_18_ground_flash_5",
+            "talisman_18_ground_flash_6",
+            "talisman_18_ground_flash_7",
+            "talisman_18_ground_flash_8"
+          ],
+          "pivot": [
+            200,
+            200
+          ],
+          "scale": [
+            0.5,
+            0.5
+          ],
+          "coordinate_size": 400,
+          "start_at": 0.25,
+          "duration": 0.45,
+          "cycle": 0.45,
+          "loop": false,
+          "hold": false,
+          "layer": 20
+        },
+        "electric_field": {
+          "frames": [
+            "talisman_18_electric_field_0",
+            "talisman_18_electric_field_1",
+            "talisman_18_electric_field_2",
+            "talisman_18_electric_field_3",
+            "talisman_18_electric_field_4",
+            "talisman_18_electric_field_5",
+            "talisman_18_electric_field_6",
+            "talisman_18_electric_field_7",
+            "talisman_18_electric_field_8"
+          ],
+          "pivot": [
+            200,
+            200
+          ],
+          "scale": [
+            0.5,
+            0.5
+          ],
+          "coordinate_size": 400,
+          "start_at": 0.29,
+          "duration": 1.2,
+          "cycle": 1.2,
+          "loop": false,
+          "hold": true,
+          "layer": 0
+        }
+      }
+    },
+    "element": "water"
   },
   {
     "id": "skill_talisman_19",
@@ -8830,108 +8860,135 @@
     },
     "skill_class": "active",
     "activation": "manual",
-    "skill_type": "two_phase_aoe",
+    "skill_type": "layered_talisman",
     "positioning": {
-      "type": "from_hero_to_enemy",
-      "hit_rule": "penetrate"
+      "type": "hero_self"
     },
     "deployment": {
       "type": "area"
     },
-    "description": "Thổi ra biển lửa thiêu đốt toàn bộ kẻ địch xung quanh liên tục.",
+    "description": "Phần Thiên Chướng: Vành lửa theo hero, bán kính 140; Thiêu đốt gây tổng 240% ATK trong 4 giây (8 tick); Mỗi mục tiêu chỉ bị áp một lần mỗi lần thi triển.",
     "vfx_frames": [
-      "skill_meteor"
+      "talisman_19_fire_array_0",
+      "talisman_19_fire_array_1",
+      "talisman_19_fire_array_2",
+      "talisman_19_fire_array_3",
+      "talisman_19_fire_array_4",
+      "talisman_19_fire_array_5",
+      "talisman_19_fire_array_6",
+      "talisman_19_fire_array_7",
+      "talisman_19_fire_array_8"
     ],
     "levels": [
       {
         "level": 1,
         "stats": {
-          "damage_pct": 140,
+          "damage_pct": 240,
           "speed_pct": 200,
           "range": 665,
           "projectile_count": 1,
           "cooldown": 30,
-          "radius": 120,
+          "radius": 140,
           "vfx_scale": 0.26
         },
         "description_rows": [
-          "Sát thương 140% Công Kích",
-          "Hồi chiêu 30.0s",
-          "Số lượng mục tiêu: 1"
+          "Vành lửa theo hero, bán kính 140",
+          "Thiêu đốt gây tổng 240% ATK trong 4 giây (8 tick)",
+          "Mỗi mục tiêu chỉ bị áp một lần mỗi lần thi triển",
+          "Hồi chiêu: 30s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 240
+        }
       },
       {
         "level": 2,
         "stats": {
-          "damage_pct": 175,
+          "damage_pct": 255,
           "speed_pct": 200,
-          "range": 680,
+          "range": 665,
           "projectile_count": 1,
-          "cooldown": 28.5,
-          "radius": 120,
+          "cooldown": 29,
+          "radius": 140,
           "vfx_scale": 0.28
         },
         "description_rows": [
-          "Sát thương 175% Công Kích",
-          "Hồi chiêu 28.5s",
-          "Số lượng mục tiêu: 1"
+          "Vành lửa theo hero, bán kính 140",
+          "Thiêu đốt gây tổng 255% ATK trong 4 giây (8 tick)",
+          "Mỗi mục tiêu chỉ bị áp một lần mỗi lần thi triển",
+          "Hồi chiêu: 29s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 255
+        }
       },
       {
         "level": 3,
         "stats": {
-          "damage_pct": 210,
+          "damage_pct": 270,
           "speed_pct": 200,
-          "range": 695,
-          "projectile_count": 2,
-          "cooldown": 27,
-          "radius": 120,
+          "range": 665,
+          "projectile_count": 1,
+          "cooldown": 28,
+          "radius": 140,
           "vfx_scale": 0.3
         },
         "description_rows": [
-          "Sát thương 210% Công Kích",
-          "Hồi chiêu 27.0s",
-          "Số lượng mục tiêu: 2"
+          "Vành lửa theo hero, bán kính 140",
+          "Thiêu đốt gây tổng 270% ATK trong 4 giây (8 tick)",
+          "Mỗi mục tiêu chỉ bị áp một lần mỗi lần thi triển",
+          "Hồi chiêu: 28s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 270
+        }
       },
       {
         "level": 4,
         "stats": {
-          "damage_pct": 245,
+          "damage_pct": 285,
           "speed_pct": 200,
-          "range": 710,
-          "projectile_count": 2,
-          "cooldown": 25.5,
-          "radius": 120,
+          "range": 665,
+          "projectile_count": 1,
+          "cooldown": 27,
+          "radius": 140,
           "vfx_scale": 0.32
         },
         "description_rows": [
-          "Sát thương 245% Công Kích",
-          "Hồi chiêu 25.5s",
-          "Số lượng mục tiêu: 2"
+          "Vành lửa theo hero, bán kính 140",
+          "Thiêu đốt gây tổng 285% ATK trong 4 giây (8 tick)",
+          "Mỗi mục tiêu chỉ bị áp một lần mỗi lần thi triển",
+          "Hồi chiêu: 27s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 285
+        }
       },
       {
         "level": 5,
         "stats": {
-          "damage_pct": 280,
+          "damage_pct": 300,
           "speed_pct": 200,
-          "range": 725,
-          "projectile_count": 3,
-          "cooldown": 24,
-          "radius": 120,
+          "range": 665,
+          "projectile_count": 1,
+          "cooldown": 26,
+          "radius": 140,
           "vfx_scale": 0.34
         },
         "description_rows": [
-          "Sát thương 280% Công Kích",
-          "Hồi chiêu 24.0s",
-          "Số lượng mục tiêu: 3"
+          "Vành lửa theo hero, bán kính 140",
+          "Thiêu đốt gây tổng 300% ATK trong 4 giây (8 tick)",
+          "Mỗi mục tiêu chỉ bị áp một lần mỗi lần thi triển",
+          "Hồi chiêu: 26s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 300
+        }
       }
     ],
     "sfx_events": [
@@ -8939,7 +8996,124 @@
         "sfx_id": "talisman-skill-19",
         "timing": "cast"
       }
-    ]
+    ],
+    "description_rows": [
+      "Vành lửa theo hero, bán kính 140",
+      "Thiêu đốt gây tổng 240% ATK trong 4 giây (8 tick)",
+      "Mỗi mục tiêu chỉ bị áp một lần mỗi lần thi triển"
+    ],
+    "cast_config": {
+      "behavior": "fire_aura",
+      "range": 665,
+      "duration": 4.11,
+      "radius": 140,
+      "effect_duration": 4,
+      "effect_bindings": [
+        {
+          "id": "burn",
+          "phase": "first_ring_contact",
+          "layer": "fire_ring",
+          "target": "enemies_entering_radius",
+          "chance": 1,
+          "duration": 4,
+          "tick_interval": 0.5,
+          "damage_budget_ratio": 1,
+          "dps_resolution": "cast_damage_budget / 4.0",
+          "tick_count": 8,
+          "apply_once_per_cast_target": true
+        }
+      ],
+      "damage_owner": "burn_status_only",
+      "activate_at": 0.11,
+      "damage_pct": 240,
+      "layers": {
+        "fire_array": {
+          "frames": [
+            "talisman_19_fire_array_0",
+            "talisman_19_fire_array_1",
+            "talisman_19_fire_array_2",
+            "talisman_19_fire_array_3",
+            "talisman_19_fire_array_4",
+            "talisman_19_fire_array_5",
+            "talisman_19_fire_array_6",
+            "talisman_19_fire_array_7",
+            "talisman_19_fire_array_8"
+          ],
+          "pivot": [
+            200,
+            200
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "coordinate_size": 400,
+          "start_at": 0.13,
+          "duration": 3.98,
+          "cycle": 0.63,
+          "loop": true,
+          "hold": false,
+          "layer": 0
+        },
+        "fire_ring": {
+          "frames": [
+            "talisman_19_fire_ring_0",
+            "talisman_19_fire_ring_1",
+            "talisman_19_fire_ring_2",
+            "talisman_19_fire_ring_3",
+            "talisman_19_fire_ring_4",
+            "talisman_19_fire_ring_5",
+            "talisman_19_fire_ring_6",
+            "talisman_19_fire_ring_7",
+            "talisman_19_fire_ring_8"
+          ],
+          "pivot": [
+            200,
+            200
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "coordinate_size": 400,
+          "start_at": 0.11,
+          "duration": 4.0,
+          "cycle": 0.63,
+          "loop": true,
+          "hold": false,
+          "layer": 20
+        },
+        "embers": {
+          "frames": [
+            "talisman_19_embers_0",
+            "talisman_19_embers_1",
+            "talisman_19_embers_2",
+            "talisman_19_embers_3",
+            "talisman_19_embers_4",
+            "talisman_19_embers_5",
+            "talisman_19_embers_6",
+            "talisman_19_embers_7",
+            "talisman_19_embers_8"
+          ],
+          "pivot": [
+            200,
+            200
+          ],
+          "scale": [
+            0.5,
+            0.5
+          ],
+          "coordinate_size": 400,
+          "start_at": 0.15,
+          "duration": 3.96,
+          "cycle": 0.63,
+          "loop": true,
+          "hold": false,
+          "layer": 30
+        }
+      }
+    },
+    "element": "fire"
   },
   {
     "id": "skill_talisman_20",
@@ -8951,141 +9125,130 @@
     },
     "skill_class": "active",
     "activation": "manual",
-    "skill_type": "ground_aoe",
+    "skill_type": "layered_talisman",
     "positioning": {
-      "type": "from_hero_to_enemy",
-      "hit_rule": "penetrate"
+      "type": "hero_self"
     },
     "deployment": {
-      "type": "area"
+      "type": "self_buff"
     },
-    "description": "Kháng toàn bộ sát thương khống chế và giảm 50% sát thương nhận vào trong 4 giây.",
+    "description": "Kim Thân Bất Diệt: Trong 4 giây: giảm 50% sát thương nhận vào và miễn khống chế; Không gây sát thương; vẫn có thể nhận độc và thiêu đốt.",
     "vfx_frames": [
-      "skill_frost_0",
-      "skill_frost_1",
-      "skill_frost_2",
-      "skill_frost_3"
+      "talisman_20_lotus_0",
+      "talisman_20_lotus_1",
+      "talisman_20_lotus_2",
+      "talisman_20_lotus_3",
+      "talisman_20_lotus_4",
+      "talisman_20_lotus_5",
+      "talisman_20_lotus_6",
+      "talisman_20_lotus_7",
+      "talisman_20_lotus_8"
     ],
     "levels": [
       {
         "level": 1,
         "stats": {
-          "damage_pct": 90,
+          "damage_pct": 0,
           "speed_pct": 200,
           "range": 665,
           "projectile_count": 1,
           "cooldown": 30,
-          "radius": 120,
+          "radius": 0,
           "vfx_scale": 0.26
         },
         "description_rows": [
-          "Sát thương 90% Công Kích",
-          "Hồi chiêu 30.0s",
-          "Số lượng mục tiêu: 1"
+          "Trong 4 giây: giảm 50% sát thương nhận vào và miễn khống chế",
+          "Không gây sát thương; vẫn có thể nhận độc và thiêu đốt",
+          "Hồi chiêu: 30s"
         ],
-        "effects": [
-          {
-            "id": "slow",
-            "duration": 1.5,
-            "slow_percent": 0.25
-          }
-        ]
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 0
+        }
       },
       {
         "level": 2,
         "stats": {
-          "damage_pct": 112,
+          "damage_pct": 0,
           "speed_pct": 200,
-          "range": 680,
+          "range": 665,
           "projectile_count": 1,
-          "cooldown": 28.5,
-          "radius": 120,
+          "cooldown": 29,
+          "radius": 0,
           "vfx_scale": 0.28
         },
         "description_rows": [
-          "Sát thương 112% Công Kích",
-          "Hồi chiêu 28.5s",
-          "Số lượng mục tiêu: 1"
+          "Trong 4 giây: giảm 50% sát thương nhận vào và miễn khống chế",
+          "Không gây sát thương; vẫn có thể nhận độc và thiêu đốt",
+          "Hồi chiêu: 29s"
         ],
-        "effects": [
-          {
-            "id": "slow",
-            "duration": 1.5,
-            "slow_percent": 0.25
-          }
-        ]
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 0
+        }
       },
       {
         "level": 3,
         "stats": {
-          "damage_pct": 135,
+          "damage_pct": 0,
           "speed_pct": 200,
-          "range": 695,
-          "projectile_count": 2,
-          "cooldown": 27,
-          "radius": 120,
+          "range": 665,
+          "projectile_count": 1,
+          "cooldown": 28,
+          "radius": 0,
           "vfx_scale": 0.3
         },
         "description_rows": [
-          "Sát thương 135% Công Kích",
-          "Hồi chiêu 27.0s",
-          "Số lượng mục tiêu: 2"
+          "Trong 4 giây: giảm 50% sát thương nhận vào và miễn khống chế",
+          "Không gây sát thương; vẫn có thể nhận độc và thiêu đốt",
+          "Hồi chiêu: 28s"
         ],
-        "effects": [
-          {
-            "id": "slow",
-            "duration": 1.5,
-            "slow_percent": 0.25
-          }
-        ]
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 0
+        }
       },
       {
         "level": 4,
         "stats": {
-          "damage_pct": 157,
+          "damage_pct": 0,
           "speed_pct": 200,
-          "range": 710,
-          "projectile_count": 2,
-          "cooldown": 25.5,
-          "radius": 120,
+          "range": 665,
+          "projectile_count": 1,
+          "cooldown": 27,
+          "radius": 0,
           "vfx_scale": 0.32
         },
         "description_rows": [
-          "Sát thương 157% Công Kích",
-          "Hồi chiêu 25.5s",
-          "Số lượng mục tiêu: 2"
+          "Trong 4 giây: giảm 50% sát thương nhận vào và miễn khống chế",
+          "Không gây sát thương; vẫn có thể nhận độc và thiêu đốt",
+          "Hồi chiêu: 27s"
         ],
-        "effects": [
-          {
-            "id": "slow",
-            "duration": 1.5,
-            "slow_percent": 0.25
-          }
-        ]
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 0
+        }
       },
       {
         "level": 5,
         "stats": {
-          "damage_pct": 180,
+          "damage_pct": 0,
           "speed_pct": 200,
-          "range": 725,
-          "projectile_count": 3,
-          "cooldown": 24,
-          "radius": 120,
+          "range": 665,
+          "projectile_count": 1,
+          "cooldown": 26,
+          "radius": 0,
           "vfx_scale": 0.34
         },
         "description_rows": [
-          "Sát thương 180% Công Kích",
-          "Hồi chiêu 24.0s",
-          "Số lượng mục tiêu: 3"
+          "Trong 4 giây: giảm 50% sát thương nhận vào và miễn khống chế",
+          "Không gây sát thương; vẫn có thể nhận độc và thiêu đốt",
+          "Hồi chiêu: 26s"
         ],
-        "effects": [
-          {
-            "id": "slow",
-            "duration": 1.5,
-            "slow_percent": 0.25
-          }
-        ]
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 0
+        }
       }
     ],
     "sfx_events": [
@@ -9093,7 +9256,127 @@
         "sfx_id": "talisman-skill-20",
         "timing": "cast"
       }
-    ]
+    ],
+    "description_rows": [
+      "Trong 4 giây: giảm 50% sát thương nhận vào và miễn khống chế",
+      "Không gây sát thương; vẫn có thể nhận độc và thiêu đốt"
+    ],
+    "cast_config": {
+      "behavior": "golden_guard",
+      "range": 665,
+      "duration": 4.12,
+      "damage_reduction": 0.5,
+      "control_immunity": true,
+      "effect_duration": 4,
+      "effect_bindings": [
+        {
+          "id": "damage_reduction",
+          "phase": "bell_forms",
+          "layer": "golden_bell",
+          "target": "caster",
+          "chance": 1,
+          "duration": 4,
+          "reduction_pct": 0.5
+        },
+        {
+          "id": "control_immune",
+          "phase": "bell_forms",
+          "layer": "golden_bell",
+          "target": "caster",
+          "chance": 1,
+          "duration": 4
+        }
+      ],
+      "activate_at": 0.12,
+      "damage_pct": 0,
+      "layers": {
+        "lotus": {
+          "frames": [
+            "talisman_20_lotus_0",
+            "talisman_20_lotus_1",
+            "talisman_20_lotus_2",
+            "talisman_20_lotus_3",
+            "talisman_20_lotus_4",
+            "talisman_20_lotus_5",
+            "talisman_20_lotus_6",
+            "talisman_20_lotus_7",
+            "talisman_20_lotus_8"
+          ],
+          "pivot": [
+            200,
+            200
+          ],
+          "scale": [
+            0.5,
+            0.5
+          ],
+          "coordinate_size": 400,
+          "start_at": 0.16,
+          "duration": 3.96,
+          "cycle": 0.63,
+          "loop": true,
+          "hold": false,
+          "layer": 0
+        },
+        "golden_bell": {
+          "frames": [
+            "talisman_20_golden_bell_0",
+            "talisman_20_golden_bell_1",
+            "talisman_20_golden_bell_2",
+            "talisman_20_golden_bell_3",
+            "talisman_20_golden_bell_4",
+            "talisman_20_golden_bell_5",
+            "talisman_20_golden_bell_6",
+            "talisman_20_golden_bell_7",
+            "talisman_20_golden_bell_8"
+          ],
+          "pivot": [
+            200,
+            365
+          ],
+          "scale": [
+            0.5,
+            0.5
+          ],
+          "coordinate_size": 400,
+          "start_at": 0.12,
+          "duration": 4.0,
+          "cycle": 0.63,
+          "loop": true,
+          "hold": false,
+          "layer": 30
+        },
+        "protection_glyphs": {
+          "frames": [
+            "talisman_20_protection_glyphs_0",
+            "talisman_20_protection_glyphs_1",
+            "talisman_20_protection_glyphs_2",
+            "talisman_20_protection_glyphs_3",
+            "talisman_20_protection_glyphs_4",
+            "talisman_20_protection_glyphs_5",
+            "talisman_20_protection_glyphs_6",
+            "talisman_20_protection_glyphs_7",
+            "talisman_20_protection_glyphs_8"
+          ],
+          "pivot": [
+            200,
+            200
+          ],
+          "scale": [
+            0.5,
+            0.5
+          ],
+          "coordinate_size": 400,
+          "start_at": 0.2,
+          "duration": 3.92,
+          "cycle": 0.63,
+          "loop": true,
+          "hold": false,
+          "layer": 40
+        }
+      }
+    },
+    "element": "earth"
   },
   {
     "id": "skill_talisman_21",
@@ -9105,17 +9388,24 @@
     },
     "skill_class": "active",
     "activation": "manual",
-    "skill_type": "chain",
+    "skill_type": "layered_talisman",
     "positioning": {
-      "type": "from_hero_to_enemy",
-      "hit_rule": "end_on_hit"
+      "type": "enemy_ground"
     },
     "deployment": {
-      "type": "multi_target"
+      "type": "area"
     },
-    "description": "Triệu hồi đàn quỷ ám tấn công và trừ độc liên tục lên các kẻ địch.",
+    "description": "Bách Quỷ Dạ Hành: Tối đa 3 độc hồn, mỗi mục tiêu một hồn; Mỗi mục tiêu chịu tổng 110% ATK: trực tiếp và độc 4 giây; Vũng độc và ấn độc không gây thêm sát thương.",
     "vfx_frames": [
-      "skill_lightning_chain"
+      "talisman_21_poison_pool_0",
+      "talisman_21_poison_pool_1",
+      "talisman_21_poison_pool_2",
+      "talisman_21_poison_pool_3",
+      "talisman_21_poison_pool_4",
+      "talisman_21_poison_pool_5",
+      "talisman_21_poison_pool_6",
+      "talisman_21_poison_pool_7",
+      "talisman_21_poison_pool_8"
     ],
     "levels": [
       {
@@ -9126,87 +9416,107 @@
           "range": 665,
           "projectile_count": 1,
           "cooldown": 30,
-          "radius": 0,
+          "radius": 160,
           "vfx_scale": 0.26
         },
         "description_rows": [
-          "Sát thương 110% Công Kích",
-          "Hồi chiêu 30.0s",
-          "Số lượng mục tiêu: 1"
+          "Tối đa 3 độc hồn, mỗi mục tiêu một hồn",
+          "Mỗi mục tiêu chịu tổng 110% ATK: trực tiếp và độc 4 giây",
+          "Vũng độc và ấn độc không gây thêm sát thương",
+          "Hồi chiêu: 30s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 110
+        }
       },
       {
         "level": 2,
         "stats": {
-          "damage_pct": 137,
+          "damage_pct": 125,
           "speed_pct": 200,
-          "range": 680,
+          "range": 665,
           "projectile_count": 1,
-          "cooldown": 28.5,
-          "radius": 0,
+          "cooldown": 29,
+          "radius": 160,
           "vfx_scale": 0.28
         },
         "description_rows": [
-          "Sát thương 137% Công Kích",
-          "Hồi chiêu 28.5s",
-          "Số lượng mục tiêu: 1"
+          "Tối đa 3 độc hồn, mỗi mục tiêu một hồn",
+          "Mỗi mục tiêu chịu tổng 125% ATK: trực tiếp và độc 4 giây",
+          "Vũng độc và ấn độc không gây thêm sát thương",
+          "Hồi chiêu: 29s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 125
+        }
       },
       {
         "level": 3,
         "stats": {
-          "damage_pct": 165,
+          "damage_pct": 140,
           "speed_pct": 200,
-          "range": 695,
-          "projectile_count": 2,
-          "cooldown": 27,
-          "radius": 0,
+          "range": 665,
+          "projectile_count": 1,
+          "cooldown": 28,
+          "radius": 160,
           "vfx_scale": 0.3
         },
         "description_rows": [
-          "Sát thương 165% Công Kích",
-          "Hồi chiêu 27.0s",
-          "Số lượng mục tiêu: 2"
+          "Tối đa 3 độc hồn, mỗi mục tiêu một hồn",
+          "Mỗi mục tiêu chịu tổng 140% ATK: trực tiếp và độc 4 giây",
+          "Vũng độc và ấn độc không gây thêm sát thương",
+          "Hồi chiêu: 28s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 140
+        }
       },
       {
         "level": 4,
         "stats": {
-          "damage_pct": 192,
+          "damage_pct": 155,
           "speed_pct": 200,
-          "range": 710,
-          "projectile_count": 2,
-          "cooldown": 25.5,
-          "radius": 0,
+          "range": 665,
+          "projectile_count": 1,
+          "cooldown": 27,
+          "radius": 160,
           "vfx_scale": 0.32
         },
         "description_rows": [
-          "Sát thương 192% Công Kích",
-          "Hồi chiêu 25.5s",
-          "Số lượng mục tiêu: 2"
+          "Tối đa 3 độc hồn, mỗi mục tiêu một hồn",
+          "Mỗi mục tiêu chịu tổng 155% ATK: trực tiếp và độc 4 giây",
+          "Vũng độc và ấn độc không gây thêm sát thương",
+          "Hồi chiêu: 27s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 155
+        }
       },
       {
         "level": 5,
         "stats": {
-          "damage_pct": 220,
+          "damage_pct": 170,
           "speed_pct": 200,
-          "range": 725,
-          "projectile_count": 3,
-          "cooldown": 24,
-          "radius": 0,
+          "range": 665,
+          "projectile_count": 1,
+          "cooldown": 26,
+          "radius": 160,
           "vfx_scale": 0.34
         },
         "description_rows": [
-          "Sát thương 220% Công Kích",
-          "Hồi chiêu 24.0s",
-          "Số lượng mục tiêu: 3"
+          "Tối đa 3 độc hồn, mỗi mục tiêu một hồn",
+          "Mỗi mục tiêu chịu tổng 170% ATK: trực tiếp và độc 4 giây",
+          "Vũng độc và ấn độc không gây thêm sát thương",
+          "Hồi chiêu: 26s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 170
+        }
       }
     ],
     "sfx_events": [
@@ -9214,11 +9524,131 @@
         "sfx_id": "talisman-skill-21",
         "timing": "cast"
       }
-    ]
+    ],
+    "description_rows": [
+      "Tối đa 3 độc hồn, mỗi mục tiêu một hồn",
+      "Mỗi mục tiêu chịu tổng 110% ATK: trực tiếp và độc 4 giây",
+      "Vũng độc và ấn độc không gây thêm sát thương"
+    ],
+    "cast_config": {
+      "behavior": "poison_wraiths",
+      "range": 665,
+      "duration": 5,
+      "radius": 160,
+      "max_targets": 3,
+      "direct_ratio": 0.45454545454545453,
+      "poison_ratio": 0.5454545454545454,
+      "poison_ticks": 4,
+      "effect_bindings": [
+        {
+          "id": "poison",
+          "phase": "wraith_contact",
+          "layer": "poison_wraith",
+          "target": "hit_enemies",
+          "chance": 1,
+          "duration": 4,
+          "tick_interval": 1,
+          "damage_budget_ratio": 0.5454545454545454,
+          "dps_resolution": "cast_damage_budget * (60.0 / 110.0) / 4.0",
+          "tick_count": 4,
+          "apply_once_per_cast_target": true
+        }
+      ],
+      "release_at": 0.18,
+      "travel_duration": 0.7,
+      "damage_pct": 110,
+      "layers": {
+        "poison_pool": {
+          "frames": [
+            "talisman_21_poison_pool_0",
+            "talisman_21_poison_pool_1",
+            "talisman_21_poison_pool_2",
+            "talisman_21_poison_pool_3",
+            "talisman_21_poison_pool_4",
+            "talisman_21_poison_pool_5",
+            "talisman_21_poison_pool_6",
+            "talisman_21_poison_pool_7",
+            "talisman_21_poison_pool_8"
+          ],
+          "pivot": [
+            200,
+            200
+          ],
+          "scale": [
+            0.5,
+            0.5
+          ],
+          "coordinate_size": 400,
+          "start_at": 0.0,
+          "duration": 1.2,
+          "cycle": 0.63,
+          "loop": true,
+          "hold": false,
+          "layer": 0
+        },
+        "poison_wraith": {
+          "frames": [
+            "talisman_21_poison_wraith_0",
+            "talisman_21_poison_wraith_1",
+            "talisman_21_poison_wraith_2",
+            "talisman_21_poison_wraith_3",
+            "talisman_21_poison_wraith_4",
+            "talisman_21_poison_wraith_5",
+            "talisman_21_poison_wraith_6",
+            "talisman_21_poison_wraith_7",
+            "talisman_21_poison_wraith_8"
+          ],
+          "pivot": [
+            200,
+            200
+          ],
+          "scale": [
+            0.5,
+            0.5
+          ],
+          "coordinate_size": 400,
+          "start_at": 0.18,
+          "duration": 0.7,
+          "cycle": 0.7,
+          "loop": false,
+          "hold": true,
+          "layer": 30
+        },
+        "poison_mark": {
+          "frames": [
+            "talisman_21_poison_mark_0",
+            "talisman_21_poison_mark_1",
+            "talisman_21_poison_mark_2",
+            "talisman_21_poison_mark_3",
+            "talisman_21_poison_mark_4",
+            "talisman_21_poison_mark_5",
+            "talisman_21_poison_mark_6",
+            "talisman_21_poison_mark_7",
+            "talisman_21_poison_mark_8"
+          ],
+          "pivot": [
+            200,
+            200
+          ],
+          "scale": [
+            0.5,
+            0.5
+          ],
+          "coordinate_size": 400,
+          "start_at": 0.0,
+          "duration": 4.0,
+          "cycle": 0.63,
+          "loop": true,
+          "hold": true,
+          "layer": 40
+        }
+      }
+    },
+    "element": "metal"
   },
   {
     "id": "skill_talisman_22",
-    "display_name": "Thần Mộc Trói Buộc",
+    "display_name": "Thần Mộc Long Hộ",
     "category": "talisman",
     "createria_unlock": {
       "level": 1,
@@ -9226,108 +9656,135 @@
     },
     "skill_class": "active",
     "activation": "manual",
-    "skill_type": "two_phase_aoe",
+    "skill_type": "layered_talisman",
     "positioning": {
-      "type": "from_hero_to_enemy",
-      "hit_rule": "penetrate"
+      "type": "hero_self"
     },
     "deployment": {
-      "type": "area"
+      "type": "self_buff"
     },
-    "description": "Rễ cây trồi lên từ lòng đất trói chặt kẻ địch và liên tục hút chân khí.",
+    "description": "Thần Mộc Long Hộ: Mộc long hộ chủ tạo khiên bằng 15% Max HP trong 3 giây; Hồi 2% Max HP mỗi giây, tổng 6% Max HP; Không gây sát thương hoặc trói mục tiêu.",
     "vfx_frames": [
-      "skill_meteor"
+      "talisman_22_wood_dragon_0",
+      "talisman_22_wood_dragon_1",
+      "talisman_22_wood_dragon_2",
+      "talisman_22_wood_dragon_3",
+      "talisman_22_wood_dragon_4",
+      "talisman_22_wood_dragon_5",
+      "talisman_22_wood_dragon_6",
+      "talisman_22_wood_dragon_7",
+      "talisman_22_wood_dragon_8"
     ],
     "levels": [
       {
         "level": 1,
         "stats": {
-          "damage_pct": 140,
+          "damage_pct": 0,
           "speed_pct": 200,
           "range": 665,
           "projectile_count": 1,
           "cooldown": 30,
-          "radius": 120,
+          "radius": 0,
           "vfx_scale": 0.26
         },
         "description_rows": [
-          "Sát thương 140% Công Kích",
-          "Hồi chiêu 30.0s",
-          "Số lượng mục tiêu: 1"
+          "Mộc long hộ chủ tạo khiên bằng 15% Max HP trong 3 giây",
+          "Hồi 2% Max HP mỗi giây, tổng 6% Max HP",
+          "Không gây sát thương hoặc trói mục tiêu",
+          "Hồi chiêu: 30s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 0
+        }
       },
       {
         "level": 2,
         "stats": {
-          "damage_pct": 175,
+          "damage_pct": 0,
           "speed_pct": 200,
-          "range": 680,
+          "range": 665,
           "projectile_count": 1,
-          "cooldown": 28.5,
-          "radius": 120,
+          "cooldown": 29,
+          "radius": 0,
           "vfx_scale": 0.28
         },
         "description_rows": [
-          "Sát thương 175% Công Kích",
-          "Hồi chiêu 28.5s",
-          "Số lượng mục tiêu: 1"
+          "Mộc long hộ chủ tạo khiên bằng 15% Max HP trong 3 giây",
+          "Hồi 2% Max HP mỗi giây, tổng 6% Max HP",
+          "Không gây sát thương hoặc trói mục tiêu",
+          "Hồi chiêu: 29s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 0
+        }
       },
       {
         "level": 3,
         "stats": {
-          "damage_pct": 210,
+          "damage_pct": 0,
           "speed_pct": 200,
-          "range": 695,
-          "projectile_count": 2,
-          "cooldown": 27,
-          "radius": 120,
+          "range": 665,
+          "projectile_count": 1,
+          "cooldown": 28,
+          "radius": 0,
           "vfx_scale": 0.3
         },
         "description_rows": [
-          "Sát thương 210% Công Kích",
-          "Hồi chiêu 27.0s",
-          "Số lượng mục tiêu: 2"
+          "Mộc long hộ chủ tạo khiên bằng 15% Max HP trong 3 giây",
+          "Hồi 2% Max HP mỗi giây, tổng 6% Max HP",
+          "Không gây sát thương hoặc trói mục tiêu",
+          "Hồi chiêu: 28s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 0
+        }
       },
       {
         "level": 4,
         "stats": {
-          "damage_pct": 245,
+          "damage_pct": 0,
           "speed_pct": 200,
-          "range": 710,
-          "projectile_count": 2,
-          "cooldown": 25.5,
-          "radius": 120,
+          "range": 665,
+          "projectile_count": 1,
+          "cooldown": 27,
+          "radius": 0,
           "vfx_scale": 0.32
         },
         "description_rows": [
-          "Sát thương 245% Công Kích",
-          "Hồi chiêu 25.5s",
-          "Số lượng mục tiêu: 2"
+          "Mộc long hộ chủ tạo khiên bằng 15% Max HP trong 3 giây",
+          "Hồi 2% Max HP mỗi giây, tổng 6% Max HP",
+          "Không gây sát thương hoặc trói mục tiêu",
+          "Hồi chiêu: 27s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 0
+        }
       },
       {
         "level": 5,
         "stats": {
-          "damage_pct": 280,
+          "damage_pct": 0,
           "speed_pct": 200,
-          "range": 725,
-          "projectile_count": 3,
-          "cooldown": 24,
-          "radius": 120,
+          "range": 665,
+          "projectile_count": 1,
+          "cooldown": 26,
+          "radius": 0,
           "vfx_scale": 0.34
         },
         "description_rows": [
-          "Sát thương 280% Công Kích",
-          "Hồi chiêu 24.0s",
-          "Số lượng mục tiêu: 3"
+          "Mộc long hộ chủ tạo khiên bằng 15% Max HP trong 3 giây",
+          "Hồi 2% Max HP mỗi giây, tổng 6% Max HP",
+          "Không gây sát thương hoặc trói mục tiêu",
+          "Hồi chiêu: 26s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 0
+        }
       }
     ],
     "sfx_events": [
@@ -9335,7 +9792,132 @@
         "sfx_id": "talisman-skill-22",
         "timing": "cast"
       }
-    ]
+    ],
+    "description_rows": [
+      "Mộc long hộ chủ tạo khiên bằng 15% Max HP trong 3 giây",
+      "Hồi 2% Max HP mỗi giây, tổng 6% Max HP",
+      "Không gây sát thương hoặc trói mục tiêu"
+    ],
+    "cast_config": {
+      "behavior": "wood_guard",
+      "range": 665,
+      "duration": 3.3,
+      "shield_max_hp_ratio": 0.15,
+      "heal_max_hp_per_tick": 0.02,
+      "heal_ticks": 3,
+      "effect_duration": 3,
+      "effect_bindings": [
+        {
+          "id": "shield",
+          "phase": "dragon_guard_forms",
+          "layer": "bark_shield",
+          "target": "caster",
+          "chance": 1,
+          "duration": 3,
+          "shield_percent_max_hp": 0.15
+        },
+        {
+          "id": "regen",
+          "phase": "regen_aura_forms",
+          "layer": "regen_aura",
+          "target": "caster",
+          "chance": 1,
+          "duration": 3,
+          "tick_interval": 1,
+          "hp_percent_per_sec": 0.02,
+          "tick_count": 3
+        }
+      ],
+      "activate_at": 0.3,
+      "damage_pct": 0,
+      "layers": {
+        "wood_dragon": {
+          "frames": [
+            "talisman_22_wood_dragon_0",
+            "talisman_22_wood_dragon_1",
+            "talisman_22_wood_dragon_2",
+            "talisman_22_wood_dragon_3",
+            "talisman_22_wood_dragon_4",
+            "talisman_22_wood_dragon_5",
+            "talisman_22_wood_dragon_6",
+            "talisman_22_wood_dragon_7",
+            "talisman_22_wood_dragon_8"
+          ],
+          "pivot": [
+            200,
+            200
+          ],
+          "scale": [
+            0.5,
+            0.5
+          ],
+          "coordinate_size": 400,
+          "start_at": 0.1,
+          "duration": 0.72,
+          "cycle": 0.72,
+          "loop": false,
+          "hold": false,
+          "layer": 30
+        },
+        "bark_shield": {
+          "frames": [
+            "talisman_22_bark_shield_0",
+            "talisman_22_bark_shield_1",
+            "talisman_22_bark_shield_2",
+            "talisman_22_bark_shield_3",
+            "talisman_22_bark_shield_4",
+            "talisman_22_bark_shield_5",
+            "talisman_22_bark_shield_6",
+            "talisman_22_bark_shield_7",
+            "talisman_22_bark_shield_8"
+          ],
+          "pivot": [
+            200,
+            200
+          ],
+          "scale": [
+            0.5,
+            0.5
+          ],
+          "coordinate_size": 400,
+          "start_at": 0.3,
+          "duration": 3.0,
+          "cycle": 0.63,
+          "loop": true,
+          "hold": false,
+          "layer": 20
+        },
+        "regen_aura": {
+          "frames": [
+            "talisman_22_regen_aura_0",
+            "talisman_22_regen_aura_1",
+            "talisman_22_regen_aura_2",
+            "talisman_22_regen_aura_3",
+            "talisman_22_regen_aura_4",
+            "talisman_22_regen_aura_5",
+            "talisman_22_regen_aura_6",
+            "talisman_22_regen_aura_7",
+            "talisman_22_regen_aura_8"
+          ],
+          "pivot": [
+            200,
+            200
+          ],
+          "scale": [
+            0.5,
+            0.5
+          ],
+          "coordinate_size": 400,
+          "start_at": 0.3,
+          "duration": 3.0,
+          "cycle": 3.0,
+          "loop": false,
+          "hold": true,
+          "layer": 0
+        }
+      }
+    },
+    "element": "wood"
   },
   {
     "id": "skill_talisman_23",
@@ -9347,26 +9929,30 @@
     },
     "skill_class": "active",
     "activation": "manual",
-    "skill_type": "projectile",
+    "skill_type": "layered_talisman",
     "positioning": {
-      "type": "from_hero_to_enemy",
-      "hit_rule": "end_on_hit"
+      "type": "enemy_ground"
     },
     "deployment": {
-      "type": "multi_target"
+      "type": "area"
     },
-    "description": "Bắn liên tiếp 7 đợt tinh quang kiếm khí với sát thương tăng dần.",
+    "description": "Thất Tinh Liên Châu: Bắn 7 kiếm khí tăng tiến, tổng tối đa 180% ATK; Mỗi kiếm chỉ đánh một mục tiêu; tinh quang không gây thêm hit.",
     "vfx_frames": [
-      "skill_flame_0",
-      "skill_flame_1",
-      "skill_flame_2",
-      "skill_flame_3"
+      "talisman_23_seven_star_array_0",
+      "talisman_23_seven_star_array_1",
+      "talisman_23_seven_star_array_2",
+      "talisman_23_seven_star_array_3",
+      "talisman_23_seven_star_array_4",
+      "talisman_23_seven_star_array_5",
+      "talisman_23_seven_star_array_6",
+      "talisman_23_seven_star_array_7",
+      "talisman_23_seven_star_array_8"
     ],
     "levels": [
       {
         "level": 1,
         "stats": {
-          "damage_pct": 120,
+          "damage_pct": 180,
           "speed_pct": 200,
           "range": 665,
           "projectile_count": 1,
@@ -9375,83 +9961,98 @@
           "vfx_scale": 0.26
         },
         "description_rows": [
-          "Sát thương 120% Công Kích",
-          "Hồi chiêu 30.0s",
-          "Số lượng mục tiêu: 1"
+          "Bắn 7 kiếm khí tăng tiến, tổng tối đa 180% ATK",
+          "Mỗi kiếm chỉ đánh một mục tiêu; tinh quang không gây thêm hit",
+          "Hồi chiêu: 30s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 180
+        }
       },
       {
         "level": 2,
         "stats": {
-          "damage_pct": 150,
+          "damage_pct": 195,
           "speed_pct": 200,
-          "range": 680,
+          "range": 665,
           "projectile_count": 1,
-          "cooldown": 28.5,
+          "cooldown": 29,
           "radius": 0,
           "vfx_scale": 0.28
         },
         "description_rows": [
-          "Sát thương 150% Công Kích",
-          "Hồi chiêu 28.5s",
-          "Số lượng mục tiêu: 1"
+          "Bắn 7 kiếm khí tăng tiến, tổng tối đa 195% ATK",
+          "Mỗi kiếm chỉ đánh một mục tiêu; tinh quang không gây thêm hit",
+          "Hồi chiêu: 29s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 195
+        }
       },
       {
         "level": 3,
         "stats": {
-          "damage_pct": 180,
+          "damage_pct": 210,
           "speed_pct": 200,
-          "range": 695,
-          "projectile_count": 2,
-          "cooldown": 27,
+          "range": 665,
+          "projectile_count": 1,
+          "cooldown": 28,
           "radius": 0,
           "vfx_scale": 0.3
         },
         "description_rows": [
-          "Sát thương 180% Công Kích",
-          "Hồi chiêu 27.0s",
-          "Số lượng mục tiêu: 2"
+          "Bắn 7 kiếm khí tăng tiến, tổng tối đa 210% ATK",
+          "Mỗi kiếm chỉ đánh một mục tiêu; tinh quang không gây thêm hit",
+          "Hồi chiêu: 28s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 210
+        }
       },
       {
         "level": 4,
         "stats": {
-          "damage_pct": 210,
+          "damage_pct": 225,
           "speed_pct": 200,
-          "range": 710,
-          "projectile_count": 2,
-          "cooldown": 25.5,
+          "range": 665,
+          "projectile_count": 1,
+          "cooldown": 27,
           "radius": 0,
           "vfx_scale": 0.32
         },
         "description_rows": [
-          "Sát thương 210% Công Kích",
-          "Hồi chiêu 25.5s",
-          "Số lượng mục tiêu: 2"
+          "Bắn 7 kiếm khí tăng tiến, tổng tối đa 225% ATK",
+          "Mỗi kiếm chỉ đánh một mục tiêu; tinh quang không gây thêm hit",
+          "Hồi chiêu: 27s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 225
+        }
       },
       {
         "level": 5,
         "stats": {
           "damage_pct": 240,
           "speed_pct": 200,
-          "range": 725,
-          "projectile_count": 3,
-          "cooldown": 24,
+          "range": 665,
+          "projectile_count": 1,
+          "cooldown": 26,
           "radius": 0,
           "vfx_scale": 0.34
         },
         "description_rows": [
-          "Sát thương 240% Công Kích",
-          "Hồi chiêu 24.0s",
-          "Số lượng mục tiêu: 3"
+          "Bắn 7 kiếm khí tăng tiến, tổng tối đa 240% ATK",
+          "Mỗi kiếm chỉ đánh một mục tiêu; tinh quang không gây thêm hit",
+          "Hồi chiêu: 26s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 240
+        }
       }
     ],
     "sfx_events": [
@@ -9459,7 +10060,119 @@
         "sfx_id": "talisman-skill-23",
         "timing": "cast"
       }
-    ]
+    ],
+    "description_rows": [
+      "Bắn 7 kiếm khí tăng tiến, tổng tối đa 180% ATK",
+      "Mỗi kiếm chỉ đánh một mục tiêu; tinh quang không gây thêm hit"
+    ],
+    "cast_config": {
+      "behavior": "seven_star_volley",
+      "range": 665,
+      "duration": 2,
+      "shot_count": 7,
+      "shot_interval": 0.12,
+      "shot_weights": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "effect_bindings": [],
+      "release_at": 0.12,
+      "speed": 900,
+      "width": 20,
+      "damage_pct": 180,
+      "layers": {
+        "seven_star_array": {
+          "frames": [
+            "talisman_23_seven_star_array_0",
+            "talisman_23_seven_star_array_1",
+            "talisman_23_seven_star_array_2",
+            "talisman_23_seven_star_array_3",
+            "talisman_23_seven_star_array_4",
+            "talisman_23_seven_star_array_5",
+            "talisman_23_seven_star_array_6",
+            "talisman_23_seven_star_array_7",
+            "talisman_23_seven_star_array_8"
+          ],
+          "pivot": [
+            200,
+            200
+          ],
+          "scale": [
+            0.5,
+            0.5
+          ],
+          "coordinate_size": 400,
+          "start_at": 0.0,
+          "duration": 1.4,
+          "cycle": 1.4,
+          "loop": false,
+          "hold": true,
+          "layer": 0
+        },
+        "star_sword": {
+          "frames": [
+            "talisman_23_star_sword_0",
+            "talisman_23_star_sword_1",
+            "talisman_23_star_sword_2",
+            "talisman_23_star_sword_3",
+            "talisman_23_star_sword_4",
+            "talisman_23_star_sword_5",
+            "talisman_23_star_sword_6",
+            "talisman_23_star_sword_7",
+            "talisman_23_star_sword_8"
+          ],
+          "pivot": [
+            200,
+            200
+          ],
+          "scale": [
+            0.5,
+            0.5
+          ],
+          "coordinate_size": 400,
+          "start_at": 0.12,
+          "duration": 0.6,
+          "cycle": 0.6,
+          "loop": false,
+          "hold": true,
+          "layer": 30
+        },
+        "star_impact": {
+          "frames": [
+            "talisman_23_star_impact_0",
+            "talisman_23_star_impact_1",
+            "talisman_23_star_impact_2",
+            "talisman_23_star_impact_3",
+            "talisman_23_star_impact_4",
+            "talisman_23_star_impact_5",
+            "talisman_23_star_impact_6",
+            "talisman_23_star_impact_7",
+            "talisman_23_star_impact_8"
+          ],
+          "pivot": [
+            200,
+            200
+          ],
+          "scale": [
+            0.5,
+            0.5
+          ],
+          "coordinate_size": 400,
+          "start_at": 0.0,
+          "duration": 0.45,
+          "cycle": 0.45,
+          "loop": false,
+          "hold": false,
+          "layer": 20
+        }
+      }
+    },
+    "element": "water"
   },
   {
     "id": "skill_talisman_24",
@@ -9471,108 +10184,130 @@
     },
     "skill_class": "active",
     "activation": "manual",
-    "skill_type": "chain",
+    "skill_type": "layered_talisman",
     "positioning": {
-      "type": "from_hero_to_enemy",
-      "hit_rule": "end_on_hit"
+      "type": "enemy_ground"
     },
     "deployment": {
-      "type": "multi_target"
+      "type": "area"
     },
-    "description": "Vung dây trói định thân kẻ địch, phong ấn toàn bộ kỹ năng kích hoạt trong 3 giây.",
+    "description": "Thiên La Địa Võng: Trói tối đa 3 mục tiêu trong vùng, mỗi mục tiêu chịu 80% ATK; Trói chân 1.2 giây và câm lặng 2 giây theo kháng/miễn khống chế.",
     "vfx_frames": [
-      "skill_lightning_chain"
+      "talisman_24_binding_net_0",
+      "talisman_24_binding_net_1",
+      "talisman_24_binding_net_2",
+      "talisman_24_binding_net_3",
+      "talisman_24_binding_net_4",
+      "talisman_24_binding_net_5",
+      "talisman_24_binding_net_6",
+      "talisman_24_binding_net_7",
+      "talisman_24_binding_net_8"
     ],
     "levels": [
       {
         "level": 1,
         "stats": {
-          "damage_pct": 110,
+          "damage_pct": 80,
           "speed_pct": 200,
           "range": 665,
           "projectile_count": 1,
           "cooldown": 30,
-          "radius": 0,
+          "radius": 100,
           "vfx_scale": 0.26
         },
         "description_rows": [
-          "Sát thương 110% Công Kích",
-          "Hồi chiêu 30.0s",
-          "Số lượng mục tiêu: 1"
+          "Trói tối đa 3 mục tiêu trong vùng, mỗi mục tiêu chịu 80% ATK",
+          "Trói chân 1.2 giây và câm lặng 2 giây theo kháng/miễn khống chế",
+          "Hồi chiêu: 30s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 80
+        }
       },
       {
         "level": 2,
         "stats": {
-          "damage_pct": 137,
+          "damage_pct": 90,
           "speed_pct": 200,
-          "range": 680,
+          "range": 665,
           "projectile_count": 1,
-          "cooldown": 28.5,
-          "radius": 0,
+          "cooldown": 29,
+          "radius": 100,
           "vfx_scale": 0.28
         },
         "description_rows": [
-          "Sát thương 137% Công Kích",
-          "Hồi chiêu 28.5s",
-          "Số lượng mục tiêu: 1"
+          "Trói tối đa 3 mục tiêu trong vùng, mỗi mục tiêu chịu 90% ATK",
+          "Trói chân 1.2 giây và câm lặng 2 giây theo kháng/miễn khống chế",
+          "Hồi chiêu: 29s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 90
+        }
       },
       {
         "level": 3,
         "stats": {
-          "damage_pct": 165,
+          "damage_pct": 100,
           "speed_pct": 200,
-          "range": 695,
-          "projectile_count": 2,
-          "cooldown": 27,
-          "radius": 0,
+          "range": 665,
+          "projectile_count": 1,
+          "cooldown": 28,
+          "radius": 100,
           "vfx_scale": 0.3
         },
         "description_rows": [
-          "Sát thương 165% Công Kích",
-          "Hồi chiêu 27.0s",
-          "Số lượng mục tiêu: 2"
+          "Trói tối đa 3 mục tiêu trong vùng, mỗi mục tiêu chịu 100% ATK",
+          "Trói chân 1.2 giây và câm lặng 2 giây theo kháng/miễn khống chế",
+          "Hồi chiêu: 28s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 100
+        }
       },
       {
         "level": 4,
         "stats": {
-          "damage_pct": 192,
+          "damage_pct": 110,
           "speed_pct": 200,
-          "range": 710,
-          "projectile_count": 2,
-          "cooldown": 25.5,
-          "radius": 0,
+          "range": 665,
+          "projectile_count": 1,
+          "cooldown": 27,
+          "radius": 100,
           "vfx_scale": 0.32
         },
         "description_rows": [
-          "Sát thương 192% Công Kích",
-          "Hồi chiêu 25.5s",
-          "Số lượng mục tiêu: 2"
+          "Trói tối đa 3 mục tiêu trong vùng, mỗi mục tiêu chịu 110% ATK",
+          "Trói chân 1.2 giây và câm lặng 2 giây theo kháng/miễn khống chế",
+          "Hồi chiêu: 27s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 110
+        }
       },
       {
         "level": 5,
         "stats": {
-          "damage_pct": 220,
+          "damage_pct": 120,
           "speed_pct": 200,
-          "range": 725,
-          "projectile_count": 3,
-          "cooldown": 24,
-          "radius": 0,
+          "range": 665,
+          "projectile_count": 1,
+          "cooldown": 26,
+          "radius": 100,
           "vfx_scale": 0.34
         },
         "description_rows": [
-          "Sát thương 220% Công Kích",
-          "Hồi chiêu 24.0s",
-          "Số lượng mục tiêu: 3"
+          "Trói tối đa 3 mục tiêu trong vùng, mỗi mục tiêu chịu 120% ATK",
+          "Trói chân 1.2 giây và câm lặng 2 giây theo kháng/miễn khống chế",
+          "Hồi chiêu: 26s"
         ],
-        "effects": []
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 120
+        }
       }
     ],
     "sfx_events": [
@@ -9580,7 +10315,129 @@
         "sfx_id": "talisman-skill-24",
         "timing": "cast"
       }
-    ]
+    ],
+    "description_rows": [
+      "Trói tối đa 3 mục tiêu trong vùng, mỗi mục tiêu chịu 80% ATK",
+      "Trói chân 1.2 giây và câm lặng 2 giây theo kháng/miễn khống chế"
+    ],
+    "cast_config": {
+      "behavior": "binding_net",
+      "range": 665,
+      "duration": 2.33,
+      "radius": 100,
+      "max_targets": 3,
+      "root_duration": 1.2,
+      "silence_duration": 2,
+      "effect_bindings": [
+        {
+          "id": "root",
+          "phase": "eruption_contact",
+          "layer": "binding_eruption",
+          "target": "selected_hit_enemies",
+          "chance": 1,
+          "duration": 1.2,
+          "apply_once_per_cast_target": true
+        },
+        {
+          "id": "silence",
+          "phase": "eruption_contact",
+          "layer": "binding_eruption",
+          "target": "selected_hit_enemies",
+          "chance": 1,
+          "duration": 2,
+          "apply_once_per_cast_target": true
+        }
+      ],
+      "impact_at": 0.33,
+      "damage_pct": 80,
+      "layers": {
+        "binding_net": {
+          "frames": [
+            "talisman_24_binding_net_0",
+            "talisman_24_binding_net_1",
+            "talisman_24_binding_net_2",
+            "talisman_24_binding_net_3",
+            "talisman_24_binding_net_4",
+            "talisman_24_binding_net_5",
+            "talisman_24_binding_net_6",
+            "talisman_24_binding_net_7",
+            "talisman_24_binding_net_8"
+          ],
+          "pivot": [
+            200,
+            200
+          ],
+          "scale": [
+            0.5,
+            0.5
+          ],
+          "coordinate_size": 400,
+          "start_at": 0.0,
+          "duration": 2.2,
+          "cycle": 0.63,
+          "loop": true,
+          "hold": true,
+          "layer": 0
+        },
+        "binding_eruption": {
+          "frames": [
+            "talisman_24_binding_eruption_0",
+            "talisman_24_binding_eruption_1",
+            "talisman_24_binding_eruption_2",
+            "talisman_24_binding_eruption_3",
+            "talisman_24_binding_eruption_4",
+            "talisman_24_binding_eruption_5",
+            "talisman_24_binding_eruption_6",
+            "talisman_24_binding_eruption_7",
+            "talisman_24_binding_eruption_8"
+          ],
+          "pivot": [
+            200,
+            365
+          ],
+          "scale": [
+            0.5,
+            0.5
+          ],
+          "coordinate_size": 400,
+          "start_at": 0.12,
+          "duration": 0.63,
+          "cycle": 0.63,
+          "loop": false,
+          "hold": false,
+          "layer": 20
+        },
+        "binding_bands": {
+          "frames": [
+            "talisman_24_binding_bands_0",
+            "talisman_24_binding_bands_1",
+            "talisman_24_binding_bands_2",
+            "talisman_24_binding_bands_3",
+            "talisman_24_binding_bands_4",
+            "talisman_24_binding_bands_5",
+            "talisman_24_binding_bands_6",
+            "talisman_24_binding_bands_7",
+            "talisman_24_binding_bands_8"
+          ],
+          "pivot": [
+            200,
+            200
+          ],
+          "scale": [
+            0.5,
+            0.5
+          ],
+          "coordinate_size": 400,
+          "start_at": 0.33,
+          "duration": 2.0,
+          "cycle": 0.63,
+          "loop": true,
+          "hold": true,
+          "layer": 30
+        }
+      }
+    },
+    "element": "fire"
   },
   {
     "id": "skill_talisman_25",
@@ -9592,141 +10449,130 @@
     },
     "skill_class": "active",
     "activation": "manual",
-    "skill_type": "ground_aoe",
+    "skill_type": "layered_talisman",
     "positioning": {
-      "type": "from_hero_to_enemy",
-      "hit_rule": "penetrate"
+      "type": "enemy_ground"
     },
     "deployment": {
       "type": "area"
     },
-    "description": "Ấn biến to che trời đập xuống, gây sát thương chấn động và đánh ngã toàn bộ mục tiêu.",
+    "description": "Thái Sơn Áp Đỉnh: Đại ấn và sóng chấn địa gây tổng 180% ATK; Sóng chấn địa gây choáng 0.6 giây và đẩy lùi 60 theo kháng.",
     "vfx_frames": [
-      "skill_frost_0",
-      "skill_frost_1",
-      "skill_frost_2",
-      "skill_frost_3"
+      "talisman_25_seal_sigil_0",
+      "talisman_25_seal_sigil_1",
+      "talisman_25_seal_sigil_2",
+      "talisman_25_seal_sigil_3",
+      "talisman_25_seal_sigil_4",
+      "talisman_25_seal_sigil_5",
+      "talisman_25_seal_sigil_6",
+      "talisman_25_seal_sigil_7",
+      "talisman_25_seal_sigil_8"
     ],
     "levels": [
       {
         "level": 1,
         "stats": {
-          "damage_pct": 90,
+          "damage_pct": 180,
           "speed_pct": 200,
           "range": 665,
           "projectile_count": 1,
           "cooldown": 30,
-          "radius": 120,
+          "radius": 140,
           "vfx_scale": 0.26
         },
         "description_rows": [
-          "Sát thương 90% Công Kích",
-          "Hồi chiêu 30.0s",
-          "Số lượng mục tiêu: 1"
+          "Đại ấn và sóng chấn địa gây tổng 180% ATK",
+          "Sóng chấn địa gây choáng 0.6 giây và đẩy lùi 60 theo kháng",
+          "Hồi chiêu: 30s"
         ],
-        "effects": [
-          {
-            "id": "slow",
-            "duration": 1.5,
-            "slow_percent": 0.25
-          }
-        ]
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 180
+        }
       },
       {
         "level": 2,
         "stats": {
-          "damage_pct": 112,
+          "damage_pct": 195,
           "speed_pct": 200,
-          "range": 680,
+          "range": 665,
           "projectile_count": 1,
-          "cooldown": 28.5,
-          "radius": 120,
+          "cooldown": 29,
+          "radius": 140,
           "vfx_scale": 0.28
         },
         "description_rows": [
-          "Sát thương 112% Công Kích",
-          "Hồi chiêu 28.5s",
-          "Số lượng mục tiêu: 1"
+          "Đại ấn và sóng chấn địa gây tổng 195% ATK",
+          "Sóng chấn địa gây choáng 0.6 giây và đẩy lùi 60 theo kháng",
+          "Hồi chiêu: 29s"
         ],
-        "effects": [
-          {
-            "id": "slow",
-            "duration": 1.5,
-            "slow_percent": 0.25
-          }
-        ]
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 195
+        }
       },
       {
         "level": 3,
         "stats": {
-          "damage_pct": 135,
+          "damage_pct": 210,
           "speed_pct": 200,
-          "range": 695,
-          "projectile_count": 2,
-          "cooldown": 27,
-          "radius": 120,
+          "range": 665,
+          "projectile_count": 1,
+          "cooldown": 28,
+          "radius": 140,
           "vfx_scale": 0.3
         },
         "description_rows": [
-          "Sát thương 135% Công Kích",
-          "Hồi chiêu 27.0s",
-          "Số lượng mục tiêu: 2"
+          "Đại ấn và sóng chấn địa gây tổng 210% ATK",
+          "Sóng chấn địa gây choáng 0.6 giây và đẩy lùi 60 theo kháng",
+          "Hồi chiêu: 28s"
         ],
-        "effects": [
-          {
-            "id": "slow",
-            "duration": 1.5,
-            "slow_percent": 0.25
-          }
-        ]
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 210
+        }
       },
       {
         "level": 4,
         "stats": {
-          "damage_pct": 157,
+          "damage_pct": 225,
           "speed_pct": 200,
-          "range": 710,
-          "projectile_count": 2,
-          "cooldown": 25.5,
-          "radius": 120,
+          "range": 665,
+          "projectile_count": 1,
+          "cooldown": 27,
+          "radius": 140,
           "vfx_scale": 0.32
         },
         "description_rows": [
-          "Sát thương 157% Công Kích",
-          "Hồi chiêu 25.5s",
-          "Số lượng mục tiêu: 2"
+          "Đại ấn và sóng chấn địa gây tổng 225% ATK",
+          "Sóng chấn địa gây choáng 0.6 giây và đẩy lùi 60 theo kháng",
+          "Hồi chiêu: 27s"
         ],
-        "effects": [
-          {
-            "id": "slow",
-            "duration": 1.5,
-            "slow_percent": 0.25
-          }
-        ]
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 225
+        }
       },
       {
         "level": 5,
         "stats": {
-          "damage_pct": 180,
+          "damage_pct": 240,
           "speed_pct": 200,
-          "range": 725,
-          "projectile_count": 3,
-          "cooldown": 24,
-          "radius": 120,
+          "range": 665,
+          "projectile_count": 1,
+          "cooldown": 26,
+          "radius": 140,
           "vfx_scale": 0.34
         },
         "description_rows": [
-          "Sát thương 180% Công Kích",
-          "Hồi chiêu 24.0s",
-          "Số lượng mục tiêu: 3"
+          "Đại ấn và sóng chấn địa gây tổng 240% ATK",
+          "Sóng chấn địa gây choáng 0.6 giây và đẩy lùi 60 theo kháng",
+          "Hồi chiêu: 26s"
         ],
-        "effects": [
-          {
-            "id": "slow",
-            "duration": 1.5,
-            "slow_percent": 0.25
-          }
-        ]
+        "effects": [],
+        "cast_config": {
+          "damage_pct": 240
+        }
       }
     ],
     "sfx_events": [
@@ -9734,7 +10580,133 @@
         "sfx_id": "talisman-skill-25",
         "timing": "cast"
       }
-    ]
+    ],
+    "description_rows": [
+      "Đại ấn và sóng chấn địa gây tổng 180% ATK",
+      "Sóng chấn địa gây choáng 0.6 giây và đẩy lùi 60 theo kháng"
+    ],
+    "cast_config": {
+      "behavior": "earth_seal",
+      "range": 665,
+      "duration": 1.2,
+      "radius": 140,
+      "seal_ratio": 0.6,
+      "wave_ratio": 0.4,
+      "knockback_distance": 60,
+      "effect_bindings": [
+        {
+          "id": "stun",
+          "phase": "shockwave_contact",
+          "layer": "earth_shockwave",
+          "target": "hit_enemies",
+          "chance": 1,
+          "duration": 0.6,
+          "apply_once_per_cast_target": true
+        },
+        {
+          "id": "knockback",
+          "phase": "shockwave_contact",
+          "layer": "earth_shockwave",
+          "target": "hit_enemies",
+          "chance": 1,
+          "duration": 0.18,
+          "distance": 60,
+          "apply_once_per_cast_target": true
+        }
+      ],
+      "stun_duration": 0.6,
+      "impact_at": 0.38,
+      "wave_duration": 0.63,
+      "wave_width": 14,
+      "damage_pct": 180,
+      "layers": {
+        "seal_sigil": {
+          "frames": [
+            "talisman_25_seal_sigil_0",
+            "talisman_25_seal_sigil_1",
+            "talisman_25_seal_sigil_2",
+            "talisman_25_seal_sigil_3",
+            "talisman_25_seal_sigil_4",
+            "talisman_25_seal_sigil_5",
+            "talisman_25_seal_sigil_6",
+            "talisman_25_seal_sigil_7",
+            "talisman_25_seal_sigil_8"
+          ],
+          "pivot": [
+            200,
+            200
+          ],
+          "scale": [
+            0.5,
+            0.5
+          ],
+          "coordinate_size": 400,
+          "start_at": 0.0,
+          "duration": 1.1,
+          "cycle": 1.1,
+          "loop": false,
+          "hold": true,
+          "layer": 0
+        },
+        "falling_seal": {
+          "frames": [
+            "talisman_25_falling_seal_0",
+            "talisman_25_falling_seal_1",
+            "talisman_25_falling_seal_2",
+            "talisman_25_falling_seal_3",
+            "talisman_25_falling_seal_4",
+            "talisman_25_falling_seal_5",
+            "talisman_25_falling_seal_6",
+            "talisman_25_falling_seal_7",
+            "talisman_25_falling_seal_8"
+          ],
+          "pivot": [
+            200,
+            365
+          ],
+          "scale": [
+            0.5,
+            0.5
+          ],
+          "coordinate_size": 400,
+          "start_at": 0.08,
+          "duration": 0.7,
+          "cycle": 0.3,
+          "loop": false,
+          "hold": true,
+          "layer": 30
+        },
+        "earth_shockwave": {
+          "frames": [
+            "talisman_25_earth_shockwave_0",
+            "talisman_25_earth_shockwave_1",
+            "talisman_25_earth_shockwave_2",
+            "talisman_25_earth_shockwave_3",
+            "talisman_25_earth_shockwave_4",
+            "talisman_25_earth_shockwave_5",
+            "talisman_25_earth_shockwave_6",
+            "talisman_25_earth_shockwave_7",
+            "talisman_25_earth_shockwave_8"
+          ],
+          "pivot": [
+            200,
+            200
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "coordinate_size": 400,
+          "start_at": 0.38,
+          "duration": 0.63,
+          "cycle": 0.63,
+          "loop": false,
+          "hold": false,
+          "layer": 20
+        }
+      }
+    },
+    "element": "earth"
   },
   {
     "id": "skill_talisman_26",

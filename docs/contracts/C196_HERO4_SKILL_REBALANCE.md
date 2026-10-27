@@ -1,9 +1,32 @@
 # C196 Hero 4 poison skill rebalance
 
-Version: 1.2.0
-Status: ACTIVE
+Version: 1.4.0
+Status: IN_PROGRESS
 
 ## Schema and server authority
+Validation 1.4.0: raw-budget/data regression and retained revision1.3 invariants PASS; Godot Hero4Piercing PASS including both-leg poison falloff and unchanged slow; Hero4PoisonTraps and Hero4Revision13 PASS; client static PASS. Source comparison proves every other skill including Skill4 unchanged. Selective local DB update changes only levels/description of Skill1–3, preserves other fields/skills/settings, and advances config41→42. Backup: workspace .tmp/hero4-poison-redistribution/1793093934907/. Updated client is required for Skill2 poison falloff; no production deployment. Existing vortex stun-dummy regression remains outside this revision; no full-suite acceptance claim.
+
+Revision 1.4.0 supersedes prior damage curves: Skill1 direct hit is20/22.5/25/27.5/30 percent ATK; its existing2s poison remains12.5/15/17.5/20/22.5 DPS percent ATK. Skill2 converts half its prior85/95/105/115/125 direct coefficient into2s poison: direct42.5/47.5/52.5/57.5/62.5, poison DPS21.25/23.75/26.25/28.75/31.25. Its poison carries optional `scale_dps_with_range: true`; Projectile applies the same snapshotted spatial100%→30% multiplier to resolved DPS and direct damage on each leg, without altering slow or mutating shared effect dictionaries.
+
+Skill3 already has poison. Move half its prior direct100.1/107.6/116/126.5/140 into the existing poison over its existing3/3.5/4/4.5/5 seconds: direct50.05/53.8/58/63.25/70; poison DPS61.683333333/70.371428571/79.5/89.055555556/99. Preserve all cooldown/range/count/visual/slow/unlock values and all Skill4 values.
+
+Damage conservation is an isolated-hit raw budget: direct + DPS×duration. Existing strongest-poison/refresh semantics, crit/DEF/element calculations, target survival and repeat hits can change actual delivered totals; this revision does not introduce additive stacks or promise identical battle DPS. Data remains server-authoritative; no new RPC/storage schema/fallback. Local develop publication may selectively update only these three skill rows, with backup/readback, same active settings and a config version increment; no production writes.
+
+Revision 1.3.0 supersedes the older values below: Skill1 poison DPS is
+12.5/15/17.5/20/22.5 percent ATK per second (duration 2s, direct hit unchanged).
+Skill2 visual vfx_scale is multiplied by 1.3 at every level; collision radius,
+range, damage and piercing falloff remain unchanged. Skill4 in-run
+createria_unlock.level changes 10 to 15; persistent hero_level_unlock stays 30.
+Skill4 primary ground vortex renders at absolute Z=4 below the hero actor Z=5;
+needle projectiles retain their existing layer. AtlasRegistry assets, UiSkin,
+RPC schemas and online-only config requirements remain unchanged. No fallback.
+
+Validation 1.3.0: five-level data/description curves PASS; Godot
+TestHero4Revision13 verifies real primary vortex VFX at absolute Z=4 for all
+five levels; TestHero4Piercing PASS with updated server config. Client static
+runner PASS. Three local DB skill rows verified, all other skills unchanged;
+local config version advanced. No production deployment. Gate 4 pending:
+full server static runner stops at the existing Arc6 seed/generator mismatch.
 Skill seed JSON is authoritative, no RPC changes or local fallback (C121).
 Skill1: damage40/45/50/55/60, poison DPS percent25/30/35/40/45 for2s,
 cooldown2.4/2.2/2/1.8/1.6, range680/700/720/740/760, count1/2/2/3/3.
@@ -38,6 +61,8 @@ timing, additive poison synergy/cap/duration/expiry/pool reset must be tested.
 ## Changelog
 | Version | Date | Change |
 |---|---|---|
+| 1.4.0 | 2026-10-27 | Halve Skill1 direct damage; shift half Skill2/3 direct coefficients into poison, preserving isolated raw budgets and spatial falloff. |
+| 1.3.0 | 2026-10-27 | Halve Skill1 poison DPS, enlarge Skill2 art 30%, select Skill4 at combat Lv15 and render its ground vortex below heroes. |
 | 1.0.0 | 2026-10-24 | Four skill curves, trap cap/VFX and five-tick spinning vortex with additive ATK poison. |
 
 Acceptance: full server/client static suites and Godot parser PASS. TestHero4Vortex verifies all five needle counts, independent random angles, first0.5s/interval0.1s, five equal damage ticks summing to the configured total, 20% per-target stun distribution over10000 trials, 400deg/s spin and 2.5s loop lifetime. TestHero4PoisonTraps verifies Enemy and Player-based target poison synergy, duration extension,5000 DPS cap, expiry/clear reset, all five trap caps, owner isolation, oldest removal without explosion, expired slots, exactly-once damage and looped1.5s VFX. No new assets, no deployment/publication. Gate score9/10.

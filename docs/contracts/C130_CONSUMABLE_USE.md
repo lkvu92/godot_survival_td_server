@@ -1,10 +1,20 @@
 # C130 — Consumable use and permanent cultivation sources
 
-- Version: `1.5.0`
+- Version: `1.6.0`
 - Status: `ACTIVE`
-- Date: `2026-10-25`
+- Date: `2026-10-27`
 
 ## Scope and authority
+Revision 1.6.0: healing consumables (combat kind `heal`) use a configured 5-second cooldown; other item cooldowns remain unchanged. Hero item buffs join the existing StatusIconStrip in campaign and tribulation through its external presentation provider, without applying duplicate gameplay statuses. Existing RPC request/response and DB schema are unchanged; server item effect data remains authoritative, missing config/offline blocks use.
+
+Player exposes `get_consumable_status_presentations() -> Array`: distinct item IDs, AtlasRegistry item textures, remaining/duration in simulation seconds, priority 10, one nonstacking entry per active kind. Reuse refreshes duration; item shield presentation ends on depletion or expiry. Slow remains on affected enemies; instant healing does not become a timed gameplay status. Preview-only healing feedback may use the existing healing path. Restore retains lifetime metadata; legacy snapshots recover total duration from configured item data or remaining time. Shared strip binds the provider alongside the status controller and reads its current timer without owning another gameplay clock. Do not merge item DEF/shield into canonical skill statuses or change skill/item stacking.
+
+Changelog 1.6.0 (2026-10-27): configured 5s healing cooldown and shared hero item-buff presentation with authoritative lifetime. Rollout requires updating game_items and publishing the normal immutable config snapshot; no live data changes are implied by source edits.
+
+Client receipt API adds an optional third argument `apply_consumable_receipt(receipt_id, effect, item_id = "")` for presentation identity; two-argument callers and old run snapshots remain supported. `StatusIconStrip.bind_external_provider(Callable)` reads the actor's live presentation list alongside canonical statuses, preserving the four-icon cap. No extra status or timer is inserted into StatusEffectController.
+
+Validation 2026-10-27: Godot TestConsumableUse PASS (buff refresh, no duplicate DEF, independent skill/item shields, depletion/expiry, original-duration rings, pause, restore and both HUD provider bindings); TestStatusIconBindings and TestTacticalSupport PASS; standalone client static PASS. Compiled server consumable tests PASS including exact 4999/5000ms boundaries, independent 15s buff cooldowns, replay and inventory debit in campaign/tribulation. Full server static runner stops at unrelated test_daily_pack_entitlements.cjs stamina expectation (200 actual, 330 expected). Headless checks do not replace device visual acceptance. Targeted patch: server/tools/sql/c130_healing_cooldown_5s.sql; not applied to a live DB and no config release published.
+
 Complete C129 item activation without changing prices. Rename/reroll retain their dedicated actions.
 Server-owned item attributes.effect define kind, value, duration, cooldown, element and radius.
 Client never submits effect strength. use_consumable RPC is account-guarded; request:

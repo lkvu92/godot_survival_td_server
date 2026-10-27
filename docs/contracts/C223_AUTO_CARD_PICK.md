@@ -1,12 +1,12 @@
 # C223 — VIP auto/manual card picking
 
-Version: 1.1.1
+Version: 1.1.2
 Status: IN_PROGRESS
-Updated: 2026-10-26
+Updated: 2026-10-27
 
 ## Behavior and authority
 
-VIP level >=4 unlocks a card-pick toggle in battle HUD and card dialog. AtlasRegistry action icons target (index30) for Auto and map (index23) for Manual; use UiSkin. SaveManager local scoped setting `auto_card_pick` is boolean, defaults false. The existing environment/account/server/generation settings scope prevents preference bleed. Current authenticated VIP, server config readiness and connection are checked before each automated pick; local preference never grants VIP or offline gameplay.
+VIP level >=4 unlocks a card-pick toggle in the Settings dialog and battle HUD. The card-selection dialog does not render or change this preference; it only follows the current setting. AtlasRegistry action icons target (index30) for Auto and map (index23) for Manual; use UiSkin. SaveManager local scoped setting `auto_card_pick` is boolean, defaults false. The existing environment/account/server/generation settings scope prevents preference bleed. Current authenticated VIP, server config readiness and connection are checked before each automated pick; local preference never grants VIP or offline gameplay.
 
 Choose only from the current offered cards, through the same provider.choose_card method and existing validation/manual selection path. No reroll or ad consumption. After a short pause-independent delay, pick a skill card first, prioritizing the highest resulting skill level. Then ATK, cooldown reduction, effect accuracy, deep wound, DEF, attack speed, effect resistance, control tenacity, healing power, healing and remaining support. Within one support family use the strongest offered value; ties preserve offer order. Campaign and tower draft use the same dialog. No new RPC, gameplay config or reward data.
 
@@ -37,3 +37,11 @@ User clarification supersedes the horizontal gameplay row in1.1.0: gameplay util
 | Version | Date | Change |
 |---|---|---|
 | 1.1.1 | 2026-10-26 | Restore one centered, evenly spaced vertical gameplay action column. |
+
+## Revision 1.1.2 — Settings owns card-pick mode
+
+Remove the Auto/Manual control and status caption from the card-selection dialog. The dialog continues to honor `auto_card_pick`; Settings is the user-facing configuration surface, while the existing battle HUD shortcut remains unchanged.
+
+| Version | Date | Change |
+|---|---|---|
+| 1.1.2 | 2026-10-27 | Remove the redundant Auto/Manual control from the card-selection dialog. |

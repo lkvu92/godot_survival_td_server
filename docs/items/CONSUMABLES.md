@@ -22,7 +22,7 @@ Các con số dưới đây là **cân bằng mặc định ban đầu**, cấu 
 | Hộ Thuẫn Đan | Trong trận | Khiên riêng bằng 30% HP tối đa, 15 giây |
 | Hàn Băng Phù | Trong trận | Làm chậm 40% quái trong bán kính 400 đơn vị, 8 giây |
 
-Vật phẩm trong trận có cooldown thực 15 giây mỗi loại; buff dùng lại làm mới thời gian, không cộng dồn. Thời gian hiệu lực theo thời gian mô phỏng: pause dừng timer, tăng tốc game làm timer chạy theo trận. Cooldown server theo đồng hồ thực và hiển thị theo đồng hồ thực. Khiên vật phẩm độc lập với khiên kỹ năng. Kháng chỉ áp dụng sát thương có hệ ngũ hành.
+Vật phẩm hồi máu trong trận có cooldown thực 5 giây; các vật phẩm chiến đấu khác giữ 15 giây mỗi loại theo cấu hình. Buff dùng lại làm mới thời gian, không cộng dồn. Thời gian hiệu lực theo thời gian mô phỏng: pause dừng timer, tăng tốc game làm timer chạy theo trận. Cooldown server theo đồng hồ thực và hiển thị theo đồng hồ thực. Khiên vật phẩm độc lập với khiên kỹ năng. Kháng chỉ áp dụng sát thương có hệ ngũ hành. Buff item hiển thị trên hàng effect chung của hero trong campaign và Độ Kiếp; vòng thời gian theo lifetime thực của buff, khiên hết sớm khi bị phá, hồi máu tức thời không tạo buff kéo dài.
 
 Thanh vật phẩm bên trái HUD, cuộn dọc qua ScrollBarUI tương tự cột kỹ năng đối diện; tối đa 6 slot nhìn thấy (ít hơn trên màn hình thấp). Giữ vị trí HP gốc. Slot dùng viền/rarity UiItemSlot của Inventory, số lượng góc dưới phải. Pause, đã chết, kết thúc trận hoặc mất mạng không dùng được. Hồi sinh dùng hộp riêng. Chưa mở vật phẩm chiến đấu trong Độ Kiếp.
 

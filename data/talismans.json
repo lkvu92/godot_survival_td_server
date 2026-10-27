@@ -50,7 +50,7 @@
     "max_level": 30,
     "is_equipped": false,
     "description": "Đao rèn bằng đồng đỏ vùng núi lửa, thân đao luôn ấm nóng tích tụ hỏa kình.",
-    "skill": "Xích Viêm Trảm: Hai trảm kích chữ X xuyên mục tiêu; mỗi tia gây 150% Công Kích, vùng giao tâm gây tổng cộng 400%.",
+    "skill": "Xích Viêm Trảm: Hai tia chữ X xuyên mục tiêu: 60% ATK mỗi tia; Vùng giao tâm: tổng tối đa 150% ATK mỗi mục tiêu.",
     "stats": {
       "atk": 22,
       "hp": 180,
@@ -92,7 +92,7 @@
     "max_level": 30,
     "is_equipped": false,
     "description": "Thương thép luyện qua trăm trận chiến, mũi thương sắc bén phá giáp hộ thân.",
-    "skill": "Bách Luyện Phá Giáp: Chém vào tâm mục tiêu, gây ngẫu nhiên 200%-800% Công Kích và bỏ qua 30% phòng ngự.",
+    "skill": "Bách Luyện Phá Giáp: Một mục tiêu: ngẫu nhiên 140–180% ATK; Bỏ qua 15% phòng ngự mục tiêu.",
     "stats": {
       "atk": 22,
       "def": 5,
@@ -134,7 +134,7 @@
     "max_level": 30,
     "is_equipped": false,
     "description": "Khiên rèn từ sắt đen nguyên khối ngàn năm, kiên cố bất khả xâm phạm.",
-    "skill": "Ô Thiết Hộ Bích: Trong 5s tăng 20% phòng ngự và miễn nhiễm sát thương chí mạng.",
+    "skill": "Ô Thiết Hộ Bích: Trong 3 giây: tăng 15% DEF; Miễn sát thương chí mạng; vẫn nhận sát thương thường.",
     "stats": {
       "hp": 340,
       "def": 9,
@@ -176,7 +176,7 @@
     "max_level": 30,
     "is_equipped": false,
     "description": "Vòng ngọc ngưng tụ chân thủy uốn lượn, xua tan uế khí và gột rửa thân thể.",
-    "skill": "Thủy Ba Tẩy Lễ: Thanh tẩy tức thời; trong 3s chặn mọi debuff và hồi 10% HP tối đa mỗi giây.",
+    "skill": "Thủy Ba Tẩy Lễ: Thanh tẩy mọi hiệu ứng xấu ngay khi thi triển; Miễn hiệu ứng xấu trong 2 giây; Hồi 3% Max HP mỗi giây, tổng 6% Max HP.",
     "stats": {
       "speed_pct": 9,
       "cooldown_reduction_pct": 4,
@@ -218,7 +218,7 @@
     "max_level": 30,
     "is_equipped": false,
     "description": "Trượng khắc từ linh mộc nghìn năm hút sinh cơ đất trời, hồi sinh dưỡng mệnh.",
-    "skill": "Hồi Xuân Quyết: Triệu hồi ấn sinh mệnh tại chân hero, hồi HP bằng 250% Công Kích pháp bảo.",
+    "skill": "Hồi Xuân Quyết: Hồi tức thời 150% ATK chiến đấu; Không vượt quá HP tối đa.",
     "stats": {
       "spirit": 32,
       "hp": 300,
@@ -260,7 +260,7 @@
     "max_level": 30,
     "is_equipped": false,
     "description": "Chùy nặng nghìn cân phá đá khai sơn, nện đất chấn động uy lực kinh người.",
-    "skill": "Liệt Địa Trọng Kích: Trả 20% HP tối đa, không giảm dưới 1 HP, để gây sát thương AOE bằng 700% Công Kích.",
+    "skill": "Liệt Địa Trọng Kích: Tiêu hao tối đa 10% Max HP, giữ tối thiểu 1 HP; Gây 180% ATK trong bán kính 120 tại mục tiêu.",
     "stats": {
       "atk": 19,
       "hp": 260,
@@ -302,7 +302,7 @@
     "max_level": 30,
     "is_equipped": false,
     "description": "Chùm kim băng tinh xảo ngưng tụ từ sương giá cửu hàn, xuyên thấu cản bước tà ma.",
-    "skill": "Hàn Băng Thần Châm: Bắn 3 tia song song, mỗi tia gây 200% Công Kích và có 40% đóng băng mục tiêu trong 1s.",
+    "skill": "Hàn Băng Thần Châm: Ba tia song song, mỗi tia gây 45% ATK; Mỗi hit có 20% đóng băng 0.5 giây.",
     "stats": {
       "atk": 16,
       "speed_pct": 8,
@@ -344,7 +344,7 @@
     "max_level": 30,
     "is_equipped": false,
     "description": "Quạt lông dệt bằng tơ mây hỏa diệm, phẩy nhẹ sinh bão lửa thiêu rụi bầy yêu.",
-    "skill": "Hỏa Diễm Tản: Phóng hỏa khí bán nguyệt xuyên mục tiêu, gây 300% Công Kích và đẩy lùi kẻ địch trên đường bay.",
+    "skill": "Hỏa Diễm Tản: Sóng lửa xuyên mục tiêu, gây 90% ATK; Đẩy lùi 50 đơn vị.",
     "stats": {
       "atk": 18,
       "spirit": 30,
@@ -386,7 +386,7 @@
     "max_level": 30,
     "is_equipped": false,
     "description": "Chuông đồng trầm tích từ địa mạch hoàng tuyền, tiếng chuông tịnh hóa tâm thần trừ tà niệm.",
-    "skill": "Kim Cang Định Tâm: Hồn chuông rơi xuống gây AOE 150% Công Kích; mỗi mục tiêu có 40% bị choáng 0.5s.",
+    "skill": "Kim Cang Định Tâm: Chuông chạm đất gây 70% ATK, bán kính 100; Mỗi mục tiêu có 25% choáng 0.35 giây.",
     "stats": {
       "spirit": 34,
       "def": 8,
@@ -428,7 +428,7 @@
     "max_level": 30,
     "is_equipped": false,
     "description": "Ống tên gió thần tốc, xuất tiễn tựa sao băng xé toạc tầng không săn đuổi đầu lĩnh quái.",
-    "skill": "Tật Phong Tiễn: Bắn 3 mũi tên tăng dần kích thước, sát thương và lực đẩy lùi.",
+    "skill": "Tật Phong Tiễn: Ba mũi tên gây 25% / 45% / 70% ATK; Đẩy lùi tăng dần: 20 / 35 / 50.",
     "stats": {
       "atk": 17,
       "speed_pct": 9,
@@ -470,7 +470,7 @@
     "max_level": 30,
     "is_equipped": false,
     "description": "Ấn triện khắc từ đất hoàng thổ nguyên chất, nặng như thái sơn che chở chân thân.",
-    "skill": "Thái Sơn Hộ Thể: Trong 5s tăng 40% phòng ngự và cộng thêm 200 phòng ngự.",
+    "skill": "Thái Sơn Hộ Thể: Trong 3 giây: DEF = DEF cơ sở × 1.3; Không cộng DEF phẳng.",
     "stats": {
       "def": 9,
       "hp": 350,
@@ -512,7 +512,7 @@
     "max_level": 30,
     "is_equipped": false,
     "description": "Lôi châm dẫn lôi hỏa cửu thiên, kích phát điện quang bộc liệt truyền sát bầy yêu.",
-    "skill": "Cửu Thiên Lôi Giật: Giáng 3 tia sét vào mục tiêu ngẫu nhiên; mỗi tia gây 100% Công Kích và có 40% choáng 0.5s.",
+    "skill": "Cửu Thiên Lôi Giật: Ba tia sét chọn lại mục tiêu, mỗi tia 35% ATK; Mỗi hit có 20% choáng 0.3 giây.",
     "stats": {
       "atk": 20,
       "spirit": 28,
@@ -554,7 +554,7 @@
     "max_level": 30,
     "is_equipped": false,
     "description": "Cành gai đằng mộc quỷ dị hút máu sinh linh bồi dưỡng chủ nhân khi gặp hiểm cảnh.",
-    "skill": "Huyết Đằng Hộ Mệnh: Gây 250% Công Kích lên một mục tiêu và hồi HP bằng 30% sát thương thực gây ra.",
+    "skill": "Huyết Đằng Hộ Mệnh: Một mục tiêu: 100% ATK; Hồi 20% sát thương thực trừ vào HP mục tiêu.",
     "stats": {
       "atk": 16,
       "hp": 250,
@@ -596,7 +596,7 @@
     "max_level": 30,
     "is_equipped": false,
     "description": "Viên ngọc trai biển sâu ngưng tụ tinh hoa thủy linh phát ánh sáng huyền ảo lung linh.",
-    "skill": "Quang Mang Hộ Thể: Nội tại tạo 3 quang mang xoay quanh hero, xuyên mục tiêu và gây 35% Công Kích khi va chạm.",
+    "skill": "Quang Mang Hộ Thể: Nội tại: ba cầu xoay quanh hero, 8% ATK mỗi va chạm; Bán kính bằng 25% chiều cao chiến trường, một vòng 4 giây; Cùng mục tiêu: tối đa một hit mỗi 0.5 giây; Mỗi cầu chỉ đánh lại cùng mục tiêu sau 1.5 giây.",
     "stats": {
       "dodge_rate": 0.03,
       "spirit": 32,
@@ -638,7 +638,7 @@
     "max_level": 30,
     "is_equipped": false,
     "description": "Thần kiếm đúc từ hàn ngọc ngàn năm nơi vực sâu Bắc Cực cực kỳ buốt giá.",
-    "skill": "Tuyết Lạc Băng Phong: Ngưng tụ kiếm trận băng giá, đóng băng kẻ địch diện rộng trong 3 giây.",
+    "skill": "Tuyết Lạc Băng Phong: Kiếm băng và băng trồi gây tổng 120% ATK; Đóng băng 3 giây theo kháng/miễn khống chế.",
     "stats": {
       "atk": 32,
       "speed_pct": 8,
@@ -682,7 +682,7 @@
     "max_level": 30,
     "is_equipped": false,
     "description": "Đao chứa oán niệm và ma khí u ám thu thập từ chiến trường cổ xưa.",
-    "skill": "Phệ Hồn Trảm: Nhát chém gây vết thương sâu xé rách linh hồn, cấm hồi máu trong 6 giây.",
+    "skill": "Phệ Hồn Trảm: Trảm khí xuyên tuyến hẹp, gây 150% ATK mỗi mục tiêu; Vết thương sâu: giảm hồi máu 50% trong 4 giây.",
     "stats": {
       "atk": 30,
       "hp": 380,
@@ -726,7 +726,7 @@
     "max_level": 30,
     "is_equipped": false,
     "description": "Gương bát quái bằng đồng tím hấp thụ linh lôi tầng trời thứ chín.",
-    "skill": "Tử Lôi Phá Diệt: Phóng ra cột sét tím hủy diệt từ trên cao đánh thẳng vào mục tiêu chỉ định.",
+    "skill": "Tử Lôi Phá Diệt: Cột sét và điện lan gây tối đa 180% ATK lên mục tiêu chính; Cột sét có 35% gây tê liệt 0.5 giây; điện lan không roll lại.",
     "stats": {
       "atk": 28,
       "spirit": 48,
@@ -770,7 +770,7 @@
     "max_level": 30,
     "is_equipped": false,
     "description": "Lò luyện thu nhỏ chứa địa hỏa hung hãn thiêu đốt vạn vật.",
-    "skill": "Phần Thiên Chướng: Thổi ra biển lửa thiêu đốt toàn bộ kẻ địch xung quanh liên tục.",
+    "skill": "Phần Thiên Chướng: Vành lửa theo hero, bán kính 140; Thiêu đốt gây tổng 240% ATK trong 4 giây (8 tick); Mỗi mục tiêu chỉ bị áp một lần mỗi lần thi triển.",
     "stats": {
       "atk": 31,
       "spirit": 52,
@@ -814,7 +814,7 @@
     "max_level": 30,
     "is_equipped": false,
     "description": "Kính hộ tâm đúc từ hợp kim bất hoại dát vàng ròng phù chú.",
-    "skill": "Kim Thân Bất Diệt: Kháng toàn bộ sát thương khống chế và giảm 50% sát thương nhận vào trong 4 giây.",
+    "skill": "Kim Thân Bất Diệt: Trong 4 giây: giảm 50% sát thương nhận vào và miễn khống chế; Không gây sát thương; vẫn có thể nhận độc và thiêu đốt.",
     "stats": {
       "hp": 550,
       "def": 14,
@@ -858,7 +858,7 @@
     "max_level": 30,
     "is_equipped": false,
     "description": "Cờ hiệu quấn vải liệm tà phái vương vấn nghìn vạn oan hồn gào thét.",
-    "skill": "Bách Quỷ Dạ Hành: Triệu hồi đàn quỷ ám tấn công và trừ độc liên tục lên các kẻ địch.",
+    "skill": "Bách Quỷ Dạ Hành: Tối đa 3 độc hồn, mỗi mục tiêu một hồn; Mỗi mục tiêu chịu tổng 110% ATK: trực tiếp và độc 4 giây; Vũng độc và ấn độc không gây thêm sát thương.",
     "stats": {
       "spirit": 50,
       "atk": 24,
@@ -902,7 +902,7 @@
     "max_level": 30,
     "is_equipped": false,
     "description": "Gậy pháp làm từ rễ thần mộc thụ long khí biến dị ngàn năm.",
-    "skill": "Thần Mộc Trói Buộc: Rễ cây trồi lên từ lòng đất trói chặt kẻ địch và liên tục hút chân khí.",
+    "skill": "Thần Mộc Long Hộ: Mộc long hộ chủ tạo khiên bằng 15% Max HP trong 3 giây; Hồi 2% Max HP mỗi giây, tổng 6% Max HP; Không gây sát thương hoặc trói mục tiêu.",
     "stats": {
       "spirit": 48,
       "hp": 450,
@@ -946,7 +946,7 @@
     "max_level": 30,
     "is_equipped": false,
     "description": "Thanh kiếm mang hình tượng chòm sao Bắc Đẩu định đoạt sinh tử kiếp số.",
-    "skill": "Thất Tinh Liên Châu: Bắn liên tiếp 7 đợt tinh quang kiếm khí với sát thương tăng dần.",
+    "skill": "Thất Tinh Liên Châu: Bắn 7 kiếm khí tăng tiến, tổng tối đa 180% ATK; Mỗi kiếm chỉ đánh một mục tiêu; tinh quang không gây thêm hit.",
     "stats": {
       "atk": 32,
       "speed_pct": 9,
@@ -990,7 +990,7 @@
     "max_level": 30,
     "is_equipped": false,
     "description": "Sợi dây thừng dệt bằng gân yêu vương và tơ thiên tằm chắc chắn.",
-    "skill": "Thiên La Địa Võng: Vung dây trói định thân kẻ địch, phong ấn toàn bộ kỹ năng kích hoạt trong 3 giây.",
+    "skill": "Thiên La Địa Võng: Trói tối đa 3 mục tiêu trong vùng, mỗi mục tiêu chịu 80% ATK; Trói chân 1.2 giây và câm lặng 2 giây theo kháng/miễn khống chế.",
     "stats": {
       "spirit": 45,
       "speed_pct": 10,
@@ -1034,7 +1034,7 @@
     "max_level": 30,
     "is_equipped": false,
     "description": "Đại ấn ngưng tụ trọng lượng của cả một ngọn núi linh thiêng hùng vĩ.",
-    "skill": "Thái Sơn Áp Đỉnh: Ấn biến to che trời đập xuống, gây sát thương chấn động và đánh ngã toàn bộ mục tiêu.",
+    "skill": "Thái Sơn Áp Đỉnh: Đại ấn và sóng chấn địa gây tổng 180% ATK; Sóng chấn địa gây choáng 0.6 giây và đẩy lùi 60 theo kháng.",
     "stats": {
       "hp": 520,
       "def": 13,

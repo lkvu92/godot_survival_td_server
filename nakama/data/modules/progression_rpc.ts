@@ -93,7 +93,7 @@ function startTrialTower(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: n
     const catalog=readCombatPowerCatalog(nk),hero=catalog.heroes.find((v:any)=>v.id===req.hero_id),
         state=cpArray(h.value.heroes).find((v:any)=>v.hero_id===req.hero_id);
     if(!hero||!state||state.owned!==true)return fail('HERO_NOT_OWNED','Bạn chưa sở hữu nhân vật này.');
-    const level=Math.max(1,Math.min(50,Number(state.level)||1));
+    const level=Math.max(1,Math.min(PROGRESSION_MAX_LEVEL,Number(state.level)||1));
     const storedAttributes=cpObject(state.current_attribute);
     const demonAttributes=Object.assign({},Object.keys(storedAttributes).length?storedAttributes:progressionHeroAttributes(nk,req.hero_id,level));
     const heroElementProfile={affinities:Object.assign({},cpObject(profile.element_affinities)),levels:Object.assign({},cpObject(profile.elements))};
@@ -239,7 +239,7 @@ function finishTrialTower(ctx:nkruntime.Context,_logger:nkruntime.Logger,nk:nkru
 }
 
 const PROGRESSION_VERSION = 2;
-const PROGRESSION_MAX_LEVEL = 50;
+const PROGRESSION_MAX_LEVEL = 70;
 const PROGRESSION_HERO_BASE_EXP = 1000;
 const PROGRESSION_USER_BASE_EXP = 5000;
 const PROGRESSION_POWER_C = 750;
@@ -648,7 +648,7 @@ function getThanLuanState(ctx:nkruntime.Context,_logger:nkruntime.Logger,nk:nkru
         const profile=cpObject(p.value);
         if(thanLuanReconcile(profile,config))nk.storageWrite([{collection:'player_profiles',key:'main',userId:ctx.userId,value:profile,version:p.version,permissionRead:1,permissionWrite:0}]);
         return JSON.stringify(thanLuanResponse(profile,cpObject(inv.value),config));
-    }catch(_e){return JSON.stringify({success:false,code:'STATE_UNAVAILABLE',message:'Chưa tải được Thần Luân. Hãy thử lại.'});}
+    }catch(_e){return JSON.stringify({success:false,code:'STATE_UNAVAILABLE',message:'Chưa tải được Pháp Tắc. Hãy thử lại.'});}
 }
 
 function upgradeThanLuan(ctx:nkruntime.Context,_logger:nkruntime.Logger,nk:nkruntime.Nakama,payload:string):string {
@@ -658,14 +658,14 @@ function upgradeThanLuan(ctx:nkruntime.Context,_logger:nkruntime.Logger,nk:nkrun
     if(!req||typeof req.request_id!=='string'||!/^[a-zA-Z0-9_-]{8,128}$/.test(req.request_id)
         ||!Number.isSafeInteger(req.expected_level)||req.expected_level<1||req.expected_level>50
         ||!Number.isSafeInteger(req.expected_revision)||req.expected_revision<0||typeof req.use_charm!=='boolean')return fail('INVALID_REQUEST','Yêu cầu không hợp lệ.');
-    let config:any;try{config=thanLuanConfig(nk);}catch(_e){return fail('CONFIG_INVALID','Cấu hình Thần Luân chưa sẵn sàng.');}
+    let config:any;try{config=thanLuanConfig(nk);}catch(_e){return fail('CONFIG_INVALID','Cấu hình Pháp Tắc chưa sẵn sàng.');}
     const receiptRef={collection:'player_item_requests',key:'than_luan_'+req.request_id,userId:ctx.userId};
     const rows=nk.storageRead([{collection:'player_profiles',key:'main',userId:ctx.userId},{collection:'player_inventory',key:'items',userId:ctx.userId},receiptRef]);
     const p=rows.find(r=>r.collection==='player_profiles'), inv=rows.find(r=>r.collection==='player_inventory'), receipt=rows.find(r=>r.collection==='player_item_requests');
     if(!p||!inv)return fail('PROFILE_INCOMPLETE','Chưa tải đủ nhân vật.');
     const profile=cpObject(p.value), inventory=cpObject(inv.value);
-    try{thanLuanReconcile(profile,config);}catch(_e){return fail('STATE_INVALID','Tiến độ Thần Luân không hợp lệ.');}
-    if(Number(profile.level||1)<config.unlock_level)return fail('FEATURE_LOCKED','Thần Luân mở ở Lv.30.');
+    try{thanLuanReconcile(profile,config);}catch(_e){return fail('STATE_INVALID','Tiến độ Pháp Tắc không hợp lệ.');}
+    if(Number(profile.level||1)<config.unlock_level)return fail('FEATURE_LOCKED','Pháp Tắc mở ở Lv.30.');
     if(receipt){
         if(receipt.value.expected_level!==req.expected_level||receipt.value.expected_revision!==req.expected_revision||receipt.value.use_charm!==req.use_charm)return fail('REQUEST_CONFLICT','Mã yêu cầu đã được dùng.');
         return JSON.stringify(Object.assign(thanLuanResponse(profile,inventory,config),receipt.value.outcome,{duplicate:true}));
@@ -699,7 +699,7 @@ function upgradeThanLuan(ctx:nkruntime.Context,_logger:nkruntime.Logger,nk:nkrun
     ]);}catch(_e){return fail('CONFLICT','Có thao tác khác. Hãy tải lại và thử lại.');}
     if(typeof writePlayerLeaderboardRecords==='function') {
         try{writePlayerLeaderboardRecords(nk,ctx.userId,profile,profile.display_name);}
-        catch(_e){_logger.warn('Than Luan committed; leaderboard refresh deferred until profile sync.');}
+        catch(_e){_logger.warn('Phap Tac committed; leaderboard refresh deferred until profile sync.');}
     }
     return JSON.stringify(Object.assign(thanLuanResponse(profile,inventory,config),outcome));
 }

@@ -1,7 +1,7 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const {ARC,SEED,ELEMENTS,POOL,CORE,rng,buildCatalog,mergeCatalog,loadCatalog,loadRecommendations} = require('../tools/arc6_catalog.cjs');
+const {ARC,SEED,ELEMENTS,POOL,CORE,ARC6_STAGE_STAT_CURVE,rng,buildCatalog,mergeCatalog,loadCatalog,loadRecommendations} = require('../tools/arc6_catalog.cjs');
 const {getWaveExp,rebalanceWaveExp} = require('../tools/campaign_wave_exp.cjs');
 const {applyWaveRoleRules} = require('../tools/campaign_wave_roles.cjs');
 const {migrateCampaignWaves} = require('../tools/campaign_wave_pressure.cjs');
@@ -31,10 +31,14 @@ for (const enemy of built.enemies.filter(e=>!e.is_boss)) {
   assert.equal(new Set(enemy.generic_skills.map(s=>s.id)).size,enemy.generic_skills.length,'no duplicate generic IDs');
   for (const skill of enemy.generic_skills) assert(supported.has(skill.id),`engine-supported skill ${skill.id}`);
   assert(ELEMENTS.includes(enemy.element));
-  assert.equal(enemy.balance_reference_level,35);
+  assert.equal(enemy.balance_reference_level,55);
 }
 assert.equal(sourceMap.get('frost_knight').element,'metal');
 assert.equal(sourceMap.get('arc6_frost_knight').element,'water','isolated Water tank variant');
+for (const id of ['snow_mage','snow_skeleton','frost_lancer','frost_knight']) {
+  const source = sourceMap.get(id), variant = sourceMap.get(`arc6_${id}`);
+  assert(Math.abs(variant.visual_scale * built.arcs[0].enemy_visual_scale_multiplier - source.visual_scale) < 0.00001, `${id} Arc6 rendered scale matches Arc2`);
+}
 for (const [id,skills] of [['arc6_wraith_mid',2],['arc6_wraith_final',4]]) {
   const boss = sourceMap.get(id);
   assert(boss.is_boss);
@@ -57,7 +61,8 @@ let waves=0,units=0;
 for (const [si,stage] of built.stages.entries()) {
   assert.equal(stage.arc_id,ARC);
   assert.equal(stage.level,51+si);
-  assert.equal(stage.stage_rules.balance_reference_level,35);
+  assert.equal(stage.stage_rules.balance_reference_level,51+si);
+  assert.deepEqual(stage.stage_rules.stat_curve,{model:'shared_hp_atk_def_linear_v1',wave_1:ARC6_STAGE_STAT_CURVE[si][0],wave_20:ARC6_STAGE_STAT_CURVE[si][1]});
   assert.deepEqual(Object.values(stage.stage_rules.element_weights),[20,20,20,20,20]);
   assert.equal(stage.waves.length,20);
   assert.equal(stage.is_boss,si===4||si===9);
@@ -76,6 +81,10 @@ for (const [si,stage] of built.stages.entries()) {
       for (const stat of ['hp_mul','atk_mul','def_mul','speed_mul']) assert(entry.modifiers[stat]>0 && Number.isFinite(entry.modifiers[stat]));
       if (entry.boss) {assert(enemy.is_boss);continue;}
       assert(!enemy.is_boss && enemy.id.startsWith('arc6_'));
+      assert.equal(entry.modifiers.hp_mul,entry.modifiers.atk_mul,'regular creep shares HP/ATK multiplier');
+      assert.equal(entry.modifiers.hp_mul,entry.modifiers.def_mul,'regular creep shares HP/DEF multiplier');
+      const expectedStat=Math.round((ARC6_STAGE_STAT_CURVE[si][0]+(ARC6_STAGE_STAT_CURVE[si][1]-ARC6_STAGE_STAT_CURVE[si][0])*wi/19)*1e6)/1e6;
+      assert.equal(entry.modifiers.hp_mul,expectedStat,'linear stage wave stat curve');
       counts[enemy.arc6_role]+=entry.count;
       totals[enemy.element]+=entry.count;
       units+=entry.count;

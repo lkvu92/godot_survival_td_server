@@ -2377,7 +2377,7 @@
     },
     "source_enemy_id": "steam_automaton",
     "arc6_role": "normal",
-    "balance_reference_level": 35
+    "balance_reference_level": 55
   },
   {
     "id": "arc6_iron_crossbowman",
@@ -2438,7 +2438,7 @@
     },
     "source_enemy_id": "iron_crossbowman",
     "arc6_role": "ranger",
-    "balance_reference_level": 35
+    "balance_reference_level": 55
   },
   {
     "id": "arc6_shield_sentinel",
@@ -2502,14 +2502,14 @@
     },
     "source_enemy_id": "shield_sentinel",
     "arc6_role": "tank",
-    "balance_reference_level": 35
+    "balance_reference_level": 55
   },
   {
     "id": "arc6_frost_lancer",
     "display_name": "Frost Lancer · Quy Khư",
     "element": "water",
     "attack_type": "melee",
-    "visual_scale": 0.4095,
+    "visual_scale": 0.255937,
     "exp": 6,
     "attributes": {
       "hp": 380,
@@ -2571,14 +2571,14 @@
     },
     "source_enemy_id": "frost_lancer",
     "arc6_role": "normal",
-    "balance_reference_level": 35
+    "balance_reference_level": 55
   },
   {
     "id": "arc6_snow_mage",
     "display_name": "Snow Mage · Quy Khư",
     "element": "water",
     "attack_type": "ranged",
-    "visual_scale": 0.4095,
+    "visual_scale": 0.255937,
     "exp": 3,
     "attributes": {
       "hp": 140,
@@ -2641,14 +2641,14 @@
     },
     "source_enemy_id": "snow_mage",
     "arc6_role": "ranger",
-    "balance_reference_level": 35
+    "balance_reference_level": 55
   },
   {
     "id": "arc6_frost_knight",
     "display_name": "Hàn Giáp Vệ · Quy Khư",
     "element": "water",
     "attack_type": "melee",
-    "visual_scale": 0.4095,
+    "visual_scale": 0.255937,
     "exp": 6,
     "attributes": {
       "hp": 480,
@@ -2690,7 +2690,7 @@
     "collision_radius": 22,
     "source_enemy_id": "frost_knight",
     "arc6_role": "tank",
-    "balance_reference_level": 35
+    "balance_reference_level": 55
   },
   {
     "id": "arc6_spore_crawler",
@@ -2755,7 +2755,7 @@
     },
     "source_enemy_id": "spore_crawler",
     "arc6_role": "normal",
-    "balance_reference_level": 35
+    "balance_reference_level": 55
   },
   {
     "id": "arc6_thorn_spitter",
@@ -2821,7 +2821,7 @@
     },
     "source_enemy_id": "thorn_spitter",
     "arc6_role": "ranger",
-    "balance_reference_level": 35
+    "balance_reference_level": 55
   },
   {
     "id": "arc6_ent_protector",
@@ -2898,7 +2898,7 @@
     },
     "source_enemy_id": "ent_protector",
     "arc6_role": "tank",
-    "balance_reference_level": 35
+    "balance_reference_level": 55
   },
   {
     "id": "arc6_flame_imp",
@@ -2954,7 +2954,7 @@
     },
     "source_enemy_id": "flame_imp",
     "arc6_role": "normal",
-    "balance_reference_level": 35
+    "balance_reference_level": 55
   },
   {
     "id": "arc6_pyromancer",
@@ -3021,7 +3021,7 @@
     },
     "source_enemy_id": "pyromancer",
     "arc6_role": "ranger",
-    "balance_reference_level": 35
+    "balance_reference_level": 55
   },
   {
     "id": "arc6_lava_brute",
@@ -3083,14 +3083,14 @@
     },
     "source_enemy_id": "lava_brute",
     "arc6_role": "tank",
-    "balance_reference_level": 35
+    "balance_reference_level": 55
   },
   {
     "id": "arc6_snow_skeleton",
     "display_name": "Snow Skeleton · Quy Khư",
     "element": "earth",
     "attack_type": "melee",
-    "visual_scale": 0.4095,
+    "visual_scale": 0.255937,
     "exp": 2,
     "attributes": {
       "hp": 190,
@@ -3133,7 +3133,7 @@
     },
     "source_enemy_id": "snow_skeleton",
     "arc6_role": "normal",
-    "balance_reference_level": 35
+    "balance_reference_level": 55
   },
   {
     "id": "arc6_seismic_shaman",
@@ -3201,7 +3201,7 @@
     },
     "source_enemy_id": "seismic_shaman",
     "arc6_role": "ranger",
-    "balance_reference_level": 35
+    "balance_reference_level": 55
   },
   {
     "id": "arc6_granite_colossus",
@@ -3271,7 +3271,7 @@
     },
     "source_enemy_id": "granite_colossus",
     "arc6_role": "tank",
-    "balance_reference_level": 35
+    "balance_reference_level": 55
   },
   {
     "id": "arc6_wraith_mid",
@@ -3279,6 +3279,8 @@
     "element": "earth",
     "attack_type": "melee",
     "visual_scale": 0.15,
+    "boss_visual_scale": 0.442,
+    "is_boss": true,
     "exp": 120,
     "attributes": {
       "hp": 6500,
@@ -3371,10 +3373,8 @@
         ]
       }
     ],
-    "is_boss": true,
     "source_enemy_id": "primordial_wraith",
-    "balance_reference_level": 35,
-    "boss_visual_scale": 0.442
+    "balance_reference_level": 55
   },
   {
     "id": "arc6_wraith_final",
@@ -3382,6 +3382,8 @@
     "element": "earth",
     "attack_type": "melee",
     "visual_scale": 0.15,
+    "boss_visual_scale": 0.442,
+    "is_boss": true,
     "exp": 120,
     "attributes": {
       "hp": 6500,
@@ -3532,9 +3534,7 @@
         ]
       }
     ],
-    "is_boss": true,
     "source_enemy_id": "primordial_wraith",
-    "balance_reference_level": 35,
-    "boss_visual_scale": 0.442
+    "balance_reference_level": 55
   }
 ]

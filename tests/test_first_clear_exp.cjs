@@ -124,3 +124,11 @@ db.player_heroes.value.heroes[0].exp=5000;
 result=settle('one');assert(result.success);assert(result.hero.level>1);
 assert(result.hero.exp<=result.hero.next_level_exp);
 console.log('PASS C186 campaign EXP: legacy overflow capped; normal hero level progression preserved');
+
+reset();db.player_profiles.value.level=70;
+db.player_heroes.value.heroes[0].level=69;
+db.player_heroes.value.heroes[0].exp=999999999;
+result=settle('one');assert(result.success);
+assert.equal(result.profile.level,70);assert.equal(result.hero.level,70);
+assert.equal(result.hero.exp,0);assert.equal(result.hero.next_level_exp,0);
+console.log('PASS C225 persistent hero reaches 70 under account cap; max EXP is zero');

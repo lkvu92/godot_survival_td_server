@@ -23,4 +23,12 @@ for (const order of [1, 3, 4, 5]) {
     if (enemy.is_boss) assert.ok(renderedSize(enemy, arc) <= maxBossSize + 1e-9, `${enemyId} exceeds the 1.3x Arc 2 Golem cap`);
   }
 }
-console.log('PASS arc 1/3/4/5 creep scale reduction and boss size cap');
+const arc6 = arcs.find(arc => arc.order === 6);
+for (const sourceId of ['snow_mage', 'snow_skeleton', 'frost_lancer', 'frost_knight']) {
+  const source = enemies.get(sourceId), variant = enemies.get(`arc6_${sourceId}`);
+  assert.ok(source && variant && arc6, `Arc 6 ${sourceId} scale fixture`);
+  const sourceScale = Number(source.visual_scale) * Number(arc2.enemy_visual_scale_multiplier ?? 1);
+  const variantScale = Number(variant.visual_scale) * Number(arc6.enemy_visual_scale_multiplier ?? 1);
+  assert.ok(Math.abs(sourceScale - variantScale) < 0.00001, `Arc 6 ${sourceId} must render at Arc 2 size`);
+}
+console.log('PASS arc 1/3/4/5 creep scale reduction, boss cap and Arc 6 copies at Arc 2 size');

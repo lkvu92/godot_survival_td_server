@@ -1,4 +1,4 @@
-- [Arc 6 Ngũ Tố Quy Khư plan](ARC6_NGU_TO_QUY_KHU_PLAN.md) and [C221](contracts/C221_ARC6_NGU_TO_QUY_KHU.md): mixed-element existing-engine campaign.
+- [Arc 6 Ngũ Tố Quy Khư plan](ARC6_NGU_TO_QUY_KHU_PLAN.md) and [C221](contracts/C221_ARC6_NGU_TO_QUY_KHU.md) v1.1.1: mixed-element campaign, per-stage Lv51–60 shared creep-stat curves, and Arc 2 ice variants rendered at their source size.
 - [C220 Tactical support cards](contracts/C220_TACTICAL_SUPPORT_CARDS.md): three-tier support, status accuracy and healing reduction.
 - [C176 local readiness](reports/C176_LOCAL_READINESS.md): local config v4 and native Nakama/PostgreSQL smoke PASS.
 
@@ -30,7 +30,7 @@
 
 - [C157 Arc 2 ice creep skills](contracts/C157_CREEP_ICE_SKILLS.md) v1.0.0: ice claws, bolts, pillars, Cực Băng Tam Trọng Thiên and Băng Linh Lung use server-authoritative skill data.
 
-- [C156 Campaign mode stat multipliers](contracts/C156_CAMPAIGN_MODE_STAT_MULTIPLIERS.md) v1.0.0: Normal/Epic/Legend apply `1.00× / 1.25× / 1.5625×` to every enemy HP, ATK, and DEF.
+- [C156 Campaign mode stat multipliers](contracts/C156_CAMPAIGN_MODE_STAT_MULTIPLIERS.md) v1.1.0: Normal/Epic/Legend apply `1.00× / 1.25× / 1.50×` to every enemy HP, ATK, and DEF.
 
 - [C155 Arc 3–5 boss stat reduction](contracts/C155_ARC_3_5_BOSS_REDUCTION.md) v1.0.0: campaign boss HP, ATK, and DEF are reduced by 30%; timing, rewards, and EXP are unchanged.
 
@@ -155,7 +155,7 @@
 
 - [C158 wood skills v1.1.0](contracts/C158_CREEP_WOOD_SKILLS.md): compact target-centered thorn ellipse and authoritative presentation dimensions.
 
-- [C178 — Thần Luân](contracts/C178_THAN_LUAN.md): shared level-35 survival progression, five-tier aura, shared combat HUD and dedicated Pháp Tắc Phù.
+- [C178 — Pháp Tắc](contracts/C178_THAN_LUAN.md): shared survival progression, five-tier aura, shared combat HUD and dedicated Pháp Tắc Phù; legacy internal key remains `than_luan`.
 - [C183 Hero 3 falling seal](contracts/C183_HERO_3_FALLING_SEAL.md) v1.0.2: same three-wave mechanics, current skill2 cooldown8/7.5/7/6.5/6s under C195.
 - C183 v1.0.1: halve Hero 3 Skill 2 sword-burst duration at all five levels.
 - [C184 Hero 4 Venom Vortex](contracts/C184_HERO_4_VENOM_VORTEX.md) v1.0.1: C196 vortex2.5s/five ticks,20% stun and additive ATK poison capped5000 DPS.
@@ -223,7 +223,7 @@ C197 v1.1.0: fixed golden phantom, 0.5s protection, actual-hit repeat damage and
 - C204 v1.2.0: visible world aura above map; remove Law HUD text.
 
 - C204 v1.3.0: no Law effects on Home/Profile/Tower/hero-select avatars.
-- [C218 Campaign wave pressure](contracts/C218_CAMPAIGN_WAVE_PRESSURE.md) v2.3.1 IN_PROGRESS: Godot runtime checkpoint calibrator W4/W9/W14/W19 dùng một hero đồng hệ mỗi Arc, kế thừa lower bound Normal → Epic → Legend và checkpoint JSON riêng từng Arc; full-catalog recommendation chưa chạy `--write`. [Kế hoạch triển khai](C218_CAMPAIGN_PRESSURE_IMPLEMENTATION_PLAN.md).
+- [C218 Campaign wave pressure](contracts/C218_CAMPAIGN_WAVE_PRESSURE.md) v2.4.0 IN_PROGRESS: Arc 2 targets Normal Lv10–19 with runtime-corrected stage factors 0.45–0.85; benchmark v4 recommendations must be regenerated. [Kế hoạch triển khai](C218_CAMPAIGN_PRESSURE_IMPLEMENTATION_PLAN.md).
 
 - [C130 v1.4.0](contracts/C130_CONSUMABLE_USE.md): Đột phá dùng vật phẩm chiến đấu và một Hồi Sinh Phù mỗi lượt; server kiểm tra encounter, cooldown, thời hạn và giao dịch chống trừ lặp.
 
@@ -248,3 +248,25 @@ C197 v1.1.0: fixed golden phantom, 0.5s protection, actual-hit repeat damage and
 - C224 v1.1.1: Home VIP handles paired mouse/touch release without closing its new dialog.
 
 - C223 v1.1.1: gameplay actions use one aligned vertical column with equal spacing.
+- C223 v1.1.2: card selection follows Settings without showing a redundant Auto/Manual control.
+
+- [C225 Level 70](contracts/C225_LEVEL_70.md): persistent caps 70, Độ Kiếp 51–60 / Bán Tiên 61–70 and seven-tier frames.
+
+- C196 v1.3.0: halve Skill1 poison, Skill2 art +30%, Skill4 combat unlock15 and ground vortex below hero.
+
+- [C227 Ordered wave spawning](contracts/C227_ORDERED_WAVE_SPAWNING.md) v1.0.0 IN_PROGRESS: four-wave batches and overlapping tanker/ranger/fast/boss queues.
+
+
+- [C015 v1.16.0 — Cân bằng Hạ phẩm ID 2–15](contracts/C015_TALISMAN_EQUIPMENT_SYSTEM.md): baseline mới, tích hợp và nghiệm thu lần lượt bốn nhóm; IN_PROGRESS.
+- [C130 Consumable effects](contracts/C130_CONSUMABLE_USE.md) v1.6.0: 5s healing cooldown and shared hero buff icons with actual remaining lifetime.
+
+- C015 v1.16.1: xác nhận 15 asset pháp bảo 1200×1200, 9 frame 400×400; atlas và region đã đồng bộ.
+
+- C015 v1.16.2: Hấp Huyết Thứ Hạ phẩm dùng dây gai 400px/frame, hit/heal một lần ở 0.21s.
+
+- Trung phẩm ID 16–25: [kế hoạch/data đề xuất 31 tầng theo asset thực tế](plans/MID_TIER_TALISMAN_SKILLS.proposed.json); giữ hệ catalog, DRAFT_NOT_SEEDED.
+- [C218 runtime recommendations](contracts/C218_CAMPAIGN_WAVE_PRESSURE.md) v2.4.1: explicit Arc 6 calibration; default catalog write remains Arc 1–5 with fingerprint checks.
+
+- [C230 — Trung phẩm 31 tầng và effect gameplay](contracts/C230_MID_TIER_TALISMAN_SKILLS.md), v1.0.0 IN_PROGRESS.
+- [C218 historical recommendation DB update](contracts/C218_CAMPAIGN_WAVE_PRESSURE.md) v2.4.2: selective local Arc 1–5 power update with backups and unchanged active settings.
+- [C196 Hero4 damage redistribution](contracts/C196_HERO4_SKILL_REBALANCE.md) v1.4.0: halve Skill1 direct hit; move half Skill2/3 direct damage into poison while preserving isolated raw budgets and Skill2 range falloff.

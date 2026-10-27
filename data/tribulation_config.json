@@ -225,6 +225,24 @@
       "atk_step": 0.08,
       "base_def": 100,
       "def_step": 0.15
+    },
+    {
+      "user_level": 59,
+      "base_hp": 222222,
+      "base_atk": 1354,
+      "hp_step": 0.15,
+      "atk_step": 0.08,
+      "base_def": 100,
+      "def_step": 0.15
+    },
+    {
+      "user_level": 69,
+      "base_hp": 493827,
+      "base_atk": 2112,
+      "hp_step": 0.15,
+      "atk_step": 0.08,
+      "base_def": 100,
+      "def_step": 0.15
     }
   ],
   "post_boss_heal_by_wave": [

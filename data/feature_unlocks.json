@@ -126,12 +126,12 @@
       "required_user_level": 30,
       "enabled": true,
       "release_status": "released",
-      "display_name": "Pháp tắc",
-      "description": "Bồi dưỡng Thần Luân bằng Mảnh pháp tắc từ Tâm Ma Tháp để tăng khả năng sinh tồn.",
+      "display_name": "Pháp Tắc",
+      "description": "Bồi dưỡng Pháp Tắc bằng Mảnh pháp tắc từ Tâm Ma Tháp để tăng khả năng sinh tồn.",
       "tour_id": "than_luan_v1",
       "tour_mode": "dismiss_any",
-      "mail_title": "Đã khai mở: Pháp tắc",
-      "mail_body": "Chúc mừng đạo hữu đạt cấp {level}! Pháp tắc đã khai mở.\n\nBồi dưỡng Thần Luân bằng Mảnh pháp tắc từ Tâm Ma Tháp để tăng khả năng sinh tồn.\n\nTrở về Trang chủ để khám phá chức năng mới."
+      "mail_title": "Đã khai mở: Pháp Tắc",
+      "mail_body": "Chúc mừng đạo hữu đạt cấp {level}! Pháp Tắc đã khai mở.\n\nBồi dưỡng Pháp Tắc bằng Mảnh pháp tắc từ Tâm Ma Tháp để tăng khả năng sinh tồn.\n\nTrở về Trang chủ để khám phá chức năng mới."
     },
     "guild_war": {
       "required_user_level": null,

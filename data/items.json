@@ -1204,7 +1204,7 @@
       "max_level": 30,
       "skill_id": "skill_talisman_16",
       "skill_name": "Tuyết Lạc Băng Phong",
-      "skill_description": "Tuyết Lạc Băng Phong: Ngưng tụ kiếm trận băng giá, đóng băng kẻ địch diện rộng trong 3 giây.",
+      "skill_description": "Tuyết Lạc Băng Phong: Kiếm băng và băng trồi gây tổng 120% ATK; Đóng băng 3 giây theo kháng/miễn khống chế.",
       "base_stats": {
         "atk": 32,
         "speed_pct": 8,
@@ -1255,7 +1255,7 @@
       "max_level": 30,
       "skill_id": "skill_talisman_17",
       "skill_name": "Phệ Hồn Trảm",
-      "skill_description": "Phệ Hồn Trảm: Nhát chém gây vết thương sâu xé rách linh hồn, cấm hồi máu trong 6 giây.",
+      "skill_description": "Phệ Hồn Trảm: Trảm khí xuyên tuyến hẹp, gây 150% ATK mỗi mục tiêu; Vết thương sâu: giảm hồi máu 50% trong 4 giây.",
       "base_stats": {
         "atk": 30,
         "hp": 380,
@@ -1306,7 +1306,7 @@
       "max_level": 30,
       "skill_id": "skill_talisman_18",
       "skill_name": "Tử Lôi Phá Diệt",
-      "skill_description": "Tử Lôi Phá Diệt: Phóng ra cột sét tím hủy diệt từ trên cao đánh thẳng vào mục tiêu chỉ định.",
+      "skill_description": "Tử Lôi Phá Diệt: Cột sét và điện lan gây tối đa 180% ATK lên mục tiêu chính; Cột sét có 35% gây tê liệt 0.5 giây; điện lan không roll lại.",
       "base_stats": {
         "atk": 28,
         "spirit": 48,
@@ -1357,7 +1357,7 @@
       "max_level": 30,
       "skill_id": "skill_talisman_19",
       "skill_name": "Phần Thiên Chướng",
-      "skill_description": "Phần Thiên Chướng: Thổi ra biển lửa thiêu đốt toàn bộ kẻ địch xung quanh liên tục.",
+      "skill_description": "Phần Thiên Chướng: Vành lửa theo hero, bán kính 140; Thiêu đốt gây tổng 240% ATK trong 4 giây (8 tick); Mỗi mục tiêu chỉ bị áp một lần mỗi lần thi triển.",
       "base_stats": {
         "atk": 31,
         "spirit": 52,
@@ -1408,7 +1408,7 @@
       "max_level": 30,
       "skill_id": "skill_talisman_20",
       "skill_name": "Kim Thân Bất Diệt",
-      "skill_description": "Kim Thân Bất Diệt: Kháng toàn bộ sát thương khống chế và giảm 50% sát thương nhận vào trong 4 giây.",
+      "skill_description": "Kim Thân Bất Diệt: Trong 4 giây: giảm 50% sát thương nhận vào và miễn khống chế; Không gây sát thương; vẫn có thể nhận độc và thiêu đốt.",
       "base_stats": {
         "hp": 550,
         "def": 14,
@@ -1459,7 +1459,7 @@
       "max_level": 30,
       "skill_id": "skill_talisman_21",
       "skill_name": "Bách Quỷ Dạ Hành",
-      "skill_description": "Bách Quỷ Dạ Hành: Triệu hồi đàn quỷ ám tấn công và trừ độc liên tục lên các kẻ địch.",
+      "skill_description": "Bách Quỷ Dạ Hành: Tối đa 3 độc hồn, mỗi mục tiêu một hồn; Mỗi mục tiêu chịu tổng 110% ATK: trực tiếp và độc 4 giây; Vũng độc và ấn độc không gây thêm sát thương.",
       "base_stats": {
         "spirit": 50,
         "atk": 24,
@@ -1509,8 +1509,8 @@
       "severe_repair_item_quantity": 2,
       "max_level": 30,
       "skill_id": "skill_talisman_22",
-      "skill_name": "Thần Mộc Trói Buộc",
-      "skill_description": "Thần Mộc Trói Buộc: Rễ cây trồi lên từ lòng đất trói chặt kẻ địch và liên tục hút chân khí.",
+      "skill_name": "Thần Mộc Long Hộ",
+      "skill_description": "Thần Mộc Long Hộ: Mộc long hộ chủ tạo khiên bằng 15% Max HP trong 3 giây; Hồi 2% Max HP mỗi giây, tổng 6% Max HP; Không gây sát thương hoặc trói mục tiêu.",
       "base_stats": {
         "spirit": 48,
         "hp": 450,
@@ -1561,7 +1561,7 @@
       "max_level": 30,
       "skill_id": "skill_talisman_23",
       "skill_name": "Thất Tinh Liên Châu",
-      "skill_description": "Thất Tinh Liên Châu: Bắn liên tiếp 7 đợt tinh quang kiếm khí với sát thương tăng dần.",
+      "skill_description": "Thất Tinh Liên Châu: Bắn 7 kiếm khí tăng tiến, tổng tối đa 180% ATK; Mỗi kiếm chỉ đánh một mục tiêu; tinh quang không gây thêm hit.",
       "base_stats": {
         "atk": 32,
         "speed_pct": 9,
@@ -1612,7 +1612,7 @@
       "max_level": 30,
       "skill_id": "skill_talisman_24",
       "skill_name": "Thiên La Địa Võng",
-      "skill_description": "Thiên La Địa Võng: Vung dây trói định thân kẻ địch, phong ấn toàn bộ kỹ năng kích hoạt trong 3 giây.",
+      "skill_description": "Thiên La Địa Võng: Trói tối đa 3 mục tiêu trong vùng, mỗi mục tiêu chịu 80% ATK; Trói chân 1.2 giây và câm lặng 2 giây theo kháng/miễn khống chế.",
       "base_stats": {
         "spirit": 45,
         "speed_pct": 10,
@@ -1663,7 +1663,7 @@
       "max_level": 30,
       "skill_id": "skill_talisman_25",
       "skill_name": "Thái Sơn Áp Đỉnh",
-      "skill_description": "Thái Sơn Áp Đỉnh: Ấn biến to che trời đập xuống, gây sát thương chấn động và đánh ngã toàn bộ mục tiêu.",
+      "skill_description": "Thái Sơn Áp Đỉnh: Đại ấn và sóng chấn địa gây tổng 180% ATK; Sóng chấn địa gây choáng 0.6 giây và đẩy lùi 60 theo kháng.",
       "base_stats": {
         "hp": 520,
         "def": 13,
@@ -3227,7 +3227,7 @@
         "kind": "heal",
         "value": 0.3,
         "duration": 0,
-        "cooldown": 15
+        "cooldown": 5
       }
     }
   },
@@ -3349,7 +3349,7 @@
   {
     "id": "law_fragment_low",
     "display_name": "Mảnh vỡ pháp tắc hạ phẩm",
-    "description": "Nguyên liệu hạ phẩm từ Tâm Ma Tháp, dùng nâng Thần Luân lên cấp 2–10.",
+    "description": "Nguyên liệu hạ phẩm từ Tâm Ma Tháp, dùng nâng Pháp Tắc lên cấp 2–10.",
     "category": "material", "rarity": "common", "icon_id": "consumable_10", "stackable": true, "max_stack": 999999, "order": 490, "expires_after_hours": 0,
     "tags": ["material", "law_fragment", "trial_tower"],
     "attributes": {"atlas_slot": 10, "material_family": "law_fragment", "tier": "low"}
@@ -3357,7 +3357,7 @@
   {
     "id": "law_fragment_medium",
     "display_name": "Mảnh vỡ pháp tắc trung phẩm",
-    "description": "Nguyên liệu trung phẩm từ Tâm Ma Tháp, dùng nâng Thần Luân lên cấp 11–20.",
+    "description": "Nguyên liệu trung phẩm từ Tâm Ma Tháp, dùng nâng Pháp Tắc lên cấp 11–20.",
     "category": "material", "rarity": "rare", "icon_id": "consumable_11", "stackable": true, "max_stack": 999999, "order": 491, "expires_after_hours": 0,
     "tags": ["material", "law_fragment", "trial_tower"],
     "attributes": {"atlas_slot": 11, "material_family": "law_fragment", "tier": "medium"}
@@ -3365,7 +3365,7 @@
   {
     "id": "law_fragment_high",
     "display_name": "Mảnh vỡ pháp tắc thượng phẩm",
-    "description": "Nguyên liệu thượng phẩm từ Tâm Ma Tháp, dùng nâng Thần Luân lên cấp 21–50.",
+    "description": "Nguyên liệu thượng phẩm từ Tâm Ma Tháp, dùng nâng Pháp Tắc lên cấp 21–50.",
     "category": "material", "rarity": "epic", "icon_id": "consumable_12", "stackable": true, "max_stack": 999999, "order": 492, "expires_after_hours": 0,
     "tags": ["material", "law_fragment", "trial_tower"],
     "attributes": {"atlas_slot": 12, "material_family": "law_fragment", "tier": "high"}
@@ -3485,7 +3485,7 @@
 {
   "id": "than_luan_boost_charm",
   "display_name": "Pháp Tắc Phù",
-  "description": "Tăng thêm 50% tỷ lệ thành công hiện có cho một lần nâng cấp Thần Luân, tối đa 100%. Phù bị tiêu hao dù nâng cấp thất bại.",
+  "description": "Tăng thêm 50% tỷ lệ thành công hiện có cho một lần nâng cấp Pháp Tắc, tối đa 100%. Phù bị tiêu hao dù nâng cấp thất bại.",
   "rarity": "rare",
   "icon_id": "divine_wheel_boost",
   "order": 66,

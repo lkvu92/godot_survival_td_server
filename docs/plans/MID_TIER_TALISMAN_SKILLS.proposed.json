@@ -1,0 +1,1592 @@
+{
+  "status": "IMPLEMENTED_IN_SOURCE_NOT_PUBLISHED",
+  "version": "1.1.0",
+  "date": "2026-10-27",
+  "scope": "mid-tier talisman IDs 16–25",
+  "authority": "Historical design proposal. Current implementation lives in server/data/skills.json and client runtime; this file is not a seed input.",
+  "total_images": 31,
+  "animated_sheets": 30,
+  "static_overlays": 1,
+  "skills": [
+    {
+      "id": "skill_talisman_16",
+      "talisman_id": 16,
+      "talisman_name": "Hàn Băng Phách Kiếm",
+      "element": "water",
+      "display_name": "Tuyết Lạc Băng Phong",
+      "current_skill_type": "layered_talisman",
+      "proposed_skill_type": "layered_talisman",
+      "cast_config_proposal": {
+        "behavior": "ice",
+        "range": 665,
+        "duration": 1.1,
+        "radius": 120,
+        "freeze_duration": 3,
+        "layers": [
+          {
+            "id": "frost_array",
+            "file": "area_north_frost_array_effect.png",
+            "role": "trận băng",
+            "start_ms": 0,
+            "duration_ms": 1100,
+            "instances": "1",
+            "anchor": "target_ground",
+            "pivot": [
+              200,
+              200
+            ],
+            "z_order": 0,
+            "playback": "one_shot_hold",
+            "animation_cycle_ms": 1100,
+            "rotation_deg": 0,
+            "scale_proposal": [
+              0.5,
+              0.5
+            ],
+            "blend": "alpha",
+            "gameplay": "chỉ hiển thị",
+            "frame_progression": "01–03 vòng nhỏ; 04–06 mở rộng; 07–09 vòng hoàn chỉnh, runtime fade cuối"
+          },
+          {
+            "id": "ice_sword",
+            "file": "main_cold_ice_sword_effect.png",
+            "role": "kiếm giáng",
+            "start_ms": 0,
+            "duration_ms": 620,
+            "instances": "1",
+            "anchor": "target_ground_tip",
+            "pivot": [
+              200,
+              365
+            ],
+            "z_order": 30,
+            "playback": "one_shot_hold",
+            "animation_cycle_ms": 180,
+            "rotation_deg": 0,
+            "scale_proposal": [
+              0.5,
+              0.5
+            ],
+            "blend": "alpha",
+            "gameplay": "30% budget, một hit tại 180ms",
+            "frame_progression": "01–03 kiếm hình thành; 04–06 kiếm lớn; 07–09 kiếm chạm đất; runtime dịch từ trên xuống, không dịch thêm theo bbox"
+          },
+          {
+            "id": "ice_spikes",
+            "file": "impact_ice_spike_cluster_effect.png",
+            "role": "băng trồi",
+            "start_ms": 320,
+            "duration_ms": 650,
+            "instances": "1",
+            "anchor": "target_ground_base",
+            "pivot": [
+              200,
+              365
+            ],
+            "z_order": 20,
+            "playback": "one_shot_hold",
+            "animation_cycle_ms": 110,
+            "rotation_deg": 0,
+            "scale_proposal": [
+              0.5,
+              0.5
+            ],
+            "blend": "alpha",
+            "gameplay": "70% budget AOE, một hit tại 430ms; freeze một lần",
+            "frame_progression": "01–03 mầm băng; 04–06 cụm băng nở; 07–09 cụm lớn, fade sau hit"
+          },
+          {
+            "id": "freeze_feet",
+            "file": "freeze_foot_overlay.png",
+            "role": "trạng thái đóng băng",
+            "start_ms": 430,
+            "duration_ms": 3000,
+            "instances": "mỗi target freeze thành công",
+            "anchor": "target_feet",
+            "pivot": [
+              128,
+              128
+            ],
+            "z_order": 3,
+            "playback": "static_status",
+            "animation_cycle_ms": 3000,
+            "rotation_deg": 0,
+            "scale_proposal": [
+              0.3,
+              0.3
+            ],
+            "blend": "alpha",
+            "gameplay": "không hit; sống đúng thời gian status",
+            "frame_progression": "ảnh tĩnh 256×256; không cắt thành chín frame; bỏ ngay khi status hết/target chết"
+          }
+        ],
+        "effect_bindings": [
+          {
+            "id": "freeze",
+            "phase": "ice_spikes_contact",
+            "layer": "ice_spikes",
+            "target": "hit_enemies",
+            "chance": 1,
+            "duration": 3,
+            "apply_once_per_cast_target": true
+          }
+        ],
+        "effect_resolution_policy": {
+          "dispatcher": "EffectService -> target.apply_status_effect -> StatusEffectController",
+          "authored_chance_is_before_accuracy_and_resistance": true,
+          "source_key": "caster_id + skill_id + target_spawn_generation",
+          "same_source_dot_rule": "one active contribution per skill/source/target; never multiply by visual instances",
+          "different_sources_rule": "requires source-aware contribution resolution; never overwrite or duplicate Hero DOT",
+          "status_visuals": "shared status icon/shader follows actual successful status, never raw effect attempts",
+          "boss_rule": "existing resistance/immunity/duration rules; never bypass for talismans",
+          "template_fields": "resolve dps_resolution and damage_budget_ratio into absolute dps before apply; do not pass formulas to current EffectService"
+        }
+      },
+      "levels_proposal": [
+        {
+          "level": 1,
+          "stats": {
+            "damage_pct": 120,
+            "cooldown": 30
+          }
+        },
+        {
+          "level": 2,
+          "stats": {
+            "damage_pct": 150,
+            "cooldown": 29
+          }
+        },
+        {
+          "level": 3,
+          "stats": {
+            "damage_pct": 180,
+            "cooldown": 28
+          }
+        },
+        {
+          "level": 4,
+          "stats": {
+            "damage_pct": 210,
+            "cooldown": 27
+          }
+        },
+        {
+          "level": 5,
+          "stats": {
+            "damage_pct": 240,
+            "cooldown": 26
+          }
+        }
+      ],
+      "design_notes": "Giữ nhận diện và cơ chế đã có; sửa grid/pivot 400px. Freeze theo resistance/boss rules, không tự bỏ miễn khống chế."
+    },
+    {
+      "id": "skill_talisman_17",
+      "talisman_id": 17,
+      "talisman_name": "Cửu U Ma Đao",
+      "element": "wood",
+      "display_name": "Phệ Hồn Trảm",
+      "current_skill_type": "projectile",
+      "proposed_skill_type": "layered_talisman",
+      "cast_config_proposal": {
+        "behavior": "nether_slash",
+        "range": 665,
+        "duration": 1.1,
+        "width": 44,
+        "healing_reduction": 0.5,
+        "debuff_duration": 4,
+        "layers": [
+          {
+            "id": "nether_slash",
+            "file": "main_nether_crescent_slash_effect.png",
+            "role": "trảm khí",
+            "start_ms": 90,
+            "duration_ms": 650,
+            "instances": "1",
+            "anchor": "projectile_center",
+            "pivot": [
+              200,
+              200
+            ],
+            "z_order": 30,
+            "playback": "one_shot_hold",
+            "animation_cycle_ms": 650,
+            "rotation_deg": 0,
+            "scale_proposal": [
+              0.5,
+              0.5
+            ],
+            "blend": "alpha",
+            "gameplay": "toàn bộ budget, mỗi target một hit; giảm hồi máu",
+            "frame_progression": "01–03 lưỡi trảm nhỏ; 04–06 nở; 07–09 đạt đỉnh; giữ frame cuối khi bay rồi fade"
+          },
+          {
+            "id": "nether_rift",
+            "file": "area_nether_earth_rip_effect.png",
+            "role": "vết xé trên đất",
+            "start_ms": 120,
+            "duration_ms": 700,
+            "instances": "2, lệch nhau 70ms",
+            "anchor": "path_ground",
+            "pivot": [
+              200,
+              200
+            ],
+            "z_order": 0,
+            "playback": "one_shot",
+            "animation_cycle_ms": 700,
+            "rotation_deg": 0,
+            "scale_proposal": [
+              0.5,
+              0.5
+            ],
+            "blend": "alpha",
+            "gameplay": "chỉ hiển thị",
+            "frame_progression": "01–03 vết nhỏ; 04–06 xé rộng; 07–09 rạn hoàn chỉnh; không coi nứt đất là DOT"
+          },
+          {
+            "id": "torn_wraiths",
+            "file": "particle_torn_wraiths_effect.png",
+            "role": "hồn bị xé",
+            "start_ms": 220,
+            "duration_ms": 650,
+            "instances": "tối đa 1/target trúng, cap 3",
+            "anchor": "target_center",
+            "pivot": [
+              200,
+              200
+            ],
+            "z_order": 20,
+            "playback": "one_shot",
+            "animation_cycle_ms": 650,
+            "rotation_deg": 0,
+            "scale_proposal": [
+              0.5,
+              0.5
+            ],
+            "blend": "alpha",
+            "gameplay": "chỉ hiển thị",
+            "frame_progression": "01–03 hồn xuất hiện; 04–06 trôi tách; 07–09 loãng/tan; không spawn ba đòn ma riêng"
+          }
+        ],
+        "effect_bindings": [
+          {
+            "id": "deep_wound",
+            "phase": "slash_contact",
+            "layer": "nether_slash",
+            "target": "hit_enemies",
+            "chance": 1,
+            "duration": 4,
+            "healing_reduction": 0.5,
+            "apply_once_per_cast_target": true
+          }
+        ],
+        "effect_resolution_policy": {
+          "dispatcher": "EffectService -> target.apply_status_effect -> StatusEffectController",
+          "authored_chance_is_before_accuracy_and_resistance": true,
+          "source_key": "caster_id + skill_id + target_spawn_generation",
+          "same_source_dot_rule": "one active contribution per skill/source/target; never multiply by visual instances",
+          "different_sources_rule": "requires source-aware contribution resolution; never overwrite or duplicate Hero DOT",
+          "status_visuals": "shared status icon/shader follows actual successful status, never raw effect attempts",
+          "boss_rule": "existing resistance/immunity/duration rules; never bypass for talismans",
+          "template_fields": "resolve dps_resolution and damage_budget_ratio into absolute dps before apply; do not pass formulas to current EffectService"
+        }
+      },
+      "levels_proposal": [
+        {
+          "level": 1,
+          "stats": {
+            "damage_pct": 150,
+            "cooldown": 30
+          }
+        },
+        {
+          "level": 2,
+          "stats": {
+            "damage_pct": 165,
+            "cooldown": 29
+          }
+        },
+        {
+          "level": 3,
+          "stats": {
+            "damage_pct": 180,
+            "cooldown": 28
+          }
+        },
+        {
+          "level": 4,
+          "stats": {
+            "damage_pct": 195,
+            "cooldown": 27
+          }
+        },
+        {
+          "level": 5,
+          "stats": {
+            "damage_pct": 210,
+            "cooldown": 26
+          }
+        }
+      ],
+      "design_notes": "Trảm xuyên tuyến hẹp; giảm hồi máu 50% trong 4s. Không execute, không ignore DEF, không thêm damage từ vết nứt/hồn trang trí."
+    },
+    {
+      "id": "skill_talisman_18",
+      "talisman_id": 18,
+      "talisman_name": "Tử Tiêu Lôi Kính",
+      "element": "water",
+      "display_name": "Tử Lôi Phá Diệt",
+      "current_skill_type": "two_phase_aoe",
+      "proposed_skill_type": "layered_talisman",
+      "cast_config_proposal": {
+        "behavior": "lightning_pillar",
+        "range": 665,
+        "duration": 1.5,
+        "radius": 110,
+        "phase_ratios": [
+          0.6666666666666666,
+          0.16666666666666666,
+          0.16666666666666666
+        ],
+        "field_ticks": 3,
+        "layers": [
+          {
+            "id": "lightning_pillar",
+            "file": "main_violet_lightning_pillar_effect.png",
+            "role": "cột sét",
+            "start_ms": 90,
+            "duration_ms": 540,
+            "instances": "1",
+            "anchor": "target_ground_tip",
+            "pivot": [
+              200,
+              365
+            ],
+            "z_order": 30,
+            "playback": "one_shot_hold",
+            "animation_cycle_ms": 160,
+            "rotation_deg": 0,
+            "scale_proposal": [
+              0.5,
+              0.5
+            ],
+            "blend": "alpha",
+            "gameplay": "2/3 budget, target chính tại 250ms",
+            "frame_progression": "01–03 tia mảnh; 04–06 cột mạnh; 07–09 đạt đỉnh; neo chân cột, runtime fade"
+          },
+          {
+            "id": "ground_flash",
+            "file": "impact_ground_flash_effect.png",
+            "role": "chớp va chạm",
+            "start_ms": 250,
+            "duration_ms": 450,
+            "instances": "1",
+            "anchor": "target_ground",
+            "pivot": [
+              200,
+              200
+            ],
+            "z_order": 20,
+            "playback": "one_shot",
+            "animation_cycle_ms": 450,
+            "rotation_deg": 0,
+            "scale_proposal": [
+              0.5,
+              0.5
+            ],
+            "blend": "alpha",
+            "gameplay": "1/6 budget AOE tại 250ms",
+            "frame_progression": "01–03 chớp nhỏ; 04–06 nổ; 07–09 lóe cực đại rồi runtime fade; không hit theo mỗi frame"
+          },
+          {
+            "id": "electric_field",
+            "file": "area_crawling_electric_field_effect.png",
+            "role": "điện lan mặt đất",
+            "start_ms": 290,
+            "duration_ms": 1200,
+            "instances": "1",
+            "anchor": "target_ground",
+            "pivot": [
+              200,
+              200
+            ],
+            "z_order": 0,
+            "playback": "one_shot_hold",
+            "animation_cycle_ms": 1200,
+            "rotation_deg": 0,
+            "scale_proposal": [
+              0.5,
+              0.5
+            ],
+            "blend": "alpha",
+            "gameplay": "1/6 budget chia 3 tick, 400ms/tick",
+            "frame_progression": "01–03 vòng điện nhỏ; 04–06 mở; 07–09 vòng lớn; không xoay ellipse thành đạn đứng"
+          }
+        ],
+        "effect_bindings": [
+          {
+            "id": "paralyze",
+            "phase": "pillar_contact",
+            "layer": "lightning_pillar",
+            "target": "primary_target",
+            "chance": 0.35,
+            "duration": 0.5,
+            "apply_once_per_cast_target": true
+          }
+        ],
+        "effect_resolution_policy": {
+          "dispatcher": "EffectService -> target.apply_status_effect -> StatusEffectController",
+          "authored_chance_is_before_accuracy_and_resistance": true,
+          "source_key": "caster_id + skill_id + target_spawn_generation",
+          "same_source_dot_rule": "one active contribution per skill/source/target; never multiply by visual instances",
+          "different_sources_rule": "requires source-aware contribution resolution; never overwrite or duplicate Hero DOT",
+          "status_visuals": "shared status icon/shader follows actual successful status, never raw effect attempts",
+          "boss_rule": "existing resistance/immunity/duration rules; never bypass for talismans",
+          "template_fields": "resolve dps_resolution and damage_budget_ratio into absolute dps before apply; do not pass formulas to current EffectService"
+        }
+      },
+      "levels_proposal": [
+        {
+          "level": 1,
+          "stats": {
+            "damage_pct": 180,
+            "cooldown": 30
+          }
+        },
+        {
+          "level": 2,
+          "stats": {
+            "damage_pct": 195,
+            "cooldown": 29
+          }
+        },
+        {
+          "level": 3,
+          "stats": {
+            "damage_pct": 210,
+            "cooldown": 28
+          }
+        },
+        {
+          "level": 4,
+          "stats": {
+            "damage_pct": 225,
+            "cooldown": 27
+          }
+        },
+        {
+          "level": 5,
+          "stats": {
+            "damage_pct": 240,
+            "cooldown": 26
+          }
+        }
+      ],
+      "design_notes": "Cột tập trung vào target chính; flash và điện lan AOE. Target chính nhận tối đa tổng budget, quái cạnh chỉ nhận các pha AOE."
+    },
+    {
+      "id": "skill_talisman_19",
+      "talisman_id": 19,
+      "talisman_name": "Liệt Hỏa Phần Thiên Lô",
+      "element": "fire",
+      "display_name": "Phần Thiên Chướng",
+      "current_skill_type": "two_phase_aoe",
+      "proposed_skill_type": "layered_talisman",
+      "cast_config_proposal": {
+        "behavior": "fire_aura",
+        "range": 665,
+        "duration": 4.11,
+        "radius": 140,
+        "layers": [
+          {
+            "id": "fire_array",
+            "file": "area_bagua_fire_array_effect.png",
+            "role": "bát quái dưới chân",
+            "start_ms": 130,
+            "duration_ms": 3980,
+            "instances": "1",
+            "anchor": "hero_feet",
+            "pivot": [
+              200,
+              200
+            ],
+            "z_order": 0,
+            "playback": "loop",
+            "animation_cycle_ms": 630,
+            "rotation_deg": 0,
+            "scale_proposal": [
+              0.5,
+              0.5
+            ],
+            "blend": "alpha",
+            "gameplay": "chỉ hiển thị",
+            "frame_progression": "01–09 chu kỳ ánh lửa quanh ấn; loop 630ms, fade vào/ra 150ms"
+          },
+          {
+            "id": "fire_ring",
+            "file": "area_fire_nova_ring_effect.png",
+            "role": "vành lửa",
+            "start_ms": 110,
+            "duration_ms": 4000,
+            "instances": "1",
+            "anchor": "hero_feet",
+            "pivot": [
+              200,
+              200
+            ],
+            "z_order": 20,
+            "playback": "loop",
+            "animation_cycle_ms": 630,
+            "rotation_deg": 0,
+            "scale_proposal": [
+              0.5,
+              0.5
+            ],
+            "blend": "alpha",
+            "gameplay": "áp burn một lần/target; burn sở hữu toàn bộ budget, 8 tick / 4s, không có tick damage trực tiếp từ vòng",
+            "frame_progression": "01–09 lửa xoay liên tục; vòng theo hero, phạm vi hit lấy config"
+          },
+          {
+            "id": "embers",
+            "file": "particle_rising_embers_effect.png",
+            "role": "tàn lửa",
+            "start_ms": 150,
+            "duration_ms": 3960,
+            "instances": "1 emitter",
+            "anchor": "hero_feet",
+            "pivot": [
+              200,
+              200
+            ],
+            "z_order": 30,
+            "playback": "loop",
+            "animation_cycle_ms": 630,
+            "rotation_deg": 0,
+            "scale_proposal": [
+              0.5,
+              0.5
+            ],
+            "blend": "alpha",
+            "gameplay": "chỉ hiển thị",
+            "frame_progression": "01–09 tàn lửa bay lên; không áp burn thêm; không cộng chuyển động runtime theo chiều đứng lần hai"
+          }
+        ],
+        "effect_duration": 4,
+        "effect_bindings": [
+          {
+            "id": "burn",
+            "phase": "first_ring_contact",
+            "layer": "fire_ring",
+            "target": "enemies_entering_radius",
+            "chance": 1,
+            "duration": 4,
+            "tick_interval": 0.5,
+            "damage_budget_ratio": 1,
+            "dps_resolution": "cast_damage_budget / 4.0",
+            "tick_count": 8,
+            "apply_once_per_cast_target": true
+          }
+        ],
+        "effect_resolution_policy": {
+          "dispatcher": "EffectService -> target.apply_status_effect -> StatusEffectController",
+          "authored_chance_is_before_accuracy_and_resistance": true,
+          "source_key": "caster_id + skill_id + target_spawn_generation",
+          "same_source_dot_rule": "one active contribution per skill/source/target; never multiply by visual instances",
+          "different_sources_rule": "requires source-aware contribution resolution; never overwrite or duplicate Hero DOT",
+          "status_visuals": "shared status icon/shader follows actual successful status, never raw effect attempts",
+          "boss_rule": "existing resistance/immunity/duration rules; never bypass for talismans",
+          "template_fields": "resolve dps_resolution and damage_budget_ratio into absolute dps before apply; do not pass formulas to current EffectService"
+        },
+        "damage_owner": "burn_status_only"
+      },
+      "levels_proposal": [
+        {
+          "level": 1,
+          "stats": {
+            "damage_pct": 240,
+            "cooldown": 30
+          }
+        },
+        {
+          "level": 2,
+          "stats": {
+            "damage_pct": 255,
+            "cooldown": 29
+          }
+        },
+        {
+          "level": 3,
+          "stats": {
+            "damage_pct": 270,
+            "cooldown": 28
+          }
+        },
+        {
+          "level": 4,
+          "stats": {
+            "damage_pct": 285,
+            "cooldown": 27
+          }
+        },
+        {
+          "level": 5,
+          "stats": {
+            "damage_pct": 300,
+            "cooldown": 26
+          }
+        }
+      ],
+      "design_notes": "Vành lửa áp burn 4s đúng một lần/target/cast khi target chạm vùng. Toàn bộ budget 240–300% nằm trong burn 8 tick, không có damage AOE hoặc burn thứ hai. Burn sống theo status kể cả target rời vòng; target chưa từng chạm không nhận burn."
+    },
+    {
+      "id": "skill_talisman_20",
+      "talisman_id": 20,
+      "talisman_name": "Kim Cương Hộ Tâm Kính",
+      "element": "earth",
+      "display_name": "Kim Thân Bất Diệt",
+      "current_skill_type": "ground_aoe",
+      "proposed_skill_type": "layered_talisman",
+      "cast_config_proposal": {
+        "behavior": "golden_guard",
+        "range": 665,
+        "duration": 4.12,
+        "damage_reduction": 0.5,
+        "control_immunity": true,
+        "layers": [
+          {
+            "id": "lotus",
+            "file": "area_golden_lotus_pedestal_effect.png",
+            "role": "đài sen",
+            "start_ms": 160,
+            "duration_ms": 3960,
+            "instances": "1",
+            "anchor": "hero_feet",
+            "pivot": [
+              200,
+              200
+            ],
+            "z_order": 0,
+            "playback": "loop",
+            "animation_cycle_ms": 630,
+            "rotation_deg": 0,
+            "scale_proposal": [
+              0.5,
+              0.5
+            ],
+            "blend": "alpha",
+            "gameplay": "chỉ hiển thị",
+            "frame_progression": "01–09 đài sen dao động ánh sáng; vòng giữ mặt phẳng đất"
+          },
+          {
+            "id": "golden_bell",
+            "file": "main_golden_bell_shield_effect.png",
+            "role": "chuông hộ thể",
+            "start_ms": 120,
+            "duration_ms": 4000,
+            "instances": "1",
+            "anchor": "hero_feet_base",
+            "pivot": [
+              200,
+              365
+            ],
+            "z_order": 30,
+            "playback": "loop",
+            "animation_cycle_ms": 630,
+            "rotation_deg": 0,
+            "scale_proposal": [
+              0.5,
+              0.5
+            ],
+            "blend": "alpha",
+            "gameplay": "giảm damage 50%, miễn control trong 4s; không damage",
+            "frame_progression": "01–09 chuông sáng luân phiên; alpha đủ nhìn hero; buff bắt đầu cùng chuông ở 120ms"
+          },
+          {
+            "id": "protection_glyphs",
+            "file": "particle_protection_glyphs_effect.png",
+            "role": "phù văn",
+            "start_ms": 200,
+            "duration_ms": 3920,
+            "instances": "1 sheet chứa đủ phù",
+            "anchor": "hero_center",
+            "pivot": [
+              200,
+              200
+            ],
+            "z_order": 40,
+            "playback": "loop",
+            "animation_cycle_ms": 630,
+            "rotation_deg": 0,
+            "scale_proposal": [
+              0.5,
+              0.5
+            ],
+            "blend": "alpha",
+            "gameplay": "chỉ hiển thị",
+            "frame_progression": "01–09 phù văn xoay; không tạo bốn bản sheet vì mỗi frame đã chứa nhiều phù"
+          }
+        ],
+        "effect_duration": 4,
+        "effect_bindings": [
+          {
+            "id": "damage_reduction",
+            "phase": "bell_forms",
+            "layer": "golden_bell",
+            "target": "caster",
+            "chance": 1,
+            "duration": 4,
+            "reduction_pct": 0.5
+          },
+          {
+            "id": "control_immune",
+            "phase": "bell_forms",
+            "layer": "golden_bell",
+            "target": "caster",
+            "chance": 1,
+            "duration": 4
+          }
+        ],
+        "effect_resolution_policy": {
+          "dispatcher": "EffectService -> target.apply_status_effect -> StatusEffectController",
+          "authored_chance_is_before_accuracy_and_resistance": true,
+          "source_key": "caster_id + skill_id + target_spawn_generation",
+          "same_source_dot_rule": "one active contribution per skill/source/target; never multiply by visual instances",
+          "different_sources_rule": "requires source-aware contribution resolution; never overwrite or duplicate Hero DOT",
+          "status_visuals": "shared status icon/shader follows actual successful status, never raw effect attempts",
+          "boss_rule": "existing resistance/immunity/duration rules; never bypass for talismans",
+          "template_fields": "resolve dps_resolution and damage_budget_ratio into absolute dps before apply; do not pass formulas to current EffectService"
+        }
+      },
+      "levels_proposal": [
+        {
+          "level": 1,
+          "stats": {
+            "damage_pct": 0,
+            "cooldown": 30
+          }
+        },
+        {
+          "level": 2,
+          "stats": {
+            "damage_pct": 0,
+            "cooldown": 29
+          }
+        },
+        {
+          "level": 3,
+          "stats": {
+            "damage_pct": 0,
+            "cooldown": 28
+          }
+        },
+        {
+          "level": 4,
+          "stats": {
+            "damage_pct": 0,
+            "cooldown": 27
+          }
+        },
+        {
+          "level": 5,
+          "stats": {
+            "damage_pct": 0,
+            "cooldown": 26
+          }
+        }
+      ],
+      "design_notes": "Thuần phòng thủ theo chuông/sen/phù: giảm 50% damage, miễn control, không miễn toàn bộ damage hoặc mọi debuff; không gây AOE slow như data cũ."
+    },
+    {
+      "id": "skill_talisman_21",
+      "talisman_id": 21,
+      "talisman_name": "Thực Cốt Phệ Hồn Phiên",
+      "element": "metal",
+      "display_name": "Bách Quỷ Dạ Hành",
+      "current_skill_type": "chain",
+      "proposed_skill_type": "layered_talisman",
+      "cast_config_proposal": {
+        "behavior": "poison_wraiths",
+        "range": 665,
+        "duration": 5,
+        "radius": 160,
+        "max_targets": 3,
+        "direct_ratio": 0.45454545454545453,
+        "poison_ratio": 0.5454545454545454,
+        "poison_ticks": 4,
+        "layers": [
+          {
+            "id": "poison_pool",
+            "file": "area_poison_pool_effect.png",
+            "role": "vũng độc",
+            "start_ms": 0,
+            "duration_ms": 1200,
+            "instances": "1",
+            "anchor": "target_cluster_ground",
+            "pivot": [
+              200,
+              200
+            ],
+            "z_order": 0,
+            "playback": "loop",
+            "animation_cycle_ms": 630,
+            "rotation_deg": 0,
+            "scale_proposal": [
+              0.5,
+              0.5
+            ],
+            "blend": "alpha",
+            "gameplay": "chỉ hiển thị điểm xuất hồn, không DOT riêng",
+            "frame_progression": "01–09 mặt vũng dao động; fade khi hồn rời đi"
+          },
+          {
+            "id": "poison_wraith",
+            "file": "main_poison_wraith_effect .png",
+            "role": "độc hồn truy địch",
+            "start_ms": 180,
+            "duration_ms": 700,
+            "instances": "tối đa 3; mỗi target một hồn",
+            "anchor": "projectile_center",
+            "pivot": [
+              200,
+              200
+            ],
+            "z_order": 30,
+            "playback": "one_shot_hold",
+            "animation_cycle_ms": 700,
+            "rotation_deg": 0,
+            "scale_proposal": [
+              0.5,
+              0.5
+            ],
+            "blend": "alpha",
+            "gameplay": "50% ATK direct/target + gắn poison; không nhân ba khi chỉ có một target",
+            "frame_progression": "01–03 hồn hình thành; 04–06 hồn lớn; 07–09 hồn hoàn chỉnh; runtime bay, ghi nhận hit riêng"
+          },
+          {
+            "id": "poison_mark",
+            "file": "status_ancient_poison_mark_effect.png",
+            "role": "ấn độc trên target",
+            "start_ms": 0,
+            "duration_ms": 4000,
+            "instances": "mỗi target trúng",
+            "anchor": "target_center",
+            "pivot": [
+              200,
+              200
+            ],
+            "z_order": 40,
+            "playback": "loop_status",
+            "animation_cycle_ms": 630,
+            "rotation_deg": 0,
+            "scale_proposal": [
+              0.5,
+              0.5
+            ],
+            "blend": "alpha",
+            "gameplay": "chỉ hiển thị status; poison resolver gây tổng 60%/4 tick",
+            "frame_progression": "01–09 ấn xoay quanh target; mốc 0 là thời điểm hồn chạm target, không phải lúc cast"
+          }
+        ],
+        "effect_bindings": [
+          {
+            "id": "poison",
+            "phase": "wraith_contact",
+            "layer": "poison_wraith",
+            "target": "hit_enemies",
+            "chance": 1,
+            "duration": 4,
+            "tick_interval": 1,
+            "damage_budget_ratio": 0.5454545454545454,
+            "dps_resolution": "cast_damage_budget * (60.0 / 110.0) / 4.0",
+            "tick_count": 4,
+            "apply_once_per_cast_target": true
+          }
+        ],
+        "effect_resolution_policy": {
+          "dispatcher": "EffectService -> target.apply_status_effect -> StatusEffectController",
+          "authored_chance_is_before_accuracy_and_resistance": true,
+          "source_key": "caster_id + skill_id + target_spawn_generation",
+          "same_source_dot_rule": "one active contribution per skill/source/target; never multiply by visual instances",
+          "different_sources_rule": "requires source-aware contribution resolution; never overwrite or duplicate Hero DOT",
+          "status_visuals": "shared status icon/shader follows actual successful status, never raw effect attempts",
+          "boss_rule": "existing resistance/immunity/duration rules; never bypass for talismans",
+          "template_fields": "resolve dps_resolution and damage_budget_ratio into absolute dps before apply; do not pass formulas to current EffectService"
+        }
+      },
+      "levels_proposal": [
+        {
+          "level": 1,
+          "stats": {
+            "damage_pct": 110,
+            "cooldown": 30
+          }
+        },
+        {
+          "level": 2,
+          "stats": {
+            "damage_pct": 125,
+            "cooldown": 29
+          }
+        },
+        {
+          "level": 3,
+          "stats": {
+            "damage_pct": 140,
+            "cooldown": 28
+          }
+        },
+        {
+          "level": 4,
+          "stats": {
+            "damage_pct": 155,
+            "cooldown": 27
+          }
+        },
+        {
+          "level": 5,
+          "stats": {
+            "damage_pct": 170,
+            "cooldown": 26
+          }
+        }
+      ],
+      "design_notes": "Tối đa ba target, mỗi target một hồn. Poison không stack theo số frame, refresh cùng nguồn; không ghi đè poison Hero khác nguồn. Pool và dấu độc không có damage riêng."
+    },
+    {
+      "id": "skill_talisman_22",
+      "talisman_id": 22,
+      "talisman_name": "Thanh Mộc Thần Long Trượng",
+      "element": "wood",
+      "display_name": "Thần Mộc Long Hộ",
+      "current_skill_type": "two_phase_aoe",
+      "proposed_skill_type": "layered_talisman",
+      "cast_config_proposal": {
+        "behavior": "wood_guard",
+        "range": 665,
+        "duration": 3.3,
+        "shield_max_hp_ratio": 0.15,
+        "heal_max_hp_per_tick": 0.02,
+        "heal_ticks": 3,
+        "layers": [
+          {
+            "id": "wood_dragon",
+            "file": "main_wood_dragon_effect.png",
+            "role": "mộc long hộ chủ",
+            "start_ms": 100,
+            "duration_ms": 720,
+            "instances": "1",
+            "anchor": "hero_center",
+            "pivot": [
+              200,
+              200
+            ],
+            "z_order": 30,
+            "playback": "one_shot",
+            "animation_cycle_ms": 720,
+            "rotation_deg": 0,
+            "scale_proposal": [
+              0.5,
+              0.5
+            ],
+            "blend": "alpha",
+            "gameplay": "không damage; hoàn tất tạo hộ thuẫn tại 300ms",
+            "frame_progression": "01–03 rồng vươn; 04–06 cuộn quanh; 07–09 thành vòng; không biến thành đạn lao vào quái"
+          },
+          {
+            "id": "bark_shield",
+            "file": "main_bark_shield_effect.png",
+            "role": "khiên vỏ cây",
+            "start_ms": 300,
+            "duration_ms": 3000,
+            "instances": "1",
+            "anchor": "hero_center",
+            "pivot": [
+              200,
+              200
+            ],
+            "z_order": 20,
+            "playback": "loop",
+            "animation_cycle_ms": 630,
+            "rotation_deg": 0,
+            "scale_proposal": [
+              0.5,
+              0.5
+            ],
+            "blend": "alpha",
+            "gameplay": "shield 15% Max HP trong 3s, không cộng dồn",
+            "frame_progression": "01–09 vòng khiên dao động; mất khi shield vỡ hoặc hết hạn"
+          },
+          {
+            "id": "regen_aura",
+            "file": "area_regen_aura_effect.png",
+            "role": "linh trận hồi phục",
+            "start_ms": 300,
+            "duration_ms": 3000,
+            "instances": "1",
+            "anchor": "hero_feet",
+            "pivot": [
+              200,
+              200
+            ],
+            "z_order": 0,
+            "playback": "one_shot_hold",
+            "animation_cycle_ms": 3000,
+            "rotation_deg": 0,
+            "scale_proposal": [
+              0.5,
+              0.5
+            ],
+            "blend": "alpha",
+            "gameplay": "hồi 2% Max HP/s, 3 tick; tổng 6%",
+            "frame_progression": "01–03 mầm lá; 04–06 bùng sinh khí; 07–09 tan; kéo dài bằng giữ pha giữa, không loop cảnh mọc/tan liên tục"
+          }
+        ],
+        "effect_duration": 3,
+        "effect_bindings": [
+          {
+            "id": "shield",
+            "phase": "dragon_guard_forms",
+            "layer": "bark_shield",
+            "target": "caster",
+            "chance": 1,
+            "duration": 3,
+            "shield_percent_max_hp": 0.15
+          },
+          {
+            "id": "regen",
+            "phase": "regen_aura_forms",
+            "layer": "regen_aura",
+            "target": "caster",
+            "chance": 1,
+            "duration": 3,
+            "tick_interval": 1,
+            "hp_percent_per_sec": 0.02,
+            "tick_count": 3
+          }
+        ],
+        "effect_resolution_policy": {
+          "dispatcher": "EffectService -> target.apply_status_effect -> StatusEffectController",
+          "authored_chance_is_before_accuracy_and_resistance": true,
+          "source_key": "caster_id + skill_id + target_spawn_generation",
+          "same_source_dot_rule": "one active contribution per skill/source/target; never multiply by visual instances",
+          "different_sources_rule": "requires source-aware contribution resolution; never overwrite or duplicate Hero DOT",
+          "status_visuals": "shared status icon/shader follows actual successful status, never raw effect attempts",
+          "boss_rule": "existing resistance/immunity/duration rules; never bypass for talismans",
+          "template_fields": "resolve dps_resolution and damage_budget_ratio into absolute dps before apply; do not pass formulas to current EffectService"
+        }
+      },
+      "levels_proposal": [
+        {
+          "level": 1,
+          "stats": {
+            "damage_pct": 0,
+            "cooldown": 30
+          }
+        },
+        {
+          "level": 2,
+          "stats": {
+            "damage_pct": 0,
+            "cooldown": 29
+          }
+        },
+        {
+          "level": 3,
+          "stats": {
+            "damage_pct": 0,
+            "cooldown": 28
+          }
+        },
+        {
+          "level": 4,
+          "stats": {
+            "damage_pct": 0,
+            "cooldown": 27
+          }
+        },
+        {
+          "level": 5,
+          "stats": {
+            "damage_pct": 0,
+            "cooldown": 26
+          }
+        }
+      ],
+      "design_notes": "Đổi thiết kế cũ trói/hút chân khí sang hộ chủ đúng hình rồng cuộn, khiên, hồi phục. Không root, không hút mana, không gây damage. Chỉ số shield/heal cố định qua năm level."
+    },
+    {
+      "id": "skill_talisman_23",
+      "talisman_id": 23,
+      "talisman_name": "Thất Tinh Đoạt Mệnh Kiếm",
+      "element": "water",
+      "display_name": "Thất Tinh Liên Châu",
+      "current_skill_type": "projectile",
+      "proposed_skill_type": "layered_talisman",
+      "cast_config_proposal": {
+        "behavior": "seven_star_volley",
+        "range": 665,
+        "duration": 2,
+        "shot_count": 7,
+        "shot_interval": 0.12,
+        "shot_weights": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "layers": [
+          {
+            "id": "seven_star_array",
+            "file": "e7a634a2-1133-4812-9d81-8cd7f1286874.png",
+            "role": "tinh đồ thất tinh",
+            "start_ms": 0,
+            "duration_ms": 1400,
+            "instances": "1",
+            "anchor": "hero_cast_origin",
+            "pivot": [
+              200,
+              200
+            ],
+            "z_order": 0,
+            "playback": "one_shot_hold",
+            "animation_cycle_ms": 1400,
+            "rotation_deg": 0,
+            "scale_proposal": [
+              0.5,
+              0.5
+            ],
+            "blend": "alpha",
+            "gameplay": "chỉ hiển thị; bảy sao trong sheet không phải bảy hit",
+            "frame_progression": "01–03 sao nối; 04–06 tinh đồ hiện; 07–09 hoàn chỉnh; fade sau bắn"
+          },
+          {
+            "id": "star_sword",
+            "file": "ee8733f9-4889-4e85-84b5-9a0b544945f4.png",
+            "role": "kiếm khí",
+            "start_ms": 120,
+            "duration_ms": 600,
+            "instances": "7, cách nhau 120ms",
+            "anchor": "projectile_center",
+            "pivot": [
+              200,
+              200
+            ],
+            "z_order": 30,
+            "playback": "one_shot_hold",
+            "animation_cycle_ms": 600,
+            "rotation_deg": 0,
+            "scale_proposal": [
+              0.5,
+              0.5
+            ],
+            "blend": "alpha",
+            "gameplay": "tổng 180% ATK với trọng số 1..7 / 28; mỗi kiếm chỉ hit một target",
+            "frame_progression": "01–03 kiếm khí hình thành; 04–06 kéo dài; 07–09 vệt cắm/va chạm: dùng 01–06 khi bay, phần cuối khi chạm nếu cần; không double-hit"
+          },
+          {
+            "id": "star_impact",
+            "file": "b7c978ba-b1bf-4309-9743-95d29ba7027f.png",
+            "role": "tinh quang va chạm",
+            "start_ms": 0,
+            "duration_ms": 450,
+            "instances": "mỗi kiếm trúng một instance",
+            "anchor": "target_contact",
+            "pivot": [
+              200,
+              200
+            ],
+            "z_order": 20,
+            "playback": "one_shot",
+            "animation_cycle_ms": 450,
+            "rotation_deg": 0,
+            "scale_proposal": [
+              0.5,
+              0.5
+            ],
+            "blend": "alpha",
+            "gameplay": "chỉ hiển thị; damage đã do projectile resolve",
+            "frame_progression": "01–03 chớp sao; 04–06 bùng; 07–09 tan; mốc 0 tính theo hit của từng kiếm"
+          }
+        ],
+        "effect_bindings": [],
+        "effect_resolution_policy": {
+          "dispatcher": "EffectService -> target.apply_status_effect -> StatusEffectController",
+          "authored_chance_is_before_accuracy_and_resistance": true,
+          "source_key": "caster_id + skill_id + target_spawn_generation",
+          "same_source_dot_rule": "one active contribution per skill/source/target; never multiply by visual instances",
+          "different_sources_rule": "requires source-aware contribution resolution; never overwrite or duplicate Hero DOT",
+          "status_visuals": "shared status icon/shader follows actual successful status, never raw effect attempts",
+          "boss_rule": "existing resistance/immunity/duration rules; never bypass for talismans",
+          "template_fields": "resolve dps_resolution and damage_budget_ratio into absolute dps before apply; do not pass formulas to current EffectService"
+        }
+      },
+      "levels_proposal": [
+        {
+          "level": 1,
+          "stats": {
+            "damage_pct": 180,
+            "cooldown": 30
+          }
+        },
+        {
+          "level": 2,
+          "stats": {
+            "damage_pct": 195,
+            "cooldown": 29
+          }
+        },
+        {
+          "level": 3,
+          "stats": {
+            "damage_pct": 210,
+            "cooldown": 28
+          }
+        },
+        {
+          "level": 4,
+          "stats": {
+            "damage_pct": 225,
+            "cooldown": 27
+          }
+        },
+        {
+          "level": 5,
+          "stats": {
+            "damage_pct": 240,
+            "cooldown": 26
+          }
+        }
+      ],
+      "design_notes": "Chia tổng damage theo trọng số /28, không nhân 180% cho từng kiếm. Khóa lại hướng lúc bắn; target chết thì chọn target hợp lệ mới trong tầm cho kiếm chưa phát."
+    },
+    {
+      "id": "skill_talisman_24",
+      "talisman_id": 24,
+      "talisman_name": "Càn Khôn Khốn Yêu Thừng",
+      "element": "fire",
+      "display_name": "Thiên La Địa Võng",
+      "current_skill_type": "chain",
+      "proposed_skill_type": "layered_talisman",
+      "cast_config_proposal": {
+        "behavior": "binding_net",
+        "range": 665,
+        "duration": 2.33,
+        "radius": 100,
+        "max_targets": 3,
+        "root_duration": 1.2,
+        "silence_duration": 2,
+        "layers": [
+          {
+            "id": "binding_net",
+            "file": "4f4a02dc-0ec9-4a11-9221-2f5e1c3f00a4.png",
+            "role": "lưới dưới chân",
+            "start_ms": 0,
+            "duration_ms": 2200,
+            "instances": "mỗi target được chọn, cap 3",
+            "anchor": "target_feet",
+            "pivot": [
+              200,
+              200
+            ],
+            "z_order": 0,
+            "playback": "loop_status",
+            "animation_cycle_ms": 630,
+            "rotation_deg": 0,
+            "scale_proposal": [
+              0.5,
+              0.5
+            ],
+            "blend": "alpha",
+            "gameplay": "chỉ hiển thị vùng trói; không damage mỗi sợi lưới",
+            "frame_progression": "01–09 lưới co giãn; giữ ellipse dưới chân, không xoay thành vòng đứng"
+          },
+          {
+            "id": "binding_eruption",
+            "file": "18593799-68f9-4d18-a15b-d559d03ce067.png",
+            "role": "linh lực trồi",
+            "start_ms": 120,
+            "duration_ms": 630,
+            "instances": "mỗi target được chọn, cap 3",
+            "anchor": "target_feet_base",
+            "pivot": [
+              200,
+              365
+            ],
+            "z_order": 20,
+            "playback": "one_shot",
+            "animation_cycle_ms": 630,
+            "rotation_deg": 0,
+            "scale_proposal": [
+              0.5,
+              0.5
+            ],
+            "blend": "alpha",
+            "gameplay": "80% ATK/target tại 330ms, root 1.2s và silence 2s cùng lần hit",
+            "frame_progression": "01–03 điểm sáng; 04–06 linh lực vươn; 07–09 va chạm/tan; sheet đã có hai trụ, không cộng hai hit"
+          },
+          {
+            "id": "binding_bands",
+            "file": "03eab5ed-d401-4fda-96ff-1c146c77120d.png",
+            "role": "vòng dây khóa thân",
+            "start_ms": 330,
+            "duration_ms": 2000,
+            "instances": "mỗi target status thành công",
+            "anchor": "target_center",
+            "pivot": [
+              200,
+              200
+            ],
+            "z_order": 30,
+            "playback": "loop_status",
+            "animation_cycle_ms": 630,
+            "rotation_deg": 0,
+            "scale_proposal": [
+              0.5,
+              0.5
+            ],
+            "blend": "alpha",
+            "gameplay": "chỉ hiển thị status, không kéo dài root theo thời gian hình",
+            "frame_progression": "01–09 các vòng sáng chuyển động; sheet chứa nhiều vòng, chỉ một instance/target"
+          }
+        ],
+        "effect_bindings": [
+          {
+            "id": "root",
+            "phase": "eruption_contact",
+            "layer": "binding_eruption",
+            "target": "selected_hit_enemies",
+            "chance": 1,
+            "duration": 1.2,
+            "apply_once_per_cast_target": true
+          },
+          {
+            "id": "silence",
+            "phase": "eruption_contact",
+            "layer": "binding_eruption",
+            "target": "selected_hit_enemies",
+            "chance": 1,
+            "duration": 2,
+            "apply_once_per_cast_target": true
+          }
+        ],
+        "effect_resolution_policy": {
+          "dispatcher": "EffectService -> target.apply_status_effect -> StatusEffectController",
+          "authored_chance_is_before_accuracy_and_resistance": true,
+          "source_key": "caster_id + skill_id + target_spawn_generation",
+          "same_source_dot_rule": "one active contribution per skill/source/target; never multiply by visual instances",
+          "different_sources_rule": "requires source-aware contribution resolution; never overwrite or duplicate Hero DOT",
+          "status_visuals": "shared status icon/shader follows actual successful status, never raw effect attempts",
+          "boss_rule": "existing resistance/immunity/duration rules; never bypass for talismans",
+          "template_fields": "resolve dps_resolution and damage_budget_ratio into absolute dps before apply; do not pass formulas to current EffectService"
+        }
+      },
+      "levels_proposal": [
+        {
+          "level": 1,
+          "stats": {
+            "damage_pct": 80,
+            "cooldown": 30
+          }
+        },
+        {
+          "level": 2,
+          "stats": {
+            "damage_pct": 90,
+            "cooldown": 29
+          }
+        },
+        {
+          "level": 3,
+          "stats": {
+            "damage_pct": 100,
+            "cooldown": 28
+          }
+        },
+        {
+          "level": 4,
+          "stats": {
+            "damage_pct": 110,
+            "cooldown": 27
+          }
+        },
+        {
+          "level": 5,
+          "stats": {
+            "damage_pct": 120,
+            "cooldown": 26
+          }
+        }
+      ],
+      "design_notes": "Ba tầng đúng hình: lưới, linh lực trồi, dây khóa. Giữ hệ Hỏa dù ảnh xanh. Không đốt cháy ngầm, không kéo dài root thành 2s theo vòng dây."
+    },
+    {
+      "id": "skill_talisman_25",
+      "talisman_id": 25,
+      "talisman_name": "Trấn Nhạc Phiên Thiên Ấn",
+      "element": "earth",
+      "display_name": "Thái Sơn Áp Đỉnh",
+      "current_skill_type": "ground_aoe",
+      "proposed_skill_type": "layered_talisman",
+      "cast_config_proposal": {
+        "behavior": "earth_seal",
+        "range": 665,
+        "duration": 1.2,
+        "radius": 140,
+        "seal_ratio": 0.6,
+        "wave_ratio": 0.4,
+        "knockback_distance": 60,
+        "layers": [
+          {
+            "id": "seal_sigil",
+            "file": "2.png",
+            "role": "ấn văn mặt đất",
+            "start_ms": 0,
+            "duration_ms": 1100,
+            "instances": "1",
+            "anchor": "target_ground",
+            "pivot": [
+              200,
+              200
+            ],
+            "z_order": 0,
+            "playback": "one_shot_hold",
+            "animation_cycle_ms": 1100,
+            "rotation_deg": 0,
+            "scale_proposal": [
+              0.5,
+              0.5
+            ],
+            "blend": "alpha",
+            "gameplay": "chỉ hiển thị báo điểm rơi",
+            "frame_progression": "01–03 ấn văn mở; 04–06 rõ; 07–09 hoàn chỉnh; không damage theo chữ/đá trang trí"
+          },
+          {
+            "id": "falling_seal",
+            "file": "1.png",
+            "role": "đại ấn giáng xuống",
+            "start_ms": 80,
+            "duration_ms": 700,
+            "instances": "1",
+            "anchor": "target_ground_base",
+            "pivot": [
+              200,
+              365
+            ],
+            "z_order": 30,
+            "playback": "one_shot_hold",
+            "animation_cycle_ms": 300,
+            "rotation_deg": 0,
+            "scale_proposal": [
+              0.5,
+              0.5
+            ],
+            "blend": "alpha",
+            "gameplay": "60% budget AOE tại 380ms",
+            "frame_progression": "01–03 ấn xuất hiện; 04–06 lớn; 07–09 ấn hoàn chỉnh; runtime rơi, không cộng chuyển động tự căn bbox"
+          },
+          {
+            "id": "earth_shockwave",
+            "file": "3.png",
+            "role": "sóng chấn địa",
+            "start_ms": 380,
+            "duration_ms": 630,
+            "instances": "1",
+            "anchor": "target_ground",
+            "pivot": [
+              200,
+              200
+            ],
+            "z_order": 20,
+            "playback": "one_shot",
+            "animation_cycle_ms": 630,
+            "rotation_deg": 0,
+            "scale_proposal": [
+              0.5,
+              0.5
+            ],
+            "blend": "alpha",
+            "gameplay": "40% budget khi vòng quét qua target; đẩy 60 và knockdown 0.6s theo resistance",
+            "frame_progression": "01–03 bụi nhỏ; 04–06 lan; 07–09 vòng lớn; swept annulus một hit/target, không scan cả đĩa mỗi frame"
+          }
+        ],
+        "effect_bindings": [
+          {
+            "id": "stun",
+            "phase": "shockwave_contact",
+            "layer": "earth_shockwave",
+            "target": "hit_enemies",
+            "chance": 1,
+            "duration": 0.6,
+            "apply_once_per_cast_target": true
+          },
+          {
+            "id": "knockback",
+            "phase": "shockwave_contact",
+            "layer": "earth_shockwave",
+            "target": "hit_enemies",
+            "chance": 1,
+            "duration": 0.18,
+            "distance": 60,
+            "apply_once_per_cast_target": true
+          }
+        ],
+        "effect_resolution_policy": {
+          "dispatcher": "EffectService -> target.apply_status_effect -> StatusEffectController",
+          "authored_chance_is_before_accuracy_and_resistance": true,
+          "source_key": "caster_id + skill_id + target_spawn_generation",
+          "same_source_dot_rule": "one active contribution per skill/source/target; never multiply by visual instances",
+          "different_sources_rule": "requires source-aware contribution resolution; never overwrite or duplicate Hero DOT",
+          "status_visuals": "shared status icon/shader follows actual successful status, never raw effect attempts",
+          "boss_rule": "existing resistance/immunity/duration rules; never bypass for talismans",
+          "template_fields": "resolve dps_resolution and damage_budget_ratio into absolute dps before apply; do not pass formulas to current EffectService"
+        },
+        "stun_duration": 0.6
+      },
+      "levels_proposal": [
+        {
+          "level": 1,
+          "stats": {
+            "damage_pct": 180,
+            "cooldown": 30
+          }
+        },
+        {
+          "level": 2,
+          "stats": {
+            "damage_pct": 195,
+            "cooldown": 29
+          }
+        },
+        {
+          "level": 3,
+          "stats": {
+            "damage_pct": 210,
+            "cooldown": 28
+          }
+        },
+        {
+          "level": 4,
+          "stats": {
+            "damage_pct": 225,
+            "cooldown": 27
+          }
+        },
+        {
+          "level": 5,
+          "stats": {
+            "damage_pct": 240,
+            "cooldown": 26
+          }
+        }
+      ],
+      "design_notes": "Ấn rơi + một vòng chấn địa. Mỗi pha có ledger riêng, tổng tối đa 100% budget. Không làm target bay/choáng lặp theo từng frame. Hất ngã biểu diễn bằng stun 0.6s + knockback 60 hiện có; không tạo effect_id knockdown chưa tồn tại."
+    }
+  ],
+  "effect_schema_notes": "Effect bindings are proposal templates. Actor effect handlers and source-aware DOT/shield ownership require implementation before seed. No changes to live effects.json or active skill seed.",
+  "implementation_contract": "C230_MID_TIER_TALISMAN_SKILLS"
+}

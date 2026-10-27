@@ -19,7 +19,15 @@
     },
     "50": {
       "title": "Chúc mừng đột phá — Lv.50",
-      "body": "Chúc mừng đạo hữu chạm tới đỉnh cao hiện tại! Đỉnh núi hôm nay có thể chỉ là khởi đầu của một chân trời khác. Truyền thuyết kể rằng ngoài gông cùm thiên đạo còn có vạn giới chư thiên — hãy giữ vững đạo tâm, chờ ngày tiên lộ tiếp tục rộng mở."
+      "body": "Chúc mừng đạo hữu đột phá thành công! Tiên lộ tiếp tục rộng mở tới Độ Kiếp và Bán Tiên. Hãy tiếp tục tích lũy căn cơ, chuẩn bị cho những tầng thiên kiếp tiếp theo."
+    },
+    "60": {
+      "title": "Chúc mừng đột phá — Lv.60 — Độ Kiếp kỳ",
+      "body": "Chúc mừng đạo hữu vượt thiên kiếp, đạt cấp 60 Độ Kiếp kỳ! Hãy giữ vững đạo tâm và tiếp tục tôi luyện căn cơ."
+    },
+    "70": {
+      "title": "Chúc mừng đột phá — Lv.70 — Bán Tiên",
+      "body": "Chúc mừng đạo hữu vượt thiên kiếp, đạt cấp 70 Bán Tiên! Hãy giữ vững đạo tâm và tiếp tục tôi luyện căn cơ."
     }
   }
 }

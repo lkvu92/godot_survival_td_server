@@ -12,7 +12,7 @@ const effects = {
   attack_talisman:battle('attack',0.3), defense_talisman:battle('defense',0.3),
   cooldown_talisman:battle('cooldown',0.2), resistance_talisman:battle('resistance',0.2),
   critical_talisman:battle('critical',0.1), attack_speed_talisman:battle('attack_speed',0.25),
-  revive_talisman:battle('revive',0.5,3), healing_elixir:battle('heal',0.3,0),
+  revive_talisman:battle('revive',0.5,3), healing_elixir:battle('heal',0.3,0,{cooldown:5}),
   shield_elixir:battle('shield',0.3,15), slow_talisman:battle('slow',0.4,8,{radius:400})
 };
 for (const element of ['metal','wood','water','fire','earth']) {

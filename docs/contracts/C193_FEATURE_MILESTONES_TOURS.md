@@ -8,7 +8,7 @@ Status: ACTIVE
 Server system.feature_unlocks adds mailbox (Lv1). Checkin2, daily_quests3,
 shop4, sweep5, leaderboard10, elements15, talisman20, trial_tower25, laws30.
 Daily quests route to the existing daily mission in EventsDialog; no invented
-quest rewards. Laws displays Phap tac and retains the existing Than Luan screen;
+quest rewards. Laws displays Pháp Tắc and retains the existing Pháp Tắc screen;
 progression.than_luan.unlock_level and validators become 30. Existing Epic10/
 Legend22 and arc-clear predicates unchanged. Future guild_war, ancient_battlefield,
 multiverse stay planned/disabled with null required levels and updated descriptions.
@@ -46,7 +46,7 @@ No new bitmap assets; AtlasRegistry/UiSkin used. Existing signal interfaces rema
 Validation: runtime build/postbuild, full server static suite and client static
 suite PASS. Explicit milestone map, mailbox/daily admission, durable rights,
 atomic mails, fresh-character pending mailbox tour, laws Lv29/30 boundary and
-Godot Than Luan parity PASS. Generic tours and actual seven-step sweep route
+Godot Pháp Tắc parity PASS. Generic tours and actual seven-step sweep route
 through ArcSelect/StageSelect/CharacterSelect PASS: disabled informational final
 step, no underlying action, Lv4 hidden/Lv5 disabled/S enabled, no grants. Actual
 Home construction resolves all nine node tour targets and disables all three

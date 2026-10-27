@@ -128,12 +128,12 @@ const FEATURE_DEFAULTS: any = {
       "required_user_level": 30,
       "enabled": true,
       "release_status": "released",
-      "display_name": "Pháp tắc",
-      "description": "Bồi dưỡng Thần Luân bằng Mảnh pháp tắc từ Tâm Ma Tháp để tăng khả năng sinh tồn.",
+      "display_name": "Pháp Tắc",
+      "description": "Bồi dưỡng Pháp Tắc bằng Mảnh pháp tắc từ Tâm Ma Tháp để tăng khả năng sinh tồn.",
       "tour_id": "than_luan_v1",
       "tour_mode": "dismiss_any",
-      "mail_title": "Đã khai mở: Pháp tắc",
-      "mail_body": "Chúc mừng đạo hữu đạt cấp {level}! Pháp tắc đã khai mở.\n\nBồi dưỡng Thần Luân bằng Mảnh pháp tắc từ Tâm Ma Tháp để tăng khả năng sinh tồn.\n\nTrở về Trang chủ để khám phá chức năng mới."
+      "mail_title": "Đã khai mở: Pháp Tắc",
+      "mail_body": "Chúc mừng đạo hữu đạt cấp {level}! Pháp Tắc đã khai mở.\n\nBồi dưỡng Pháp Tắc bằng Mảnh pháp tắc từ Tâm Ma Tháp để tăng khả năng sinh tồn.\n\nTrở về Trang chủ để khám phá chức năng mới."
     },
     "guild_war": {
       "required_user_level": null,
@@ -170,13 +170,39 @@ const FEATURE_DEFAULTS: any = {
     }
   }
 };
-const REALM_MILESTONE_DEFAULTS:any={schema_version:1,milestones:{
-    '10':{title:'Chúc mừng đột phá — Lv.10',body:'Chúc mừng đạo hữu vượt thiên kiếp, bước vào cảnh giới mới! Tiên lộ từ đây rộng mở, nhưng mỗi miền đất đều ẩn chứa nhân quả. Hãy vững đạo tâm, tích lũy căn cơ và thử sức với những thử thách khắc nghiệt hơn.'},
-    '20':{title:'Chúc mừng đột phá — Lv.20',body:'Chúc mừng đạo hữu đột phá thành công! Khi linh lực dần tinh thuần, ngũ hành cũng hé lộ quy luật tương sinh tương khắc. Thấu hiểu linh căn sẽ giúp đạo hữu đi xa hơn trên con đường tu luyện.'},
-    '30':{title:'Chúc mừng đột phá — Lv.30',body:'Chúc mừng đạo hữu vượt thêm một tầng thiên đạo! Sức mạnh cần được tôi luyện qua thực chiến; Tháp Thí Luyện đang chờ những người đủ bản lĩnh. Hãy chuẩn bị pháp bảo, giữ tâm sáng và tiến từng bước vững vàng.'},
-    '40':{title:'Chúc mừng đột phá — Lv.40',body:'Chúc mừng đạo hữu đặt chân tới cảnh giới cao hơn! Càng gần thiên đạo, người tu hành càng nhận ra sức mạnh luôn đi cùng trách nhiệm. Phía sau những cuộc tranh đấu còn có bí mật của thế giới này đang chờ được khám phá.'},
-    '50':{title:'Chúc mừng đột phá — Lv.50',body:'Chúc mừng đạo hữu chạm tới đỉnh cao hiện tại! Đỉnh núi hôm nay có thể chỉ là khởi đầu của một chân trời khác. Truyền thuyết kể rằng ngoài gông cùm thiên đạo còn có vạn giới chư thiên — hãy giữ vững đạo tâm, chờ ngày tiên lộ tiếp tục rộng mở.'}
-}};
+const REALM_MILESTONE_DEFAULTS:any={
+  "schema_version": 1,
+  "milestones": {
+    "10": {
+      "title": "Chúc mừng đột phá — Lv.10",
+      "body": "Chúc mừng đạo hữu vượt thiên kiếp, bước vào cảnh giới mới! Tiên lộ từ đây rộng mở, nhưng mỗi miền đất đều ẩn chứa nhân quả. Hãy vững đạo tâm, tích lũy căn cơ và thử sức với những thử thách khắc nghiệt hơn."
+    },
+    "20": {
+      "title": "Chúc mừng đột phá — Lv.20",
+      "body": "Chúc mừng đạo hữu đột phá thành công! Khi linh lực dần tinh thuần, ngũ hành cũng hé lộ quy luật tương sinh tương khắc. Thấu hiểu linh căn sẽ giúp đạo hữu đi xa hơn trên con đường tu luyện."
+    },
+    "30": {
+      "title": "Chúc mừng đột phá — Lv.30",
+      "body": "Chúc mừng đạo hữu vượt thêm một tầng thiên đạo! Sức mạnh cần được tôi luyện qua thực chiến; Tháp Thí Luyện đang chờ những người đủ bản lĩnh. Hãy chuẩn bị pháp bảo, giữ tâm sáng và tiến từng bước vững vàng."
+    },
+    "40": {
+      "title": "Chúc mừng đột phá — Lv.40",
+      "body": "Chúc mừng đạo hữu đặt chân tới cảnh giới cao hơn! Càng gần thiên đạo, người tu hành càng nhận ra sức mạnh luôn đi cùng trách nhiệm. Phía sau những cuộc tranh đấu còn có bí mật của thế giới này đang chờ được khám phá."
+    },
+    "50": {
+      "title": "Chúc mừng đột phá — Lv.50",
+      "body": "Chúc mừng đạo hữu đột phá thành công! Tiên lộ tiếp tục rộng mở tới Độ Kiếp và Bán Tiên. Hãy tiếp tục tích lũy căn cơ, chuẩn bị cho những tầng thiên kiếp tiếp theo."
+    },
+    "60": {
+      "title": "Chúc mừng đột phá — Lv.60 — Độ Kiếp kỳ",
+      "body": "Chúc mừng đạo hữu vượt thiên kiếp, đạt cấp 60 Độ Kiếp kỳ! Hãy giữ vững đạo tâm và tiếp tục tôi luyện căn cơ."
+    },
+    "70": {
+      "title": "Chúc mừng đột phá — Lv.70 — Bán Tiên",
+      "body": "Chúc mừng đạo hữu vượt thiên kiếp, đạt cấp 70 Bán Tiên! Hãy giữ vững đạo tâm và tiếp tục tôi luyện căn cơ."
+    }
+  }
+};
 
 function featureValidateConfig(config:any,realms:any):void {
     if(!config||config.schema_version!==1||!config.features||Array.isArray(config.features)||!realms||realms.schema_version!==1||!realms.milestones)throw Error('FEATURE_CONFIG_INVALID');
@@ -184,7 +210,7 @@ function featureValidateConfig(config:any,realms:any):void {
     for(const id of FEATURE_IDS){
         const f=config.features[id];
         if(!f||typeof f.enabled!=='boolean'||['planned','released'].indexOf(f.release_status)<0
-            ||(f.required_user_level!==null&&(!Number.isSafeInteger(f.required_user_level)||f.required_user_level<1||f.required_user_level>50))
+            ||(f.required_user_level!==null&&(!Number.isSafeInteger(f.required_user_level)||f.required_user_level<1||f.required_user_level>70))
             ||(f.enabled&&(f.required_user_level===null||f.release_status!=='released'))
             ||typeof f.display_name!=='string'||!f.display_name.trim()||f.display_name.length>100
             ||typeof f.description!=='string'||f.description.length>2000
@@ -195,7 +221,7 @@ function featureValidateConfig(config:any,realms:any):void {
         if(f.tour_id){if(tours.indexOf(f.tour_id)>=0)throw Error('DUPLICATE_TOUR');tours.push(f.tour_id);}
     }
     if(Object.keys(config.features).some(id=>FEATURE_IDS.indexOf(id)<0))throw Error('UNKNOWN_FEATURE');
-    for(const level of ['10','20','30','40','50']){
+    for(const level of ['10','20','30','40','50','60','70']){
         const r=realms.milestones[level];
         if(!r||typeof r.title!=='string'||!r.title.trim()||r.title.length>160||typeof r.body!=='string'||!r.body.trim()||r.body.length>10000)throw Error('REALM_CONFIG_INVALID');
     }
@@ -245,7 +271,7 @@ function featureRuntime(base:nkruntime.Nakama,userId:string):nkruntime.Nakama {
         });
         // History proves success; level alone must never manufacture a breakthrough.
         const history=profile.value.breakthrough&&profile.value.breakthrough.history;
-        if(Array.isArray(history))for(const level of ['10','20','30','40','50']){
+        if(Array.isArray(history))for(const level of ['10','20','30','40','50','60','70']){
             if(!history.some((h:any)=>Number(h.level)===Number(level)))continue;
             const r=c.realms[level];send({source_id:'realm_breakthrough:'+level,source_type:'realm_breakthrough',title:r.title,body:r.body});
         }

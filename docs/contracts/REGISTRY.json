@@ -1,11 +1,15 @@
 {
   "contracts": [
+    {"id":"C230_MID_TIER_TALISMAN_SKILLS","version":"1.0.0","status":"IN_PROGRESS","updated_at":"2026-10-27","contract_file":"docs/contracts/C230_MID_TIER_TALISMAN_SKILLS.md"},
+    {"id":"C015_TALISMAN_EQUIPMENT_SYSTEM","version":"1.17.0","status":"IN_PROGRESS","updated_at":"2026-10-27","contract_file":"docs/contracts/C015_TALISMAN_EQUIPMENT_SYSTEM.md"},
+    {"id":"C227_ORDERED_WAVE_SPAWNING","version":"1.0.0","status":"IN_PROGRESS","updated_at":"2026-10-27","contract_file":"docs/contracts/C227_ORDERED_WAVE_SPAWNING.md"},
+    {"id":"C225_LEVEL_70","version":"1.0.0","status":"IN_PROGRESS","updated_at":"2026-10-27","contract_file":"docs/contracts/C225_LEVEL_70.md"},
     {"id":"C224_VIP_BENEFITS_MILESTONES","version":"1.1.1","status":"IN_PROGRESS","updated_at":"2026-10-26","contract_file":"docs/contracts/C224_VIP_BENEFITS_MILESTONES.md"},
-    {"id":"C223_AUTO_CARD_PICK","version":"1.1.1","status":"IN_PROGRESS","updated_at":"2026-10-26","contract_file":"docs/contracts/C223_AUTO_CARD_PICK.md"},
+    {"id":"C223_AUTO_CARD_PICK","version":"1.1.2","status":"IN_PROGRESS","updated_at":"2026-10-27","contract_file":"docs/contracts/C223_AUTO_CARD_PICK.md"},
     {"id":"C222_BOSS_SKILL_RANGE","version":"1.0.0","status":"IN_PROGRESS","updated_at":"2026-10-26","contract_file":"docs/contracts/C222_BOSS_SKILL_RANGE.md"},
-    {"id":"C221_ARC6_NGU_TO_QUY_KHU","version":"1.0.0","status":"IN_PROGRESS","updated_at":"2026-10-26","contract_file":"docs/contracts/C221_ARC6_NGU_TO_QUY_KHU.md"},
+    {"id":"C221_ARC6_NGU_TO_QUY_KHU","version":"1.1.1","status":"IN_PROGRESS","updated_at":"2026-10-27","contract_file":"docs/contracts/C221_ARC6_NGU_TO_QUY_KHU.md"},
     {"id":"C220_TACTICAL_SUPPORT_CARDS","version":"1.0.1","status":"ACTIVE","updated_at":"2026-10-26","contract_file":"docs/contracts/C220_TACTICAL_SUPPORT_CARDS.md"},
-    {"id":"C218_CAMPAIGN_WAVE_PRESSURE","version":"2.3.1","status":"IN_PROGRESS","updated_at":"2026-10-26","contract_file":"docs/contracts/C218_CAMPAIGN_WAVE_PRESSURE.md"},
+    {"id":"C218_CAMPAIGN_WAVE_PRESSURE","version":"2.4.2","status":"IN_PROGRESS","updated_at":"2026-10-27","contract_file":"docs/contracts/C218_CAMPAIGN_WAVE_PRESSURE.md"},
     {
       "id": "C204_LAW_BATTLE_ENTRY",
       "version": "1.3.0",
@@ -64,9 +68,9 @@
     },
     {
       "id": "C196_HERO4_SKILL_REBALANCE",
-      "version": "1.2.0",
-      "status": "ACTIVE",
-      "updated_at": "2026-10-24",
+      "version": "1.4.0",
+      "status": "IN_PROGRESS",
+      "updated_at": "2026-10-27",
       "contract_file": "docs/contracts/C196_HERO4_SKILL_REBALANCE.md"
     },
     {
@@ -176,9 +180,9 @@
     },
     {
       "id": "C178_THAN_LUAN",
-      "version": "2.2.0",
+      "version": "2.3.0",
       "status": "ACTIVE",
-      "updated_at": "2026-10-23",
+      "updated_at": "2026-10-27",
       "contract_file": "docs/contracts/C178_THAN_LUAN.md"
     },
     {
@@ -309,9 +313,9 @@
     },
     {
       "id": "C156_CAMPAIGN_MODE_STAT_MULTIPLIERS",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "status": "ACTIVE",
-      "updated_at": "2026-10-21",
+      "updated_at": "2026-10-27",
       "contract_file": "docs/contracts/C156_CAMPAIGN_MODE_STAT_MULTIPLIERS.md"
     },
     {
@@ -416,9 +420,9 @@
     },
     {
       "id": "C139_SWAP_ARC1_ARC2_ELEMENTAL_ONBOARDING",
-      "version": "1.0.1",
+      "version": "1.1.0",
       "status": "ACTIVE",
-      "updated_at": "2026-10-19",
+      "updated_at": "2026-10-26",
       "contract_file": "docs/contracts/C139_SWAP_ARC1_ARC2_ELEMENTAL_ONBOARDING.md"
     },
     {
@@ -486,9 +490,9 @@
     },
     {
       "id": "C130_CONSUMABLE_USE",
-      "version": "1.5.0",
+      "version": "1.6.0",
       "status": "ACTIVE",
-      "updated_at": "2026-10-25",
+      "updated_at": "2026-10-27",
       "contract_file": "docs/contracts/C130_CONSUMABLE_USE.md"
     },
     {

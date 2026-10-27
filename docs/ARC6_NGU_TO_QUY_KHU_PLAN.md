@@ -7,7 +7,7 @@ Ngày: 2026-10-26. Contract: [C221](contracts/C221_ARC6_NGU_TO_QUY_KHU.md).
 Vùng đất linh khí hỗn loạn: dung nham và lôi điện trong khe nứt, cây cỏ hóa kim loại, hơi ẩm kết băng. Vạn vật sinh từ hỗn độn và quy về hư vô. Địa hình là hình ảnh; chưa thêm hazard gameplay.
 
 - Arc `arc_ngu_to_quy_khu`, order 6, 10 stage `stage_6_01`…`stage_6_10`, mỗi stage 20 wave; Normal/Epic/Legend.
-- Level hiển thị 51–60 nối Arc 5; mốc cân bằng chiến đấu cố định Lv.35. Không scale theo level Hero đang chơi.
+- Level hiển thị và mốc cân bằng chiến đấu cùng nối Arc 5 từ 51–60; mỗi stage dùng level riêng, không scale theo level Hero đang chơi.
 - Random lúc sinh catalog bằng seed cố định, từng slot độc lập: Kim/Thủy/Mộc/Hỏa/Thổ = 20% mỗi hệ. Không ép đủ hệ; runtime đọc entries như các Arc trước.
 - Lõi Normal/Ranger/Tank, giữ luật sáu wave đầu chưa Tank, ba wave đầu chưa rusher.
 - Tái sử dụng creep/animation/đòn đánh cũ qua biến thể riêng, giữ nguyên enemy gốc; thêm đúng một generic skill không trùng.
@@ -72,7 +72,7 @@ Nội tại ưu tiên: Kim defense_buff; Thủy debuff_resistance; Mộc regener
 3. Enemy variants, 200 wave, 30 stage levels, loot/progression, pressure/EXP tool compatibility.
 4. Client roster, element, atlas, background/sweep, boss integration.
 5. Tests dữ liệu, original-catalog preservation, EXP, difficulty/pressure, spawn/resume/boss, online-only, static suites và backend build.
-6. Godot runtime thử Lv.35 và report thực tế; không ghi nhận mô phỏng phân tích như clear rate thực chiến.
+6. Godot runtime thử đúng mốc Lv51–60 của từng stage và report thực tế; không ghi nhận mô phỏng phân tích như clear rate thực chiến.
 7. Đánh giá trạng thái hoàn thành từ evidence; production deploy không tự thực hiện. Local catalog chỉ có hiệu lực khi seed/publish theo workflow hiện hành.
 
 ## Theo dõi
@@ -84,11 +84,11 @@ Nội tại ưu tiên: Kim defense_buff; Thủy debuff_resistance; Mộc regener
 
 ## Triển khai hiện tại
 
-`tools/arc6_catalog.cjs --write|--check` sinh nội dung idempotent. Không random lại khi chơi. Pool hiện có 15 biến thể thường và `arc6_wraith_mid`/`arc6_wraith_final`; alias presentation ở client dùng nguyên frame nguồn. `stage_rules` lưu seed, trọng số hệ và mốc Lv.35 qua DB.
+`tools/arc6_catalog.cjs --write|--check` sinh nội dung idempotent. Không random lại khi chơi. Pool hiện có 15 biến thể thường và `arc6_wraith_mid`/`arc6_wraith_final`; alias presentation ở client dùng nguyên frame nguồn. `stage_rules` lưu seed, trọng số hệ, đường cong wave và mốc Lv51–60 qua DB.
 
-Baseline là modifier đầu trận của `stage_4_05` (Lv.35), không level hiện tại của Hero. Hệ số giữa ải `1 + 0.035 × (ải - 1)`; hệ số entry theo wave `1 + 0.004 × (wave - 1)`. Sau pilot nhận sát thương thật, creep dùng thêm hệ số tuning HP `0.55`, ATK `0.15`, DEF `0.70` so với baseline. Tank Thủy/Thổ có hệ số HP riêng để giữ tương quan vai trò, không sửa attributes gốc. Campaign pressure v1 và difficulty vẫn do resolver cũ áp dụng đúng một lần.
+Arc 6 nối tiếp pipeline chỉ số creep đã dùng ở Arc 3–5, không rebasing về Lv35. Mỗi stage dùng đúng level hiển thị làm mốc cân bằng (`51..60`; stage 6-05 là Lv55), giữ nguyên `attributes` gốc của từng creep rồi nội suy tuyến tính một `stat multiplier` từ wave 1 đến wave 20. Cùng multiplier đó áp cho HP, ATK và DEF; `speed_mul=0.75`. Đường cong Normal nối sau Arc 5: stage 6-01 `6.75→8.40`, tăng dần đến stage 6-10 `9.00→11.50`. Epic/Legend vẫn do runtime nhân đúng một lần. Boss dùng multiplier W20 cho HP/DEF; riêng ATK Wraith nhân `0.45` vì bộ skill multi-hit. Recommendation cũ được giữ để không mất dữ liệu nhưng đánh dấu phải chạy lại benchmark.
 
-Boss lấy bộ attributes tham chiếu Dreadnought Lv.35 (`6500 HP / 105 ATK / 45 DEF` trước entry modifier), giữ scheduler Wraith; entry ATK có hệ số `0.45` vì bộ chiêu nhiều hit. Không thêm cơ chế HP-phase hay hazard mới.
+Boss giữ bộ base attributes ổn định (`6500 HP / 105 ATK / 45 DEF` trước entry modifier) và scheduler Wraith; stage multiplier chịu trách nhiệm scale Lv51–60, entry ATK có hệ số `0.45` vì bộ chiêu nhiều hit. Không thêm cơ chế HP-phase hay hazard mới.
 
 Loot dùng template đúng loại ải/tier của Arc 5, chia đều trọng số rune theo hệ và nối tiếp gold reward sau Arc 5 (không reset về ải 41). Quy tắc fragment Legend, vé Tháp và mở khóa dùng backend hiện tại; Arc 6 fragment chia đều năm hệ.
 
@@ -96,7 +96,7 @@ Loot dùng template đúng loại ải/tier của Arc 5, chia đều trọng s�
 
 Các pilot `stationary` và `approach` là lane chẩn đoán. `approach` dùng AI tiến gần của engine, không phải ước lượng tỷ lệ thắng người chơi. Đặc biệt Hero ít HP không nên ôm cụm ranged/CC.
 
-Lane tham chiếu cuối dùng bot giữ khoảng cách đơn giản: tiến khi ngoài 85% tầm basic, lùi khi dưới 65%, đi vòng nửa tốc độ khi ở giữa; hướng theo parity của seed, không xem telegraph/đạn và không có perfect dodge. Hero nhận damage thật và chết tại 0 HP, không trang bị/Thần Luân/affinity; thẻ được chọn từ offer hợp lệ. Lv.35 là baseline thiết kế; loadout dùng để đo đề cử có thể cao hơn tùy ải/tier, giới hạn Lv.50 của game vẫn giữ nguyên.
+Lane tham chiếu cuối dùng bot giữ khoảng cách đơn giản: tiến khi ngoài 85% tầm basic, lùi khi dưới 65%, đi vòng nửa tốc độ khi ở giữa; hướng theo parity của seed, không xem telegraph/đạn và không có perfect dodge. Hero nhận damage thật và chết tại 0 HP, không trang bị/Pháp Tắc/affinity; thẻ được chọn từ offer hợp lệ. Benchmark bắt đầu tại level tham chiếu của stage và được phép tìm cao hơn để phát hiện khi creep cần hạ chỉ số.
 
 File `ARC6_RUNTIME_PILOT.json` đầu tiên đã đánh dấu **invalid_for_balance** vì harness benchmark cũ giữ 1 HP. Không dùng các PASS đó để nghiệm thu. Test mortality riêng chứng minh mất đúng 1 HP khi nhận 1 true damage và chết khi chịu đòn chí tử.
 

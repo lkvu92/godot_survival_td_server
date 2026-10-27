@@ -2,8 +2,10 @@
 // C018 v1.4.0 / C118 v1.0.0: permanent-loadout combat power.
 
 function getLeaderboardRealmTitle(level: number): string {
-    const safeLvl = Math.max(1, Math.min(50, Math.floor(level)));
+    const safeLvl = Math.max(1, Math.min(PROGRESSION_MAX_LEVEL, Math.floor(level)));
     const tier = Math.max(1, Math.min(10, ((safeLvl - 1) % 10) + 1));
+    if (safeLvl >= 61) return `Bán Tiên Tầng ${tier}`;
+    if (safeLvl >= 51) return `Độ Kiếp Tầng ${tier}`;
     if (safeLvl >= 41) return `Hóa Thần Tầng ${tier}`;
     if (safeLvl >= 31) return `Nguyên Anh Tầng ${tier}`;
     if (safeLvl >= 21) return `Kết Đan Tầng ${tier}`;
@@ -70,7 +72,7 @@ function syncAllStoredProfilesToLeaderboards(nk: nkruntime.Nakama, logger: nkrun
 }
 
 function writePlayerLeaderboardRecords(nk: nkruntime.Nakama, userId: string, profile: any, displayName?: string, weeklyActive: boolean = true): any {
-    const level = Math.max(1, Math.min(50, Number(profile.level || 1)));
+    const level = Math.max(1, Math.min(PROGRESSION_MAX_LEVEL, Number(profile.level || 1)));
     const vip = Number(profile.vip || (profile.vip_progress ? profile.vip_progress.level : 0) || 0);
     const heroId = String(profile.avatar_url || "hero_1");
     let name = String(displayName || profile.display_name || "").trim();

@@ -1,6 +1,6 @@
 # C218 — Khung cân bằng áp lực Campaign theo wave
 
-- **Version:** 2.3.1
+- **Version:** 2.4.2
 - **Status:** IN_PROGRESS
 - **Updated:** 2026-10-26
 - **Owner:** Gameplay Balance
@@ -310,8 +310,26 @@ Thứ tự rollout:
 
 ## 15. Changelog
 
+Local operation 2026-10-27 (explicit historical results requested): sync_campaign_recommendations_local.cjs --check/--apply/--verify PASS. All150 Arc1–5 recommended_power rows changed to the exported historical JSON and matched on readback. Develop target survival_td_local at127.0.0.1:7350; config version40→41 with identical active settings. Every other stage-level field and all outside rows (including Arc6) were preserved. No profile mutations or production access. Before/after backup: workspace .tmp/c218-db-recommendations/1793092410267/. Seed source was intentionally not rewritten; a later full seed can replace these DB-only values unless the selected recommendations are explicitly incorporated into seed input. This operation does not resolve the broader C218 calibration/acceptance gates.
+
+Arc 2 Normal is recalibrated toward minimum reference levels `10..19` across its ten stages. Every authored enemy entry, including bosses, receives the one-time stage correction `0.45 + 0.40 × (stage_index - 1) / 9` on `hp_mul`, `atk_mul`, and `def_mul`; movement, counts, cadence, EXP, roles, and rewards do not change. The first runtime probe rejected the analytical `0.67` opening factor: Lv10 passed W4 but died at W6 after roughly 1.46–1.52K incoming damage against about 924 HP. Stage metadata records version/factor so the revised migration remains idempotent. C156 then applies difficulty once at `1.00 / 1.25 / 1.50`. Existing Arc 2 recommendation checkpoints are stale and must be regenerated before writing recommended power.
+
+Calibration search has no Arc or persistent-level ceiling. With harness flag
+`--uncapped-level=true`, only the in-memory progression snapshot extends the
+hero cap to the tested level; authored stat growth and CP evaluation use that
+same snapshot. Levels above the gameplay cap are extrapolated balance results.
+Each failed level is checkpointed with `last_tested_level` and `next_level`.
+Existing v4 PASS rows remain valid, and capped UNSOLVED rows resume above their
+previous tested maximum. Search continues until PASS or user cancellation.
+
 | Version | Date | Change |
 |---|---|---|
+| 2.4.2 | 2026-10-27 | User-directed application of historical Arc 1–5 recommendation JSON to the isolated develop DB. Selectively update only recommended_power for exactly 150 stage-level pairs, back up before/after, preserve all other fields and Arc 6, and advance the local config version with the identical active settings snapshot. Historical fingerprints remain unchanged; this is not a fresh calibration or production publication. Seed source is not rewritten by this DB-only operation. |
+| 2.4.1 | 2026-10-27 | Allow explicit read-only runtime calibration with --arc=6 (hero_3, W19 checkpoint). Default calibration and unfiltered --write remain Arc 1–5; existing fingerprint gates and gameplay inputs are unchanged. Historical JSON extraction is a separate report, not a validated catalog write. |
+| 2.4.0 | 2026-10-27 | Recurve Arc 2 with runtime-corrected stage factors `0.45..0.85` to target Normal levels `10..19`; align C156 Epic/Legend multipliers to `1.25/1.50`; require fresh runtime recommendations. |
+| 2.3.4 | 2026-10-27 | Tìm minimum level theo bước +3 cho đến lần PASS đầu tiên, sau đó dò ngược từng level đến biên FAIL gần nhất. Ví dụ 10 FAIL → 13 FAIL → 16 PASS → 15/14 để chốt minimum. Trạng thái `stride`/`descend`, biên fail và best pass được checkpoint để resume đúng pha. |
+| 2.3.3 | 2026-10-26 | Benchmark flag `--guarantee-skills=true` inserts the first legal unfinished hero skill into each offer and selects skills in pool order. Default gameplay offers remain random; persistent/run unlock gates and one-card-per-level budget remain enforced. Model v4/policy v2 invalidates older checkpoints. This measures survival with a guaranteed skill build, not ordinary offer RNG. |
+| 2.3.2 | 2026-10-26 | Godot recommender chay survival benchmark that (`mortal=true`): HP khong con bi kep o 1. Persistent skill gate van dung level benchmark khi mortality bat. Row `UNSOLVED` luu ly do/telemetry cua level cao nhat; Arc dung sau Normal UNSOLVED de khong chay cac stage phu thuoc vo ich. Model v3 lam checkpoint v2 khong con hop le. |
 | 2.3.1 | 2026-10-26 | Calibrator chỉ dùng một hero đồng hệ cho mỗi Arc (Hỏa/Thủy/Mộc/Kim/Thổ = hero_2/1/4/5/3). Trong cùng stage, Epic bắt đầu từ level Normal đã pass và Legend bắt đầu từ Epic; mỗi difficulty cũng giữ lower bound của stage trước. Kết quả được ghi atomic vào một JSON riêng sau từng row/Arc và tự resume; persistent skill unlock vẫn dùng level benchmark thật. |
 | 2.3.0 | 2026-10-26 | Thay proposal `analytical_power_factor` bằng Godot runtime calibrator. Stage pass theo checkpoint lũy tiến W4/W9/W14/W19 với Skill 1/1–2/1–3/1–4 max, neutral element, offer/card policy thật, HP xuyên wave và clear-rate nhiều seed. Report ghi base stats, persistent level và per-hero CP; `--write` chỉ cho phép full catalog không filter và từ chối mọi row UNSOLVED. |
 | 2.2.0 | 2026-10-26 | Áp dụng `campaign_opening_relief_version: 1` cho 50 campaign stage: giảm mật độ count wave 1/2/3 theo 80%/65%/80%, tăng giãn spawn và giữ chính xác EXP theo wave. Migration idempotent, không đổi boss/loot; regression Node và Godot headless đọc dữ liệu thật đều phải pass. Late-game simulator vẫn là hạng mục tiếp theo, chưa auto-tune/publish. |

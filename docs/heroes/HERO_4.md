@@ -1,7 +1,7 @@
 # Hero 4 — U Ảnh Độc Tôn
 
-Version: 1.0.2
-Cập nhật: 2026-10-24
+Version: 1.1.0
+Cập nhật: 2026-10-27
 
 [Danh sách 5 hero](../HERO_SKILLS_CURRENT.md) · [Config skill nguồn](../../data/skills.json)
 
@@ -14,19 +14,19 @@ Các cột Lv1–Lv5 là **cấp skill trong trận**. Level hero mở skill và
 | 1 | Độc Phi Tiêu | 1 | 1 | `volley_projectile` / `active` |
 | 2 | Hồi Hoàn Độc Luân | 10 | 5 | `boomerang_fan` / `active` |
 | 3 | Hủ Cốt Độc Cạm | 20 | 10 | `trap` / `active` |
-| 4 | Vạn Độc Thần Phong | 30 | 10 | `poison_vortex` / `active` |
+| 4 | Vạn Độc Thần Phong | 30 | 15 | `poison_vortex` / `active` |
 
-**Lưu ý:** Skill 4 Hero 4 hiện vẫn chọn trong trận từ **Lv10** theo config, khác Lv15 của các hero còn lại. Đây là ghi nhận hiện trạng, không tự đổi yêu cầu mở khóa.
+**C196 v1.4:** Skill 1 giảm 50% sát thương trực tiếp; Skill 2–3 chuyển 50% sát thương trực tiếp sang độc, giữ tổng hệ số thô khi trúng một lần và độc chạy đủ thời gian. Độc vẫn dùng strongest/refresh, nên không coi đây là tổng damage bảo đảm khi trúng nhiều lần hoặc chồng với độc khác.
 
 ## Skill 1 — Độc Phi Tiêu
 
-Mỗi tiêu gây sát thương trực tiếp và đặt độc 25/30/35/40/45% ATK **mỗi giây**, luôn trong 2s. Số tiêu 1/2/2/3/3, bắn nối tiếp theo `volley_interval`; không mặc định nhân toàn bộ độc với số tiêu vì độc thường dùng max potency/refresh.
+Mỗi tiêu gây 20/22,5/25/27,5/30% ATK trực tiếp và đặt độc 12,5/15/17,5/20/22,5% ATK **mỗi giây**, trong 2s. Số tiêu 1/2/2/3/3, bắn nối tiếp theo `volley_interval`; không nhân toàn bộ độc với số tiêu vì độc thường dùng max potency/refresh.
 
 ### Chỉ số gameplay
 
 | Thông số | Lv1 | Lv2 | Lv3 | Lv4 | Lv5 |
 |---|---:|---:|---:|---:|---:|
-| Sát thương (% ATK) (`damage_pct`) | 40 | 45 | 50 | 55 | 60 |
+| Sát thương (% ATK) (`damage_pct`) | 20 | 22.5 | 25 | 27.5 | 30 |
 | Tốc độ bay (% tốc độ di chuyển hero) (`speed_pct`) | 230 | 244 | 258 | 274 | 292 |
 | Range cơ sở (px) (`range`) | 680 | 700 | 720 | 740 | 760 |
 | Số projectile (`projectile_count`) | 1 | 2 | 2 | 3 | 3 |
@@ -44,7 +44,7 @@ Thông số cố định cho cả 5 cấp:
 | Effect / thuộc tính | Lv1 | Lv2 | Lv3 | Lv4 | Lv5 |
 |---|---:|---:|---:|---:|---:|
 | `poison.duration` | 2 | 2 | 2 | 2 | 2 |
-| `poison.dps_pct` | 25 | 30 | 35 | 40 | 45 |
+| `poison.dps_pct` | 12.5 | 15 | 17.5 | 20 | 22.5 |
 
 Bảng effect giữ **giá trị JSON gốc**: `chance`/`slow_percent=0.2` nghĩa là 20%; `dps_pct=25` nghĩa là 25% ATK mỗi giây. `duration` tính bằng giây.
 
@@ -61,17 +61,16 @@ Bảng effect giữ **giá trị JSON gốc**: `chance`/`slow_percent=0.2` nghĩ
 |---|---:|---|---|
 | `vfx_frames` | 9 | `hero_4_skill_1_frame_0` | `res://assets/hero/hero_4/hero_4_skill_1_animation.png` |
 
-<!-- skill-stats-source hero_4_skill_1 e14f4ba46f7d8dafd6f1c1097b45131904e6dabfe252a46a082559ba0e89fa85 -->
 
 ## Skill 2 — Hồi Hoàn Độc Luân
 
-Độc luân xuyên, bay đi rồi quay lại; hệ số bảng là **mỗi lần trúng**, không phải tổng cả đi/về. Bước góc 10°, giới hạn ±20°. Làm chậm 15/17,5/20/22,5/25%; thời gian chậm và tốc độ bay giữ theo từng cấp.
+Độc luân xuyên, bay đi rồi quay lại; mỗi lần trúng chia 50% sát thương trực tiếp và 50% thành độc trong 2s. Cả hai phần cùng giảm tuyến tính theo khoảng cách từ 100% xuống 30% tại tầm tối đa, ở cả lượt đi/về. Tổng hệ số thô trước chia là 85/95/105/115/125% ATK mỗi lần trúng. Bước góc 10°, giới hạn ±20°; slow và tốc độ bay giữ nguyên.
 
 ### Chỉ số gameplay
 
 | Thông số | Lv1 | Lv2 | Lv3 | Lv4 | Lv5 |
 |---|---:|---:|---:|---:|---:|
-| Sát thương (% ATK) (`damage_pct`) | 85 | 95 | 105 | 115 | 125 |
+| Sát thương (% ATK) (`damage_pct`) | 42.5 | 47.5 | 52.5 | 57.5 | 62.5 |
 | Tốc độ bay (% tốc độ di chuyển hero) (`speed_pct`) | 248 | 261 | 275 | 291 | 310 |
 | Range cơ sở (px) (`range`) | 700 | 720 | 740 | 760 | 780 |
 | Số projectile (`projectile_count`) | 1 | 2 | 3 | 4 | 5 |
@@ -92,6 +91,9 @@ Thông số cố định cho cả 5 cấp:
 |---|---:|---:|---:|---:|---:|
 | `slow.duration` | 1.5 | 1.75 | 2 | 2.25 | 2.5 |
 | `slow.slow_percent` | 0.15 | 0.175 | 0.2 | 0.225 | 0.25 |
+| `poison.duration` | 2 | 2 | 2 | 2 | 2 |
+| `poison.dps_pct` | 21.25 | 23.75 | 26.25 | 28.75 | 31.25 |
+| `poison.scale_dps_with_range` | true | true | true | true | true |
 
 Bảng effect giữ **giá trị JSON gốc**: `chance`/`slow_percent=0.2` nghĩa là 20%; `dps_pct=25` nghĩa là 25% ATK mỗi giây. `duration` tính bằng giây.
 
@@ -99,7 +101,7 @@ Bảng effect giữ **giá trị JSON gốc**: `chance`/`slow_percent=0.2` nghĩ
 
 | Thông số | Lv1 | Lv2 | Lv3 | Lv4 | Lv5 |
 |---|---:|---:|---:|---:|---:|
-| `vfx_scale` | 0.09 | 0.095 | 0.0975 | 0.1 | 0.105 |
+| `vfx_scale` | 0.117 | 0.1235 | 0.12675 | 0.13 | 0.1365 |
 
 
 ### Frame/asset qua AtlasRegistry
@@ -108,7 +110,6 @@ Bảng effect giữ **giá trị JSON gốc**: `chance`/`slow_percent=0.2` nghĩ
 |---|---:|---|---|
 | `vfx_frames` | 9 | `hero_4_skill_2_frame_0` | `res://assets/hero/hero_4/hero_4_skill_2_animation.png` |
 
-<!-- skill-stats-source hero_4_skill_2 06feead79eb1efebde281a4d8f1b48d85ed8f2ec1df92afdac9ab66b7cfd75b6 -->
 
 ## Skill 3 — Hủ Cốt Độc Cạm
 
@@ -118,7 +119,7 @@ Giới hạn 3/4/5/6/9 bẫy **riêng mỗi caster**; đặt vượt giới hạ
 
 | Thông số | Lv1 | Lv2 | Lv3 | Lv4 | Lv5 |
 |---|---:|---:|---:|---:|---:|
-| Sát thương (% ATK) (`damage_pct`) | 100.1 | 107.6 | 116 | 126.5 | 140 |
+| Sát thương (% ATK) (`damage_pct`) | 50.05 | 53.8 | 58 | 63.25 | 70 |
 | Range cơ sở (px) (`range`) | 725 | 750 | 775 | 800 | 825 |
 | Hồi chiêu (s) (`cooldown`) | 8.8 | 8.2 | 7.6 | 7 | 6.2 |
 | Bán kính radius (px) (`radius`) | 85 | 95 | 105 | 115 | 125 |
@@ -140,7 +141,7 @@ Thông số cố định cho cả 5 cấp:
 | Effect / thuộc tính | Lv1 | Lv2 | Lv3 | Lv4 | Lv5 |
 |---|---:|---:|---:|---:|---:|
 | `poison.duration` | 3 | 3.5 | 4 | 4.5 | 5 |
-| `poison.dps_pct` | 45 | 55 | 65 | 75 | 85 |
+| `poison.dps_pct` | 61.683333333 | 70.371428571 | 79.5 | 89.055555556 | 99 |
 | `slow.duration` | 2.5 | 2.5 | 2.75 | 3 | 3 |
 | `slow.slow_percent` | 0.1 | 0.15 | 0.2 | 0.25 | 0.3 |
 
@@ -161,7 +162,6 @@ Bảng effect giữ **giá trị JSON gốc**: `chance`/`slow_percent=0.2` nghĩ
 | `vfx_frames` | 9 | `hero_4_skill_3a_frame_0` | `res://assets/hero/hero_4/hero_4_skill_3_animation.png` |
 | `explosion_vfx_frames` | 9 | `hero_4_skill_3b_frame_0` | `res://assets/hero/hero_4/hero_4_skill_3_2_animation.png` |
 
-<!-- skill-stats-source hero_4_skill_3 f51a5bc5d26b60d0c6caa7ef2630f9d49bcbef970273d26c31dcde57854ddbb9 -->
 
 
 C196 v1.1.0: size bẫy và hiệu ứng nổ giảm40%, phạm vi và sát thương giữ nguyên.
@@ -253,6 +253,7 @@ Chi tiết: [C200](../contracts/C200_HERO4_ASSET_GRID.md).
 
 | Version | Ngày | Thay đổi |
 |---|---|---|
+| 1.1.0 | 2026-10-27 | C196 v1.4: giảm hit Skill1, chuyển damage Skill2/3 sang độc và cập nhật mốc mở Skill4 cùng scale Skill2. |
 | 1.0.2 | 2026-10-24 | Kim Skill4 đã đổi sang animation3×3/9frame400px. |
 | 1.0.1 | 2026-10-24 | Chuẩn grid400px cho năm animation sheet; giữ nguyên kim đơn và icon. |
 | 1.0.0 | 2026-10-24 | Tổng hợp đầy đủ config và hành vi sau các thay đổi trong phiên; tách thông số hiện tại khỏi thiết kế lịch sử. |
