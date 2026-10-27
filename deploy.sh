@@ -9,6 +9,36 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 NAKAMA_DIR="${SCRIPT_DIR}/nakama"
 
 cd "${NAKAMA_DIR}"
+IDENTITY_ENABLED=false
+PROFILE_ARGS=()
+
+select_identity_profile() {
+    local profile
+    profile="$(python3 identity_config.py)"
+    case "$profile" in
+        identity) IDENTITY_ENABLED=true; PROFILE_ARGS=(--profile identity) ;;
+        none) IDENTITY_ENABLED=false; PROFILE_ARGS=() ;;
+        *) echo "[ERROR] Invalid identity profile inspection result."; exit 1 ;;
+    esac
+    echo "[INFO] Account identity enabled: ${IDENTITY_ENABLED}"
+}
+
+wait_for_identity() {
+    if [ "$IDENTITY_ENABLED" != true ]; then return; fi
+    local attempt
+    for attempt in $(seq 1 30); do
+        if docker compose --profile identity exec -T account-identity node -e "fetch('http://127.0.0.1:8080/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))" >/dev/null 2>&1; then
+            echo "[OK] Account identity is healthy."
+            if [ "${1:-verify}" = verify ]; then
+                docker compose --profile identity exec -T account-identity node src/verify-smtp.js
+            fi
+            return
+        fi
+        sleep 1
+    done
+    echo "[ERROR] Account identity healthcheck failed; inspect logs account-identity."
+    return 1
+}
 
 ensure_secrets() {
     if [ ! -f "iap.secret.yml" ]; then
@@ -42,12 +72,14 @@ wait_for_nakama() {
 
 start_services() {
     ensure_secrets
+    select_identity_profile
     python3 configure_runtime.py
-    echo "[INFO] Starting Survival TD stack (PostgreSQL, Nakama, Monetization Verifier)..."
-    docker compose up -d --build
+    echo "[INFO] Starting Survival TD stack and enabled identity service..."
+    docker compose "${PROFILE_ARGS[@]}" up -d --build
     # Mounted JavaScript and runtime secrets require a fresh Nakama process.
-    docker compose up -d --force-recreate nakama
+    docker compose "${PROFILE_ARGS[@]}" up -d --no-deps --force-recreate nakama
     wait_for_nakama
+    wait_for_identity
 }
 
 cmd_start() {
@@ -57,7 +89,7 @@ cmd_start() {
 
 cmd_stop() {
     echo "[INFO] Stopping containers..."
-    docker compose down
+    docker compose --profile identity down
 }
 
 cmd_restart() {
@@ -100,14 +132,17 @@ cmd_build() {
 }
 
 cmd_logs() {
-    docker compose logs -f "${1:-}"
+    if [ -n "${1:-}" ]; then docker compose --profile identity logs -f "$1";
+    else docker compose --profile identity logs -f; fi
 }
 
 cmd_health() {
+    select_identity_profile
     echo "[INFO] Checking Nakama health endpoint..."
     curl -s "http://127.0.0.1:7350/healthcheck" && echo ""
     echo "[INFO] Docker container status:"
-    docker compose ps
+    docker compose --profile identity ps
+    wait_for_identity health
 }
 
 # ------------------------------------------------------------------------------

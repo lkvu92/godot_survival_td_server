@@ -1,3 +1,5 @@
+- [C134 stamina storage cap](contracts/C134_RESULT_AD_SYSTEM_CONFIG.md) v1.0.2: storage 200, natural regeneration 30; daily-pack/current/legacy grants and regression expectations aligned.
+- [C232 Verified account identity](contracts/C232_ACCOUNT_IDENTITY.md): Gmail SMTP confirmation links, verified email registration and account deletion; v1.1.0 jade/gold production mail templates. [Validation and SMTP status](reports/C232_ACCOUNT_IDENTITY_VALIDATION.md).
 - [Arc 6 Ngũ Tố Quy Khư plan](ARC6_NGU_TO_QUY_KHU_PLAN.md) and [C221](contracts/C221_ARC6_NGU_TO_QUY_KHU.md) v1.1.1: mixed-element campaign, per-stage Lv51–60 shared creep-stat curves, and Arc 2 ice variants rendered at their source size.
 - [C220 Tactical support cards](contracts/C220_TACTICAL_SUPPORT_CARDS.md): three-tier support, status accuracy and healing reduction.
 - [C176 local readiness](reports/C176_LOCAL_READINESS.md): local config v4 and native Nakama/PostgreSQL smoke PASS.
@@ -270,3 +272,7 @@ C197 v1.1.0: fixed golden phantom, 0.5s protection, actual-hit repeat damage and
 - [C230 — Trung phẩm 31 tầng và effect gameplay](contracts/C230_MID_TIER_TALISMAN_SKILLS.md), v1.0.0 IN_PROGRESS.
 - [C218 historical recommendation DB update](contracts/C218_CAMPAIGN_WAVE_PRESSURE.md) v2.4.2: selective local Arc 1–5 power update with backups and unchanged active settings.
 - [C196 Hero4 damage redistribution](contracts/C196_HERO4_SKILL_REBALANCE.md) v1.4.0: halve Skill1 direct hit; move half Skill2/3 direct damage into poison while preserving isolated raw budgets and Skill2 range falloff.
+
+- C232 v1.2.1: validate email links before showing credentials; report registered email conflicts.
+
+- C232 v1.2.2: login account-deletion/support buttons share the login action asset.

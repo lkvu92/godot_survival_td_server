@@ -1,0 +1,19 @@
+THÔNG THIÊN LỘ
+Xác nhận email của bạn
+
+Bạn vừa yêu cầu tạo tài khoản Thông Thiên Lộ bằng địa chỉ email này.
+Nhấn nút bên dưới để xác nhận email, sau đó tự đặt tên đăng nhập và mật khẩu trên trang bảo mật của trò chơi.
+
+XÁC NHẬN EMAIL:
+https://api.lkvustudio.com/account/confirm#token=preview-only-not-valid&purpose=register_email
+
+Hiệu lực đến: 12:15 01/01/2030 (GMT+7). Liên kết dùng một lần, tối đa 15 phút kể từ lúc yêu cầu.
+
+Tài khoản chỉ được tạo sau khi bạn hoàn tất xác nhận. Mở liên kết chưa tự động tạo tài khoản.
+
+
+Nếu bạn không yêu cầu, hãy bỏ qua thư này. Không chia sẻ liên kết xác nhận.
+Chúng tôi không yêu cầu bạn gửi mật khẩu qua email.
+
+Hỗ trợ: admin@lkvustudio.com
+Chính sách quyền riêng tư: https://api.lkvustudio.com/account/privacy-policy/

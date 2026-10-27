@@ -6,6 +6,8 @@ Bạn có thể yêu cầu xóa tài khoản và dữ liệu liên quan bằng e
 
 ## Gửi yêu cầu
 
+Nếu còn đăng nhập được, mở **Hồ sơ → Email và xóa tài khoản**. Luồng email gửi link riêng và yêu cầu mật khẩu hiện tại cùng xác nhận xóa; luồng Google yêu cầu xác thực Google lại. Chỉ mở link không tự xóa tài khoản. Yêu cầu đã tiếp nhận có mã biên nhận để tra cứu trạng thái; nếu cần hỗ trợ, gửi email theo hướng dẫn dưới đây. Nếu chỉ đăng nhập thiết bị hoặc đã mất quyền truy cập, vẫn có thể gửi yêu cầu qua email để được hướng dẫn xác minh.
+
 1. Gửi email đến [admin@lkvustudio.com](mailto:admin@lkvustudio.com?subject=Thong%20Thien%20Lo%20-%20Account%20deletion%20request) với tiêu đề **Thông Thiên Lộ — Yêu cầu xóa tài khoản**.
 2. Nếu có thể, gửi từ email đã liên kết và cung cấp mã tài khoản, máy chủ, tên nhân vật mà bạn biết. Nêu rõ muốn xóa toàn bộ tài khoản hay chỉ yêu cầu xóa một nhóm dữ liệu cụ thể.
 3. Nếu đăng nhập bằng thiết bị hoặc không còn truy cập email liên kết, hãy mô tả tình huống để được hướng dẫn xác minh phù hợp. Không cần cài lại game chỉ để gửi yêu cầu.
@@ -31,6 +33,8 @@ Lịch sử thanh toán do Google Play quản lý tuân theo quy trình riêng c
 You can request deletion of your account and associated data by email, even after uninstalling the game. Requests are processed after account ownership is verified; opening the email link does not automatically delete data.
 
 ## Submit a request
+
+If you can sign in, open **Profile → Email and account deletion**. The email flow sends a purpose-specific link and requires your current password and final confirmation; the Google flow requires Google reauthentication. Opening a link alone does not delete the account. Accepted requests have a receipt for status checks; contact support below if necessary. Device-only users and users who have lost access can still email a request for verification assistance.
 
 1. Email [admin@lkvustudio.com](mailto:admin@lkvustudio.com?subject=Thong%20Thien%20Lo%20-%20Account%20deletion%20request) with the subject **Thông Thiên Lộ — Account deletion request**.
 2. Use your linked email if possible and include your account ID, server and character name if known. Say whether you want the whole account deleted or are requesting deletion of a specific category of data.

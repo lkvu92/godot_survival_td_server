@@ -1,0 +1,19 @@
+THÔNG THIÊN LỘ
+Xác minh email tài khoản
+
+Bạn đã yêu cầu xác minh địa chỉ email cho tài khoản Thông Thiên Lộ đang sử dụng.
+Mở trang xác nhận và nhập mật khẩu hiện tại của tài khoản. Sau khi hoàn tất, quay lại trò chơi để tiếp tục.
+
+XÁC MINH EMAIL:
+https://api.lkvustudio.com/account/confirm#token=preview-only-not-valid&purpose=verify_legacy_email
+
+Hiệu lực đến: 12:15 01/01/2030 (GMT+7). Liên kết dùng một lần, tối đa 15 phút kể từ lúc yêu cầu.
+
+Liên kết này chỉ xác minh email. Nó không đặt lại mật khẩu hoặc tạo một tài khoản khác.
+
+
+Nếu bạn không yêu cầu, hãy bỏ qua thư này. Không chia sẻ liên kết xác nhận.
+Chúng tôi không yêu cầu bạn gửi mật khẩu qua email.
+
+Hỗ trợ: admin@lkvustudio.com
+Chính sách quyền riêng tư: https://api.lkvustudio.com/account/privacy-policy/

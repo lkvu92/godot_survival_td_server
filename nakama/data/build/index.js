@@ -32,7 +32,7 @@ function createServerWeeklyTables(nk) {
           FROM server_weekly_scores s JOIN users u ON u.id=s.user_id
           WHERE s.server_id=sid AND s.generation=gen AND s.period_id=p.period_id
             AND COALESCE(u.disable_time,to_timestamp(0))<=to_timestamp(0)
-            AND NOT EXISTS(SELECT 1 FROM account_link_state a WHERE a.user_id=s.user_id AND a.status='archived')) ranked
+            AND NOT EXISTS(SELECT 1 FROM account_link_state a WHERE a.user_id=s.user_id AND a.status IN('archived','deleting'))) ranked
         CROSS JOIN LATERAL jsonb_array_elements(p.config->'boards'->ranked.board_id->'tiers') tier
         WHERE ranked.position BETWEEN (tier->>'from')::INT AND (tier->>'to')::INT AND (p.config->'boards'->ranked.board_id->>'enabled')::BOOL
         ON CONFLICT DO NOTHING;
@@ -90,7 +90,7 @@ const readServerWeekly = (ctx, _logger, nk, payload) => {
   const ranks = period ? nk.sqlQuery(`SELECT * FROM (SELECT s.user_id::TEXT,s.display_name,s.score,
       ROW_NUMBER() OVER(ORDER BY s.score DESC,s.achieved_at,s.user_id) AS rank FROM server_weekly_scores s JOIN users u ON u.id=s.user_id
       WHERE s.server_id=$1 AND s.generation=$2 AND s.period_id=$3 AND s.board_id=$4 AND COALESCE(u.disable_time,to_timestamp(0))<=to_timestamp(0)
-      AND NOT EXISTS(SELECT 1 FROM account_link_state a WHERE a.user_id=s.user_id AND a.status='archived')) ranked
+      AND NOT EXISTS(SELECT 1 FROM account_link_state a WHERE a.user_id=s.user_id AND a.status IN('archived','deleting'))) ranked
       WHERE rank<=50 OR user_id=$5 ORDER BY rank`, [scope.serverId, scope.generation, period.period_id, board, ctx.userId]) : [];
   const awards = nk.sqlQuery(`SELECT period_id,board_id,rank,score,rewards,EXTRACT(EPOCH FROM expires_at)*1000 AS expires_at_ms,
       expires_at<=clock_timestamp() AS expired FROM server_weekly_awards WHERE server_id=$1 AND generation=$2 AND user_id=$3::UUID AND board_id=$4 ORDER BY period_id DESC LIMIT 14`, [scope.serverId, scope.generation, ctx.userId, board]);
@@ -361,17 +361,19 @@ function createServerLifecycleTables(nk) {
         'storage',COALESCE((SELECT jsonb_agg(to_jsonb(o) ORDER BY collection,key,user_id) FROM
           (SELECT collection,key,user_id::TEXT,version,value,read,write FROM storage
            WHERE left(key,length(sid||':g'||gen||':'))=sid||':g'||gen||':'
+           AND NOT account_identity_erasure_pending(user_id)
            AND collection=ANY($1$COLLECTIONS$1$::TEXT[])) o),'[]'::JSONB),
         'unknown',COALESCE((SELECT jsonb_agg(jsonb_build_object('collection',collection,'key',key)) FROM storage
           WHERE left(key,length(sid||':g'||gen||':'))=sid||':g'||gen||':'
+          AND NOT account_identity_erasure_pending(user_id)
           AND NOT(collection=ANY($1$COLLECTIONS$1$::TEXT[]))),'[]'::JSONB),
-        'characters',COALESCE((SELECT jsonb_agg(to_jsonb(c) ORDER BY account_id) FROM player_characters c WHERE server_id=sid AND generation=gen),'[]'::JSONB),
+        'characters',COALESCE((SELECT jsonb_agg(to_jsonb(c) ORDER BY account_id) FROM player_characters c WHERE server_id=sid AND generation=gen AND NOT account_identity_erasure_pending(account_id)),'[]'::JSONB),
         'pending_financial',(SELECT COUNT(*) FROM monetization_purchase_orders WHERE target_server_id=sid AND target_generation=gen AND status='pending')+
           (SELECT COUNT(*) FROM monetization_ad_rewards WHERE target_server_id=sid AND target_generation=gen AND status IN ('prepared','verified')),
         'real_purchases',(SELECT COUNT(*) FROM monetization_purchases WHERE target_server_id=sid AND target_generation=gen AND purchase_token_hash NOT LIKE 'mock:%'),
         'weekly_periods',COALESCE((SELECT jsonb_agg(to_jsonb(p) ORDER BY period_id) FROM server_weekly_periods p WHERE server_id=sid AND generation=gen),'[]'::JSONB),
-        'weekly_scores',COALESCE((SELECT jsonb_agg(to_jsonb(p) ORDER BY period_id,board_id,user_id) FROM server_weekly_scores p WHERE server_id=sid AND generation=gen),'[]'::JSONB),
-        'weekly_awards',COALESCE((SELECT jsonb_agg(to_jsonb(p) ORDER BY period_id,board_id,user_id) FROM server_weekly_awards p WHERE server_id=sid AND generation=gen),'[]'::JSONB))); END;
+        'weekly_scores',COALESCE((SELECT jsonb_agg(to_jsonb(p) ORDER BY period_id,board_id,user_id) FROM server_weekly_scores p WHERE server_id=sid AND generation=gen AND NOT account_identity_erasure_pending(user_id)),'[]'::JSONB),
+        'weekly_awards',COALESCE((SELECT jsonb_agg(to_jsonb(p) ORDER BY period_id,board_id,user_id) FROM server_weekly_awards p WHERE server_id=sid AND generation=gen AND NOT account_identity_erasure_pending(user_id)),'[]'::JSONB))); END;
     $manifest$;`.replace(/\$1\$COLLECTIONS\$1\$/g, "'{" + CHARACTER_COLLECTIONS.join(",") + "}'"), []);
 }
 function serverLifecycleHandler(action) {
@@ -454,7 +456,8 @@ function serverLifecycleHandler(action) {
       if (Number(server.revision) !== req.expected_revision || req.action !== "cleanup" && Number(server.generation) !== req.expected_generation || req.action === "cleanup" && req.expected_generation >= Number(server.generation) && server.status !== "deleted") return serverFailure("PLAN_STALE", 409, "Scope changed");
       if (server.status === "deleted" && req.action !== "cleanup") return serverFailure("SERVER_DELETED", 409, "Tombstone cannot be reused");
       const id = nk.uuidv4();
-      const rows = nk.sqlQuery(`WITH m AS (SELECT server_lifecycle_manifest($2,$4) AS manifest)
+      const rows = nk.sqlQuery(`WITH guard AS MATERIALIZED (SELECT server_id FROM game_servers WHERE server_id=$2 FOR UPDATE),
+              m AS (SELECT server_lifecycle_manifest($2,$4) AS manifest FROM guard)
               INSERT INTO server_operation_plans(id,server_id,action,generation,revision,actor_id,reason,manifest,manifest_hash)
               SELECT $1::UUID,$2,$3,$4,$5,$6::UUID,$7,manifest,encode(sha256(convert_to(manifest::TEXT,'UTF8')),'hex') FROM m
               RETURNING id AS plan_id,manifest_hash,expires_at,manifest`, [id, req.server_id, req.action, req.expected_generation, req.expected_revision, ctx.userId, req.reason.trim()]);
@@ -3798,6 +3801,160 @@ const getComplianceProfile = (ctx, logger, nk, _payload) => {
   });
 };
 
+function identityEnabled(ctx) {
+  return !!ctx.env && ctx.env.ACCOUNT_IDENTITY_ENABLED === "true";
+}
+function createAccountIdentityTables(nk) {
+  nk.sqlExec(`CREATE TABLE IF NOT EXISTS account_identity_verifications(
+      user_id UUID PRIMARY KEY,email TEXT NOT NULL,verified_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),source TEXT NOT NULL,creation_intent UUID UNIQUE);
+      ALTER TABLE account_identity_verifications ADD COLUMN IF NOT EXISTS creation_intent UUID UNIQUE;
+      CREATE TABLE IF NOT EXISTS account_identity_deletions(
+      id UUID PRIMARY KEY,user_id UUID NOT NULL UNIQUE,status TEXT NOT NULL DEFAULT 'queued',receipt_hash TEXT NOT NULL UNIQUE,
+      attempts INT NOT NULL DEFAULT 0,confirmation_hash TEXT UNIQUE,updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
+      ALTER TABLE account_identity_deletions ADD COLUMN IF NOT EXISTS confirmation_hash TEXT UNIQUE;
+      CREATE OR REPLACE FUNCTION account_identity_erasure_pending(uid UUID) RETURNS BOOLEAN LANGUAGE plpgsql AS $erase$
+      BEGIN RETURN EXISTS(SELECT 1 FROM account_identity_deletions WHERE user_id=uid)
+        OR EXISTS(SELECT 1 FROM account_link_state a JOIN account_identity_deletions d ON d.user_id=a.merged_into WHERE a.user_id=uid AND a.status='archived'); END $erase$;`, []);
+}
+function identityAccount(nk, userId) {
+  const r = nk.sqlQuery(`SELECT u.id,u.email,u.google_id,u.custom_id,u.disable_time,
+      COALESCE(octet_length(u.password),0)>0 AS has_password,
+      EXISTS(SELECT 1 FROM account_identity_verifications v WHERE v.user_id=u.id AND v.email=u.email) AS verified,
+      EXISTS(SELECT 1 FROM account_identity_deletions d WHERE d.user_id=u.id) AS deleting,
+      COALESCE((SELECT generation FROM player_login_sessions WHERE user_id=u.id),'') AS generation
+      FROM users u WHERE u.id=$1::UUID`, [userId]);
+  return r.length ? r[0] : null;
+}
+function identityGameplayGate(ctx, nk) {
+  if (!identityEnabled(ctx) || !ctx.userId) return null;
+  const a = identityAccount(nk, ctx.userId);
+  if (!a || a.deleting) return JSON.stringify({ success: false, code: 401, reason: "ACCOUNT_DELETING", message: "T\xE0i kho\u1EA3n \u0111ang \u0111\u01B0\u1EE3c x\xF3a. Vui l\xF2ng \u0111\u0103ng xu\u1EA5t." });
+  if (a.has_password && !a.google_id && !a.verified) return JSON.stringify({ success: false, code: 403, reason: "EMAIL_VERIFICATION_REQUIRED", message: "Vui l\xF2ng x\xE1c nh\u1EADn email tr\u01B0\u1EDBc khi v\xE0o game." });
+  return null;
+}
+function identityBeforeEmail(ctx, _logger, nk, req) {
+  if (!identityEnabled(ctx)) return req;
+  if (req.create !== false) throw Error("EMAIL_CONFIRMATION_REQUIRED: \u0110\u0103ng k\xFD b\u1EB1ng link x\xE1c nh\u1EADn email. Vui l\xF2ng c\u1EADp nh\u1EADt game.");
+  const email = String((req.account || {}).email || "").trim().toLowerCase();
+  if (email) (req.account || {}).email = email;
+  return req;
+}
+function identityBlockMutation(ctx, _l, _nk, req) {
+  if (identityEnabled(ctx)) throw Error("ACCOUNT_IDENTITY_MANAGED: S\u1EED d\u1EE5ng quy tr\xECnh x\xE1c nh\u1EADn t\xE0i kho\u1EA3n.");
+  return req;
+}
+function identityBeforeUpdate(ctx, _l, _nk, req) {
+  if (identityEnabled(ctx) && req.email !== void 0) throw Error("ACCOUNT_IDENTITY_MANAGED");
+  return req;
+}
+function identityBeforeCustom(ctx, logger, nk, req) {
+  if (String((req.account || {}).id || "").indexOf("c232:") === 0) throw Error("Internal identity");
+  return beforeSingleLogin(ctx, logger, nk, req);
+}
+function identityBeforeGoogle(ctx, logger, nk, req) {
+  if (identityEnabled(ctx)) {
+    const proof = nk.httpRequest(
+      "http://account-identity:8080/account/internal/google-proof",
+      "POST",
+      { "Content-Type": "application/json", "Authorization": "Bearer " + ctx.env.ACCOUNT_IDENTITY_SECRET },
+      JSON.stringify({ id_token: (req.account || {}).token }),
+      1e4
+    );
+    if (proof.code !== 200) throw Error("Kh\xF4ng th\u1EC3 x\xE1c nh\u1EADn Google. Vui l\xF2ng th\u1EED l\u1EA1i.");
+    const verified = JSON.parse(proof.body);
+    if (!verified.success) throw Error("Invalid Google proof");
+    req.account.vars = Object.assign({}, req.account.vars || {}, { c232_google_email: verified.authoritative_email || "" });
+  }
+  return beforeSingleLogin(ctx, logger, nk, req);
+}
+function identityAfterGoogle(ctx, logger, nk, s, req) {
+  afterSingleLogin(ctx, logger, nk, s, req);
+  if (!identityEnabled(ctx)) return;
+  const email = String(((req.account || {}).vars || {}).c232_google_email || "");
+  if (email) nk.sqlExec(`INSERT INTO account_identity_verifications(user_id,email,source)
+      SELECT id,email,'google_authoritative_email' FROM users WHERE id=$1::UUID AND email=$2 AND google_id IS NOT NULL
+      ON CONFLICT(user_id) DO UPDATE SET email=EXCLUDED.email,verified_at=NOW(),source=EXCLUDED.source`, [ctx.userId, email]);
+}
+const accountIdentityStatus = (ctx, _l, nk) => {
+  if (!ctx.userId) throw Error("Authentication required");
+  const rejected = requireCurrentLogin(ctx, nk);
+  if (rejected) return rejected;
+  const a = identityAccount(nk, ctx.userId);
+  if (!a || a.deleting) throw Error("Account unavailable");
+  const characters = nk.sqlQuery("SELECT count(*)::INT AS count FROM player_characters WHERE account_id=$1::UUID", [ctx.userId]);
+  const entitlement = nk.sqlQuery("SELECT no_ads_expires_at>NOW() AS active FROM player_monetization_entitlements WHERE user_id=$1", [ctx.userId]);
+  return JSON.stringify({
+    success: true,
+    user_id: ctx.userId,
+    email: a.email || "",
+    google_linked: !!a.google_id,
+    google_id: a.google_id || "",
+    has_password: !!a.has_password,
+    verified: !!a.verified,
+    generation: a.generation,
+    character_server_count: Number(characters[0].count),
+    no_ads_active: !!entitlement.length && !!entitlement[0].active,
+    verification_required: identityEnabled(ctx) && !!a.has_password && !a.google_id && !a.verified
+  });
+};
+const accountIdentityBridge = (ctx, logger, nk, payload) => {
+  const p = JSON.parse(payload || "{}");
+  if (ctx.userId || !identityEnabled(ctx) || !ctx.env.ACCOUNT_IDENTITY_SECRET || p.secret !== ctx.env.ACCOUNT_IDENTITY_SECRET) throw Error("Forbidden");
+  if (p.action === "create") {
+    if (!/^[a-f0-9-]{36}$/.test(String(p.intent || ""))) throw Error("Invalid intent");
+    const email = String(p.email || "").trim().toLowerCase(), custom = "c232:" + p.intent;
+    const existing = nk.sqlQuery("SELECT u.id,u.custom_id,v.creation_intent FROM users u LEFT JOIN account_identity_verifications v ON v.user_id=u.id WHERE u.email=$1", [email]);
+    if (existing.length && existing[0].custom_id !== custom && existing[0].creation_intent !== p.intent) return JSON.stringify({ success: false, reason: "ACCOUNT_EXISTS" });
+    const auth = existing.length ? { userId: String(existing[0].id) } : nk.authenticateCustom(custom, String(p.username || ""), true);
+    const current = identityAccount(nk, auth.userId);
+    if (current.email && current.email !== email) throw Error("Identity conflict");
+    if (!current.email) nk.linkEmail(auth.userId, email, String(p.password || ""));
+    nk.sqlExec(`INSERT INTO account_identity_verifications(user_id,email,source,creation_intent) VALUES($1::UUID,$2,'email_link',$3::UUID)
+          ON CONFLICT(user_id) DO UPDATE SET email=EXCLUDED.email,verified_at=NOW(),source=EXCLUDED.source,creation_intent=EXCLUDED.creation_intent`, [auth.userId, email, p.intent]);
+    if (current.custom_id === custom) nk.unlinkCustom(auth.userId, custom);
+    return JSON.stringify({ success: true });
+  }
+  if (p.action === "password_proof") {
+    const a = identityAccount(nk, String(p.user_id || ""));
+    if (!a || a.deleting || !a.email || a.generation !== p.generation || a.email !== p.email || !a.has_password) throw Error("Identity changed");
+    const auth = nk.authenticateEmail(a.email, String(p.password || ""), void 0, false);
+    if (auth.userId !== p.user_id) throw Error("Identity mismatch");
+    return JSON.stringify({ success: true });
+  }
+  if (p.action === "delete_tick") return identityDeleteTick(nk, logger, String(p.job_id || ""));
+  if (p.action === "reconcile") {
+    const pending = nk.sqlQuery("SELECT id,custom_id,email FROM users WHERE custom_id LIKE 'c232:%' AND create_time<NOW()-INTERVAL '1 hour' LIMIT 20", []);
+    for (const a of pending) {
+      if (a.email) {
+        nk.sqlExec(`INSERT INTO account_identity_verifications(user_id,email,source,creation_intent) VALUES($1::UUID,$2,'email_link',$3::UUID)
+                  ON CONFLICT(user_id) DO NOTHING`, [a.id, a.email, String(a.custom_id).slice(5)]);
+        nk.unlinkCustom(String(a.id), String(a.custom_id));
+      } else nk.accountDeleteId(String(a.id), true);
+    }
+    return JSON.stringify({ success: true });
+  }
+  throw Error("Unknown identity action");
+};
+function identityDeleteTick(nk, logger, jobId) {
+  const jobs = nk.sqlQuery("SELECT * FROM account_identity_deletions WHERE id=$1::UUID", [jobId]);
+  if (!jobs.length) throw Error("Job missing");
+  const job = jobs[0], uid = String(job.user_id);
+  if (job.status === "completed") return JSON.stringify({ success: true, status: "completed" });
+  const locked = nk.sqlQuery(`INSERT INTO account_link_state(user_id,status,active_requests) VALUES($1::UUID,'deleting',0)
+      ON CONFLICT(user_id) DO UPDATE SET status='deleting' WHERE account_link_state.status IN('active','deleting')
+      RETURNING active_requests`, [uid]);
+  if (!locked.length || Number(locked[0].active_requests) > 0) return JSON.stringify({ success: true, status: "retrying" });
+  nk.sqlExec("UPDATE account_identity_deletions SET status='processing',attempts=attempts+1,updated_at=NOW() WHERE id=$1::UUID", [jobId]);
+  const aliases = nk.sqlQuery("SELECT user_id FROM account_link_state WHERE merged_into=$1::UUID AND status='archived'", [uid]);
+  for (const id of aliases.map((a) => String(a.user_id)).concat([uid])) {
+    nk.sqlExec(`SELECT account_identity_cleanup($1::UUID)`, [id]);
+    if (nk.sqlQuery("SELECT id FROM users WHERE id=$1::UUID", [id]).length) nk.accountDeleteId(id, true);
+  }
+  nk.sqlExec("UPDATE account_identity_deletions SET status='completed',updated_at=NOW() WHERE id=$1::UUID", [jobId]);
+  logger.info("C232 deletion job completed");
+  return JSON.stringify({ success: true, status: "completed" });
+}
+
 const LOGIN_REPLACED_MESSAGE = "T\xE0i kho\u1EA3n \u0111\xE3 \u0111\u01B0\u1EE3c \u0111\u0103ng nh\u1EADp \u1EDF thi\u1EBFt b\u1ECB kh\xE1c";
 function createSingleLoginTable(nk) {
   nk.sqlExec(`CREATE TABLE IF NOT EXISTS player_login_sessions (
@@ -3812,7 +3969,7 @@ function beforeSingleLogin(_ctx, _logger, nk, request) {
   return request;
 }
 function beforeSingleLoginEmail(ctx, logger, nk, request) {
-  return beforeSingleLogin(ctx, logger, nk, beforeEmailPasswordSetup(ctx, logger, nk, request));
+  return beforeSingleLogin(ctx, logger, nk, beforeEmailPasswordSetup(ctx, logger, nk, identityBeforeEmail(ctx, logger, nk, request)));
 }
 function afterSingleLogin(ctx, logger, nk, _session, request) {
   const generation = String((ctx.vars || {}).login_generation || ((request.account || {}).vars || {}).login_generation || "");
@@ -3984,7 +4141,10 @@ function createAccountLinkTables(nk) {
     END $$`, []);
 }
 function withActiveAccount(nk, userId, action) {
-  const lease = nk.sqlQuery(`INSERT INTO account_link_state(user_id,active_requests) VALUES($1::UUID,1)
+  if (userId === "00000000-0000-0000-0000-000000000000") throw new Error("Account archived or deleted; sign in again");
+  const lease = nk.sqlQuery(`INSERT INTO account_link_state(user_id,active_requests)
+        SELECT $1::UUID,1 WHERE EXISTS(SELECT 1 FROM users WHERE id=$1::UUID)
+          AND NOT EXISTS(SELECT 1 FROM account_identity_deletions WHERE user_id=$1::UUID)
         ON CONFLICT(user_id) DO UPDATE SET active_requests=account_link_state.active_requests+1
         WHERE account_link_state.status='active' RETURNING user_id`, [userId]);
   if (!lease.length) throw new Error("Account archived after linking; sign in again");
@@ -3999,6 +4159,8 @@ function accountGuardedRpc(id, handler) {
   return (ctx, logger, nk, payload) => {
     const rejected = requireCurrentLogin(ctx, nk);
     if (rejected) return rejected;
+    const identityRejected = id === "session_status" ? null : identityGameplayGate(ctx, nk);
+    if (identityRejected) return identityRejected;
     if (id === "confirm_google_link") return handler(ctx, logger, nk, payload);
     let owner = ctx.userId;
     if (!owner && (id === "admob_ssv_confirm" || id === "google_play_rtdn_confirm")) {
@@ -4093,6 +4255,23 @@ const setupAccountPassword = (ctx, _logger, nk, payload) => {
     return fail(403, "Kh\xF4ng th\u1EC3 x\xE1c th\u1EF1c Google. H\xE3y ch\u1ECDn l\u1EA1i t\xE0i kho\u1EA3n Google.");
   }
   if (google.userId !== ctx.userId) return fail(403, "H\xE3y ch\u1ECDn \u0111\xFAng Google \u0111\xE3 li\xEAn k\u1EBFt v\u1EDBi t\xE0i kho\u1EA3n hi\u1EC7n t\u1EA1i.");
+  if (identityEnabled(ctx)) {
+    try {
+      const proof = nk.httpRequest(
+        "http://account-identity:8080/account/internal/google-email-proof",
+        "POST",
+        { "Content-Type": "application/json", "Authorization": "Bearer " + ctx.env.ACCOUNT_IDENTITY_SECRET },
+        JSON.stringify({ id_token: token, user_id: ctx.userId }),
+        1e4
+      );
+      const verified = JSON.parse(proof.body);
+      if (proof.code !== 200 || !verified.success || verified.email !== row.email) return fail(403, "Email ch\u01B0a c\xF3 b\u1EB1ng ch\u1EE9ng x\xE1c minh ph\xF9 h\u1EE3p. Vui l\xF2ng li\xEAn h\u1EC7 admin@lkvustudio.com.");
+      nk.sqlExec(`INSERT INTO account_identity_verifications(user_id,email,source) VALUES($1::UUID,$2,'google_authoritative_email')
+              ON CONFLICT(user_id) DO UPDATE SET email=EXCLUDED.email,verified_at=NOW(),source=EXCLUDED.source`, [ctx.userId, row.email]);
+    } catch (_e) {
+      return fail(503, "Ch\u01B0a x\xE1c minh \u0111\u01B0\u1EE3c email Google. Vui l\xF2ng th\u1EED l\u1EA1i.");
+    }
+  }
   try {
     const hash = nk.bcryptHash(password);
     const updated = nk.sqlQuery(`UPDATE users SET password=convert_to($4,'UTF8'),update_time=NOW()
@@ -9504,7 +9683,7 @@ BEGIN
             SELECT s.*, ROW_NUMBER() OVER(PARTITION BY board_id ORDER BY score DESC,achieved_at,user_id) AS position
             FROM weekly_leaderboard_scores s JOIN users u ON u.id=s.user_id
             WHERE s.period_id=p.period_id AND COALESCE(u.disable_time,to_timestamp(0))<=to_timestamp(0)
-                AND NOT EXISTS(SELECT 1 FROM account_link_state a WHERE a.user_id=s.user_id AND a.status='archived')
+                AND NOT EXISTS(SELECT 1 FROM account_link_state a WHERE a.user_id=s.user_id AND a.status IN('archived','deleting'))
         ) ranked
         CROSS JOIN LATERAL jsonb_array_elements(p.config->'boards'->ranked.board_id->'tiers') tier
         WHERE ranked.position BETWEEN (tier->>'from')::INT AND (tier->>'to')::INT
@@ -9589,7 +9768,7 @@ const readWeeklyLeaderboardRewards = (ctx, _logger, nk, payload) => {
         SELECT s.user_id::TEXT,s.display_name,s.score,ROW_NUMBER() OVER(ORDER BY s.score DESC,s.achieved_at,s.user_id) AS rank
         FROM weekly_leaderboard_scores s JOIN users u ON u.id=s.user_id
         WHERE s.period_id=$1 AND s.board_id=$2 AND COALESCE(u.disable_time,to_timestamp(0))<=to_timestamp(0)
-            AND NOT EXISTS(SELECT 1 FROM account_link_state a WHERE a.user_id=s.user_id AND a.status='archived')
+            AND NOT EXISTS(SELECT 1 FROM account_link_state a WHERE a.user_id=s.user_id AND a.status IN('archived','deleting'))
         ) ranked WHERE rank<=50 OR user_id=$3 ORDER BY rank`, [period.period_id, board, ctx.userId]) : [];
   const awards = nk.sqlQuery(`SELECT period_id,board_id,rank,score,rewards,EXTRACT(EPOCH FROM expires_at)*1000 AS expires_at_ms,
         expires_at<=clock_timestamp() AS expired FROM weekly_leaderboard_awards WHERE user_id=$1::UUID AND board_id=$2 ORDER BY period_id DESC LIMIT 14`, [ctx.userId, board]);
@@ -10169,7 +10348,7 @@ const rpcSweepTick = (ctx, logger, nk, _payload) => {
       WHERE p.collection='player_profiles' AND p.value->'sweep'->>'status' IN ('running','cancelling')
         AND LEAST((p.value->'sweep'->>'next_due_at_ms')::BIGINT, (p.value->'sweep'->>'cancel_at_ms')::BIGINT) <= $1::BIGINT
         AND COALESCE(u.disable_time,to_timestamp(0))<=to_timestamp(0)
-        AND NOT EXISTS(SELECT 1 FROM account_link_state a WHERE a.user_id=p.user_id AND a.status='archived')
+        AND NOT EXISTS(SELECT 1 FROM account_link_state a WHERE a.user_id=p.user_id AND a.status IN('archived','deleting'))
         AND (c.user_id IS NULL OR (c.lease_until<=NOW() AND c.retry_at<=NOW()))
         AND (($2::BOOLEAN AND EXISTS(SELECT 1 FROM game_servers g JOIN player_characters pc
               ON pc.server_id=g.server_id AND pc.generation=g.generation AND pc.account_id=p.user_id AND pc.status='ready'
@@ -10195,8 +10374,8 @@ const rpcSweepTick = (ctx, logger, nk, _payload) => {
         if (!match) throw new Error("Invalid sweep character key");
         scope = { accountId: job.user_id, serverId: match[1], generation: Number(match[2]) };
         runtime = mailCombatRuntime(characterRuntime(nk, scope), job.user_id);
-        session = withServerRequest(nk, scope, () => sweepProcess(runtime, job.user_id, logger, Date.now(), 4));
-      } else session = sweepProcess(mailCombatRuntime(nk, job.user_id), job.user_id, logger, Date.now(), 4);
+        session = withActiveAccount(nk, job.user_id, () => withServerRequest(nk, scope, () => sweepProcess(runtime, job.user_id, logger, Date.now(), 4)));
+      } else session = withActiveAccount(nk, job.user_id, () => sweepProcess(mailCombatRuntime(nk, job.user_id), job.user_id, logger, Date.now(), 4));
       nk.sqlExec(`DELETE FROM sweep_worker_claims WHERE user_id=$1::UUID AND storage_key=$2 AND lease_id=$3`, [job.user_id, job.storage_key, lease]);
       processed++;
       if (session) {
@@ -10238,8 +10417,10 @@ const rpcSweepTick = (ctx, logger, nk, _payload) => {
           }]);
         };
         try {
-          if (scope) withServerRequest(nk, scope, block);
-          else block();
+          withActiveAccount(nk, job.user_id, () => {
+            if (scope) withServerRequest(nk, scope, block);
+            else block();
+          });
         } catch (blockError) {
           logger.warn("Sweep error state retry: %s", String(blockError));
         }
@@ -11073,13 +11254,13 @@ const rpcMailTick = (ctx, logger, nk, _payload) => {
   for (const campaign of campaigns) {
     if (Date.now() >= deadline) break;
     try {
-      const users = campaign.server_id ? nk.sqlQuery(`SELECT c.account_id::TEXT AS user_id FROM player_characters c JOIN users u ON u.id=c.account_id WHERE c.server_id=$1 AND c.generation=$2 AND c.status='ready' AND c.created_at<=$3 AND c.account_id::TEXT>$4 AND COALESCE(u.disable_time,to_timestamp(0))<=to_timestamp(0) AND NOT EXISTS(SELECT 1 FROM account_link_state a WHERE a.user_id=u.id AND a.status='archived') ORDER BY c.account_id::TEXT LIMIT 26`, [campaign.server_id, campaign.generation, campaign.cutoff, campaign.cursor]) : nk.sqlQuery(`SELECT u.id::TEXT AS user_id FROM users u WHERE u.create_time<=$1 AND u.id::TEXT>$2 AND u.id<>'00000000-0000-0000-0000-000000000000' AND COALESCE(u.disable_time,to_timestamp(0))<=to_timestamp(0) AND NOT EXISTS(SELECT 1 FROM account_link_state a WHERE a.user_id=u.id AND a.status='archived') ORDER BY u.id::TEXT LIMIT 26`, [campaign.cutoff, campaign.cursor]);
+      const users = campaign.server_id ? nk.sqlQuery(`SELECT c.account_id::TEXT AS user_id FROM player_characters c JOIN users u ON u.id=c.account_id WHERE c.server_id=$1 AND c.generation=$2 AND c.status='ready' AND c.created_at<=$3 AND c.account_id::TEXT>$4 AND COALESCE(u.disable_time,to_timestamp(0))<=to_timestamp(0) AND NOT EXISTS(SELECT 1 FROM account_link_state a WHERE a.user_id=u.id AND a.status IN('archived','deleting')) ORDER BY c.account_id::TEXT LIMIT 26`, [campaign.server_id, campaign.generation, campaign.cutoff, campaign.cursor]) : nk.sqlQuery(`SELECT u.id::TEXT AS user_id FROM users u WHERE u.create_time<=$1 AND u.id::TEXT>$2 AND u.id<>'00000000-0000-0000-0000-000000000000' AND COALESCE(u.disable_time,to_timestamp(0))<=to_timestamp(0) AND NOT EXISTS(SELECT 1 FROM account_link_state a WHERE a.user_id=u.id AND a.status IN('archived','deleting')) ORDER BY u.id::TEXT LIMIT 26`, [campaign.cutoff, campaign.cursor]);
       const more = users.length > 25;
       if (more) users.pop();
       let last = campaign.cursor, processed = 0;
       for (const user of users) {
         if (Date.now() >= deadline) break;
-        deliverMail(mailAdminRuntime(nk, user.user_id, campaign), user.user_id, parseJsonObject(campaign.definition));
+        withActiveAccount(nk, user.user_id, () => deliverMail(mailAdminRuntime(nk, user.user_id, campaign), user.user_id, parseJsonObject(campaign.definition)));
         delivered++;
         processed++;
         last = user.user_id;
@@ -11092,14 +11273,14 @@ const rpcMailTick = (ctx, logger, nk, _payload) => {
   const multi = ctx.env && ctx.env.MULTI_SERVER_ENABLED === "true", table = multi ? "server_weekly_awards" : "weekly_leaderboard_awards";
   const targets = nk.sqlQuery(`SELECT DISTINCT a.user_id::TEXT AS user_id ${multi ? ",a.server_id,a.generation" : ""} FROM ${table} a
         WHERE expires_at>clock_timestamp() AND EXISTS(SELECT 1 FROM users u WHERE u.id=a.user_id AND COALESCE(u.disable_time,to_timestamp(0))<=to_timestamp(0))
-        AND NOT EXISTS(SELECT 1 FROM account_link_state l WHERE l.user_id=a.user_id AND l.status='archived')
+        AND NOT EXISTS(SELECT 1 FROM account_link_state l WHERE l.user_id=a.user_id AND l.status IN('archived','deleting'))
         ${multi ? "AND EXISTS(SELECT 1 FROM game_servers g JOIN player_characters p ON p.server_id=g.server_id AND p.generation=g.generation WHERE g.server_id=a.server_id AND g.generation=a.generation AND g.status='open' AND p.account_id=a.user_id AND p.status='ready')" : ""}
         AND NOT EXISTS(SELECT 1 FROM storage s WHERE s.collection='player_mail_deliveries' AND s.user_id=a.user_id
         AND s.key=${multi ? "a.server_id||':g'||a.generation||':'||" : ""}'m_'||substring(encode(sha256(convert_to('weekly:'||a.period_id||':'||a.board_id,'UTF8')),'hex'),1,48)) LIMIT 25`, []);
   for (const target of targets) {
     if (Date.now() >= deadline) break;
     try {
-      mailRecoverWeekly(mailAdminRuntime(nk, target.user_id, target), target.user_id);
+      withActiveAccount(nk, target.user_id, () => mailRecoverWeekly(mailAdminRuntime(nk, target.user_id, target), target.user_id));
     } catch (error) {
       logger.error("Mail weekly recovery: " + String(error));
       failures.push({ user: target.user_id });
@@ -11424,13 +11605,22 @@ function InitModule(ctx, logger, nk, initializer) {
   initializer.registerRpc("resolve_purchase_order", linkedRpc_resolve_purchase_order);
   createAccountLinkTables(nk);
   createSingleLoginTable(nk);
+  createAccountIdentityTables(nk);
+  initializer.registerRpc("account_identity_status", accountIdentityStatus);
+  initializer.registerRpc("account_identity_bridge", accountIdentityBridge);
+  initializer.registerBeforeLinkEmail(identityBlockMutation);
+  initializer.registerBeforeUnlinkEmail(identityBlockMutation);
+  initializer.registerBeforeLinkGoogle(identityBlockMutation);
+  initializer.registerBeforeUnlinkGoogle(identityBlockMutation);
+  initializer.registerBeforeDeleteAccount(identityBlockMutation);
+  initializer.registerBeforeUpdateAccount(identityBeforeUpdate);
   initializer.registerBeforeAuthenticateEmail(beforeSingleLoginEmail);
   initializer.registerAfterAuthenticateEmail(afterSingleLogin);
-  initializer.registerBeforeAuthenticateGoogle(beforeSingleLogin);
-  initializer.registerAfterAuthenticateGoogle(afterSingleLogin);
+  initializer.registerBeforeAuthenticateGoogle(identityBeforeGoogle);
+  initializer.registerAfterAuthenticateGoogle(identityAfterGoogle);
   initializer.registerBeforeAuthenticateDevice(beforeSingleLogin);
   initializer.registerAfterAuthenticateDevice(afterSingleLogin);
-  initializer.registerBeforeAuthenticateCustom(beforeSingleLogin);
+  initializer.registerBeforeAuthenticateCustom(identityBeforeCustom);
   initializer.registerAfterAuthenticateCustom(afterSingleLogin);
   initializer.registerRpc("session_status", linkedRpc_session_status);
   initializer.registerRpc("admin_test_access", linkedRpc_admin_test_access);

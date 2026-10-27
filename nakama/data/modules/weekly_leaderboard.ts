@@ -81,7 +81,7 @@ BEGIN
             SELECT s.*, ROW_NUMBER() OVER(PARTITION BY board_id ORDER BY score DESC,achieved_at,user_id) AS position
             FROM weekly_leaderboard_scores s JOIN users u ON u.id=s.user_id
             WHERE s.period_id=p.period_id AND COALESCE(u.disable_time,to_timestamp(0))<=to_timestamp(0)
-                AND NOT EXISTS(SELECT 1 FROM account_link_state a WHERE a.user_id=s.user_id AND a.status='archived')
+                AND NOT EXISTS(SELECT 1 FROM account_link_state a WHERE a.user_id=s.user_id AND a.status IN('archived','deleting'))
         ) ranked
         CROSS JOIN LATERAL jsonb_array_elements(p.config->'boards'->ranked.board_id->'tiers') tier
         WHERE ranked.position BETWEEN (tier->>'from')::INT AND (tier->>'to')::INT
@@ -158,7 +158,7 @@ const readWeeklyLeaderboardRewards: nkruntime.RpcFunction = (ctx, _logger, nk, p
         SELECT s.user_id::TEXT,s.display_name,s.score,ROW_NUMBER() OVER(ORDER BY s.score DESC,s.achieved_at,s.user_id) AS rank
         FROM weekly_leaderboard_scores s JOIN users u ON u.id=s.user_id
         WHERE s.period_id=$1 AND s.board_id=$2 AND COALESCE(u.disable_time,to_timestamp(0))<=to_timestamp(0)
-            AND NOT EXISTS(SELECT 1 FROM account_link_state a WHERE a.user_id=s.user_id AND a.status='archived')
+            AND NOT EXISTS(SELECT 1 FROM account_link_state a WHERE a.user_id=s.user_id AND a.status IN('archived','deleting'))
         ) ranked WHERE rank<=50 OR user_id=$3 ORDER BY rank`, [period.period_id,board,ctx.userId]) : [];
     const awards = nk.sqlQuery(`SELECT period_id,board_id,rank,score,rewards,EXTRACT(EPOCH FROM expires_at)*1000 AS expires_at_ms,
         expires_at<=clock_timestamp() AS expired FROM weekly_leaderboard_awards WHERE user_id=$1::UUID AND board_id=$2 ORDER BY period_id DESC LIMIT 14`, [ctx.userId,board]);

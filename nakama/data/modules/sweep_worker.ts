@@ -22,7 +22,7 @@ const rpcSweepTick: nkruntime.RpcFunction = (ctx, logger, nk, _payload) => {
       WHERE p.collection='player_profiles' AND p.value->'sweep'->>'status' IN ('running','cancelling')
         AND LEAST((p.value->'sweep'->>'next_due_at_ms')::BIGINT, (p.value->'sweep'->>'cancel_at_ms')::BIGINT) <= $1::BIGINT
         AND COALESCE(u.disable_time,to_timestamp(0))<=to_timestamp(0)
-        AND NOT EXISTS(SELECT 1 FROM account_link_state a WHERE a.user_id=p.user_id AND a.status='archived')
+        AND NOT EXISTS(SELECT 1 FROM account_link_state a WHERE a.user_id=p.user_id AND a.status IN('archived','deleting'))
         AND (c.user_id IS NULL OR (c.lease_until<=NOW() AND c.retry_at<=NOW()))
         AND (($2::BOOLEAN AND EXISTS(SELECT 1 FROM game_servers g JOIN player_characters pc
               ON pc.server_id=g.server_id AND pc.generation=g.generation AND pc.account_id=p.user_id AND pc.status='ready'
@@ -48,8 +48,8 @@ const rpcSweepTick: nkruntime.RpcFunction = (ctx, logger, nk, _payload) => {
                 if (!match) throw new Error('Invalid sweep character key');
                 scope={accountId:job.user_id,serverId:match[1],generation:Number(match[2])};
                 runtime=mailCombatRuntime(characterRuntime(nk,scope),job.user_id);
-                session=withServerRequest(nk,scope,()=>sweepProcess(runtime,job.user_id,logger,Date.now(),4));
-            } else session=sweepProcess(mailCombatRuntime(nk,job.user_id),job.user_id,logger,Date.now(),4);
+                session=withActiveAccount(nk,job.user_id,()=>withServerRequest(nk,scope!,()=>sweepProcess(runtime,job.user_id,logger,Date.now(),4)));
+            } else session=withActiveAccount(nk,job.user_id,()=>sweepProcess(mailCombatRuntime(nk,job.user_id),job.user_id,logger,Date.now(),4));
             nk.sqlExec(`DELETE FROM sweep_worker_claims WHERE user_id=$1::UUID AND storage_key=$2 AND lease_id=$3`,[job.user_id,job.storage_key,lease]);
             processed++;
             // Notification is a hint; failure never rolls back a committed receipt.
@@ -74,7 +74,7 @@ const rpcSweepTick: nkruntime.RpcFunction = (ctx, logger, nk, _payload) => {
                     runtime.storageWrite([{collection:'player_profiles',key:'main',userId:job.user_id,
                         value:profile,version:rows[0].version,permissionRead:1,permissionWrite:0}]);
                 };
-                try {if(scope)withServerRequest(nk,scope,block);else block();}
+                try {withActiveAccount(nk,job.user_id,()=>{if(scope)withServerRequest(nk,scope,block);else block();});}
                 catch(blockError) {logger.warn('Sweep error state retry: %s',String(blockError));}
             }
             nk.sqlExec(`UPDATE sweep_worker_claims SET lease_until=NOW(),

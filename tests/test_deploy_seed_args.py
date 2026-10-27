@@ -14,7 +14,7 @@ BASH = str(GIT_BASH) if GIT_BASH.exists() else shutil.which("bash")
 
 @unittest.skipUnless(BASH, "Bash is required for shell integration")
 class DeploySeedArgsTests(unittest.TestCase):
-    def execute(self, args, failure=0):
+    def execute(self, args, failure=0, identity=False, smtp_failure=0, profile_failure=0):
         with tempfile.TemporaryDirectory(prefix="deploy test ") as temporary:
             root = Path(temporary)
             (root / "nakama").mkdir()
@@ -27,8 +27,17 @@ printf 'CALL:%s\\n' "${0##*/}" >> "$TEST_ARG_LOG"
 printf 'ARG:%s\\n' "$@" >> "$TEST_ARG_LOG"
 printf 'END\\n' >> "$TEST_ARG_LOG"
 if [ "${0##*/}" = python3 ]; then
+  if [ "${1:-}" = identity_config.py ]; then
+    printf '%s\\n' "${TEST_IDENTITY_PROFILE:-none}"
+    exit "${TEST_PROFILE_EXIT:-0}"
+  fi
   for arg in "$@"; do
     if [ "$arg" = --seed ]; then exit "${TEST_SEED_EXIT:-0}"; fi
+  done
+fi
+if [ "${0##*/}" = docker ]; then
+  for arg in "$@"; do
+    if [ "$arg" = src/verify-smtp.js ]; then exit "${TEST_SMTP_EXIT:-0}"; fi
   done
 fi
 exit 0
@@ -41,6 +50,7 @@ exit 0
             env = os.environ.copy()
             env.update(PATH=str(root / "commands") + os.pathsep + env.get("PATH", ""),
                        TEST_ARG_LOG=log.as_posix(), TEST_SEED_EXIT=str(failure),
+                       TEST_IDENTITY_PROFILE="identity" if identity else "none", TEST_SMTP_EXIT=str(smtp_failure), TEST_PROFILE_EXIT=str(profile_failure),
                        TEST_STUB_DIR=("/" + str(root.drive)[0].lower() + (root / "commands").as_posix()[2:]) if os.name == "nt" else str(root / "commands"),
                        NAKAMA_CONFIG_ADMIN_TOKEN="synthetic-admin-env-only")
             result = subprocess.run([BASH, "-c", 'export PATH="$TEST_STUB_DIR:$PATH"; exec bash "$@"', "deploy-test", str(root / "deploy.sh"), *args], env=env,
@@ -75,7 +85,7 @@ exit 0
         result, calls = self.execute(["deploy", "--publish"])
         self.assertEqual(result.returncode, 0, result.stderr)
         python_calls = [call for call in calls if call[0] == "python3"]
-        self.assertEqual(python_calls, [["python3", "configure_runtime.py"],
+        self.assertEqual(python_calls, [["python3", "identity_config.py"], ["python3", "configure_runtime.py"],
                                        ["python3", "configure_runtime.py", "--seed", "--", "--publish"],
                                        ["python3", "configure_runtime.py", "--seed", "--", "--check-active"]])
         self.assertTrue(any(call[:4] == ["docker", "compose", "up", "-d"] for call in calls))
@@ -91,7 +101,7 @@ exit 0
                 result, calls = self.execute([action])
                 self.assertEqual(result.returncode, 0, result.stderr)
                 python_calls = [call for call in calls if call[0] == "python3"]
-                self.assertEqual(python_calls[1:], [
+                self.assertEqual(python_calls[2:], [
                     ["python3", "configure_runtime.py", "--seed", "--", "--publish"],
                     ["python3", "configure_runtime.py", "--seed", "--", "--check-active"]])
 
@@ -110,7 +120,30 @@ exit 0
     def test_logs_retains_service_argument(self):
         result, calls = self.execute(["logs", "nakama"])
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(calls, [["docker", "compose", "logs", "-f", "nakama"]])
+        self.assertEqual(calls, [["docker", "compose", "--profile", "identity", "logs", "-f", "nakama"]])
+
+    def test_enabled_identity_is_built_checked_and_smtp_verified(self):
+        result, calls = self.execute(["deploy"], identity=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn(["docker", "compose", "--profile", "identity", "up", "-d", "--build"], calls)
+        self.assertIn(["docker", "compose", "--profile", "identity", "up", "-d", "--no-deps", "--force-recreate", "nakama"], calls)
+        self.assertTrue(any(call[-3:] == ["account-identity", "node", "src/verify-smtp.js"] for call in calls))
+
+    def test_disabled_identity_does_not_probe_smtp(self):
+        result, calls = self.execute(["deploy"])
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertFalse(any("src/verify-smtp.js" in call for call in calls))
+
+    def test_smtp_failure_prevents_publication_and_success(self):
+        result, calls = self.execute(["deploy"], identity=True, smtp_failure=23)
+        self.assertEqual(result.returncode, 23)
+        self.assertNotIn("[SUCCESS]", result.stdout)
+        self.assertFalse(any("--seed" in call for call in calls))
+
+    def test_invalid_identity_configuration_stops_before_container_start(self):
+        result, calls = self.execute(["deploy"], profile_failure=21)
+        self.assertEqual(result.returncode, 21)
+        self.assertFalse(any(call[:2] == ["docker", "compose"] and "up" in call for call in calls))
 
 
 if __name__ == "__main__":

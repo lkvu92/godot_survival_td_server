@@ -21,6 +21,8 @@ Phiên bản Android được kiểm tra cho chính sách này không yêu cầu
 
 ## 2. Mục đích sử dụng
 
+Trong luồng xác nhận email, chúng tôi xử lý địa chỉ nhận, loại yêu cầu, thời điểm, trạng thái gửi và mã xác nhận dạng hash; thư được gửi qua Gmail/Google Workspace SMTP. Link hết hạn sau 15 phút và chỉ dùng cho đúng mục đích. Nội dung chờ gửi có chứa link được mã hóa và xóa khỏi hàng đợi sau khi gửi hoặc hết hạn; bản ghi link hết hạn được dọn sau một ngày. Mật khẩu không được lưu trong yêu cầu chờ gửi email. Yêu cầu gửi thư chưa đồng nghĩa thư đã vào hộp thư đến.
+
 Chúng tôi sử dụng dữ liệu để tạo và xác thực tài khoản; lưu, khôi phục và đồng bộ tiến trình; cung cấp tính năng game và bảng xếp hạng; xác minh mua hàng, hoàn tiền và quyền lợi; phân phát quảng cáo và xác minh phần thưởng quảng cáo; hỗ trợ người chơi; duy trì độ ổn định, bảo mật và công bằng; xử lý tranh chấp và thực hiện nghĩa vụ pháp lý áp dụng.
 
 Không phải mọi dữ liệu đều cần thiết cho mọi tính năng. Bạn có thể chọn không sử dụng đăng nhập Google, mua hàng hoặc quảng cáo nhận thưởng. Tuy nhiên, dữ liệu tài khoản, kết nối và tiến trình cần cho các tính năng trực tuyến có thể vẫn được xử lý; nếu không cung cấp hoặc yêu cầu xóa, một số chức năng có thể không hoạt động.

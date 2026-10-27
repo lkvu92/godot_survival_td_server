@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="referrer" content="no-referrer"><title>Xác nhận tài khoản — Thông Thiên Lộ</title><link rel="stylesheet" href="./style.css"></head>
+<body><main>
+<header class="brand"><span class="seal" aria-hidden="true">◈</span><p class="brand-name">THÔNG THIÊN LỘ</p><p class="brand-caption" id="category">BẢO VỆ TÀI KHOẢN</p></header>
+<section class="content" aria-labelledby="page-title"><h1 id="page-title">Xác nhận tài khoản</h1><p id="intro">Mở liên kết trong email để tiếp tục xác nhận tài khoản của bạn.</p>
+<form id="form" hidden><label hidden>Thao tác<select id="purpose"><option value="register_email">Hoàn tất đăng ký mới</option><option value="verify_legacy_email">Xác nhận email tài khoản hiện tại</option><option value="delete_account">Xóa tài khoản trên tất cả server</option></select></label>
+<label id="username-row">Tên đăng nhập<input id="username" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="64" placeholder="Từ 3–64 ký tự chữ, số, _ hoặc -"><span class="field-hint">Bạn sẽ dùng tên này hoặc email để đăng nhập trò chơi.</span></label>
+<label><span id="password-label">Mật khẩu</span><input id="password" type="password" minlength="8" autocomplete="new-password" required><span class="field-hint" id="password-hint">Ít nhất 8 ký tự, tối đa 72 byte.</span></label>
+<label id="confirm-password-row">Nhập lại mật khẩu<input id="password-again" type="password" autocomplete="new-password"></label>
+<div id="delete-warning" class="warning" hidden><p><strong>Xóa vĩnh viễn trên TẤT CẢ máy chủ</strong></p><p>Nhân vật, vật phẩm và tiến trình sẽ bị xóa, không thể hoàn tác. Việc xóa không tự động hoàn tiền hoặc hủy gói đăng ký trên Google Play.</p><label>Nhập XOA để xác nhận<input id="confirmation" autocomplete="off" spellcheck="false" placeholder="XOA"></label></div>
+<button id="submit" type="submit">Xác nhận</button><p class="secure-note" id="secure-note">Chỉ hoàn tất khi bạn chủ động xác nhận trên trang này.</p></form>
+<p id="status" class="status" role="status" aria-live="polite"></p></section>
+<footer><p>Cần hỗ trợ? <a href="mailto:admin@lkvustudio.com">admin@lkvustudio.com</a></p><a href="/account/privacy-policy/">Chính sách quyền riêng tư</a></footer>
+</main><script src="./confirm.js" defer></script></body></html>

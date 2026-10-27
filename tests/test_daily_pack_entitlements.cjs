@@ -1,5 +1,5 @@
 const fs = require('fs'), path = require('path'), vm = require('vm'), assert = require('assert');
-const root = path.join(__dirname, '..'), DAY = 86400000;
+const root = path.join(__dirname, '..'), DAY = 86400000, STAMINA_STORAGE_MAX = 200;
 const packs = JSON.parse(fs.readFileSync(path.join(root, 'data/packs.json'), 'utf8')).packs_by_tab.daily;
 const items = JSON.parse(fs.readFileSync(path.join(root, 'data/items.json'), 'utf8'));
 let now = 1800000123456, conflict = false;
@@ -7,6 +7,7 @@ class ServerDate extends Date { static now() { return now; } }
 const ctx = vm.createContext({Date: ServerDate});
 vm.runInContext(fs.readFileSync(path.join(root, 'nakama/data/modules/build/resource_rpc.js'), 'utf8'), ctx);
 ctx.getRemoteConfigValue = (_nk, _section, _key, fallback) => fallback;
+assert.equal(vm.runInContext('staminaStorageMax',ctx)({}),STAMINA_STORAGE_MAX,'Canonical storage default is 200; natural regeneration is separate');
 vm.runInContext(fs.readFileSync(path.join(root, 'nakama/data/modules/build/monetization_rpc.js'), 'utf8'), ctx);
 const grant = vm.runInContext('applyPurchaseStorageRewards', ctx);
 const claim = vm.runInContext('claimDailyPack', ctx);
@@ -57,6 +58,7 @@ for (const pack of packs) {
   for (let day=0;day<30;day++) {
     now=start+day*DAY;
     const result=invoke(claim,{product_id:pack.id}); assert.equal(result.status,'success'); assert(!result.idempotent);
+    assert.equal(db.player_profiles.value.stamina,Math.min(STAMINA_STORAGE_MAX,30+(day+1)*(pack.id==='daily_deal'?5:10)),'Every daily grant respects available storage');
     assert(!readStatus(pack.id).claimable);
     const after=clone(db);
     assert(invoke(claim,{product_id:pack.id}).idempotent);
@@ -66,7 +68,7 @@ for (const pack of packs) {
   }
   assert.equal(db.player_profiles.value.resources.gems, pack.id==='daily_deal'?300:900);
   assert.equal(db.player_inventory.value.items.find(i=>i.item_id==='campaign_sweep_ticket').quantity,pack.id==='daily_deal'?5:30,'One-time tickets and daily tickets remain separate');
-  assert.equal(db.player_profiles.value.stamina,30+(pack.id==='daily_deal'?150:300),'Full stamina reward, no cap loss');
+  assert.equal(db.player_profiles.value.stamina,Math.min(STAMINA_STORAGE_MAX,30+(pack.id==='daily_deal'?150:300)),'Unspent stamina accumulates only up to configured storage capacity');
   if (pack.id==='daily_deal') assert.equal(db.player_profiles.value.resources.gold,75000);
   else {
     assert.equal(db.player_profiles.value.resources.gold,150000);
@@ -128,9 +130,9 @@ for(let day=0;day<30;day++){now=oldStart+day*DAY;assert.equal(invoke(claim,{prod
 assert.equal(db.player_profiles.value.resources.gems,3000);
 assert.equal(db.player_profiles.value.resources.gold,300000);
 assert.equal(readStatus('daily_deal').rewards.find(r=>r.reward_id==='gems').quantity,100,'Status exposes old purchased rewards for UI');
-assert.equal(db.player_profiles.value.stamina,630);
+assert.equal(db.player_profiles.value.stamina,STAMINA_STORAGE_MAX,'Legacy reward snapshots also obey the current storage cap');
 assert.equal(db.player_inventory.value.items.find(i=>i.item_id==='campaign_sweep_ticket').quantity,150);
 const patch = require('../nakama/build_daily_pack_patch.cjs').sql;
 assert(patch.includes('BEGIN;') && patch.includes('COMMIT;'));
 assert(!/UPDATE (player_|monetization_purchase_orders)/.test(patch),'Patch must not rewrite players or old orders');
-console.log('PASS 30-day packs: activation/receipt replay, 30 claims, exact boundaries, expiry/renewal, no catch-up, coexistence, active-purchase guard, CAS, full stamina, new/legacy order snapshots and catalog patch');
+console.log('PASS 30-day packs: activation/replay, 30 claims, boundaries, expiry, no catch-up, coexistence, CAS, stamina storage cap 200, current/legacy order snapshots and catalog patch');

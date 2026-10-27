@@ -1,0 +1,17 @@
+# Isolated local test credentials only. Never use on public interfaces.
+database:
+  address: ["postgres:c232-isolated-test-only@postgres:5432/nakama"]
+socket:
+  server_key: c232-test-key
+runtime:
+  http_key: c232-test-http
+  env:
+    - ACCOUNT_IDENTITY_ENABLED=true
+    - ACCOUNT_IDENTITY_SECRET=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    - APP_ENVIRONMENT=develop
+    - MULTI_SERVER_ENABLED=true
+    - CONFIG_ADMIN_USER_ID=00000000-0000-0000-0000-000000000001
+    - MONETIZATION_VERIFIER_SECRET=c232-test-verifier
+    - ANDROID_PACKAGE_NAME=vn.lkvu92.survivaltd
+    - ADMOB_REWARDED_UNIT_ID_DEVELOP=ca-app-pub-3940256099942544/5224354917
+    - ADMOB_REWARDED_UNIT_ID_PRODUCTION=ca-app-pub-2623237649967496/5496497462

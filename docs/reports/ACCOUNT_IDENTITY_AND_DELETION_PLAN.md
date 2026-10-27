@@ -1,6 +1,6 @@
 # Kế hoạch tổng thể: xác minh email, đăng nhập Google và xóa tài khoản
 
-Ngày: 27/10/2026 · Trạng thái: PLAN, chưa triển khai runtime hoặc production.
+Ngày: 27/10/2026 · Cập nhật 28/10/2026: đã triển khai mã nguồn theo C232; xem [kết quả kiểm tra và cấu hình còn thiếu](C232_ACCOUNT_IDENTITY_VALIDATION.md). Chưa bật production; Gmail SMTP local đang trả EAUTH 535.
 
 Tài liệu này là kế hoạch điều phối hiện hành. `ACCOUNT_DELETION_PLAN.md` tiếp tục mô tả cleanup/job; phần xác minh email khi xóa được thay bằng link theo quyết định dưới đây. Không dùng OTP.
 

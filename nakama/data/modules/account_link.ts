@@ -16,7 +16,7 @@ function beforeSingleLogin(_ctx: nkruntime.Context, _logger: nkruntime.Logger, n
 }
 
 function beforeSingleLoginEmail(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, request: any): any {
-    return beforeSingleLogin(ctx, logger, nk, beforeEmailPasswordSetup(ctx, logger, nk, request));
+    return beforeSingleLogin(ctx, logger, nk, beforeEmailPasswordSetup(ctx, logger, nk, identityBeforeEmail(ctx,logger,nk,request)));
 }
 
 function afterSingleLogin(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, _session: any, request: any): void {
@@ -196,7 +196,10 @@ function createAccountLinkTables(nk: nkruntime.Nakama): void {
 }
 
 function withActiveAccount<T>(nk: nkruntime.Nakama, userId: string, action: () => T): T {
-    const lease = nk.sqlQuery(`INSERT INTO account_link_state(user_id,active_requests) VALUES($1::UUID,1)
+    if(userId==='00000000-0000-0000-0000-000000000000')throw new Error('Account archived or deleted; sign in again');
+    const lease = nk.sqlQuery(`INSERT INTO account_link_state(user_id,active_requests)
+        SELECT $1::UUID,1 WHERE EXISTS(SELECT 1 FROM users WHERE id=$1::UUID)
+          AND NOT EXISTS(SELECT 1 FROM account_identity_deletions WHERE user_id=$1::UUID)
         ON CONFLICT(user_id) DO UPDATE SET active_requests=account_link_state.active_requests+1
         WHERE account_link_state.status='active' RETURNING user_id`, [userId]);
     if (!lease.length) throw new Error("Account archived after linking; sign in again");
@@ -209,6 +212,8 @@ function accountGuardedRpc(id: string, handler: nkruntime.RpcFunction): nkruntim
     return (ctx, logger, nk, payload) => {
         const rejected = requireCurrentLogin(ctx, nk);
         if (rejected) return rejected;
+        const identityRejected=id==='session_status'?null:identityGameplayGate(ctx,nk);
+        if(identityRejected)return identityRejected;
         if (id === "confirm_google_link") return handler(ctx, logger, nk, payload);
         let owner = ctx.userId;
         if (!owner && (id === "admob_ssv_confirm" || id === "google_play_rtdn_confirm")) {
@@ -290,6 +295,17 @@ const setupAccountPassword: nkruntime.RpcFunction = (ctx, _logger, nk, payload) 
     try { google=nk.authenticateGoogle(token,"",false); }
     catch (_e) { return fail(403,"Không thể xác thực Google. Hãy chọn lại tài khoản Google."); }
     if (google.userId!==ctx.userId) return fail(403,"Hãy chọn đúng Google đã liên kết với tài khoản hiện tại.");
+    if(identityEnabled(ctx)) {
+        try {
+            const proof=nk.httpRequest('http://account-identity:8080/account/internal/google-email-proof','POST',
+              {'Content-Type':'application/json','Authorization':'Bearer '+ctx.env.ACCOUNT_IDENTITY_SECRET},
+              JSON.stringify({id_token:token,user_id:ctx.userId}),10000);
+            const verified=JSON.parse(proof.body);
+            if(proof.code!==200||!verified.success||verified.email!==row.email)return fail(403,'Email chưa có bằng chứng xác minh phù hợp. Vui lòng liên hệ admin@lkvustudio.com.');
+            nk.sqlExec(`INSERT INTO account_identity_verifications(user_id,email,source) VALUES($1::UUID,$2,'google_authoritative_email')
+              ON CONFLICT(user_id) DO UPDATE SET email=EXCLUDED.email,verified_at=NOW(),source=EXCLUDED.source`,[ctx.userId,row.email]);
+        } catch(_e) {return fail(503,'Chưa xác minh được email Google. Vui lòng thử lại.');}
+    }
     try {
         const hash=nk.bcryptHash(password);
         const updated=nk.sqlQuery(`UPDATE users SET password=convert_to($4,'UTF8'),update_time=NOW()

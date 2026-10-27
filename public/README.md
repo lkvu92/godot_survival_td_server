@@ -18,7 +18,7 @@ Run `python server/public/build_privacy_pages.py` from the workspace root after 
 - Public privacy/deletion contact confirmed by the project owner: `admin@lkvustudio.com`. Ensure this mailbox is monitored for requests.
 - Confirm Google Play target audience, actual availability to children and any required child-directed configuration. This draft does not invent an age gate or a minimum age.
 - Assign an operator for manual deletion and verify that deletion reaches Nakama authentication, account storage, per-server progress, inventory, rankings and related identifiers. Define actual retention/backup schedules and lawful exceptions before making more specific timing promises.
-- An in-app account-deletion request route was not found during this review. Google Play requires both an in-app request route and an external web resource when users can create accounts. These documents alone do not implement that feature.
+- C232 implements the in-app request route and account-identity service in source. Publish/release and verify the running feature before claiming it is available to players. Google Play requires both an in-app request route and an external web resource when users can create accounts.
 - Confirm Google SDK versions/mediation partners and actual consent-message configuration. Update disclosures if SDKs, partners, permissions, purposes or hosting change.
 - Complete Google Play Data Safety based on real collection/sharing, including Google SDK processing. The policy is not a substitute for that declaration.
 

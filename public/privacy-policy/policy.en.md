@@ -21,6 +21,8 @@ The Android build reviewed for this policy does not request access to contacts, 
 
 ## 2. Purposes
 
+For email confirmation, we process the recipient address, request purpose, timestamps, delivery status and a hash of the confirmation token. Messages are sent through Gmail/Google Workspace SMTP. Links expire after 15 minutes and are purpose-specific. Pending message content containing the link is encrypted and redacted after sending or expiry; expired link records are purged after one day. Passwords are not stored in pending email requests. Accepting a mail request does not guarantee inbox delivery.
+
 We process data to create and authenticate accounts; save, restore and synchronize progress; provide game features and leaderboards; verify purchases, refunds and entitlements; deliver advertising and verify ad rewards; provide support; maintain stability, security and fair play; resolve disputes; and meet applicable legal obligations.
 
 Not every category is necessary for every feature. You can choose not to use Google sign-in, purchases or rewarded ads. Account, connection and progress data needed for online features may still be processed. Refusing necessary information or requesting its deletion can prevent those features from working.

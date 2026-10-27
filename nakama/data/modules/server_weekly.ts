@@ -33,7 +33,7 @@ function createServerWeeklyTables(nk:nkruntime.Nakama):void {
           FROM server_weekly_scores s JOIN users u ON u.id=s.user_id
           WHERE s.server_id=sid AND s.generation=gen AND s.period_id=p.period_id
             AND COALESCE(u.disable_time,to_timestamp(0))<=to_timestamp(0)
-            AND NOT EXISTS(SELECT 1 FROM account_link_state a WHERE a.user_id=s.user_id AND a.status='archived')) ranked
+            AND NOT EXISTS(SELECT 1 FROM account_link_state a WHERE a.user_id=s.user_id AND a.status IN('archived','deleting'))) ranked
         CROSS JOIN LATERAL jsonb_array_elements(p.config->'boards'->ranked.board_id->'tiers') tier
         WHERE ranked.position BETWEEN (tier->>'from')::INT AND (tier->>'to')::INT AND (p.config->'boards'->ranked.board_id->>'enabled')::BOOL
         ON CONFLICT DO NOTHING;
@@ -88,7 +88,7 @@ const readServerWeekly:nkruntime.RpcFunction=(ctx,_logger,nk,payload)=>{
     const ranks=period?nk.sqlQuery(`SELECT * FROM (SELECT s.user_id::TEXT,s.display_name,s.score,
       ROW_NUMBER() OVER(ORDER BY s.score DESC,s.achieved_at,s.user_id) AS rank FROM server_weekly_scores s JOIN users u ON u.id=s.user_id
       WHERE s.server_id=$1 AND s.generation=$2 AND s.period_id=$3 AND s.board_id=$4 AND COALESCE(u.disable_time,to_timestamp(0))<=to_timestamp(0)
-      AND NOT EXISTS(SELECT 1 FROM account_link_state a WHERE a.user_id=s.user_id AND a.status='archived')) ranked
+      AND NOT EXISTS(SELECT 1 FROM account_link_state a WHERE a.user_id=s.user_id AND a.status IN('archived','deleting'))) ranked
       WHERE rank<=50 OR user_id=$5 ORDER BY rank`,[scope.serverId,scope.generation,period.period_id,board,ctx.userId]):[];
     const awards=nk.sqlQuery(`SELECT period_id,board_id,rank,score,rewards,EXTRACT(EPOCH FROM expires_at)*1000 AS expires_at_ms,
       expires_at<=clock_timestamp() AS expired FROM server_weekly_awards WHERE server_id=$1 AND generation=$2 AND user_id=$3::UUID AND board_id=$4 ORDER BY period_id DESC LIMIT 14`,[scope.serverId,scope.generation,ctx.userId,board]);

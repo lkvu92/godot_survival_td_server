@@ -1,0 +1,19 @@
+THÔNG THIÊN LỘ
+Kiểm tra yêu cầu xóa
+
+Tài khoản Thông Thiên Lộ của bạn vừa có yêu cầu xóa tài khoản.
+Nếu đây là yêu cầu của bạn, mở trang bên dưới, nhập mật khẩu hiện tại và chủ động xác nhận “Xóa vĩnh viễn”.
+
+XEM YÊU CẦU XÓA:
+https://api.lkvustudio.com/account/confirm#token=preview-only-not-valid&purpose=delete_account
+
+Hiệu lực đến: 12:15 01/01/2030 (GMT+7). Liên kết dùng một lần, tối đa 15 phút kể từ lúc yêu cầu.
+
+Xóa tài khoản áp dụng cho nhân vật, vật phẩm và tiến trình trên TẤT CẢ máy chủ, không thể hoàn tác. Việc xóa không tự động hoàn tiền hoặc hủy gói đăng ký trên Google Play.
+Mở liên kết trong email chưa tự động xóa tài khoản.
+
+Nếu bạn không yêu cầu, hãy bỏ qua thư này. Không chia sẻ liên kết xác nhận.
+Chúng tôi không yêu cầu bạn gửi mật khẩu qua email.
+
+Hỗ trợ: admin@lkvustudio.com
+Chính sách quyền riêng tư: https://api.lkvustudio.com/account/privacy-policy/

@@ -7,12 +7,44 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
+import re
+from urllib.parse import urlsplit
 
 ROOT = Path(__file__).resolve().parent
 
 
 class ConfigError(Exception):
     pass
+
+
+def validate_identity(services):
+    """Validate enabled identity configuration without returning or logging secrets."""
+    runtime_env = services["nakama"]["environment"]
+    if str(runtime_env.get("ACCOUNT_IDENTITY_ENABLED", "false")).lower() != "true":
+        return False
+    env = services.get("account-identity", {}).get("environment", {})
+    for key in ["ACCOUNT_IDENTITY_SECRET", "ACCOUNT_IDENTITY_OUTBOX_KEY"]:
+        if not re.fullmatch(r"[a-fA-F0-9]{64}", str(env.get(key, ""))):
+            raise ConfigError("Missing or invalid identity variable: " + key)
+    if env["ACCOUNT_IDENTITY_SECRET"] != runtime_env.get("ACCOUNT_IDENTITY_SECRET"):
+        raise ConfigError("Identity service/runtime secret mismatch")
+    if env["ACCOUNT_IDENTITY_SECRET"] == env["ACCOUNT_IDENTITY_OUTBOX_KEY"]:
+        raise ConfigError("Identity bridge and outbox keys must differ")
+    for key in ["SMTP_HOST", "SMTP_USER", "SMTP_PASSWORD", "SMTP_FROM", "GOOGLE_WEB_CLIENT_IDS"]:
+        value = str(env.get(key, ""))
+        if not value.strip() or "\r" in value or "\n" in value:
+            raise ConfigError("Missing or invalid identity variable: " + key)
+    if str(env.get("SMTP_PORT", "587")) not in ["465", "587"]:
+        raise ConfigError("SMTP_PORT must be 465 or 587 with TLS")
+    for key in ["SMTP_USER", "SMTP_FROM"]:
+        if not re.fullmatch(r"[^\s<>@]+@[^\s<>@]+\.[^\s<>@]+", str(env.get(key, ""))):
+            raise ConfigError("Invalid identity variable: " + key)
+    public = urlsplit(str(env.get("ACCOUNT_IDENTITY_PUBLIC_URL", "")))
+    if not public.hostname or public.username or public.password or public.query or public.fragment or public.path not in ["", "/"]:
+        raise ConfigError("Invalid ACCOUNT_IDENTITY_PUBLIC_URL")
+    if public.scheme != "https" and not (env.get("APP_ENVIRONMENT") == "develop" and public.scheme == "http"):
+        raise ConfigError("ACCOUNT_IDENTITY_PUBLIC_URL requires HTTPS outside develop")
+    return True
 
 
 def make_config(env):
@@ -29,6 +61,9 @@ def make_config(env):
     runtime_env.append("GOOGLE_PLAY_TESTER_EMAILS=" + str(env.get("GOOGLE_PLAY_TESTER_EMAILS") or "").strip())
     if str(env.get("MULTI_SERVER_ENABLED") or "").lower() == "true":
         runtime_env.append("MULTI_SERVER_ENABLED=true")
+    runtime_env.append("ACCOUNT_IDENTITY_ENABLED=" + str(env.get("ACCOUNT_IDENTITY_ENABLED") or "false").lower())
+    if str(env.get("ACCOUNT_IDENTITY_ENABLED") or "").lower() == "true":
+        runtime_env.append("ACCOUNT_IDENTITY_SECRET=" + required("ACCOUNT_IDENTITY_SECRET"))
     runtime_env.append("PLAY_PURCHASE_VERIFIER_URL=http://monetization-verifier:8080/google-play/verify")
     return {
         "database": {"address": [required("POSTGRES_USER") + ":" + required("POSTGRES_PASSWORD")
@@ -65,12 +100,14 @@ def main(seed=False, compose_file="docker-compose.yml", env_file=None, output="r
         command = ["docker", "compose", "-f", compose_file]
         if env_file:
             command.extend(["--env-file", env_file])
-        command.extend(["config", "--format", "json"])
+        # Include profiled definitions while inspecting, without starting containers.
+        command.extend(["--profile", "identity", "config", "--format", "json"])
         result = subprocess.run(command,
                                 cwd=ROOT, capture_output=True, text=True, encoding="utf-8", check=False)
         if result.returncode:
             raise ConfigError("Cannot resolve Compose configuration; verify required .env variable names.")
         services = json.loads(result.stdout)["services"]
+        validate_identity(services)
         env = services["nakama"]["environment"]
         verifier = services["monetization-verifier"]["environment"]
         for name in ["NAKAMA_HTTP_KEY", "MONETIZATION_VERIFIER_SECRET"]:

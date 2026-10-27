@@ -1,8 +1,10 @@
 # C134 Victory reward multiplier and System ad configuration
 
-Version: 1.0.1 | Status: IN_PROGRESS | Updated: 2026-10-26
+Version: 1.0.2 | Status: IN_PROGRESS | Updated: 2026-10-28
 
 ## Authority and configuration
+
+Stamina storage is capped at `system.stamina_storage_max` (canonical configuration/default **200**) for all grants, including current and legacy daily-pack/IAP snapshots. Natural regeneration/refill target remains `system.stamina_max` (**30**). Snapshot reward amounts remain intact, but applied stamina cannot exceed available storage; repeated daily claims without spending stamina must stop accumulating at 200. Client reads the same published System values; no RPC/schema or offline behavior changes. Regression fixtures must verify the configured storage cap rather than expecting 330/630 or capping purchase rewards at the natural regeneration target.
 
 All rewarded placements read the published `system.rewarded_ads` JSON in remote_config_settings (module=system,key=rewarded_ads,value_type=json), not hardcoded amounts or the legacy game_content_configs/rewarded_ads row. Keep the existing schema `{schema_version,placements,daily_mission}`; placements provide type, amount, optional daily_limit/run_limit, item_id and enabled. Defaults provide stamina +15/3 per UTC day, fragment mission 3 views for 1 fragment, one charm per day each, card reroll 3/run, revive 1/run; new stage_reward_x2_ad gives multiplier 2 with 5 successful rewards per UTC day. Missing/invalid config fails closed; zero limits/disabled placements block new claims. Server quotas and current UI use the same published settings. A generated targeted SQL patch bootstraps this system setting from the existing active ad catalog plus the new placement, then requires immutable config publication. No player reseed.
 
@@ -18,6 +20,7 @@ Existing prepare/confirm rewarded RPCs gain stage_reward_x2_ad context and canon
 
 | Version | Date | Change |
 |---|---|---|
+| 1.0.2 | 2026-10-28 | Confirm user-approved storage cap 200 across daily-pack/current/legacy tests; preserve regeneration target 30 and purchased reward snapshots. |
 | 1.0.1 | 2026-10-26 | User-approved stamina ad default +15; canonical seed aligned with System bootstrap and settings documentation. Daily quota stays three. |
 | 1.0.0 | 2026-10-18 | Initial server-authoritative victory multiplier, five/day default and centralized System ad configuration. |
 

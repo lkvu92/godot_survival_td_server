@@ -1,6 +1,6 @@
 # Kế hoạch xóa tài khoản — Thông Thiên Lộ
 
-Ngày: 27/10/2026 · Trạng thái: đề xuất triển khai, chưa thay đổi runtime/production.
+Ngày: 27/10/2026 · Cập nhật 28/10/2026: thiết kế đã được triển khai trong mã nguồn C232; [báo cáo kiểm tra](C232_ACCOUNT_IDENTITY_VALIDATION.md). Chưa bật production.
 
 **Cập nhật quyết định:** xem [kế hoạch tổng thể](ACCOUNT_IDENTITY_AND_DELETION_PLAN.md). Xác minh email dùng link, không OTP; bước proof email khi xóa bên dưới được thay bằng link riêng gắn phiên/tài khoản và xác nhận cuối. Google vẫn xác thực lại, không gửi thêm link email.
 

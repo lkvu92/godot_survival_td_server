@@ -58,6 +58,7 @@ Quy tắc runtime:
 
 - Hồi tự nhiên chỉ tăng đến `stamina_max`; stamina đang trữ cao hơn mức này không bị giảm.
 - Mọi nguồn cộng stamina (mua Ngọc, quảng cáo, vật phẩm, check-in, event, IAP/daily pack) bị clamp tại `stamina_storage_max`.
+- Cấu hình chuẩn hiện tại là **200** cho trần tích trữ: đang có 195 và nhận thêm 10 thì thành 200; đang có 200 thì không tích lũy thêm. Áp dụng cả snapshot gói mua cũ; lượng thưởng gốc không đổi. Mức hồi tự nhiên vẫn là **30**.
 - Khi user lên ít nhất một cấp, stamina được nâng lên tối thiểu `stamina_max`; số đang trữ cao hơn vẫn được giữ nguyên.
 - Không publish nếu giá trị không phải số nguyên hợp lệ, storage thấp hơn max, giá/quota mua rỗng, hoặc giá mua không dương.
 

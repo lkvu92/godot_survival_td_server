@@ -181,17 +181,19 @@ function createServerLifecycleTables(nk:nkruntime.Nakama):void {
         'storage',COALESCE((SELECT jsonb_agg(to_jsonb(o) ORDER BY collection,key,user_id) FROM
           (SELECT collection,key,user_id::TEXT,version,value,read,write FROM storage
            WHERE left(key,length(sid||':g'||gen||':'))=sid||':g'||gen||':'
+           AND NOT account_identity_erasure_pending(user_id)
            AND collection=ANY($1$COLLECTIONS$1$::TEXT[])) o),'[]'::JSONB),
         'unknown',COALESCE((SELECT jsonb_agg(jsonb_build_object('collection',collection,'key',key)) FROM storage
           WHERE left(key,length(sid||':g'||gen||':'))=sid||':g'||gen||':'
+          AND NOT account_identity_erasure_pending(user_id)
           AND NOT(collection=ANY($1$COLLECTIONS$1$::TEXT[]))),'[]'::JSONB),
-        'characters',COALESCE((SELECT jsonb_agg(to_jsonb(c) ORDER BY account_id) FROM player_characters c WHERE server_id=sid AND generation=gen),'[]'::JSONB),
+        'characters',COALESCE((SELECT jsonb_agg(to_jsonb(c) ORDER BY account_id) FROM player_characters c WHERE server_id=sid AND generation=gen AND NOT account_identity_erasure_pending(account_id)),'[]'::JSONB),
         'pending_financial',(SELECT COUNT(*) FROM monetization_purchase_orders WHERE target_server_id=sid AND target_generation=gen AND status='pending')+
           (SELECT COUNT(*) FROM monetization_ad_rewards WHERE target_server_id=sid AND target_generation=gen AND status IN ('prepared','verified')),
         'real_purchases',(SELECT COUNT(*) FROM monetization_purchases WHERE target_server_id=sid AND target_generation=gen AND purchase_token_hash NOT LIKE 'mock:%'),
         'weekly_periods',COALESCE((SELECT jsonb_agg(to_jsonb(p) ORDER BY period_id) FROM server_weekly_periods p WHERE server_id=sid AND generation=gen),'[]'::JSONB),
-        'weekly_scores',COALESCE((SELECT jsonb_agg(to_jsonb(p) ORDER BY period_id,board_id,user_id) FROM server_weekly_scores p WHERE server_id=sid AND generation=gen),'[]'::JSONB),
-        'weekly_awards',COALESCE((SELECT jsonb_agg(to_jsonb(p) ORDER BY period_id,board_id,user_id) FROM server_weekly_awards p WHERE server_id=sid AND generation=gen),'[]'::JSONB))); END;
+        'weekly_scores',COALESCE((SELECT jsonb_agg(to_jsonb(p) ORDER BY period_id,board_id,user_id) FROM server_weekly_scores p WHERE server_id=sid AND generation=gen AND NOT account_identity_erasure_pending(user_id)),'[]'::JSONB),
+        'weekly_awards',COALESCE((SELECT jsonb_agg(to_jsonb(p) ORDER BY period_id,board_id,user_id) FROM server_weekly_awards p WHERE server_id=sid AND generation=gen AND NOT account_identity_erasure_pending(user_id)),'[]'::JSONB))); END;
     $manifest$;`.replace(/\$1\$COLLECTIONS\$1\$/g,"'{"+CHARACTER_COLLECTIONS.join(',')+"}'"),[]);
 }
 
@@ -266,7 +268,8 @@ function serverLifecycleHandler(action:string):nkruntime.RpcFunction {
               ||(req.action==='cleanup'&&req.expected_generation>=Number(server.generation)&&server.status!=='deleted'))return serverFailure('PLAN_STALE',409,'Scope changed');
             if(server.status==='deleted'&&req.action!=='cleanup')return serverFailure('SERVER_DELETED',409,'Tombstone cannot be reused');
             const id=nk.uuidv4();
-            const rows=nk.sqlQuery(`WITH m AS (SELECT server_lifecycle_manifest($2,$4) AS manifest)
+            const rows=nk.sqlQuery(`WITH guard AS MATERIALIZED (SELECT server_id FROM game_servers WHERE server_id=$2 FOR UPDATE),
+              m AS (SELECT server_lifecycle_manifest($2,$4) AS manifest FROM guard)
               INSERT INTO server_operation_plans(id,server_id,action,generation,revision,actor_id,reason,manifest,manifest_hash)
               SELECT $1::UUID,$2,$3,$4,$5,$6::UUID,$7,manifest,encode(sha256(convert_to(manifest::TEXT,'UTF8')),'hex') FROM m
               RETURNING id AS plan_id,manifest_hash,expires_at,manifest`,[id,req.server_id,req.action,req.expected_generation,req.expected_revision,ctx.userId,req.reason.trim()]);

@@ -54,6 +54,11 @@ declare namespace nkruntime {
 
         // Account
         accountGetId(userId: string): Account;
+        authenticateCustom(id: string, username?: string, create?: boolean): {userId:string;username:string;created:boolean};
+        authenticateEmail(email: string, password: string, username?: string, create?: boolean): {userId:string;username:string;created:boolean};
+        linkEmail(userId: string,email: string,password: string): void;
+        unlinkCustom(userId: string,id: string): void;
+        accountDeleteId(userId: string,recorded?:boolean): void;
         authenticateGoogle(token: string, username?: string, create?: boolean): {userId:string;username:string;created:boolean};
         linkGoogle(userId: string, token: string): void;
         usersBanId(userIds: string[]): void;

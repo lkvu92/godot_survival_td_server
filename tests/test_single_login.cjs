@@ -1,5 +1,6 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert');
 const context=vm.createContext({});
+vm.runInContext(fs.readFileSync(require('path').join(__dirname,'../nakama/data/modules/build/account_identity.js'),'utf8'),context);
 vm.runInContext(fs.readFileSync(require('path').join(__dirname,'../nakama/data/modules/build/server_context.js'),'utf8'),context);
 vm.runInContext(fs.readFileSync(require('path').join(__dirname,'../nakama/data/modules/build/account_link.js'),'utf8'),context);
 const fn=name=>vm.runInContext(name,context);
@@ -45,7 +46,7 @@ assert(!fn('sessionStatus')(b,{},nk,'{}').includes('server-'));
 const main=fs.readFileSync(require('path').join(__dirname,'../nakama/data/modules/main.ts'),'utf8');
 for(const provider of ['Email','Google','Device','Custom']) {
   assert(main.includes(`registerBeforeAuthenticate${provider}(`));
-  assert(main.includes(`registerAfterAuthenticate${provider}(afterSingleLogin)`));
+  assert(main.includes(`registerAfterAuthenticate${provider}(${provider==='Google'?'identityAfterGoogle':'afterSingleLogin'})`));
 }
 assert(main.includes('registerRpc("session_status",linkedRpc_session_status)')||/registerRpc\("session_status",\s*linkedRpc_session_status\)/.test(main));
 let warned=false;

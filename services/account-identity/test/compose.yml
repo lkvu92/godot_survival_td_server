@@ -1,0 +1,31 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: nakama
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: c232-isolated-test-only
+    ports: ["127.0.0.1:25432:5432"]
+    tmpfs: [/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U postgres -d nakama]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+  nakama:
+    image: heroiclabs/nakama:3.24.2
+    depends_on:
+      postgres:
+        condition: service_healthy
+    entrypoint: [/bin/sh, -ec]
+    command:
+      - /nakama/nakama migrate up --config /test/runtime.yml && exec /nakama/nakama --config /nakama/data/local.yml --config /test/runtime.yml
+    volumes:
+      - ../../../nakama/data:/nakama/data:ro
+      - ./runtime.yml:/test/runtime.yml:ro
+    ports: ["127.0.0.1:27350:7350"]
+    healthcheck:
+      test: [CMD, /nakama/nakama, healthcheck]
+      interval: 3s
+      timeout: 3s
+      retries: 30

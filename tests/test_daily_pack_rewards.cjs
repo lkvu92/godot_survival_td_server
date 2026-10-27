@@ -47,7 +47,10 @@ for (const product of packs) {
     assert.equal(inventory.find(i => i.item_id === 'talisman_enhance_charm').quantity, 1);
     assert.equal(inventory.find(i => i.item_id === 'element_enlightenment_charm').quantity, 1);
     assert(!inventory.some(i => i.item_id === 'reset_talisman'));
-    assert.equal(db.player_profiles.value.stamina, 30, 'Audit: current fulfillment caps the advertised 50 stamina at 30');
+    assert.equal(db.player_profiles.value.stamina, 50, 'Purchase reward can exceed natural regeneration target within storage cap 200');
   }
+  db.player_profiles.value.stamina = 195;
+  grant(nk, 'test-user', 'verified-purchase-near-cap', product.id, product.fulfillment_type, product.rewards);
+  assert.equal(db.player_profiles.value.stamina,200,'Legacy one-time purchases clamp at storage cap 200');
 }
 console.log('PASS daily-tab packs: actual storage fulfillment, both charm rewards, no reset talisman, replay idempotency; confirmed one-time rewards and stamina cap');

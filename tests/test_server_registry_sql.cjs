@@ -29,7 +29,7 @@ function parseCsv(text){
 }
 const nk={sqlExec:(sql,args)=>execute(sql,args),sqlQuery:(sql,args)=>parseCsv(execute(sql,args,true))};
 const sandbox=vm.createContext({});
-for(const name of ['server_context','server_admin','character_repository','server_weekly','weekly_leaderboard','monetization_rpc'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../nakama/data/modules/build',name+'.js'),'utf8'),sandbox);
+for(const name of ['server_context','server_admin','character_repository','server_weekly','weekly_leaderboard','monetization_rpc','account_identity'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../nakama/data/modules/build',name+'.js'),'utf8'),sandbox);
 sandbox.parseJsonb=v=>typeof v==='string'?JSON.parse(v):v;
 const fn=name=>vm.runInContext(name,sandbox);
 const account='00000000-0000-0000-0000-000000000143';
@@ -37,9 +37,10 @@ const ctx={userId:account,env:{CONFIG_ADMIN_USER_ID:account,MULTI_SERVER_ENABLED
 const call=(action,body)=>JSON.parse(fn('serverAdminHandler')(action)(ctx,{},nk,JSON.stringify(body)));
 try{
   execute(`CREATE SCHEMA ${schema};CREATE TABLE users(id UUID PRIMARY KEY,disable_time TIMESTAMPTZ);INSERT INTO users VALUES('${account}');
-    CREATE TABLE account_link_state(user_id UUID PRIMARY KEY,status TEXT);
+    CREATE TABLE account_link_state(user_id UUID PRIMARY KEY,status TEXT,merged_into UUID);
     CREATE TABLE remote_config_releases(config_version BIGINT PRIMARY KEY);INSERT INTO remote_config_releases VALUES(1);`);
   fn('createServerRegistryTables')(nk);fn('createServerRegistryTables')(nk);
+  fn('createAccountIdentityTables')(nk);
   const req={server_id:'s002',request_id:'create_s002_test',display_name:'S2 Thanh Phong',config_version:1,opens_at:'2026-01-01T00:00:00Z',allow_new_characters:true,reason:'test fixture'};
   assert.equal(JSON.parse(fn('serverAdminHandler')('create')({userId:account,env:{}},{},nk,JSON.stringify(req))).code,403);
   const created=call('create',req);assert.equal(created.success,true);assert.equal(created.server.status,'disabled');

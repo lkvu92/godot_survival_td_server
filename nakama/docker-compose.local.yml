@@ -32,6 +32,8 @@ services:
       MONETIZATION_VERIFIER_SECRET: ${MONETIZATION_VERIFIER_SECRET:?Required in .env.local}
       APP_ENVIRONMENT: develop
       MULTI_SERVER_ENABLED: "true"
+      ACCOUNT_IDENTITY_ENABLED: ${ACCOUNT_IDENTITY_ENABLED:-false}
+      ACCOUNT_IDENTITY_SECRET: ${ACCOUNT_IDENTITY_SECRET:-}
       ANDROID_PACKAGE_NAME: ${ANDROID_PACKAGE_NAME:-vn.lkvu92.survivaltd}
       CONFIG_ADMIN_USER_ID: ${CONFIG_ADMIN_USER_ID:?Required in .env.local}
       GOOGLE_PLAY_TESTER_EMAILS: ${GOOGLE_PLAY_TESTER_EMAILS:-}
@@ -119,6 +121,50 @@ services:
       GOOGLE_PUBSUB_AUDIENCE: http://localhost:18082/google-play/rtdn
     ports:
       - "127.0.0.1:${MONETIZATION_PORT:-18082}:8080"
+
+  account-identity:
+    profiles: ["identity"]
+    build:
+      context: ../services/account-identity
+    environment:
+      PORT: "8080"
+      APP_ENVIRONMENT: ${APP_ENVIRONMENT:-production}
+      PGHOST: postgres
+      PGPORT: "5432"
+      PGDATABASE: ${POSTGRES_DB:-nakama}
+      PGUSER: ${POSTGRES_USER:-postgres}
+      PGPASSWORD: ${POSTGRES_PASSWORD:?Required}
+      NAKAMA_URL: http://nakama:7350
+      NAKAMA_HTTP_KEY: ${NAKAMA_HTTP_KEY:?Required}
+      ACCOUNT_IDENTITY_SECRET: ${ACCOUNT_IDENTITY_SECRET:-}
+      ACCOUNT_IDENTITY_OUTBOX_KEY: ${ACCOUNT_IDENTITY_OUTBOX_KEY:-}
+      ACCOUNT_IDENTITY_PUBLIC_URL: ${ACCOUNT_IDENTITY_PUBLIC_URL:-https://api.lkvustudio.com}
+      GOOGLE_WEB_CLIENT_IDS: ${GOOGLE_WEB_CLIENT_IDS:-}
+      SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_FROM: ${SMTP_FROM:-}
+      SMTP_REPLY_TO: ${SMTP_REPLY_TO:-admin@lkvustudio.com}
+    volumes:
+      - ../public/privacy-policy:/app/documents/privacy-policy:ro
+      - ../public/delete-account:/app/documents/delete-account:ro
+    ports:
+      - "127.0.0.1:${ACCOUNT_IDENTITY_PORT:-18083}:8080"
+    depends_on:
+      nakama:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8080/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    init: true
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    restart: unless-stopped
 
 volumes:
   pgdata:

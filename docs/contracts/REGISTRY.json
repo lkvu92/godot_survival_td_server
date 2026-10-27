@@ -1,5 +1,6 @@
 {
   "contracts": [
+    {"id":"C232_ACCOUNT_IDENTITY","version":"1.2.2","status":"IN_PROGRESS","updated_at":"2026-10-28","contract_file":"docs/contracts/C232_ACCOUNT_IDENTITY.md"},
     {"id":"C230_MID_TIER_TALISMAN_SKILLS","version":"1.0.0","status":"IN_PROGRESS","updated_at":"2026-10-27","contract_file":"docs/contracts/C230_MID_TIER_TALISMAN_SKILLS.md"},
     {"id":"C015_TALISMAN_EQUIPMENT_SYSTEM","version":"1.17.0","status":"IN_PROGRESS","updated_at":"2026-10-27","contract_file":"docs/contracts/C015_TALISMAN_EQUIPMENT_SYSTEM.md"},
     {"id":"C227_ORDERED_WAVE_SPAWNING","version":"1.0.0","status":"IN_PROGRESS","updated_at":"2026-10-27","contract_file":"docs/contracts/C227_ORDERED_WAVE_SPAWNING.md"},
@@ -448,9 +449,9 @@
     },
     {
       "id": "C134_RESULT_AD_SYSTEM_CONFIG",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "status": "IN_PROGRESS",
-      "updated_at": "2026-10-26",
+      "updated_at": "2026-10-28",
       "contract_file": "docs/contracts/C134_RESULT_AD_SYSTEM_CONFIG.md"
     },
     {

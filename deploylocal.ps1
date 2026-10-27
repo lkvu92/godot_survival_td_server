@@ -14,6 +14,17 @@ $nakamaDir = Join-Path $PSScriptRoot 'nakama'
 $envPath = Join-Path $nakamaDir '.env.local'
 $iapPath = Join-Path $nakamaDir 'iap.local.secret.yml'
 $composeArgs = @('compose', '-p', 'survival_td_local', '-f', 'docker-compose.local.yml', '--env-file', '.env.local')
+$managedComposeArgs = $composeArgs + @('--profile', 'identity')
+$identityEnabled = $false
+$activeComposeArgs = $composeArgs
+
+function Select-IdentityProfile {
+    $profile = Invoke-Checked python @('identity_config.py', '--compose-file', 'docker-compose.local.yml', '--env-file', '.env.local')
+    if ($profile -notin @('identity', 'none')) { throw 'Invalid identity profile inspection result' }
+    $script:identityEnabled = $profile -eq 'identity'
+    $script:activeComposeArgs = if ($script:identityEnabled) { $managedComposeArgs } else { $composeArgs }
+    Write-Host "[INFO] Account identity enabled: $script:identityEnabled"
+}
 
 function Invoke-Checked([string]$Program, [string[]]$Arguments) {
     & $Program @Arguments
@@ -66,31 +77,51 @@ function Wait-Nakama {
     throw "Local Nakama did not become healthy at $url"
 }
 
+function Wait-Identity([bool]$VerifySmtp = $true) {
+    if (-not $script:identityEnabled) { return }
+    $probe = "fetch('http://127.0.0.1:8080/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+    $healthy = $false
+    for ($attempt = 0; $attempt -lt 30; $attempt++) {
+        & docker @managedComposeArgs exec -T account-identity node -e $probe *> $null
+        if ($LASTEXITCODE -eq 0) { $healthy = $true; break }
+        Start-Sleep -Seconds 1
+    }
+    if (-not $healthy) { throw 'Account identity healthcheck failed; inspect logs account-identity.' }
+    Write-Host '[OK] Account identity is healthy.'
+    if ($VerifySmtp) { Invoke-Checked docker ($managedComposeArgs + @('exec', '-T', 'account-identity', 'node', 'src/verify-smtp.js')) }
+}
+
 Push-Location $nakamaDir
 try {
     switch ($Action) {
         { $_ -in 'deploy', 'start', 'restart' } {
             Initialize-LocalConfig
+            Select-IdentityProfile
             Build-Runtime
             Configure-Runtime
-            if ($Action -eq 'restart') { Invoke-Checked docker ($composeArgs + @('down')) }
-            Invoke-Checked docker ($composeArgs + @('up', '-d', '--build'))
+            if ($Action -eq 'restart') { Invoke-Checked docker ($managedComposeArgs + @('down')) }
+            Invoke-Checked docker ($activeComposeArgs + @('up', '-d', '--build'))
+            # Mounted runtime files are loaded only at process startup.
+            Invoke-Checked docker ($activeComposeArgs + @('up', '-d', '--no-deps', '--force-recreate', 'nakama'))
             Wait-Nakama
+            Wait-Identity
             if ($Action -eq 'deploy') { Configure-Runtime $true }
         }
         'build' { Build-Runtime }
         'seed' { Initialize-LocalConfig; Configure-Runtime $true }
-        'stop' { Initialize-LocalConfig; Invoke-Checked docker ($composeArgs + @('down')) }
+        'stop' { Initialize-LocalConfig; Invoke-Checked docker ($managedComposeArgs + @('down')) }
         'logs' {
             Initialize-LocalConfig
-            $args = $composeArgs + @('logs', '-f')
-            if ($Service) { $args += $Service }
-            Invoke-Checked docker $args
+            $logArgs = $managedComposeArgs + @('logs', '-f')
+            if ($Service) { $logArgs += $Service }
+            Invoke-Checked docker $logArgs
         }
         { $_ -in 'status', 'health' } {
             Initialize-LocalConfig
-            Invoke-Checked docker ($composeArgs + @('ps'))
+            Select-IdentityProfile
+            Invoke-Checked docker ($managedComposeArgs + @('ps'))
             Wait-Nakama
+            Wait-Identity $false
         }
     }
 } finally {

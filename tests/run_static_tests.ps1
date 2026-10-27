@@ -2,6 +2,8 @@ $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path $PSScriptRoot -Parent
 Push-Location $repoRoot
 try {
+    & node --test services/account-identity/test/security.test.js services/account-identity/test/mail-template.test.js
+    if ($LASTEXITCODE -ne 0) { throw 'C232 account identity security regression failed' }
     & node tests/test_mid_tier_talisman_config.cjs
     if ($LASTEXITCODE -ne 0) { throw 'Mid-tier talisman config regression failed' }
     & node tests/test_low_tier_talisman_balance.cjs

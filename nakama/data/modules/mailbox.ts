@@ -271,11 +271,11 @@ const rpcMailTick:nkruntime.RpcFunction=(ctx,logger,nk,_payload)=>{
     for(const campaign of campaigns) {
         if(Date.now()>=deadline)break;
         try {
-            const users=campaign.server_id?nk.sqlQuery(`SELECT c.account_id::TEXT AS user_id FROM player_characters c JOIN users u ON u.id=c.account_id WHERE c.server_id=$1 AND c.generation=$2 AND c.status='ready' AND c.created_at<=$3 AND c.account_id::TEXT>$4 AND COALESCE(u.disable_time,to_timestamp(0))<=to_timestamp(0) AND NOT EXISTS(SELECT 1 FROM account_link_state a WHERE a.user_id=u.id AND a.status='archived') ORDER BY c.account_id::TEXT LIMIT 26`,[campaign.server_id,campaign.generation,campaign.cutoff,campaign.cursor])
-                :nk.sqlQuery(`SELECT u.id::TEXT AS user_id FROM users u WHERE u.create_time<=$1 AND u.id::TEXT>$2 AND u.id<>'00000000-0000-0000-0000-000000000000' AND COALESCE(u.disable_time,to_timestamp(0))<=to_timestamp(0) AND NOT EXISTS(SELECT 1 FROM account_link_state a WHERE a.user_id=u.id AND a.status='archived') ORDER BY u.id::TEXT LIMIT 26`,[campaign.cutoff,campaign.cursor]);
+            const users=campaign.server_id?nk.sqlQuery(`SELECT c.account_id::TEXT AS user_id FROM player_characters c JOIN users u ON u.id=c.account_id WHERE c.server_id=$1 AND c.generation=$2 AND c.status='ready' AND c.created_at<=$3 AND c.account_id::TEXT>$4 AND COALESCE(u.disable_time,to_timestamp(0))<=to_timestamp(0) AND NOT EXISTS(SELECT 1 FROM account_link_state a WHERE a.user_id=u.id AND a.status IN('archived','deleting')) ORDER BY c.account_id::TEXT LIMIT 26`,[campaign.server_id,campaign.generation,campaign.cutoff,campaign.cursor])
+                :nk.sqlQuery(`SELECT u.id::TEXT AS user_id FROM users u WHERE u.create_time<=$1 AND u.id::TEXT>$2 AND u.id<>'00000000-0000-0000-0000-000000000000' AND COALESCE(u.disable_time,to_timestamp(0))<=to_timestamp(0) AND NOT EXISTS(SELECT 1 FROM account_link_state a WHERE a.user_id=u.id AND a.status IN('archived','deleting')) ORDER BY u.id::TEXT LIMIT 26`,[campaign.cutoff,campaign.cursor]);
             const more=users.length>25;if(more)users.pop();
             let last=campaign.cursor,processed=0;
-            for(const user of users){if(Date.now()>=deadline)break;deliverMail(mailAdminRuntime(nk,user.user_id,campaign),user.user_id,parseJsonObject(campaign.definition));delivered++;processed++;last=user.user_id;}
+            for(const user of users){if(Date.now()>=deadline)break;withActiveAccount(nk,user.user_id,()=>deliverMail(mailAdminRuntime(nk,user.user_id,campaign),user.user_id,parseJsonObject(campaign.definition)));delivered++;processed++;last=user.user_id;}
             nk.sqlExec('UPDATE mail_campaigns SET cursor=$2,done=$3 WHERE id=$1 AND cursor=$4',[campaign.id,last,!more&&processed===users.length,campaign.cursor]);
         }catch(error){failures.push({id:campaign.id,error:String(error)});}
     }
@@ -283,11 +283,11 @@ const rpcMailTick:nkruntime.RpcFunction=(ctx,logger,nk,_payload)=>{
     const multi=ctx.env&&ctx.env.MULTI_SERVER_ENABLED==='true',table=multi?'server_weekly_awards':'weekly_leaderboard_awards';
     const targets=nk.sqlQuery(`SELECT DISTINCT a.user_id::TEXT AS user_id ${multi?',a.server_id,a.generation':''} FROM ${table} a
         WHERE expires_at>clock_timestamp() AND EXISTS(SELECT 1 FROM users u WHERE u.id=a.user_id AND COALESCE(u.disable_time,to_timestamp(0))<=to_timestamp(0))
-        AND NOT EXISTS(SELECT 1 FROM account_link_state l WHERE l.user_id=a.user_id AND l.status='archived')
+        AND NOT EXISTS(SELECT 1 FROM account_link_state l WHERE l.user_id=a.user_id AND l.status IN('archived','deleting'))
         ${multi?"AND EXISTS(SELECT 1 FROM game_servers g JOIN player_characters p ON p.server_id=g.server_id AND p.generation=g.generation WHERE g.server_id=a.server_id AND g.generation=a.generation AND g.status='open' AND p.account_id=a.user_id AND p.status='ready')":''}
         AND NOT EXISTS(SELECT 1 FROM storage s WHERE s.collection='player_mail_deliveries' AND s.user_id=a.user_id
         AND s.key=${multi?"a.server_id||':g'||a.generation||':'||":""}'m_'||substring(encode(sha256(convert_to('weekly:'||a.period_id||':'||a.board_id,'UTF8')),'hex'),1,48)) LIMIT 25`,[]);
-    for(const target of targets){if(Date.now()>=deadline)break;try{mailRecoverWeekly(mailAdminRuntime(nk,target.user_id,target),target.user_id);}catch(error){logger.error('Mail weekly recovery: '+String(error));failures.push({user:target.user_id});}}
+    for(const target of targets){if(Date.now()>=deadline)break;try{withActiveAccount(nk,target.user_id,()=>mailRecoverWeekly(mailAdminRuntime(nk,target.user_id,target),target.user_id));}catch(error){logger.error('Mail weekly recovery: '+String(error));failures.push({user:target.user_id});}}
     return JSON.stringify({success:failures.length===0,purged,delivered,failures});
 };
 

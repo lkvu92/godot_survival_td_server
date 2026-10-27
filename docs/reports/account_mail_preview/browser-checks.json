@@ -1,0 +1,66 @@
+[
+  {
+    "purpose": "register_email",
+    "viewport": 760,
+    "width": 760,
+    "scroll": 760,
+    "height": 1180,
+    "images": 0
+  },
+  {
+    "purpose": "verify_legacy_email",
+    "viewport": 760,
+    "width": 760,
+    "scroll": 760,
+    "height": 1180,
+    "images": 0
+  },
+  {
+    "purpose": "delete_account",
+    "viewport": 760,
+    "width": 760,
+    "scroll": 760,
+    "height": 1180,
+    "images": 0
+  },
+  {
+    "purpose": "web-delete",
+    "viewport": 760,
+    "width": 760,
+    "scroll": 760,
+    "heading": "Xác nhận xóa tài khoản",
+    "destructive": true
+  },
+  {
+    "purpose": "register_email",
+    "viewport": 375,
+    "width": 375,
+    "scroll": 375,
+    "height": 1400,
+    "images": 0
+  },
+  {
+    "purpose": "verify_legacy_email",
+    "viewport": 375,
+    "width": 375,
+    "scroll": 375,
+    "height": 1400,
+    "images": 0
+  },
+  {
+    "purpose": "delete_account",
+    "viewport": 375,
+    "width": 375,
+    "scroll": 375,
+    "height": 1400,
+    "images": 0
+  },
+  {
+    "purpose": "web-delete",
+    "viewport": 375,
+    "width": 375,
+    "scroll": 375,
+    "heading": "Xác nhận xóa tài khoản",
+    "destructive": true
+  }
+]
