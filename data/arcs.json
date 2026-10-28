@@ -176,5 +176,31 @@
       "stage_6_09",
       "stage_6_10"
     ]
+  },
+  {
+    "id": "arc_van_yeu_co_linh",
+    "display_name": "Vạn Yêu Cổ Lĩnh",
+    "description": "Rừng Thiêng Đẫm Máu. Yêu tộc lấy nhục thân và huyết mạch thượng cổ làm gốc; kẻ yếu là mồi cho kẻ mạnh.",
+    "level_min": 61,
+    "level_max": 70,
+    "enabled_if": {
+      "type": "always"
+    },
+    "element": "",
+    "order": 7,
+    "enemy_visual_scale_multiplier": 1,
+    "boss_skill_ids": [],
+    "stage_ids": [
+      "stage_7_01",
+      "stage_7_02",
+      "stage_7_03",
+      "stage_7_04",
+      "stage_7_05",
+      "stage_7_06",
+      "stage_7_07",
+      "stage_7_08",
+      "stage_7_09",
+      "stage_7_10"
+    ]
   }
 ]

@@ -35,6 +35,7 @@ assert.equal(Object.keys(db).length, 0);
 let status = rpc();
 assert(status.success);
 assert.equal(status.snapshot.floors.length, 30);
+for(let i=0;i<30;i++)assert.equal(status.snapshot.floors[i].demon_element,["water","fire","earth","wood","metal"][i%5]);
 for(let i=0;i<30;i++)assert.equal(status.snapshot.floors[i].stat_multiplier,Math.round((0.7+i*0.1)*10000)/10000);
 for(let i=0;i<30;i++)assert.equal(status.snapshot.floors[i].speed_multiplier,Math.round((0.7+i*0.05)*10000)/10000);
 assert.equal(status.snapshot.floors[1].speed_multiplier,0.75);

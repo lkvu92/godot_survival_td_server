@@ -33,7 +33,7 @@ for(const arc of arcs.filter(a=>a.order>=1)) {
 }
 assert.equal(legacyTotal,985,'original five arcs retain all 985 waves');
 assert.equal(arc6Total,200,'Arc 6 adds ten twenty-wave stages');
-assert.equal(total,1185);
+assert.equal(total,1385);
 const before = JSON.stringify(stages);
 assert.equal(migrateCampaignWaves(stages,arcs,rules),0);
 assert.equal(JSON.stringify(stages),before,'count reduction and EXP splits are idempotent');
@@ -46,4 +46,4 @@ const context=vm.createContext({});
 vm.runInContext(fs.readFileSync(path.join(__dirname,'../nakama/data/modules/build/config_rpc.js'),'utf8'),context);
 assert(context.validCampaignWavePressure(rules));
 for(const invalid of [null,{}, {...rules,growth_interval:0},{...rules,hp_growth:-1},{...rules,skill_recovery_growth:Infinity}])assert(!context.validCampaignWavePressure(invalid));
-console.log('PASS C218: 60 stages/1185 waves, original 985 preserved, opening allocation, final boss, EXP, idempotence and System rule validation');
+console.log('PASS C218: 70 stages/1385 waves, original 985 preserved, opening allocation, final boss, EXP, idempotence and System rule validation');

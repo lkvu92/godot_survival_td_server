@@ -1,0 +1,258 @@
+[
+  {
+    "id": "hero_1",
+    "role": "Khống Chế Trận Pháp",
+    "price": {
+      "gems": 0,
+      "gold": 0
+    },
+    "element": "water",
+    "require": {
+      "vip": 0,
+      "level": 1
+    },
+    "attributes": {
+      "hp": 480,
+      "atk": 23,
+      "def": 10,
+      "crit_rate": 0.06,
+      "move_speed": 280,
+      "crit_damage": 1.5,
+      "attack_range": 350,
+      "attack_speed": 1.5,
+      "regen_percent_per_10s": 0.03
+    },
+    "created_at": "2026-10-19T02:09:00.507208+00:00",
+    "skill_pool": [
+      "hero_1_skill_1",
+      "hero_1_skill_2",
+      "hero_1_skill_3",
+      "hero_1_skill_4"
+    ],
+    "updated_at": "2026-10-28T12:00:55.68911+00:00",
+    "description": "Thiên chi kiêu nữ Băng Tuyết Thần Cung, trời sinh Cực Hàn Băng Thể. Nàng ngưng tụ chân khí hàn băng thành Huyền Băng Cầu làm chậm địch quân, bố hạ Tuyết Vực Đại Trận đông kết vạn vật, vận chuyển Băng Tâm Diệu Pháp hộ thể hồi phục sinh lực và vung Băng Phách Cực Liêm chém tan hồn phách tà ma.",
+    "display_name": "Băng Tuyết Thánh Nữ",
+    "visual_scale": 1,
+    "level_up_stats": {
+      "hp": 1.07,
+      "atk": 1.075,
+      "def": 1.045,
+      "crit_rate": 0.005,
+      "move_speed": 1.01,
+      "crit_damage": 0.02,
+      "attack_range": 1,
+      "attack_speed": 1.02,
+      "regen_percent_per_10s": 0.002
+    },
+    "starting_skills": [
+      "hero_1_skill_1"
+    ],
+    "auto_basic_attack": true,
+    "basic_attack_range": 350
+  },
+  {
+    "id": "hero_2",
+    "role": "Viễn Kích Viêm Sát",
+    "price": {
+      "gems": 0,
+      "gold": 250000
+    },
+    "element": "fire",
+    "require": {
+      "vip": 0,
+      "level": 15
+    },
+    "attributes": {
+      "hp": 360,
+      "atk": 30,
+      "def": 5,
+      "crit_rate": 0.12,
+      "move_speed": 295,
+      "crit_damage": 1.75,
+      "attack_range": 450,
+      "attack_speed": 1.45,
+      "regen_percent_per_10s": 0.01
+    },
+    "created_at": "2026-10-19T02:09:00.507208+00:00",
+    "skill_pool": [
+      "hero_2_skill_1",
+      "hero_2_skill_2",
+      "hero_2_skill_3",
+      "hero_2_skill_4"
+    ],
+    "updated_at": "2026-10-28T12:00:55.68911+00:00",
+    "description": "Thần tiễn thủ Liệt Hỏa Tông, dung hợp Chu Tước Chân Hỏa vào Tiễn Đạo Chí Cao. Xuất tiễn tựa sao băng xé toạc hư không, vừa có thể ngưng băng tiễn phong tỏa cước bộ quái vật, vừa dẫn động Phần Thiên Liệt Diễm giáng hạ vạn trượng hỏa tiễn dội từ chín tầng mây, chuyên trảm sát yêu thú đầu lĩnh từ cự ly siêu xa.",
+    "display_name": "Liệt Diễm Tiễn Tôn",
+    "visual_scale": 1,
+    "level_up_stats": {
+      "hp": 1.045,
+      "atk": 1.095,
+      "def": 1.025,
+      "crit_rate": 0.006,
+      "move_speed": 1.01,
+      "crit_damage": 0.025,
+      "attack_range": 1,
+      "attack_speed": 1.025,
+      "regen_percent_per_10s": 0.001
+    },
+    "starting_skills": [
+      "hero_2_skill_1"
+    ],
+    "auto_basic_attack": true,
+    "basic_attack_range": 450
+  },
+  {
+    "id": "hero_3",
+    "role": "Ngự Kiếm Trấn Địa",
+    "price": {
+      "gems": 400,
+      "gold": 100000
+    },
+    "element": "earth",
+    "require": {
+      "vip": 0,
+      "level": 10
+    },
+    "attributes": {
+      "hp": 440,
+      "atk": 26,
+      "def": 15,
+      "crit_rate": 0.08,
+      "move_speed": 290,
+      "crit_damage": 1.65,
+      "attack_range": 250,
+      "attack_speed": 1.55,
+      "element_resist_pct": 15,
+      "regen_percent_per_10s": 0.015
+    },
+    "created_at": "2026-10-19T02:09:00.507208+00:00",
+    "skill_pool": [
+      "hero_3_skill_1",
+      "hero_3_skill_2",
+      "hero_3_skill_3",
+      "hero_3_skill_4"
+    ],
+    "updated_at": "2026-10-28T12:00:55.68911+00:00",
+    "description": "Đại tông sư Ngự Kiếm Thuật lĩnh ngộ Thái Hư Kiếm Điển, lấy thân làm kiếm, vạn kiếm quy tông. Bạt kiếm xuất kích chấn phát đao mang kiếm khí hình rẻ quạt chém lùi bầy quái, tế khởi Thiên Cương Kiếm Ấn chấn nhiếp địa mạch làm choáng yêu tà, kiếm khí uốn lượn ngút trời xuyên thấu tầng tầng phòng ngự.",
+    "display_name": "Vô Cực Kiếm Tôn",
+    "visual_scale": 1.2,
+    "level_up_stats": {
+      "hp": 1.06,
+      "atk": 1.075,
+      "def": 1.06,
+      "crit_rate": 0.005,
+      "move_speed": 1.01,
+      "crit_damage": 0.02,
+      "attack_range": 1,
+      "attack_speed": 1.02,
+      "regen_percent_per_10s": 0.0015
+    },
+    "starting_skills": [
+      "hero_3_skill_1"
+    ],
+    "auto_basic_attack": true,
+    "basic_attack_range": 250
+  },
+  {
+    "id": "hero_4",
+    "role": "Thần Tốc Du Đấu",
+    "price": {
+      "gems": 2000,
+      "gold": 500000
+    },
+    "element": "wood",
+    "require": {
+      "vip": 0,
+      "level": 20
+    },
+    "attributes": {
+      "hp": 370,
+      "atk": 25,
+      "def": 6,
+      "crit_rate": 0.16,
+      "move_speed": 335,
+      "crit_damage": 1.8,
+      "attack_range": 400,
+      "attack_speed": 1.95,
+      "regen_percent_per_10s": 0.012
+    },
+    "created_at": "2026-10-19T02:09:00.507208+00:00",
+    "skill_pool": [
+      "hero_4_skill_1",
+      "hero_4_skill_2",
+      "hero_4_skill_3",
+      "hero_4_skill_4"
+    ],
+    "updated_at": "2026-10-28T12:00:55.68911+00:00",
+    "description": "Quỷ tài Độc Vương Cốc đắc chân truyền Cửu U U Độc Thần Công, thân pháp xuất quỷ nhập thần như bóng ma trong đêm tối. Phóng thích U Độc Phi Tiêu liên hoàn bạo liệt, ném ra Toái Nguyệt Độc Luân thu hoạch sinh cơ quái vật, thiết lập Hủ Cốt Độc Cạm mai phục và ngưng tụ Vạn Độc Thần Phong bào mòn cạn kiệt chân nguyên địch theo thời gian.",
+    "display_name": "U Ảnh Độc Tôn",
+    "visual_scale": 1,
+    "level_up_stats": {
+      "hp": 1.05,
+      "atk": 1.08,
+      "def": 1.03,
+      "crit_rate": 0.008,
+      "move_speed": 1.015,
+      "crit_damage": 0.03,
+      "attack_range": 1,
+      "attack_speed": 1.028,
+      "regen_percent_per_10s": 0.001
+    },
+    "starting_skills": [
+      "hero_4_skill_1"
+    ],
+    "auto_basic_attack": true,
+    "basic_attack_range": 400
+  },
+  {
+    "id": "hero_5",
+    "role": "Kim Cương Hộ Pháp",
+    "price": {
+      "gems": 5000,
+      "gold": 0
+    },
+    "element": "metal",
+    "require": {
+      "vip": 0,
+      "level": 25
+    },
+    "attributes": {
+      "hp": 470,
+      "atk": 24,
+      "def": 12,
+      "crit_rate": 0.08,
+      "move_speed": 285,
+      "crit_damage": 1.65,
+      "attack_range": 350,
+      "attack_speed": 1.5,
+      "regen_percent_per_10s": 0.02
+    },
+    "created_at": "2026-10-19T02:09:00.507208+00:00",
+    "skill_pool": [
+      "hero_5_skill_1",
+      "hero_5_skill_2",
+      "hero_5_skill_3",
+      "hero_5_skill_4"
+    ],
+    "updated_at": "2026-10-28T12:00:55.68911+00:00",
+    "description": "Phật Môn Thế Tôn đắc đạo Kim Cương Bất Hoại Thần Thể, chưởng quản uy năng vạn tượng trấn áp cửu u tà ma. Giáng thế thi triển Kim Cương Chỉ nổ tung kim quang đẩy lùi yêu khí, khai mở Lục Tự Đại Minh Trận thiêu đốt phong tỏa, dẫn động Như Lai Thần Chưởng long trời lở đất và kích phát Kim Cương Hộ Thể phóng thích phật quang phổ chiếu hủy diệt vạn ma.",
+    "display_name": "Vạn Tượng Quán Âm",
+    "visual_scale": 1,
+    "level_up_stats": {
+      "hp": 1.07,
+      "atk": 1.075,
+      "def": 1.05,
+      "crit_rate": 0.005,
+      "move_speed": 1.01,
+      "crit_damage": 0.02,
+      "attack_range": 1,
+      "attack_speed": 1.02,
+      "regen_percent_per_10s": 0.002
+    },
+    "starting_skills": [
+      "hero_5_skill_1"
+    ],
+    "auto_basic_attack": true,
+    "basic_attack_range": 350
+  }
+]

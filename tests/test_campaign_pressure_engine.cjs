@@ -15,9 +15,9 @@ assert.equal(engine.requirement(1), 25);
 assert.equal(engine.requirement(20), 1900);
 
 const report = engine.analyzeCatalog({...catalog,difficultyId:'normal'});
-assert.equal(report.results.filter(result => !result.stage_id.startsWith('stage_6_')).length, 150, 'original 50 campaign stages × P25/P50/P75');
+assert.equal(report.results.filter(result => !/^stage_[67]_/.test(result.stage_id)).length, 150, 'original 50 campaign stages × P25/P50/P75');
 assert.equal(report.results.filter(result => result.stage_id.startsWith('stage_6_')).length, 30, 'Arc 6 ten stages × P25/P50/P75');
-assert.equal(report.results.length, 180, '60 campaign stages × P25/P50/P75');
+assert.equal(report.results.length, 210, '70 campaign stages × P25/P50/P75');
 for (const result of report.results) {
   assert(result.waves.length > 0, `${result.stage_id} has waves`);
   for (const wave of result.waves) {

@@ -1,7 +1,7 @@
 # Skill hero — thông số source hiện tại
 
-Version: 1.0.2
-Cập nhật: 2026-10-24
+Version: 1.1.0
+Cập nhật: 2026-10-29
 
 Đây là điểm vào tài liệu kỹ năng hiện hành của **cả 5 hero**. Các bảng được
 đối chiếu từ server/data/skills.json và hành vi client, thay thế thông số cũ
@@ -15,6 +15,8 @@ Tài liệu không phải gameplay config và không chứng minh bản local/VP
 | 3 — Vô Cực Kiếm Tôn | [Hero 3](heroes/HERO_3.md) | Kiếm Phiến 320px/s cố định; chuỗi kiếm mới cách 0,1s; Thất Tinh Trận thêm tốc độ di chuyển. |
 | 4 — U Ảnh Độc Tôn | [Hero 4](heroes/HERO_4.md) | Mốc damage/độc mới, giới hạn bẫy theo hero; xoáy 2,5s/5 nhịp, độc kim cộng ATK và cap 5.000 DPS. |
 | 5 — Vạn Tượng Quán Âm | [Hero 5](heroes/HERO_5.md) | Tia/nổ riêng, cổ ngữ trễ, chưởng/đất nứt/sóng lan; kim thân đứng yên, bảo vệ 0,5s, ấn ký tính từ hit thật. |
+
+[Chỉ số hero và mô phỏng Lv1/50/70 — cân bằng vòng 2](HERO_STATS_CURRENT.md).
 
 ## Cách đọc và quyền dữ liệu
 

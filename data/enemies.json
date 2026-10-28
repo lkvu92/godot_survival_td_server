@@ -3536,5 +3536,3430 @@
     ],
     "source_enemy_id": "primordial_wraith",
     "balance_reference_level": 55
+  },
+  {
+    "id": "arc7_pha_son_cu_vien_metal",
+    "display_name": "Phá Sơn Cự Viên",
+    "element": "metal",
+    "attack_type": "melee",
+    "visual_scale": 0.26,
+    "balance_reference_level": 60,
+    "attributes": {
+      "hp": 2600,
+      "atk": 200,
+      "def": 25,
+      "move_speed": 78,
+      "attack_range": 70,
+      "attack_speed": 0.58,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "collision_radius": 25,
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Yêu Thể Bất Phược",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "C01",
+      "type": "beast_melee",
+      "display_name": "Phá Nham Quyền",
+      "radius": 65,
+      "damage_multiplier": 1,
+      "warning_time": 0.35,
+      "recovery": 0.3
+    },
+    "reward": {
+      "exp": 1,
+      "gold": 100
+    }
+  },
+  {
+    "id": "arc7_huyet_man_cuong_su_metal",
+    "display_name": "Huyết Man Cuồng Sư",
+    "element": "metal",
+    "attack_type": "melee",
+    "visual_scale": 0.26,
+    "balance_reference_level": 60,
+    "attributes": {
+      "hp": 2100,
+      "atk": 185,
+      "def": 18,
+      "move_speed": 95,
+      "attack_range": 65,
+      "attack_speed": 0.72,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "collision_radius": 25,
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Yêu Thể Bất Phược",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "C02",
+      "type": "beast_melee",
+      "display_name": "Huyết Nha Phệ",
+      "radius": 65,
+      "damage_multiplier": 1,
+      "warning_time": 0.35,
+      "recovery": 0.3
+    },
+    "reward": {
+      "exp": 1,
+      "gold": 100
+    }
+  },
+  {
+    "id": "arc7_co_giap_long_te_metal",
+    "display_name": "Cổ Giáp Long Tê",
+    "element": "metal",
+    "attack_type": "melee",
+    "visual_scale": 0.26,
+    "balance_reference_level": 60,
+    "attributes": {
+      "hp": 4400,
+      "atk": 250,
+      "def": 48,
+      "move_speed": 65,
+      "attack_range": 170,
+      "attack_speed": 0.42,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "collision_radius": 25,
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Yêu Thể Bất Phược",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "C03",
+      "type": "beast_dash",
+      "display_name": "Thiết Giác Xung",
+      "radius": 65,
+      "damage_multiplier": 1,
+      "warning_time": 0.65,
+      "recovery": 0.3,
+      "dash_distance": 160,
+      "dash_duration": 0.5
+    },
+    "reward": {
+      "exp": 1,
+      "gold": 100
+    }
+  },
+  {
+    "id": "arc7_doc_tich_man_ngac_metal",
+    "display_name": "Độc Tích Man Ngạc",
+    "element": "metal",
+    "attack_type": "ranged",
+    "visual_scale": 0.26,
+    "balance_reference_level": 60,
+    "attributes": {
+      "hp": 1500,
+      "atk": 160,
+      "def": 12,
+      "move_speed": 65,
+      "attack_range": 330,
+      "attack_speed": 0.48,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "collision_radius": 25,
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Yêu Thể Bất Phược",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "C04",
+      "type": "beast_bolt",
+      "display_name": "Chướng Độc Thóa",
+      "radius": 65,
+      "damage_multiplier": 1,
+      "warning_time": 0.35,
+      "recovery": 0.3,
+      "projectile_speed": 260,
+      "projectile_lifetime": 3.5,
+      "hit_radius": 16,
+      "effects": [
+        {
+          "id": "poison",
+          "duration": 3,
+          "dps": 20,
+          "tick_interval": 0.75
+        }
+      ]
+    },
+    "reward": {
+      "exp": 1,
+      "gold": 100
+    }
+  },
+  {
+    "id": "arc7_loi_trao_hung_bi_metal",
+    "display_name": "Lôi Trảo Hùng Bi",
+    "element": "metal",
+    "attack_type": "melee",
+    "visual_scale": 0.26,
+    "balance_reference_level": 60,
+    "attributes": {
+      "hp": 3000,
+      "atk": 230,
+      "def": 32,
+      "move_speed": 72,
+      "attack_range": 80,
+      "attack_speed": 0.48,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "collision_radius": 25,
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Yêu Thể Bất Phược",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "C05",
+      "type": "beast_melee",
+      "display_name": "Lôi Liệt Trảo",
+      "radius": 85,
+      "damage_multiplier": 1,
+      "warning_time": 0.35,
+      "recovery": 0.3
+    },
+    "reward": {
+      "exp": 1,
+      "gold": 100
+    }
+  },
+  {
+    "id": "arc7_huyen_lan_long_bao_metal",
+    "display_name": "Huyền Lân Long Báo",
+    "element": "metal",
+    "attack_type": "melee",
+    "visual_scale": 0.26,
+    "balance_reference_level": 60,
+    "attributes": {
+      "hp": 1800,
+      "atk": 175,
+      "def": 15,
+      "move_speed": 110,
+      "attack_range": 195,
+      "attack_speed": 0.65,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "collision_radius": 25,
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Yêu Thể Bất Phược",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "C06",
+      "type": "beast_dash",
+      "display_name": "Huyền Ảnh Tập",
+      "radius": 65,
+      "damage_multiplier": 1,
+      "warning_time": 0.65,
+      "recovery": 0.3,
+      "dash_distance": 200,
+      "dash_duration": 0.32
+    },
+    "reward": {
+      "exp": 1,
+      "gold": 100
+    }
+  },
+  {
+    "id": "arc7_man_cot_toan_nghe_metal",
+    "display_name": "Man Cốt Toan Nghê",
+    "element": "metal",
+    "attack_type": "ranged",
+    "visual_scale": 0.26,
+    "balance_reference_level": 60,
+    "attributes": {
+      "hp": 1800,
+      "atk": 190,
+      "def": 23,
+      "move_speed": 70,
+      "attack_range": 350,
+      "attack_speed": 0.42,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "collision_radius": 25,
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Yêu Thể Bất Phược",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "C07",
+      "type": "beast_bolt",
+      "display_name": "Cốt Khí Phá",
+      "radius": 65,
+      "damage_multiplier": 1,
+      "warning_time": 0.35,
+      "recovery": 0.3,
+      "projectile_speed": 320,
+      "projectile_lifetime": 3.5,
+      "hit_radius": 16
+    },
+    "reward": {
+      "exp": 1,
+      "gold": 100
+    }
+  },
+  {
+    "id": "arc7_bach_ho_yeu_vuong_metal",
+    "display_name": "Bạch Hổ Yêu Vương",
+    "element": "metal",
+    "attack_type": "melee",
+    "is_boss": true,
+    "boss_scale": 1,
+    "boss_visual_scale": 0.48,
+    "visual_scale": 0.48,
+    "balance_reference_level": 60,
+    "collision_radius": 38,
+    "attributes": {
+      "hp": 170000,
+      "atk": 550,
+      "def": 40,
+      "move_speed": 80,
+      "attack_range": 110,
+      "attack_speed": 0.5,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": true
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "B01",
+      "type": "tiger_claw",
+      "display_name": "Bạch Kim Hổ Trảo",
+      "radius": 100,
+      "damage_multiplier": 1,
+      "warning_time": 0.4,
+      "recovery": 0.3,
+      "basic": true,
+      "half_angle": 1.05,
+      "cooldown": 2,
+      "initial_cooldown": 0,
+      "range": 120
+    },
+    "boss_skills": [
+      {
+        "id": "B01",
+        "type": "tiger_claw",
+        "display_name": "Bạch Kim Hổ Trảo",
+        "radius": 100,
+        "damage_multiplier": 1,
+        "warning_time": 0.4,
+        "recovery": 0.3,
+        "basic": true,
+        "half_angle": 1.05,
+        "cooldown": 2,
+        "initial_cooldown": 0,
+        "range": 120
+      },
+      {
+        "id": "B02",
+        "type": "tiger_pounce",
+        "display_name": "Liệp Ảnh Vồ Sát",
+        "radius": 65,
+        "damage_multiplier": 1.25,
+        "warning_time": 0.8,
+        "recovery": 0.3,
+        "dash_distance": 260,
+        "dash_duration": 0.42,
+        "cooldown": 7,
+        "initial_cooldown": 2,
+        "range": 470
+      },
+      {
+        "id": "B03",
+        "type": "tiger_roar",
+        "display_name": "Hổ Khiếu Chấn Lĩnh",
+        "radius": 210,
+        "damage_multiplier": 0.85,
+        "warning_time": 0.8,
+        "recovery": 0.3,
+        "wave_duration": 0.55,
+        "knockback_distance": 45,
+        "cooldown": 11,
+        "initial_cooldown": 5,
+        "range": 300
+      },
+      {
+        "id": "B04",
+        "type": "tiger_bloodline",
+        "display_name": "Bạo Thể · Vạn Yêu Phục",
+        "radius": 160,
+        "damage_multiplier": 0.7,
+        "warning_time": 1,
+        "recovery": 0.3,
+        "hp_below_pct": 0.3,
+        "once": true,
+        "cooldown": 9999,
+        "initial_cooldown": 0,
+        "range": 1200
+      }
+    ],
+    "reward": {
+      "exp": 1,
+      "gold": 1000
+    }
+  },
+  {
+    "id": "arc7_chu_tuoc_nu_vuong_metal",
+    "display_name": "Chu Tước Nữ Vương",
+    "element": "metal",
+    "attack_type": "ranged",
+    "is_boss": true,
+    "boss_scale": 1,
+    "boss_visual_scale": 0.48,
+    "visual_scale": 0.48,
+    "balance_reference_level": 60,
+    "collision_radius": 38,
+    "attributes": {
+      "hp": 145000,
+      "atk": 500,
+      "def": 35,
+      "move_speed": 60,
+      "attack_range": 500,
+      "attack_speed": 0.35,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "Z01",
+      "type": "vermilion_volley",
+      "display_name": "Xích Vũ Liên Châu",
+      "radius": 30,
+      "damage_multiplier": 0.55,
+      "warning_time": 0.45,
+      "recovery": 0.3,
+      "basic": true,
+      "projectile_speed": 320,
+      "projectile_lifetime": 3,
+      "hit_radius": 18,
+      "volley_interval": 0.16,
+      "cooldown": 2.8,
+      "initial_cooldown": 0,
+      "range": 600
+    },
+    "boss_skills": [
+      {
+        "id": "Z01",
+        "type": "vermilion_volley",
+        "display_name": "Xích Vũ Liên Châu",
+        "radius": 30,
+        "damage_multiplier": 0.55,
+        "warning_time": 0.45,
+        "recovery": 0.3,
+        "basic": true,
+        "projectile_speed": 320,
+        "projectile_lifetime": 3,
+        "hit_radius": 18,
+        "volley_interval": 0.16,
+        "cooldown": 2.8,
+        "initial_cooldown": 0,
+        "range": 600
+      },
+      {
+        "id": "Z02",
+        "type": "vermilion_sweep",
+        "display_name": "Liệt Dực Hoành Tảo",
+        "radius": 170,
+        "damage_multiplier": 1.25,
+        "warning_time": 0.8,
+        "recovery": 0.3,
+        "half_angle": 1.15,
+        "cooldown": 7,
+        "initial_cooldown": 3,
+        "range": 230
+      },
+      {
+        "id": "Z03",
+        "type": "vermilion_rain",
+        "display_name": "Thiên Vũ Lạc Hỏa",
+        "radius": 65,
+        "damage_multiplier": 0.9,
+        "warning_time": 1,
+        "recovery": 0.3,
+        "fall_interval": 0.2,
+        "cooldown": 10,
+        "initial_cooldown": 6,
+        "range": 750
+      },
+      {
+        "id": "Z04",
+        "type": "vermilion_domain",
+        "display_name": "Chu Tước · Phần Thiên Lĩnh",
+        "radius": 235,
+        "damage_multiplier": 1,
+        "warning_time": 1.1,
+        "recovery": 0.3,
+        "inner_radius": 140,
+        "duration": 3,
+        "tick_interval": 0.75,
+        "dot_multiplier": 0.22,
+        "cooldown": 17,
+        "initial_cooldown": 11,
+        "range": 650
+      }
+    ],
+    "reward": {
+      "exp": 1,
+      "gold": 1000
+    }
+  },
+  {
+    "id": "arc7_pha_son_cu_vien_water",
+    "display_name": "Phá Sơn Cự Viên",
+    "element": "water",
+    "attack_type": "melee",
+    "visual_scale": 0.26,
+    "balance_reference_level": 60,
+    "attributes": {
+      "hp": 2600,
+      "atk": 200,
+      "def": 25,
+      "move_speed": 78,
+      "attack_range": 70,
+      "attack_speed": 0.58,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "collision_radius": 25,
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Yêu Thể Bất Phược",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "C01",
+      "type": "beast_melee",
+      "display_name": "Phá Nham Quyền",
+      "radius": 65,
+      "damage_multiplier": 1,
+      "warning_time": 0.35,
+      "recovery": 0.3
+    },
+    "reward": {
+      "exp": 1,
+      "gold": 100
+    }
+  },
+  {
+    "id": "arc7_huyet_man_cuong_su_water",
+    "display_name": "Huyết Man Cuồng Sư",
+    "element": "water",
+    "attack_type": "melee",
+    "visual_scale": 0.26,
+    "balance_reference_level": 60,
+    "attributes": {
+      "hp": 2100,
+      "atk": 185,
+      "def": 18,
+      "move_speed": 95,
+      "attack_range": 65,
+      "attack_speed": 0.72,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "collision_radius": 25,
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Yêu Thể Bất Phược",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "C02",
+      "type": "beast_melee",
+      "display_name": "Huyết Nha Phệ",
+      "radius": 65,
+      "damage_multiplier": 1,
+      "warning_time": 0.35,
+      "recovery": 0.3
+    },
+    "reward": {
+      "exp": 1,
+      "gold": 100
+    }
+  },
+  {
+    "id": "arc7_co_giap_long_te_water",
+    "display_name": "Cổ Giáp Long Tê",
+    "element": "water",
+    "attack_type": "melee",
+    "visual_scale": 0.26,
+    "balance_reference_level": 60,
+    "attributes": {
+      "hp": 4400,
+      "atk": 250,
+      "def": 48,
+      "move_speed": 65,
+      "attack_range": 170,
+      "attack_speed": 0.42,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "collision_radius": 25,
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Yêu Thể Bất Phược",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "C03",
+      "type": "beast_dash",
+      "display_name": "Thiết Giác Xung",
+      "radius": 65,
+      "damage_multiplier": 1,
+      "warning_time": 0.65,
+      "recovery": 0.3,
+      "dash_distance": 160,
+      "dash_duration": 0.5
+    },
+    "reward": {
+      "exp": 1,
+      "gold": 100
+    }
+  },
+  {
+    "id": "arc7_doc_tich_man_ngac_water",
+    "display_name": "Độc Tích Man Ngạc",
+    "element": "water",
+    "attack_type": "ranged",
+    "visual_scale": 0.26,
+    "balance_reference_level": 60,
+    "attributes": {
+      "hp": 1500,
+      "atk": 160,
+      "def": 12,
+      "move_speed": 65,
+      "attack_range": 330,
+      "attack_speed": 0.48,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "collision_radius": 25,
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Yêu Thể Bất Phược",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "C04",
+      "type": "beast_bolt",
+      "display_name": "Chướng Độc Thóa",
+      "radius": 65,
+      "damage_multiplier": 1,
+      "warning_time": 0.35,
+      "recovery": 0.3,
+      "projectile_speed": 260,
+      "projectile_lifetime": 3.5,
+      "hit_radius": 16,
+      "effects": [
+        {
+          "id": "poison",
+          "duration": 3,
+          "dps": 20,
+          "tick_interval": 0.75
+        }
+      ]
+    },
+    "reward": {
+      "exp": 1,
+      "gold": 100
+    }
+  },
+  {
+    "id": "arc7_loi_trao_hung_bi_water",
+    "display_name": "Lôi Trảo Hùng Bi",
+    "element": "water",
+    "attack_type": "melee",
+    "visual_scale": 0.26,
+    "balance_reference_level": 60,
+    "attributes": {
+      "hp": 3000,
+      "atk": 230,
+      "def": 32,
+      "move_speed": 72,
+      "attack_range": 80,
+      "attack_speed": 0.48,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "collision_radius": 25,
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Yêu Thể Bất Phược",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "C05",
+      "type": "beast_melee",
+      "display_name": "Lôi Liệt Trảo",
+      "radius": 85,
+      "damage_multiplier": 1,
+      "warning_time": 0.35,
+      "recovery": 0.3
+    },
+    "reward": {
+      "exp": 1,
+      "gold": 100
+    }
+  },
+  {
+    "id": "arc7_huyen_lan_long_bao_water",
+    "display_name": "Huyền Lân Long Báo",
+    "element": "water",
+    "attack_type": "melee",
+    "visual_scale": 0.26,
+    "balance_reference_level": 60,
+    "attributes": {
+      "hp": 1800,
+      "atk": 175,
+      "def": 15,
+      "move_speed": 110,
+      "attack_range": 195,
+      "attack_speed": 0.65,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "collision_radius": 25,
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Yêu Thể Bất Phược",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "C06",
+      "type": "beast_dash",
+      "display_name": "Huyền Ảnh Tập",
+      "radius": 65,
+      "damage_multiplier": 1,
+      "warning_time": 0.65,
+      "recovery": 0.3,
+      "dash_distance": 200,
+      "dash_duration": 0.32
+    },
+    "reward": {
+      "exp": 1,
+      "gold": 100
+    }
+  },
+  {
+    "id": "arc7_man_cot_toan_nghe_water",
+    "display_name": "Man Cốt Toan Nghê",
+    "element": "water",
+    "attack_type": "ranged",
+    "visual_scale": 0.26,
+    "balance_reference_level": 60,
+    "attributes": {
+      "hp": 1800,
+      "atk": 190,
+      "def": 23,
+      "move_speed": 70,
+      "attack_range": 350,
+      "attack_speed": 0.42,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "collision_radius": 25,
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Yêu Thể Bất Phược",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "C07",
+      "type": "beast_bolt",
+      "display_name": "Cốt Khí Phá",
+      "radius": 65,
+      "damage_multiplier": 1,
+      "warning_time": 0.35,
+      "recovery": 0.3,
+      "projectile_speed": 320,
+      "projectile_lifetime": 3.5,
+      "hit_radius": 16
+    },
+    "reward": {
+      "exp": 1,
+      "gold": 100
+    }
+  },
+  {
+    "id": "arc7_bach_ho_yeu_vuong_water",
+    "display_name": "Bạch Hổ Yêu Vương",
+    "element": "water",
+    "attack_type": "melee",
+    "is_boss": true,
+    "boss_scale": 1,
+    "boss_visual_scale": 0.48,
+    "visual_scale": 0.48,
+    "balance_reference_level": 60,
+    "collision_radius": 38,
+    "attributes": {
+      "hp": 170000,
+      "atk": 550,
+      "def": 40,
+      "move_speed": 80,
+      "attack_range": 110,
+      "attack_speed": 0.5,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": true
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "B01",
+      "type": "tiger_claw",
+      "display_name": "Bạch Kim Hổ Trảo",
+      "radius": 100,
+      "damage_multiplier": 1,
+      "warning_time": 0.4,
+      "recovery": 0.3,
+      "basic": true,
+      "half_angle": 1.05,
+      "cooldown": 2,
+      "initial_cooldown": 0,
+      "range": 120
+    },
+    "boss_skills": [
+      {
+        "id": "B01",
+        "type": "tiger_claw",
+        "display_name": "Bạch Kim Hổ Trảo",
+        "radius": 100,
+        "damage_multiplier": 1,
+        "warning_time": 0.4,
+        "recovery": 0.3,
+        "basic": true,
+        "half_angle": 1.05,
+        "cooldown": 2,
+        "initial_cooldown": 0,
+        "range": 120
+      },
+      {
+        "id": "B02",
+        "type": "tiger_pounce",
+        "display_name": "Liệp Ảnh Vồ Sát",
+        "radius": 65,
+        "damage_multiplier": 1.25,
+        "warning_time": 0.8,
+        "recovery": 0.3,
+        "dash_distance": 260,
+        "dash_duration": 0.42,
+        "cooldown": 7,
+        "initial_cooldown": 2,
+        "range": 470
+      },
+      {
+        "id": "B03",
+        "type": "tiger_roar",
+        "display_name": "Hổ Khiếu Chấn Lĩnh",
+        "radius": 210,
+        "damage_multiplier": 0.85,
+        "warning_time": 0.8,
+        "recovery": 0.3,
+        "wave_duration": 0.55,
+        "knockback_distance": 45,
+        "cooldown": 11,
+        "initial_cooldown": 5,
+        "range": 300
+      },
+      {
+        "id": "B04",
+        "type": "tiger_bloodline",
+        "display_name": "Bạo Thể · Vạn Yêu Phục",
+        "radius": 160,
+        "damage_multiplier": 0.7,
+        "warning_time": 1,
+        "recovery": 0.3,
+        "hp_below_pct": 0.3,
+        "once": true,
+        "cooldown": 9999,
+        "initial_cooldown": 0,
+        "range": 1200
+      }
+    ],
+    "reward": {
+      "exp": 1,
+      "gold": 1000
+    }
+  },
+  {
+    "id": "arc7_chu_tuoc_nu_vuong_water",
+    "display_name": "Chu Tước Nữ Vương",
+    "element": "water",
+    "attack_type": "ranged",
+    "is_boss": true,
+    "boss_scale": 1,
+    "boss_visual_scale": 0.48,
+    "visual_scale": 0.48,
+    "balance_reference_level": 60,
+    "collision_radius": 38,
+    "attributes": {
+      "hp": 145000,
+      "atk": 500,
+      "def": 35,
+      "move_speed": 60,
+      "attack_range": 500,
+      "attack_speed": 0.35,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "Z01",
+      "type": "vermilion_volley",
+      "display_name": "Xích Vũ Liên Châu",
+      "radius": 30,
+      "damage_multiplier": 0.55,
+      "warning_time": 0.45,
+      "recovery": 0.3,
+      "basic": true,
+      "projectile_speed": 320,
+      "projectile_lifetime": 3,
+      "hit_radius": 18,
+      "volley_interval": 0.16,
+      "cooldown": 2.8,
+      "initial_cooldown": 0,
+      "range": 600
+    },
+    "boss_skills": [
+      {
+        "id": "Z01",
+        "type": "vermilion_volley",
+        "display_name": "Xích Vũ Liên Châu",
+        "radius": 30,
+        "damage_multiplier": 0.55,
+        "warning_time": 0.45,
+        "recovery": 0.3,
+        "basic": true,
+        "projectile_speed": 320,
+        "projectile_lifetime": 3,
+        "hit_radius": 18,
+        "volley_interval": 0.16,
+        "cooldown": 2.8,
+        "initial_cooldown": 0,
+        "range": 600
+      },
+      {
+        "id": "Z02",
+        "type": "vermilion_sweep",
+        "display_name": "Liệt Dực Hoành Tảo",
+        "radius": 170,
+        "damage_multiplier": 1.25,
+        "warning_time": 0.8,
+        "recovery": 0.3,
+        "half_angle": 1.15,
+        "cooldown": 7,
+        "initial_cooldown": 3,
+        "range": 230
+      },
+      {
+        "id": "Z03",
+        "type": "vermilion_rain",
+        "display_name": "Thiên Vũ Lạc Hỏa",
+        "radius": 65,
+        "damage_multiplier": 0.9,
+        "warning_time": 1,
+        "recovery": 0.3,
+        "fall_interval": 0.2,
+        "cooldown": 10,
+        "initial_cooldown": 6,
+        "range": 750
+      },
+      {
+        "id": "Z04",
+        "type": "vermilion_domain",
+        "display_name": "Chu Tước · Phần Thiên Lĩnh",
+        "radius": 235,
+        "damage_multiplier": 1,
+        "warning_time": 1.1,
+        "recovery": 0.3,
+        "inner_radius": 140,
+        "duration": 3,
+        "tick_interval": 0.75,
+        "dot_multiplier": 0.22,
+        "cooldown": 17,
+        "initial_cooldown": 11,
+        "range": 650
+      }
+    ],
+    "reward": {
+      "exp": 1,
+      "gold": 1000
+    }
+  },
+  {
+    "id": "arc7_pha_son_cu_vien_wood",
+    "display_name": "Phá Sơn Cự Viên",
+    "element": "wood",
+    "attack_type": "melee",
+    "visual_scale": 0.26,
+    "balance_reference_level": 60,
+    "attributes": {
+      "hp": 2600,
+      "atk": 200,
+      "def": 25,
+      "move_speed": 78,
+      "attack_range": 70,
+      "attack_speed": 0.58,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "collision_radius": 25,
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Yêu Thể Bất Phược",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "C01",
+      "type": "beast_melee",
+      "display_name": "Phá Nham Quyền",
+      "radius": 65,
+      "damage_multiplier": 1,
+      "warning_time": 0.35,
+      "recovery": 0.3
+    },
+    "reward": {
+      "exp": 1,
+      "gold": 100
+    }
+  },
+  {
+    "id": "arc7_huyet_man_cuong_su_wood",
+    "display_name": "Huyết Man Cuồng Sư",
+    "element": "wood",
+    "attack_type": "melee",
+    "visual_scale": 0.26,
+    "balance_reference_level": 60,
+    "attributes": {
+      "hp": 2100,
+      "atk": 185,
+      "def": 18,
+      "move_speed": 95,
+      "attack_range": 65,
+      "attack_speed": 0.72,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "collision_radius": 25,
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Yêu Thể Bất Phược",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "C02",
+      "type": "beast_melee",
+      "display_name": "Huyết Nha Phệ",
+      "radius": 65,
+      "damage_multiplier": 1,
+      "warning_time": 0.35,
+      "recovery": 0.3
+    },
+    "reward": {
+      "exp": 1,
+      "gold": 100
+    }
+  },
+  {
+    "id": "arc7_co_giap_long_te_wood",
+    "display_name": "Cổ Giáp Long Tê",
+    "element": "wood",
+    "attack_type": "melee",
+    "visual_scale": 0.26,
+    "balance_reference_level": 60,
+    "attributes": {
+      "hp": 4400,
+      "atk": 250,
+      "def": 48,
+      "move_speed": 65,
+      "attack_range": 170,
+      "attack_speed": 0.42,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "collision_radius": 25,
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Yêu Thể Bất Phược",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "C03",
+      "type": "beast_dash",
+      "display_name": "Thiết Giác Xung",
+      "radius": 65,
+      "damage_multiplier": 1,
+      "warning_time": 0.65,
+      "recovery": 0.3,
+      "dash_distance": 160,
+      "dash_duration": 0.5
+    },
+    "reward": {
+      "exp": 1,
+      "gold": 100
+    }
+  },
+  {
+    "id": "arc7_doc_tich_man_ngac_wood",
+    "display_name": "Độc Tích Man Ngạc",
+    "element": "wood",
+    "attack_type": "ranged",
+    "visual_scale": 0.26,
+    "balance_reference_level": 60,
+    "attributes": {
+      "hp": 1500,
+      "atk": 160,
+      "def": 12,
+      "move_speed": 65,
+      "attack_range": 330,
+      "attack_speed": 0.48,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "collision_radius": 25,
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Yêu Thể Bất Phược",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "C04",
+      "type": "beast_bolt",
+      "display_name": "Chướng Độc Thóa",
+      "radius": 65,
+      "damage_multiplier": 1,
+      "warning_time": 0.35,
+      "recovery": 0.3,
+      "projectile_speed": 260,
+      "projectile_lifetime": 3.5,
+      "hit_radius": 16,
+      "effects": [
+        {
+          "id": "poison",
+          "duration": 3,
+          "dps": 20,
+          "tick_interval": 0.75
+        }
+      ]
+    },
+    "reward": {
+      "exp": 1,
+      "gold": 100
+    }
+  },
+  {
+    "id": "arc7_loi_trao_hung_bi_wood",
+    "display_name": "Lôi Trảo Hùng Bi",
+    "element": "wood",
+    "attack_type": "melee",
+    "visual_scale": 0.26,
+    "balance_reference_level": 60,
+    "attributes": {
+      "hp": 3000,
+      "atk": 230,
+      "def": 32,
+      "move_speed": 72,
+      "attack_range": 80,
+      "attack_speed": 0.48,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "collision_radius": 25,
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Yêu Thể Bất Phược",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "C05",
+      "type": "beast_melee",
+      "display_name": "Lôi Liệt Trảo",
+      "radius": 85,
+      "damage_multiplier": 1,
+      "warning_time": 0.35,
+      "recovery": 0.3
+    },
+    "reward": {
+      "exp": 1,
+      "gold": 100
+    }
+  },
+  {
+    "id": "arc7_huyen_lan_long_bao_wood",
+    "display_name": "Huyền Lân Long Báo",
+    "element": "wood",
+    "attack_type": "melee",
+    "visual_scale": 0.26,
+    "balance_reference_level": 60,
+    "attributes": {
+      "hp": 1800,
+      "atk": 175,
+      "def": 15,
+      "move_speed": 110,
+      "attack_range": 195,
+      "attack_speed": 0.65,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "collision_radius": 25,
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Yêu Thể Bất Phược",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "C06",
+      "type": "beast_dash",
+      "display_name": "Huyền Ảnh Tập",
+      "radius": 65,
+      "damage_multiplier": 1,
+      "warning_time": 0.65,
+      "recovery": 0.3,
+      "dash_distance": 200,
+      "dash_duration": 0.32
+    },
+    "reward": {
+      "exp": 1,
+      "gold": 100
+    }
+  },
+  {
+    "id": "arc7_man_cot_toan_nghe_wood",
+    "display_name": "Man Cốt Toan Nghê",
+    "element": "wood",
+    "attack_type": "ranged",
+    "visual_scale": 0.26,
+    "balance_reference_level": 60,
+    "attributes": {
+      "hp": 1800,
+      "atk": 190,
+      "def": 23,
+      "move_speed": 70,
+      "attack_range": 350,
+      "attack_speed": 0.42,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "collision_radius": 25,
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Yêu Thể Bất Phược",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "C07",
+      "type": "beast_bolt",
+      "display_name": "Cốt Khí Phá",
+      "radius": 65,
+      "damage_multiplier": 1,
+      "warning_time": 0.35,
+      "recovery": 0.3,
+      "projectile_speed": 320,
+      "projectile_lifetime": 3.5,
+      "hit_radius": 16
+    },
+    "reward": {
+      "exp": 1,
+      "gold": 100
+    }
+  },
+  {
+    "id": "arc7_bach_ho_yeu_vuong_wood",
+    "display_name": "Bạch Hổ Yêu Vương",
+    "element": "wood",
+    "attack_type": "melee",
+    "is_boss": true,
+    "boss_scale": 1,
+    "boss_visual_scale": 0.48,
+    "visual_scale": 0.48,
+    "balance_reference_level": 60,
+    "collision_radius": 38,
+    "attributes": {
+      "hp": 170000,
+      "atk": 550,
+      "def": 40,
+      "move_speed": 80,
+      "attack_range": 110,
+      "attack_speed": 0.5,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": true
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "B01",
+      "type": "tiger_claw",
+      "display_name": "Bạch Kim Hổ Trảo",
+      "radius": 100,
+      "damage_multiplier": 1,
+      "warning_time": 0.4,
+      "recovery": 0.3,
+      "basic": true,
+      "half_angle": 1.05,
+      "cooldown": 2,
+      "initial_cooldown": 0,
+      "range": 120
+    },
+    "boss_skills": [
+      {
+        "id": "B01",
+        "type": "tiger_claw",
+        "display_name": "Bạch Kim Hổ Trảo",
+        "radius": 100,
+        "damage_multiplier": 1,
+        "warning_time": 0.4,
+        "recovery": 0.3,
+        "basic": true,
+        "half_angle": 1.05,
+        "cooldown": 2,
+        "initial_cooldown": 0,
+        "range": 120
+      },
+      {
+        "id": "B02",
+        "type": "tiger_pounce",
+        "display_name": "Liệp Ảnh Vồ Sát",
+        "radius": 65,
+        "damage_multiplier": 1.25,
+        "warning_time": 0.8,
+        "recovery": 0.3,
+        "dash_distance": 260,
+        "dash_duration": 0.42,
+        "cooldown": 7,
+        "initial_cooldown": 2,
+        "range": 470
+      },
+      {
+        "id": "B03",
+        "type": "tiger_roar",
+        "display_name": "Hổ Khiếu Chấn Lĩnh",
+        "radius": 210,
+        "damage_multiplier": 0.85,
+        "warning_time": 0.8,
+        "recovery": 0.3,
+        "wave_duration": 0.55,
+        "knockback_distance": 45,
+        "cooldown": 11,
+        "initial_cooldown": 5,
+        "range": 300
+      },
+      {
+        "id": "B04",
+        "type": "tiger_bloodline",
+        "display_name": "Bạo Thể · Vạn Yêu Phục",
+        "radius": 160,
+        "damage_multiplier": 0.7,
+        "warning_time": 1,
+        "recovery": 0.3,
+        "hp_below_pct": 0.3,
+        "once": true,
+        "cooldown": 9999,
+        "initial_cooldown": 0,
+        "range": 1200
+      }
+    ],
+    "reward": {
+      "exp": 1,
+      "gold": 1000
+    }
+  },
+  {
+    "id": "arc7_chu_tuoc_nu_vuong_wood",
+    "display_name": "Chu Tước Nữ Vương",
+    "element": "wood",
+    "attack_type": "ranged",
+    "is_boss": true,
+    "boss_scale": 1,
+    "boss_visual_scale": 0.48,
+    "visual_scale": 0.48,
+    "balance_reference_level": 60,
+    "collision_radius": 38,
+    "attributes": {
+      "hp": 145000,
+      "atk": 500,
+      "def": 35,
+      "move_speed": 60,
+      "attack_range": 500,
+      "attack_speed": 0.35,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "Z01",
+      "type": "vermilion_volley",
+      "display_name": "Xích Vũ Liên Châu",
+      "radius": 30,
+      "damage_multiplier": 0.55,
+      "warning_time": 0.45,
+      "recovery": 0.3,
+      "basic": true,
+      "projectile_speed": 320,
+      "projectile_lifetime": 3,
+      "hit_radius": 18,
+      "volley_interval": 0.16,
+      "cooldown": 2.8,
+      "initial_cooldown": 0,
+      "range": 600
+    },
+    "boss_skills": [
+      {
+        "id": "Z01",
+        "type": "vermilion_volley",
+        "display_name": "Xích Vũ Liên Châu",
+        "radius": 30,
+        "damage_multiplier": 0.55,
+        "warning_time": 0.45,
+        "recovery": 0.3,
+        "basic": true,
+        "projectile_speed": 320,
+        "projectile_lifetime": 3,
+        "hit_radius": 18,
+        "volley_interval": 0.16,
+        "cooldown": 2.8,
+        "initial_cooldown": 0,
+        "range": 600
+      },
+      {
+        "id": "Z02",
+        "type": "vermilion_sweep",
+        "display_name": "Liệt Dực Hoành Tảo",
+        "radius": 170,
+        "damage_multiplier": 1.25,
+        "warning_time": 0.8,
+        "recovery": 0.3,
+        "half_angle": 1.15,
+        "cooldown": 7,
+        "initial_cooldown": 3,
+        "range": 230
+      },
+      {
+        "id": "Z03",
+        "type": "vermilion_rain",
+        "display_name": "Thiên Vũ Lạc Hỏa",
+        "radius": 65,
+        "damage_multiplier": 0.9,
+        "warning_time": 1,
+        "recovery": 0.3,
+        "fall_interval": 0.2,
+        "cooldown": 10,
+        "initial_cooldown": 6,
+        "range": 750
+      },
+      {
+        "id": "Z04",
+        "type": "vermilion_domain",
+        "display_name": "Chu Tước · Phần Thiên Lĩnh",
+        "radius": 235,
+        "damage_multiplier": 1,
+        "warning_time": 1.1,
+        "recovery": 0.3,
+        "inner_radius": 140,
+        "duration": 3,
+        "tick_interval": 0.75,
+        "dot_multiplier": 0.22,
+        "cooldown": 17,
+        "initial_cooldown": 11,
+        "range": 650
+      }
+    ],
+    "reward": {
+      "exp": 1,
+      "gold": 1000
+    }
+  },
+  {
+    "id": "arc7_pha_son_cu_vien_fire",
+    "display_name": "Phá Sơn Cự Viên",
+    "element": "fire",
+    "attack_type": "melee",
+    "visual_scale": 0.26,
+    "balance_reference_level": 60,
+    "attributes": {
+      "hp": 2600,
+      "atk": 200,
+      "def": 25,
+      "move_speed": 78,
+      "attack_range": 70,
+      "attack_speed": 0.58,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "collision_radius": 25,
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Yêu Thể Bất Phược",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "C01",
+      "type": "beast_melee",
+      "display_name": "Phá Nham Quyền",
+      "radius": 65,
+      "damage_multiplier": 1,
+      "warning_time": 0.35,
+      "recovery": 0.3
+    },
+    "reward": {
+      "exp": 1,
+      "gold": 100
+    }
+  },
+  {
+    "id": "arc7_huyet_man_cuong_su_fire",
+    "display_name": "Huyết Man Cuồng Sư",
+    "element": "fire",
+    "attack_type": "melee",
+    "visual_scale": 0.26,
+    "balance_reference_level": 60,
+    "attributes": {
+      "hp": 2100,
+      "atk": 185,
+      "def": 18,
+      "move_speed": 95,
+      "attack_range": 65,
+      "attack_speed": 0.72,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "collision_radius": 25,
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Yêu Thể Bất Phược",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "C02",
+      "type": "beast_melee",
+      "display_name": "Huyết Nha Phệ",
+      "radius": 65,
+      "damage_multiplier": 1,
+      "warning_time": 0.35,
+      "recovery": 0.3
+    },
+    "reward": {
+      "exp": 1,
+      "gold": 100
+    }
+  },
+  {
+    "id": "arc7_co_giap_long_te_fire",
+    "display_name": "Cổ Giáp Long Tê",
+    "element": "fire",
+    "attack_type": "melee",
+    "visual_scale": 0.26,
+    "balance_reference_level": 60,
+    "attributes": {
+      "hp": 4400,
+      "atk": 250,
+      "def": 48,
+      "move_speed": 65,
+      "attack_range": 170,
+      "attack_speed": 0.42,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "collision_radius": 25,
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Yêu Thể Bất Phược",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "C03",
+      "type": "beast_dash",
+      "display_name": "Thiết Giác Xung",
+      "radius": 65,
+      "damage_multiplier": 1,
+      "warning_time": 0.65,
+      "recovery": 0.3,
+      "dash_distance": 160,
+      "dash_duration": 0.5
+    },
+    "reward": {
+      "exp": 1,
+      "gold": 100
+    }
+  },
+  {
+    "id": "arc7_doc_tich_man_ngac_fire",
+    "display_name": "Độc Tích Man Ngạc",
+    "element": "fire",
+    "attack_type": "ranged",
+    "visual_scale": 0.26,
+    "balance_reference_level": 60,
+    "attributes": {
+      "hp": 1500,
+      "atk": 160,
+      "def": 12,
+      "move_speed": 65,
+      "attack_range": 330,
+      "attack_speed": 0.48,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "collision_radius": 25,
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Yêu Thể Bất Phược",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "C04",
+      "type": "beast_bolt",
+      "display_name": "Chướng Độc Thóa",
+      "radius": 65,
+      "damage_multiplier": 1,
+      "warning_time": 0.35,
+      "recovery": 0.3,
+      "projectile_speed": 260,
+      "projectile_lifetime": 3.5,
+      "hit_radius": 16,
+      "effects": [
+        {
+          "id": "poison",
+          "duration": 3,
+          "dps": 20,
+          "tick_interval": 0.75
+        }
+      ]
+    },
+    "reward": {
+      "exp": 1,
+      "gold": 100
+    }
+  },
+  {
+    "id": "arc7_loi_trao_hung_bi_fire",
+    "display_name": "Lôi Trảo Hùng Bi",
+    "element": "fire",
+    "attack_type": "melee",
+    "visual_scale": 0.26,
+    "balance_reference_level": 60,
+    "attributes": {
+      "hp": 3000,
+      "atk": 230,
+      "def": 32,
+      "move_speed": 72,
+      "attack_range": 80,
+      "attack_speed": 0.48,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "collision_radius": 25,
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Yêu Thể Bất Phược",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "C05",
+      "type": "beast_melee",
+      "display_name": "Lôi Liệt Trảo",
+      "radius": 85,
+      "damage_multiplier": 1,
+      "warning_time": 0.35,
+      "recovery": 0.3
+    },
+    "reward": {
+      "exp": 1,
+      "gold": 100
+    }
+  },
+  {
+    "id": "arc7_huyen_lan_long_bao_fire",
+    "display_name": "Huyền Lân Long Báo",
+    "element": "fire",
+    "attack_type": "melee",
+    "visual_scale": 0.26,
+    "balance_reference_level": 60,
+    "attributes": {
+      "hp": 1800,
+      "atk": 175,
+      "def": 15,
+      "move_speed": 110,
+      "attack_range": 195,
+      "attack_speed": 0.65,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "collision_radius": 25,
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Yêu Thể Bất Phược",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "C06",
+      "type": "beast_dash",
+      "display_name": "Huyền Ảnh Tập",
+      "radius": 65,
+      "damage_multiplier": 1,
+      "warning_time": 0.65,
+      "recovery": 0.3,
+      "dash_distance": 200,
+      "dash_duration": 0.32
+    },
+    "reward": {
+      "exp": 1,
+      "gold": 100
+    }
+  },
+  {
+    "id": "arc7_man_cot_toan_nghe_fire",
+    "display_name": "Man Cốt Toan Nghê",
+    "element": "fire",
+    "attack_type": "ranged",
+    "visual_scale": 0.26,
+    "balance_reference_level": 60,
+    "attributes": {
+      "hp": 1800,
+      "atk": 190,
+      "def": 23,
+      "move_speed": 70,
+      "attack_range": 350,
+      "attack_speed": 0.42,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "collision_radius": 25,
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Yêu Thể Bất Phược",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "C07",
+      "type": "beast_bolt",
+      "display_name": "Cốt Khí Phá",
+      "radius": 65,
+      "damage_multiplier": 1,
+      "warning_time": 0.35,
+      "recovery": 0.3,
+      "projectile_speed": 320,
+      "projectile_lifetime": 3.5,
+      "hit_radius": 16
+    },
+    "reward": {
+      "exp": 1,
+      "gold": 100
+    }
+  },
+  {
+    "id": "arc7_bach_ho_yeu_vuong_fire",
+    "display_name": "Bạch Hổ Yêu Vương",
+    "element": "fire",
+    "attack_type": "melee",
+    "is_boss": true,
+    "boss_scale": 1,
+    "boss_visual_scale": 0.48,
+    "visual_scale": 0.48,
+    "balance_reference_level": 60,
+    "collision_radius": 38,
+    "attributes": {
+      "hp": 170000,
+      "atk": 550,
+      "def": 40,
+      "move_speed": 80,
+      "attack_range": 110,
+      "attack_speed": 0.5,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": true
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "B01",
+      "type": "tiger_claw",
+      "display_name": "Bạch Kim Hổ Trảo",
+      "radius": 100,
+      "damage_multiplier": 1,
+      "warning_time": 0.4,
+      "recovery": 0.3,
+      "basic": true,
+      "half_angle": 1.05,
+      "cooldown": 2,
+      "initial_cooldown": 0,
+      "range": 120
+    },
+    "boss_skills": [
+      {
+        "id": "B01",
+        "type": "tiger_claw",
+        "display_name": "Bạch Kim Hổ Trảo",
+        "radius": 100,
+        "damage_multiplier": 1,
+        "warning_time": 0.4,
+        "recovery": 0.3,
+        "basic": true,
+        "half_angle": 1.05,
+        "cooldown": 2,
+        "initial_cooldown": 0,
+        "range": 120
+      },
+      {
+        "id": "B02",
+        "type": "tiger_pounce",
+        "display_name": "Liệp Ảnh Vồ Sát",
+        "radius": 65,
+        "damage_multiplier": 1.25,
+        "warning_time": 0.8,
+        "recovery": 0.3,
+        "dash_distance": 260,
+        "dash_duration": 0.42,
+        "cooldown": 7,
+        "initial_cooldown": 2,
+        "range": 470
+      },
+      {
+        "id": "B03",
+        "type": "tiger_roar",
+        "display_name": "Hổ Khiếu Chấn Lĩnh",
+        "radius": 210,
+        "damage_multiplier": 0.85,
+        "warning_time": 0.8,
+        "recovery": 0.3,
+        "wave_duration": 0.55,
+        "knockback_distance": 45,
+        "cooldown": 11,
+        "initial_cooldown": 5,
+        "range": 300
+      },
+      {
+        "id": "B04",
+        "type": "tiger_bloodline",
+        "display_name": "Bạo Thể · Vạn Yêu Phục",
+        "radius": 160,
+        "damage_multiplier": 0.7,
+        "warning_time": 1,
+        "recovery": 0.3,
+        "hp_below_pct": 0.3,
+        "once": true,
+        "cooldown": 9999,
+        "initial_cooldown": 0,
+        "range": 1200
+      }
+    ],
+    "reward": {
+      "exp": 1,
+      "gold": 1000
+    }
+  },
+  {
+    "id": "arc7_chu_tuoc_nu_vuong_fire",
+    "display_name": "Chu Tước Nữ Vương",
+    "element": "fire",
+    "attack_type": "ranged",
+    "is_boss": true,
+    "boss_scale": 1,
+    "boss_visual_scale": 0.48,
+    "visual_scale": 0.48,
+    "balance_reference_level": 60,
+    "collision_radius": 38,
+    "attributes": {
+      "hp": 145000,
+      "atk": 500,
+      "def": 35,
+      "move_speed": 60,
+      "attack_range": 500,
+      "attack_speed": 0.35,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "Z01",
+      "type": "vermilion_volley",
+      "display_name": "Xích Vũ Liên Châu",
+      "radius": 30,
+      "damage_multiplier": 0.55,
+      "warning_time": 0.45,
+      "recovery": 0.3,
+      "basic": true,
+      "projectile_speed": 320,
+      "projectile_lifetime": 3,
+      "hit_radius": 18,
+      "volley_interval": 0.16,
+      "cooldown": 2.8,
+      "initial_cooldown": 0,
+      "range": 600
+    },
+    "boss_skills": [
+      {
+        "id": "Z01",
+        "type": "vermilion_volley",
+        "display_name": "Xích Vũ Liên Châu",
+        "radius": 30,
+        "damage_multiplier": 0.55,
+        "warning_time": 0.45,
+        "recovery": 0.3,
+        "basic": true,
+        "projectile_speed": 320,
+        "projectile_lifetime": 3,
+        "hit_radius": 18,
+        "volley_interval": 0.16,
+        "cooldown": 2.8,
+        "initial_cooldown": 0,
+        "range": 600
+      },
+      {
+        "id": "Z02",
+        "type": "vermilion_sweep",
+        "display_name": "Liệt Dực Hoành Tảo",
+        "radius": 170,
+        "damage_multiplier": 1.25,
+        "warning_time": 0.8,
+        "recovery": 0.3,
+        "half_angle": 1.15,
+        "cooldown": 7,
+        "initial_cooldown": 3,
+        "range": 230
+      },
+      {
+        "id": "Z03",
+        "type": "vermilion_rain",
+        "display_name": "Thiên Vũ Lạc Hỏa",
+        "radius": 65,
+        "damage_multiplier": 0.9,
+        "warning_time": 1,
+        "recovery": 0.3,
+        "fall_interval": 0.2,
+        "cooldown": 10,
+        "initial_cooldown": 6,
+        "range": 750
+      },
+      {
+        "id": "Z04",
+        "type": "vermilion_domain",
+        "display_name": "Chu Tước · Phần Thiên Lĩnh",
+        "radius": 235,
+        "damage_multiplier": 1,
+        "warning_time": 1.1,
+        "recovery": 0.3,
+        "inner_radius": 140,
+        "duration": 3,
+        "tick_interval": 0.75,
+        "dot_multiplier": 0.22,
+        "cooldown": 17,
+        "initial_cooldown": 11,
+        "range": 650
+      }
+    ],
+    "reward": {
+      "exp": 1,
+      "gold": 1000
+    }
+  },
+  {
+    "id": "arc7_pha_son_cu_vien_earth",
+    "display_name": "Phá Sơn Cự Viên",
+    "element": "earth",
+    "attack_type": "melee",
+    "visual_scale": 0.26,
+    "balance_reference_level": 60,
+    "attributes": {
+      "hp": 2600,
+      "atk": 200,
+      "def": 25,
+      "move_speed": 78,
+      "attack_range": 70,
+      "attack_speed": 0.58,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "collision_radius": 25,
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Yêu Thể Bất Phược",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "C01",
+      "type": "beast_melee",
+      "display_name": "Phá Nham Quyền",
+      "radius": 65,
+      "damage_multiplier": 1,
+      "warning_time": 0.35,
+      "recovery": 0.3
+    },
+    "reward": {
+      "exp": 1,
+      "gold": 100
+    }
+  },
+  {
+    "id": "arc7_huyet_man_cuong_su_earth",
+    "display_name": "Huyết Man Cuồng Sư",
+    "element": "earth",
+    "attack_type": "melee",
+    "visual_scale": 0.26,
+    "balance_reference_level": 60,
+    "attributes": {
+      "hp": 2100,
+      "atk": 185,
+      "def": 18,
+      "move_speed": 95,
+      "attack_range": 65,
+      "attack_speed": 0.72,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "collision_radius": 25,
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Yêu Thể Bất Phược",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "C02",
+      "type": "beast_melee",
+      "display_name": "Huyết Nha Phệ",
+      "radius": 65,
+      "damage_multiplier": 1,
+      "warning_time": 0.35,
+      "recovery": 0.3
+    },
+    "reward": {
+      "exp": 1,
+      "gold": 100
+    }
+  },
+  {
+    "id": "arc7_co_giap_long_te_earth",
+    "display_name": "Cổ Giáp Long Tê",
+    "element": "earth",
+    "attack_type": "melee",
+    "visual_scale": 0.26,
+    "balance_reference_level": 60,
+    "attributes": {
+      "hp": 4400,
+      "atk": 250,
+      "def": 48,
+      "move_speed": 65,
+      "attack_range": 170,
+      "attack_speed": 0.42,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "collision_radius": 25,
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Yêu Thể Bất Phược",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "C03",
+      "type": "beast_dash",
+      "display_name": "Thiết Giác Xung",
+      "radius": 65,
+      "damage_multiplier": 1,
+      "warning_time": 0.65,
+      "recovery": 0.3,
+      "dash_distance": 160,
+      "dash_duration": 0.5
+    },
+    "reward": {
+      "exp": 1,
+      "gold": 100
+    }
+  },
+  {
+    "id": "arc7_doc_tich_man_ngac_earth",
+    "display_name": "Độc Tích Man Ngạc",
+    "element": "earth",
+    "attack_type": "ranged",
+    "visual_scale": 0.26,
+    "balance_reference_level": 60,
+    "attributes": {
+      "hp": 1500,
+      "atk": 160,
+      "def": 12,
+      "move_speed": 65,
+      "attack_range": 330,
+      "attack_speed": 0.48,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "collision_radius": 25,
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Yêu Thể Bất Phược",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "C04",
+      "type": "beast_bolt",
+      "display_name": "Chướng Độc Thóa",
+      "radius": 65,
+      "damage_multiplier": 1,
+      "warning_time": 0.35,
+      "recovery": 0.3,
+      "projectile_speed": 260,
+      "projectile_lifetime": 3.5,
+      "hit_radius": 16,
+      "effects": [
+        {
+          "id": "poison",
+          "duration": 3,
+          "dps": 20,
+          "tick_interval": 0.75
+        }
+      ]
+    },
+    "reward": {
+      "exp": 1,
+      "gold": 100
+    }
+  },
+  {
+    "id": "arc7_loi_trao_hung_bi_earth",
+    "display_name": "Lôi Trảo Hùng Bi",
+    "element": "earth",
+    "attack_type": "melee",
+    "visual_scale": 0.26,
+    "balance_reference_level": 60,
+    "attributes": {
+      "hp": 3000,
+      "atk": 230,
+      "def": 32,
+      "move_speed": 72,
+      "attack_range": 80,
+      "attack_speed": 0.48,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "collision_radius": 25,
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Yêu Thể Bất Phược",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "C05",
+      "type": "beast_melee",
+      "display_name": "Lôi Liệt Trảo",
+      "radius": 85,
+      "damage_multiplier": 1,
+      "warning_time": 0.35,
+      "recovery": 0.3
+    },
+    "reward": {
+      "exp": 1,
+      "gold": 100
+    }
+  },
+  {
+    "id": "arc7_huyen_lan_long_bao_earth",
+    "display_name": "Huyền Lân Long Báo",
+    "element": "earth",
+    "attack_type": "melee",
+    "visual_scale": 0.26,
+    "balance_reference_level": 60,
+    "attributes": {
+      "hp": 1800,
+      "atk": 175,
+      "def": 15,
+      "move_speed": 110,
+      "attack_range": 195,
+      "attack_speed": 0.65,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "collision_radius": 25,
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Yêu Thể Bất Phược",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "C06",
+      "type": "beast_dash",
+      "display_name": "Huyền Ảnh Tập",
+      "radius": 65,
+      "damage_multiplier": 1,
+      "warning_time": 0.65,
+      "recovery": 0.3,
+      "dash_distance": 200,
+      "dash_duration": 0.32
+    },
+    "reward": {
+      "exp": 1,
+      "gold": 100
+    }
+  },
+  {
+    "id": "arc7_man_cot_toan_nghe_earth",
+    "display_name": "Man Cốt Toan Nghê",
+    "element": "earth",
+    "attack_type": "ranged",
+    "visual_scale": 0.26,
+    "balance_reference_level": 60,
+    "attributes": {
+      "hp": 1800,
+      "atk": 190,
+      "def": 23,
+      "move_speed": 70,
+      "attack_range": 350,
+      "attack_speed": 0.42,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "collision_radius": 25,
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "display_name": "Yêu Thể Bất Phược",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "C07",
+      "type": "beast_bolt",
+      "display_name": "Cốt Khí Phá",
+      "radius": 65,
+      "damage_multiplier": 1,
+      "warning_time": 0.35,
+      "recovery": 0.3,
+      "projectile_speed": 320,
+      "projectile_lifetime": 3.5,
+      "hit_radius": 16
+    },
+    "reward": {
+      "exp": 1,
+      "gold": 100
+    }
+  },
+  {
+    "id": "arc7_bach_ho_yeu_vuong_earth",
+    "display_name": "Bạch Hổ Yêu Vương",
+    "element": "earth",
+    "attack_type": "melee",
+    "is_boss": true,
+    "boss_scale": 1,
+    "boss_visual_scale": 0.48,
+    "visual_scale": 0.48,
+    "balance_reference_level": 60,
+    "collision_radius": 38,
+    "attributes": {
+      "hp": 170000,
+      "atk": 550,
+      "def": 40,
+      "move_speed": 80,
+      "attack_range": 110,
+      "attack_speed": 0.5,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": true
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "B01",
+      "type": "tiger_claw",
+      "display_name": "Bạch Kim Hổ Trảo",
+      "radius": 100,
+      "damage_multiplier": 1,
+      "warning_time": 0.4,
+      "recovery": 0.3,
+      "basic": true,
+      "half_angle": 1.05,
+      "cooldown": 2,
+      "initial_cooldown": 0,
+      "range": 120
+    },
+    "boss_skills": [
+      {
+        "id": "B01",
+        "type": "tiger_claw",
+        "display_name": "Bạch Kim Hổ Trảo",
+        "radius": 100,
+        "damage_multiplier": 1,
+        "warning_time": 0.4,
+        "recovery": 0.3,
+        "basic": true,
+        "half_angle": 1.05,
+        "cooldown": 2,
+        "initial_cooldown": 0,
+        "range": 120
+      },
+      {
+        "id": "B02",
+        "type": "tiger_pounce",
+        "display_name": "Liệp Ảnh Vồ Sát",
+        "radius": 65,
+        "damage_multiplier": 1.25,
+        "warning_time": 0.8,
+        "recovery": 0.3,
+        "dash_distance": 260,
+        "dash_duration": 0.42,
+        "cooldown": 7,
+        "initial_cooldown": 2,
+        "range": 470
+      },
+      {
+        "id": "B03",
+        "type": "tiger_roar",
+        "display_name": "Hổ Khiếu Chấn Lĩnh",
+        "radius": 210,
+        "damage_multiplier": 0.85,
+        "warning_time": 0.8,
+        "recovery": 0.3,
+        "wave_duration": 0.55,
+        "knockback_distance": 45,
+        "cooldown": 11,
+        "initial_cooldown": 5,
+        "range": 300
+      },
+      {
+        "id": "B04",
+        "type": "tiger_bloodline",
+        "display_name": "Bạo Thể · Vạn Yêu Phục",
+        "radius": 160,
+        "damage_multiplier": 0.7,
+        "warning_time": 1,
+        "recovery": 0.3,
+        "hp_below_pct": 0.3,
+        "once": true,
+        "cooldown": 9999,
+        "initial_cooldown": 0,
+        "range": 1200
+      }
+    ],
+    "reward": {
+      "exp": 1,
+      "gold": 1000
+    }
+  },
+  {
+    "id": "arc7_chu_tuoc_nu_vuong_earth",
+    "display_name": "Chu Tước Nữ Vương",
+    "element": "earth",
+    "attack_type": "ranged",
+    "is_boss": true,
+    "boss_scale": 1,
+    "boss_visual_scale": 0.48,
+    "visual_scale": 0.48,
+    "balance_reference_level": 60,
+    "collision_radius": 38,
+    "attributes": {
+      "hp": 145000,
+      "atk": 500,
+      "def": 35,
+      "move_speed": 60,
+      "attack_range": 500,
+      "attack_speed": 0.35,
+      "projectile_speed": 320,
+      "crit_rate": 0,
+      "crit_damage": 1.5
+    },
+    "skills": [],
+    "generic_skills": [
+      {
+        "id": "debuff_resistance",
+        "params": {
+          "effect_ids": [
+            "root"
+          ],
+          "duration_multiplier": 0,
+          "duration_seconds": null
+        }
+      },
+      {
+        "id": "beast_bloodline",
+        "display_name": "Cổ Huyết Bạo Thể",
+        "params": {
+          "hp_below_pct": 0.3,
+          "atk_multiplier": 1.35,
+          "move_speed_multiplier": 1.15,
+          "max_triggers": 1,
+          "duration_seconds": null,
+          "manual_activation": false
+        }
+      }
+    ],
+    "attack_skill": {
+      "id": "Z01",
+      "type": "vermilion_volley",
+      "display_name": "Xích Vũ Liên Châu",
+      "radius": 30,
+      "damage_multiplier": 0.55,
+      "warning_time": 0.45,
+      "recovery": 0.3,
+      "basic": true,
+      "projectile_speed": 320,
+      "projectile_lifetime": 3,
+      "hit_radius": 18,
+      "volley_interval": 0.16,
+      "cooldown": 2.8,
+      "initial_cooldown": 0,
+      "range": 600
+    },
+    "boss_skills": [
+      {
+        "id": "Z01",
+        "type": "vermilion_volley",
+        "display_name": "Xích Vũ Liên Châu",
+        "radius": 30,
+        "damage_multiplier": 0.55,
+        "warning_time": 0.45,
+        "recovery": 0.3,
+        "basic": true,
+        "projectile_speed": 320,
+        "projectile_lifetime": 3,
+        "hit_radius": 18,
+        "volley_interval": 0.16,
+        "cooldown": 2.8,
+        "initial_cooldown": 0,
+        "range": 600
+      },
+      {
+        "id": "Z02",
+        "type": "vermilion_sweep",
+        "display_name": "Liệt Dực Hoành Tảo",
+        "radius": 170,
+        "damage_multiplier": 1.25,
+        "warning_time": 0.8,
+        "recovery": 0.3,
+        "half_angle": 1.15,
+        "cooldown": 7,
+        "initial_cooldown": 3,
+        "range": 230
+      },
+      {
+        "id": "Z03",
+        "type": "vermilion_rain",
+        "display_name": "Thiên Vũ Lạc Hỏa",
+        "radius": 65,
+        "damage_multiplier": 0.9,
+        "warning_time": 1,
+        "recovery": 0.3,
+        "fall_interval": 0.2,
+        "cooldown": 10,
+        "initial_cooldown": 6,
+        "range": 750
+      },
+      {
+        "id": "Z04",
+        "type": "vermilion_domain",
+        "display_name": "Chu Tước · Phần Thiên Lĩnh",
+        "radius": 235,
+        "damage_multiplier": 1,
+        "warning_time": 1.1,
+        "recovery": 0.3,
+        "inner_radius": 140,
+        "duration": 3,
+        "tick_interval": 0.75,
+        "dot_multiplier": 0.22,
+        "cooldown": 17,
+        "initial_cooldown": 11,
+        "range": 650
+      }
+    ],
+    "reward": {
+      "exp": 1,
+      "gold": 1000
+    }
   }
 ]

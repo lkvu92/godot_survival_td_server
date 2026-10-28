@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const skills=JSON.parse(fs.readFileSync(path.join(__dirname,'../data/skills.json'),'utf8'));
 const skill=n=>skills.find(s=>s.id===`hero_4_skill_${n}`);
-assert.deepEqual(skill(1).levels.map(l=>l.stats.damage_pct),[20,22.5,25,27.5,30]);
+assert.deepEqual(skill(1).levels.map(l=>l.stats.damage_pct),[40,55,70,85,100]);
 assert.deepEqual(skill(1).levels.map(l=>l.effects.find(e=>e.id==='poison').dps_pct),[12.5,15,17.5,20,22.5]);
 const oldDirect2=[85,95,105,115,125],oldDirect3=[100.1,107.6,116,126.5,140];
 const oldPoison3=[45,55,65,75,85],duration3=[3,3.5,4,4.5,5];
@@ -22,4 +22,4 @@ for(let i=0;i<5;i++){
 }
 assert.deepEqual(skill(2).levels.map(l=>l.stats.cooldown),[6.5,6,5.5,5,4.5]);
 assert.deepEqual(skill(3).levels.map(l=>l.stats.cooldown),[8.8,8.2,7.6,7,6.2]);
-console.log('PASS C196 v1.4: halved Skill1 direct, Skill2/3 conserved raw isolated budgets, all five spatial multipliers, existing poison/slow/timing and Skill4 unchanged');
+console.log('PASS C196 v1.4: C196 v1.5 recovered Skill1 direct, Skill2/3 conserved raw isolated budgets, all five spatial multipliers, existing poison/slow/timing and Skill4 unchanged');

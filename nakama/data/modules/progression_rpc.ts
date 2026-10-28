@@ -4,7 +4,7 @@ function trialTowerStatus(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: 
     const fail = (code: number, message: string) => JSON.stringify({success:false,code,message});
     if (!ctx.userId) return fail(401, "Authentication required");
     const config = readContentConfig(nk, "trial_tower");
-    if (config.floor_count !== 30 || config.daily_tickets !== 5 || config.ticket_cap !== 20
+    if (JSON.stringify(config.element_cycle) !== JSON.stringify(["water","fire","earth","wood","metal"]) || config.floor_count !== 30 || config.daily_tickets !== 5 || config.ticket_cap !== 20
         || config.base_stat_multiplier !== 0.7 || config.stat_increase_per_floor !== 0.1 || config.speed_increase_per_floor !== 0.05 || !Array.isArray(config.floors) || config.floors.length !== 30)
         return fail(503, "Tháp chưa được cấu hình.");
     const validRewards = (rewards: any) => Array.isArray(rewards) && rewards.every((r: any) =>
@@ -44,7 +44,7 @@ function trialTowerStatus(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: 
             }
         }
         return JSON.stringify({success:true,snapshot:{
-            floors:config.floors.map((f:any)=>Object.assign({},f,{first_rewards:towerRewardEntries(nk,f.first_rewards,rewardProfile,f.floor),repeat_rewards:towerRewardEntries(nk,f.repeat_rewards,rewardProfile,f.floor),stat_multiplier:Math.round((config.base_stat_multiplier+(f.floor-1)*config.stat_increase_per_floor)*10000)/10000,
+            floors:config.floors.map((f:any)=>Object.assign({},f,{demon_element:config.element_cycle[(f.floor-1)%5],first_rewards:towerRewardEntries(nk,f.first_rewards,rewardProfile,f.floor),repeat_rewards:towerRewardEntries(nk,f.repeat_rewards,rewardProfile,f.floor),stat_multiplier:Math.round((config.base_stat_multiplier+(f.floor-1)*config.stat_increase_per_floor)*10000)/10000,
                 speed_multiplier:Math.round((config.base_stat_multiplier+(f.floor-1)*config.speed_increase_per_floor)*10000)/10000})),
             highest_cleared:state.highest_cleared,tickets:state.tickets,daily_tickets:5,ticket_cap:ticketCap,
             server_time:Math.floor(now/1000),next_ticket_at:Math.floor(((Math.max(day,state.last_ticket_day)+1)*86400000-7*3600000)/1000)
@@ -116,11 +116,23 @@ function startTrialTower(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: n
     const starting=cpArray(hero.starting_skills).map((s:any)=>typeof s==='string'?s:s.skill_id||s.id).find((id:any)=>draftCatalog.some(c=>c.skill_id===id));
     if(starting)skills[starting]=1;
     if(!Object.keys(skills).length)return fail('CONFIG_INVALID','Chưa cấu hình kỹ năng.');
+    const demonElement=config.element_cycle[(req.floor-1)%5];
+    const demonHero=catalog.heroes.filter((v:any)=>v.element===demonElement).sort((a:any,b:any)=>String(a.id).localeCompare(String(b.id)))[0];
+    if(!demonHero)return fail('CONFIG_INVALID','Tower training element is not configured.');
+    const demonRows=nk.sqlQuery('SELECT id,display_name,criteria_unlock,hero_level_unlock,levels FROM game_skills WHERE id IN (SELECT jsonb_array_elements_text(skill_pool) FROM game_heroes WHERE id=$1) ORDER BY id',[demonHero.id]);
+    const demonDraftCatalog=demonRows.filter((s:any)=>cpArray(s.levels).length>0&&Number(s.hero_level_unlock||1)<=level&&Number(cpObject(s.criteria_unlock).level||1)<=20).map((s:any)=>({id:s.id,skill_id:s.id,title:s.display_name,priority:0,max_level:cpArray(s.levels).length,required_skill:cpObject(s.criteria_unlock).required_skill||'',icon_id:s.id})).concat(prep.supports);
+    const demonSkills:any={};
+    const demonStarting=cpArray(demonHero.starting_skills).map((s:any)=>typeof s==='string'?s:s.skill_id||s.id).find((id:any)=>demonDraftCatalog.some((c:any)=>c.skill_id===id));
+    if(!demonStarting)return fail('CONFIG_INVALID','Tower training skills are not configured.');
+    demonSkills[demonStarting]=1;
+    const originalAffinity=demonElementProfile.affinities[hero.element]||0;
+    demonElementProfile.affinities[hero.element]=demonElementProfile.affinities[demonElement]||0;
+    demonElementProfile.affinities[demonElement]=originalAffinity;
     const issued=talismanCreateStageRun(nk,ctx.userId,'stage_trial_tower','floor_'+req.floor);
     const run:any=Object.assign(issued.run,{request_id:req.request_id,floor:req.floor,hero_id:req.hero_id,skill_levels:skills,
         attributes:attrs,than_luan:Object.assign({},profile.than_luan),stat_multiplier:status.snapshot.floors[req.floor-1].stat_multiplier,speed_multiplier:status.snapshot.floors[req.floor-1].speed_multiplier,combat_rules:rules,
         demon_attributes:demonAttributes,hero_element_profile:heroElementProfile,demon_element_profile:demonElementProfile,
-        phase:'preparing',combat_level:20,upgrade_count:19,countdown_sec:5,draft_catalog:draftCatalog,skill_unlock_version:5,arena});
+        demon_element:demonElement,demon_skill_levels:demonSkills,demon_draft_catalog:demonDraftCatalog,phase:'preparing',combat_level:20,upgrade_count:19,countdown_sec:5,draft_catalog:draftCatalog,skill_unlock_version:5,arena});
     profile.activity={type:'combat',activity_id:run.run_id};
     try{nk.storageWrite([{...refs[0],value:profile,version:p.version,permissionRead:0,permissionWrite:0},
         {...refs[4],value:Object.assign({},towerRow.value,{tickets:towerRow.value.tickets-1}),version:towerRow.version,permissionRead:0,permissionWrite:0},
@@ -160,7 +172,7 @@ function prepareTrialTower(ctx:nkruntime.Context,_logger:nkruntime.Logger,nk:nkr
     const row=rows[0],run=row&&cpObject(row.value);
     if(!run||run.run_id!==req.run_id||run.stage_id!=='stage_trial_tower'||run.status!=='active')return fail('RUN_MISMATCH','Trận không hợp lệ.');
     if(Date.now()>run.expires_at_ms)return fail('RUN_EXPIRED','Trận đã hết hạn.');
-    if(run.skill_unlock_version!==5)return fail('RUN_RULES_CHANGED','Luật kỹ năng đã thay đổi. Hãy về tháp để tạo trận mới.');
+    if(run.skill_unlock_version!==5||!run.demon_draft_catalog||!run.demon_skill_levels)return fail('RUN_RULES_CHANGED','Luật kỹ năng đã thay đổi. Hãy về tháp để tạo trận mới.');
     if(run.phase==='countdown')return JSON.stringify(run.player_picks&&JSON.stringify(run.player_picks)===JSON.stringify(req.picks)?{success:true,run}:{success:false,code:'BUILD_LOCKED',message:'Build đã xác nhận.'});
     if(run.phase!=='preparing'||!Array.isArray(run.draft_catalog))return fail('RUN_MISMATCH','Hãy vào lại tháp.');
     const levels=Object.assign({},run.skill_levels);
@@ -168,9 +180,9 @@ function prepareTrialTower(ctx:nkruntime.Context,_logger:nkruntime.Logger,nk:nkr
         if(!c||!towerDraftLegal(c,levels))return fail('INVALID_BUILD','Nâng cấp không hợp lệ.');
         towerDraftApply(c,levels);
     }
-    const aiLevels=Object.assign({},run.skill_levels),aiPicks:string[]=[];
+    const aiLevels=Object.assign({},run.demon_skill_levels),aiPicks:string[]=[];
     for(let i=0;i<19;i++){
-        const pool=run.draft_catalog.filter((c:any)=>towerDraftLegal(c,aiLevels)),offer:any[]=[];
+        const pool=run.demon_draft_catalog.filter((c:any)=>towerDraftLegal(c,aiLevels)),offer:any[]=[];
         while(pool.length&&offer.length<3)offer.push(pool.splice(Math.floor(Math.random()*pool.length),1)[0]);
         if(!offer.length)return fail('CONFIG_INVALID','Không đủ nâng cấp cho Tâm Ma.');
         const priority=Math.min(...offer.map(c=>c.priority)),best=offer.filter(c=>c.priority===priority),chosen=best[Math.floor(Math.random()*best.length)];

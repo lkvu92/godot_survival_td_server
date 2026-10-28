@@ -3,7 +3,7 @@ const TANKERS = new Set(['horn_cactus', 'frost_knight', 'frost_giant', 'lava_bru
   'ent_protector', 'shield_sentinel', 'granite_colossus']);
 const LEADS = {tanker: 0, ranger: 2.5, fast: 1.5, boss: 2};
 const CAMPAIGN_ARCS = new Set(['arc_2', 'arc_frozen_realm', 'arc_verdant_realm',
-  'arc_iron_bastion', 'arc_titan_realm', 'arc_ngu_to_quy_khu']);
+  'arc_iron_bastion', 'arc_titan_realm', 'arc_ngu_to_quy_khu', 'arc_van_yeu_co_linh']);
 
 function applySpawnFormation(stages, enemies) {
   const definitions = new Map(enemies.map(enemy => [enemy.id, enemy]));
@@ -14,7 +14,7 @@ function applySpawnFormation(stages, enemies) {
       const enemy = definitions.get(entry.enemy_id);
       if (!enemy) throw Error(`Unknown formation enemy: ${entry.enemy_id}`);
       const role = entry.boss || enemy.is_boss ? 'boss'
-        : TANKERS.has(entry.enemy_id.replace(/^arc6_/, '')) ? 'tanker'
+        : (TANKERS.has(entry.enemy_id.replace(/^arc6_/, '')) || /^arc7_co_giap_long_te_/.test(entry.enemy_id)) ? 'tanker'
         : enemy.attack_type === 'ranged' ? 'ranger' : 'fast';
       if (entry.spawn_role !== role || entry.formation_lead_seconds !== LEADS[role]) changed++;
       entry.spawn_role = role;

@@ -44,7 +44,7 @@ assert.equal(preview.find(row => row.item_id === 'tower_sweep_ticket').drop_rate
 for (const mode of ['normal', 'epic']) {
   assert(!fn('sweepRewardTable')(rewardNk, stage.id, mode, stage, {...level, level_id: mode}, 'S').some(row => row.group === 'fragment'));
 }
-for (const other of [{...stage, id: 'stage_6_05'}, {...stage, is_boss: false}, {...stage, id: 'stage_7_10'}]) {
+for (const other of [{...stage, id: 'stage_6_05'}, {...stage, is_boss: false}, {...stage, id: 'stage_8_10'}]) {
   assert(!fn('stageCompletionLoot')(rewardNk, other, level).some(row => row.group === 'fragment' || row.item_id === 'tower_sweep_ticket'));
 }
 // All five old finals retain the original 75/25 main/other affinity distribution.

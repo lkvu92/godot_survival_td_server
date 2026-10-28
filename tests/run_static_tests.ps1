@@ -2,6 +2,8 @@ $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path $PSScriptRoot -Parent
 Push-Location $repoRoot
 try {
+    & node tests/test_hero_growth_balance.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'C238 hero growth regression failed' }
     & node tests/test_gift_codes.cjs
     if ($LASTEXITCODE -ne 0) { throw 'Gift code atomic redemption regressions failed' }
     & node --test services/account-identity/test/security.test.js services/account-identity/test/mail-template.test.js
@@ -17,6 +19,10 @@ try {
     }
     & node --check nakama/data/build/index.js
     if ($LASTEXITCODE -ne 0) { throw 'Runtime syntax failed' }
+    & node tests/test_arc7_catalog.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Arc 7 catalog regression failed' }
+    & node tests/test_arc7_backend.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Arc 7 backend regression failed' }
     & node tests/test_arc6_backend.cjs
     if ($LASTEXITCODE -ne 0) { throw 'Arc 6 backend integration failed' }
     & node tests/test_breakthrough_preview.cjs
@@ -119,3 +125,6 @@ try {
 } finally {
     Pop-Location
 }
+
+node (Join-Path $PSScriptRoot 'test_tower_element_cycle.cjs')
+if ($LASTEXITCODE -ne 0) { throw 'Tower element cycle regression failed' }

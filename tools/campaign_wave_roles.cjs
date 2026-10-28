@@ -21,7 +21,7 @@ const MIXED_TANK_TO_GRUNT = {
   arc6_lava_brute: 'arc6_flame_imp',
   arc6_granite_colossus: 'arc6_snow_skeleton',
 };
-const isCampaignArc = id => !!ROLES[id] || id === MIXED_ARC_ID;
+const isCampaignArc = id => !!ROLES[id] || id === MIXED_ARC_ID || id === 'arc_van_yeu_co_linh';
 
 function applyWaveRoleRules(stages) {
   let changed = 0;

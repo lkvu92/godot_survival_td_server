@@ -235,7 +235,8 @@ function mergeCatalog(catalog, built) {
   const output = clone(catalog);
   for (const [key,rows] of Object.entries(built)) {
     const ids = new Set(rows.map(row=>row.id));
-    output[key] = [...output[key].filter(row=>!ids.has(row.id)),...rows];
+    const replacements = new Map(rows.map(row=>[row.id,row]));
+    output[key] = output[key].map(row=>replacements.get(row.id) || row).concat(rows.filter(row=>!catalog[key].some(old=>old.id===row.id)));
   }
   const eligible = output.progression.talisman_system.fragment_drop.eligible_stages;
   if (!eligible.includes('stage_6_10')) eligible.push('stage_6_10');

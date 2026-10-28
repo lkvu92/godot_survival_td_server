@@ -332,9 +332,9 @@ function talismanUpgradeQuote(nk: nkruntime.Nakama, level: number, items: any[],
     if (!isFinite(quantityPerLevel) || quantityPerLevel <= 0) return { error: "Missing Heavenly Crystal cost config; reseed progression", success: false };
     const materialQuantity = currentLevel * quantityPerLevel;
     const gold = talismanJsonObject(upgrade.gold);
-    let goldCost = Number(gold.low_base || 10) + currentLevel * Number(gold.low_growth || 4);
-    if (targetLevel >= 21) goldCost = Number(gold.high_base || 200) + (currentLevel - 20) * Number(gold.high_growth || 20);
-    else if (targetLevel >= 11) goldCost = Number(gold.medium_base || 50) + (currentLevel - 10) * Number(gold.medium_growth || 10);
+    let goldCost = Number(gold.low_base || 10000) + currentLevel * Number(gold.low_growth || 4000);
+    if (targetLevel >= 21) goldCost = Number(gold.high_base || 200000) + (currentLevel - 20) * Number(gold.high_growth || 20000);
+    else if (targetLevel >= 11) goldCost = Number(gold.medium_base || 50000) + (currentLevel - 10) * Number(gold.medium_growth || 10000);
     const materialId = String(tier.material_id || "");
     const milestones = talismanJsonObject(upgrade.fragment_milestones);
     const fallbackMilestone = [10, 20, 30].indexOf(targetLevel) >= 0 ? targetLevel : 0;

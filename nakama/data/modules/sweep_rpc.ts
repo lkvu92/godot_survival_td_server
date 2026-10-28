@@ -137,7 +137,7 @@ function sweepWrite(nk:nkruntime.Nakama,userId:string,s:any,full:boolean):void {
 // C221: display levels 51–60 do not change the account/hero level cap.
 // The sixth campaign final shares the existing final-boss reward rules.
 function campaignFinalBossStage(stage:string,isBoss:boolean):boolean {
-    return isBoss===true&&/^stage_[1-6]_10$/.test(stage);
+    return isBoss===true&&/^stage_[1-7]_10$/.test(stage);
 }
 function sweepRewardTable(nk:nkruntime.Nakama,stage:string,mode:string,stageRow:any,level:any,grade:string,rules:any=null):any[] {
     const boss=parseJsonb(level.boss_loot_table)||[],normal=parseJsonb(level.loot_table)||[];
@@ -146,7 +146,7 @@ function sweepRewardTable(nk:nkruntime.Nakama,stage:string,mode:string,stageRow:
     if(mode==='legend'&&campaignFinalBossStage(stage,stageRow.is_boss)){
         const arcs=nk.sqlQuery('SELECT element FROM game_arcs WHERE id = $1',[stageRow.arc_id]);
         const element=arcs.length?String(arcs[0].element||''):'';
-        const mixed=stageRow.arc_id==='arc_ngu_to_quy_khu';
+        const mixed=['arc_ngu_to_quy_khu','arc_van_yeu_co_linh'].indexOf(stageRow.arc_id)>=0;
         for(const tier of [{name:'Hạ phẩm',weight:0.85},{name:'Trung phẩm',weight:0.15}]){
             const candidates=nk.sqlQuery('SELECT id, element FROM game_talismans WHERE tier = $1 ORDER BY id',[tier.name]);
             const match=candidates.filter((r:any)=>String(r.element||'')===element),other=candidates.filter((r:any)=>String(r.element||'')!==element);

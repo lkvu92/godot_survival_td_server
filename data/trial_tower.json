@@ -1543,5 +1543,12 @@
         }
       ]
     }
+  ],
+  "element_cycle": [
+    "water",
+    "fire",
+    "earth",
+    "wood",
+    "metal"
   ]
 }

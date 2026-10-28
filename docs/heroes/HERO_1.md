@@ -1,7 +1,7 @@
 # Hero 1 — Băng Tuyết Thánh Nữ
 
-Version: 1.0.0
-Cập nhật: 2026-10-24
+Version: 1.1.0
+Cập nhật: 2026-10-29
 
 [Danh sách 5 hero](../HERO_SKILLS_CURRENT.md) · [Config skill nguồn](../../data/skills.json)
 
@@ -15,6 +15,16 @@ Các cột Lv1–Lv5 là **cấp skill trong trận**. Level hero mở skill và
 | 2 | Thiên Băng Vẫn Thạch | 10 | 5 | `two_phase_aoe` / `active` |
 | 3 | Cực Địa Băng Giới | 20 | 10 | `support_heal` / `passive` |
 | 4 | Hàn Băng Thấu Thể | 30 | 15 | `support_heal` / `passive` |
+
+## Chỉ số hero và tăng cấp — C238
+
+[Bảng chung và hệ số JSON](../HERO_STATS_CURRENT.md). Lv dưới đây là cấp hero ngoài trận, khác cấp skill. Cấp tạm trong trận dùng cùng hệ số với mức 25% cho nhóm nhân.
+
+| Lv | HP | ATK | DEF | Tốc chạy | Tốc đánh | Tầm đánh | Chí mạng (%) | ST chí mạng (%) | Hồi HP/10s (%) | HP hồi/10s | Sức tấn công lý thuyết |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 1 | 480.00 | 23.00 | 10.00 | 280.00 | 1.50 | 350.00 | 6.00 | 150.00 | 3.00 | 14.40 | 35.54 |
+| 50 | 8341.20 | 795.69 | 86.44 | 308.80 | 2.44 | 350.00 | 25.60 | 223.50 | 7.90 | 658.95 | 2557.94 |
+| 70 | 26751.36 | 3379.96 | 208.46 | 321.39 | 2.98 | 350.00 | 33.60 | 253.50 | 9.90 | 2648.39 | 15268.92 |
 
 ## Skill 1 — Băng Luân Song Hành
 

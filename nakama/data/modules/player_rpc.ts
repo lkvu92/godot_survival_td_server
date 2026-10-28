@@ -161,8 +161,8 @@ function canonicalHeroStates(nk: nkruntime.Nakama, source: any): any[] {
             exp: existing ? Math.max(0, Number(existing.exp || 0)) : 0,
             next_level_exp: existing ? Math.max(0, Number(existing.next_level_exp || 1000)) : 1000,
             owned: existing ? existing.owned === true : freeHero,
-            current_attribute: existing && existing.current_attribute
-                ? existing.current_attribute : parseJsonObject(hero.attributes)
+            // C238: derived stats must follow current balance, including existing heroes.
+            current_attribute: progressionHeroAttributes(nk, id, existing ? Math.max(1, Number(existing.level || 1)) : 1)
         };
     });
 }

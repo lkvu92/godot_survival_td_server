@@ -39,6 +39,6 @@ for (const stage of stages.filter(stage => campaignArcIds.has(stage.arc_id))) {
   }
 }
 assert.equal(legacyCount, 50, 'original five arcs retained');
-assert.equal(count, 60);
+assert.equal(count, 70);
 assert.equal(applyCampaignOpeningRelief(stages), 0, 'actual data already migrated');
 console.log(`PASS C218 opening relief: ${count} stages, first 3 waves paced, boss/EXP/idempotence preserved`);

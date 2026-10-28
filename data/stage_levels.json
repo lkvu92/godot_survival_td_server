@@ -19629,5 +19629,3587 @@
         "requires_balance_reaudit": true
       }
     }
+  },
+  {
+    "id": "stage_7_01_normal",
+    "stage_id": "stage_7_01",
+    "level_id": "normal",
+    "display_name": "Normal",
+    "description": "Vạn Yêu Cổ Lĩnh · Normal · nền tảng hero Lv60",
+    "order": 1,
+    "recommended_power": 102737,
+    "exp_multiplier": 1,
+    "stamina_cost": 1,
+    "enemy_modifiers": {
+      "hp_mul": 1,
+      "atk_mul": 1,
+      "speed_mul": 1
+    },
+    "loot_table": [
+      {
+        "resource_id": "gold",
+        "min_qty": 655,
+        "max_qty": 1310,
+        "drop_rate": 1,
+        "base_quantity": 1310
+      },
+      {
+        "item_id": "stone_earth_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_water_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_fire_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_wood_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_metal_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      }
+    ],
+    "boss_loot_table": [],
+    "gold_reward": 805,
+    "stage_rules": {
+      "balance_reference_level": 60,
+      "recommendation": {
+        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
+        "reference_hero_level": 60,
+        "cases": 15,
+        "passed": 15,
+        "minimum_power_search": false
+      }
+    },
+    "unlock_condition": {
+      "stage_id": "stage_6_10",
+      "level_id": "normal"
+    }
+  },
+  {
+    "id": "stage_7_01_epic",
+    "stage_id": "stage_7_01",
+    "level_id": "epic",
+    "display_name": "Epic",
+    "description": "Vạn Yêu Cổ Lĩnh · Epic · nền tảng hero Lv60",
+    "order": 2,
+    "recommended_power": 102737,
+    "exp_multiplier": 1.5,
+    "stamina_cost": 2,
+    "enemy_modifiers": {
+      "hp_mul": 1.5,
+      "atk_mul": 1.5,
+      "speed_mul": 1.2
+    },
+    "loot_table": [
+      {
+        "resource_id": "gold",
+        "min_qty": 1180,
+        "max_qty": 2360,
+        "drop_rate": 1,
+        "base_quantity": 2360
+      },
+      {
+        "item_id": "stone_earth_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_water_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_fire_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_wood_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_metal_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "talisman_heavenly_crystal",
+        "min_qty": 1,
+        "max_qty": 8,
+        "drop_rate": 0.3,
+        "base_quantity": 8
+      }
+    ],
+    "boss_loot_table": [],
+    "gold_reward": 1450,
+    "stage_rules": {
+      "balance_reference_level": 60,
+      "recommendation": {
+        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
+        "reference_hero_level": 60,
+        "cases": 15,
+        "passed": 15,
+        "minimum_power_search": false
+      }
+    },
+    "unlock_condition": {
+      "stage_id": "stage_7_01",
+      "level_id": "normal"
+    }
+  },
+  {
+    "id": "stage_7_01_legend",
+    "stage_id": "stage_7_01",
+    "level_id": "legend",
+    "display_name": "Legend",
+    "description": "Vạn Yêu Cổ Lĩnh · Legend · nền tảng hero Lv60",
+    "order": 3,
+    "recommended_power": 102737,
+    "exp_multiplier": 2.25,
+    "stamina_cost": 3,
+    "enemy_modifiers": {
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
+      "speed_mul": 1.4
+    },
+    "loot_table": [
+      {
+        "resource_id": "gold",
+        "min_qty": 1965,
+        "max_qty": 3930,
+        "drop_rate": 1,
+        "base_quantity": 3930
+      },
+      {
+        "item_id": "stone_earth_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_water_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_fire_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_wood_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_metal_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "rune_earth_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_water_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_fire_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_wood_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_metal_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "talisman_heavenly_crystal",
+        "min_qty": 5,
+        "max_qty": 12,
+        "drop_rate": 0.45,
+        "base_quantity": 12
+      }
+    ],
+    "boss_loot_table": [],
+    "gold_reward": 2415,
+    "stage_rules": {
+      "balance_reference_level": 60,
+      "recommendation": {
+        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
+        "reference_hero_level": 60,
+        "cases": 15,
+        "passed": 15,
+        "minimum_power_search": false
+      }
+    },
+    "unlock_condition": {
+      "stage_id": "stage_7_01",
+      "level_id": "epic"
+    }
+  },
+  {
+    "id": "stage_7_02_normal",
+    "stage_id": "stage_7_02",
+    "level_id": "normal",
+    "display_name": "Normal",
+    "description": "Vạn Yêu Cổ Lĩnh · Normal · nền tảng hero Lv60",
+    "order": 1,
+    "recommended_power": 102737,
+    "exp_multiplier": 1,
+    "stamina_cost": 1,
+    "enemy_modifiers": {
+      "hp_mul": 1,
+      "atk_mul": 1,
+      "speed_mul": 1
+    },
+    "loot_table": [
+      {
+        "resource_id": "gold",
+        "min_qty": 670,
+        "max_qty": 1340,
+        "drop_rate": 1,
+        "base_quantity": 1340
+      },
+      {
+        "item_id": "stone_earth_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_water_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_fire_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_wood_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_metal_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      }
+    ],
+    "boss_loot_table": [],
+    "gold_reward": 820,
+    "stage_rules": {
+      "balance_reference_level": 60,
+      "recommendation": {
+        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
+        "reference_hero_level": 60,
+        "cases": 5,
+        "passed": 5,
+        "minimum_power_search": false
+      }
+    },
+    "unlock_condition": {
+      "stage_id": "stage_7_01",
+      "level_id": "normal"
+    }
+  },
+  {
+    "id": "stage_7_02_epic",
+    "stage_id": "stage_7_02",
+    "level_id": "epic",
+    "display_name": "Epic",
+    "description": "Vạn Yêu Cổ Lĩnh · Epic · nền tảng hero Lv60",
+    "order": 2,
+    "recommended_power": 102737,
+    "exp_multiplier": 1.5,
+    "stamina_cost": 2,
+    "enemy_modifiers": {
+      "hp_mul": 1.5,
+      "atk_mul": 1.5,
+      "speed_mul": 1.2
+    },
+    "loot_table": [
+      {
+        "resource_id": "gold",
+        "min_qty": 1205,
+        "max_qty": 2410,
+        "drop_rate": 1,
+        "base_quantity": 2410
+      },
+      {
+        "item_id": "stone_earth_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_water_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_fire_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_wood_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_metal_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "talisman_heavenly_crystal",
+        "min_qty": 1,
+        "max_qty": 8,
+        "drop_rate": 0.3,
+        "base_quantity": 8
+      }
+    ],
+    "boss_loot_table": [],
+    "gold_reward": 1475,
+    "stage_rules": {
+      "balance_reference_level": 60,
+      "recommendation": {
+        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
+        "reference_hero_level": 60,
+        "cases": 5,
+        "passed": 5,
+        "minimum_power_search": false
+      }
+    },
+    "unlock_condition": {
+      "stage_id": "stage_7_02",
+      "level_id": "normal"
+    }
+  },
+  {
+    "id": "stage_7_02_legend",
+    "stage_id": "stage_7_02",
+    "level_id": "legend",
+    "display_name": "Legend",
+    "description": "Vạn Yêu Cổ Lĩnh · Legend · nền tảng hero Lv60",
+    "order": 3,
+    "recommended_power": 102737,
+    "exp_multiplier": 2.25,
+    "stamina_cost": 3,
+    "enemy_modifiers": {
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
+      "speed_mul": 1.4
+    },
+    "loot_table": [
+      {
+        "resource_id": "gold",
+        "min_qty": 2005,
+        "max_qty": 4010,
+        "drop_rate": 1,
+        "base_quantity": 4010
+      },
+      {
+        "item_id": "stone_earth_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_water_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_fire_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_wood_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_metal_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "rune_earth_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_water_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_fire_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_wood_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_metal_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "talisman_heavenly_crystal",
+        "min_qty": 5,
+        "max_qty": 12,
+        "drop_rate": 0.45,
+        "base_quantity": 12
+      }
+    ],
+    "boss_loot_table": [],
+    "gold_reward": 2455,
+    "stage_rules": {
+      "balance_reference_level": 60,
+      "recommendation": {
+        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
+        "reference_hero_level": 60,
+        "cases": 5,
+        "passed": 5,
+        "minimum_power_search": false
+      }
+    },
+    "unlock_condition": {
+      "stage_id": "stage_7_02",
+      "level_id": "epic"
+    }
+  },
+  {
+    "id": "stage_7_03_normal",
+    "stage_id": "stage_7_03",
+    "level_id": "normal",
+    "display_name": "Normal",
+    "description": "Vạn Yêu Cổ Lĩnh · Normal · nền tảng hero Lv60",
+    "order": 1,
+    "recommended_power": 102737,
+    "exp_multiplier": 1,
+    "stamina_cost": 1,
+    "enemy_modifiers": {
+      "hp_mul": 1,
+      "atk_mul": 1,
+      "speed_mul": 1
+    },
+    "loot_table": [
+      {
+        "resource_id": "gold",
+        "min_qty": 685,
+        "max_qty": 1370,
+        "drop_rate": 1,
+        "base_quantity": 1370
+      },
+      {
+        "item_id": "stone_earth_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_water_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_fire_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_wood_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_metal_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      }
+    ],
+    "boss_loot_table": [],
+    "gold_reward": 835,
+    "stage_rules": {
+      "balance_reference_level": 60,
+      "recommendation": {
+        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
+        "reference_hero_level": 60,
+        "cases": 5,
+        "passed": 5,
+        "minimum_power_search": false
+      }
+    },
+    "unlock_condition": {
+      "stage_id": "stage_7_02",
+      "level_id": "normal"
+    }
+  },
+  {
+    "id": "stage_7_03_epic",
+    "stage_id": "stage_7_03",
+    "level_id": "epic",
+    "display_name": "Epic",
+    "description": "Vạn Yêu Cổ Lĩnh · Epic · nền tảng hero Lv60",
+    "order": 2,
+    "recommended_power": 102737,
+    "exp_multiplier": 1.5,
+    "stamina_cost": 2,
+    "enemy_modifiers": {
+      "hp_mul": 1.5,
+      "atk_mul": 1.5,
+      "speed_mul": 1.2
+    },
+    "loot_table": [
+      {
+        "resource_id": "gold",
+        "min_qty": 1230,
+        "max_qty": 2460,
+        "drop_rate": 1,
+        "base_quantity": 2460
+      },
+      {
+        "item_id": "stone_earth_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_water_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_fire_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_wood_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_metal_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "talisman_heavenly_crystal",
+        "min_qty": 1,
+        "max_qty": 8,
+        "drop_rate": 0.3,
+        "base_quantity": 8
+      }
+    ],
+    "boss_loot_table": [],
+    "gold_reward": 1500,
+    "stage_rules": {
+      "balance_reference_level": 60,
+      "recommendation": {
+        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
+        "reference_hero_level": 60,
+        "cases": 5,
+        "passed": 5,
+        "minimum_power_search": false
+      }
+    },
+    "unlock_condition": {
+      "stage_id": "stage_7_03",
+      "level_id": "normal"
+    }
+  },
+  {
+    "id": "stage_7_03_legend",
+    "stage_id": "stage_7_03",
+    "level_id": "legend",
+    "display_name": "Legend",
+    "description": "Vạn Yêu Cổ Lĩnh · Legend · nền tảng hero Lv60",
+    "order": 3,
+    "recommended_power": 102737,
+    "exp_multiplier": 2.25,
+    "stamina_cost": 3,
+    "enemy_modifiers": {
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
+      "speed_mul": 1.4
+    },
+    "loot_table": [
+      {
+        "resource_id": "gold",
+        "min_qty": 2055,
+        "max_qty": 4110,
+        "drop_rate": 1,
+        "base_quantity": 4110
+      },
+      {
+        "item_id": "stone_earth_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_water_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_fire_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_wood_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_metal_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "rune_earth_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_water_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_fire_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_wood_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_metal_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "talisman_heavenly_crystal",
+        "min_qty": 5,
+        "max_qty": 12,
+        "drop_rate": 0.45,
+        "base_quantity": 12
+      }
+    ],
+    "boss_loot_table": [],
+    "gold_reward": 2505,
+    "stage_rules": {
+      "balance_reference_level": 60,
+      "recommendation": {
+        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
+        "reference_hero_level": 60,
+        "cases": 5,
+        "passed": 5,
+        "minimum_power_search": false
+      }
+    },
+    "unlock_condition": {
+      "stage_id": "stage_7_03",
+      "level_id": "epic"
+    }
+  },
+  {
+    "id": "stage_7_04_normal",
+    "stage_id": "stage_7_04",
+    "level_id": "normal",
+    "display_name": "Normal",
+    "description": "Vạn Yêu Cổ Lĩnh · Normal · nền tảng hero Lv60",
+    "order": 1,
+    "recommended_power": 102737,
+    "exp_multiplier": 1,
+    "stamina_cost": 1,
+    "enemy_modifiers": {
+      "hp_mul": 1,
+      "atk_mul": 1,
+      "speed_mul": 1
+    },
+    "loot_table": [
+      {
+        "resource_id": "gold",
+        "min_qty": 705,
+        "max_qty": 1410,
+        "drop_rate": 1,
+        "base_quantity": 1410
+      },
+      {
+        "item_id": "stone_earth_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_water_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_fire_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_wood_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_metal_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      }
+    ],
+    "boss_loot_table": [],
+    "gold_reward": 855,
+    "stage_rules": {
+      "balance_reference_level": 60,
+      "recommendation": {
+        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
+        "reference_hero_level": 60,
+        "cases": 5,
+        "passed": 5,
+        "minimum_power_search": false
+      }
+    },
+    "unlock_condition": {
+      "stage_id": "stage_7_03",
+      "level_id": "normal"
+    }
+  },
+  {
+    "id": "stage_7_04_epic",
+    "stage_id": "stage_7_04",
+    "level_id": "epic",
+    "display_name": "Epic",
+    "description": "Vạn Yêu Cổ Lĩnh · Epic · nền tảng hero Lv60",
+    "order": 2,
+    "recommended_power": 102737,
+    "exp_multiplier": 1.5,
+    "stamina_cost": 2,
+    "enemy_modifiers": {
+      "hp_mul": 1.5,
+      "atk_mul": 1.5,
+      "speed_mul": 1.2
+    },
+    "loot_table": [
+      {
+        "resource_id": "gold",
+        "min_qty": 1270,
+        "max_qty": 2540,
+        "drop_rate": 1,
+        "base_quantity": 2540
+      },
+      {
+        "item_id": "stone_earth_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_water_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_fire_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_wood_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_metal_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "talisman_heavenly_crystal",
+        "min_qty": 1,
+        "max_qty": 8,
+        "drop_rate": 0.3,
+        "base_quantity": 8
+      }
+    ],
+    "boss_loot_table": [],
+    "gold_reward": 1540,
+    "stage_rules": {
+      "balance_reference_level": 60,
+      "recommendation": {
+        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
+        "reference_hero_level": 60,
+        "cases": 5,
+        "passed": 5,
+        "minimum_power_search": false
+      }
+    },
+    "unlock_condition": {
+      "stage_id": "stage_7_04",
+      "level_id": "normal"
+    }
+  },
+  {
+    "id": "stage_7_04_legend",
+    "stage_id": "stage_7_04",
+    "level_id": "legend",
+    "display_name": "Legend",
+    "description": "Vạn Yêu Cổ Lĩnh · Legend · nền tảng hero Lv60",
+    "order": 3,
+    "recommended_power": 102737,
+    "exp_multiplier": 2.25,
+    "stamina_cost": 3,
+    "enemy_modifiers": {
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
+      "speed_mul": 1.4
+    },
+    "loot_table": [
+      {
+        "resource_id": "gold",
+        "min_qty": 2115,
+        "max_qty": 4230,
+        "drop_rate": 1,
+        "base_quantity": 4230
+      },
+      {
+        "item_id": "stone_earth_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_water_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_fire_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_wood_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_metal_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "rune_earth_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_water_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_fire_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_wood_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_metal_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "talisman_heavenly_crystal",
+        "min_qty": 5,
+        "max_qty": 12,
+        "drop_rate": 0.45,
+        "base_quantity": 12
+      }
+    ],
+    "boss_loot_table": [],
+    "gold_reward": 2565,
+    "stage_rules": {
+      "balance_reference_level": 60,
+      "recommendation": {
+        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
+        "reference_hero_level": 60,
+        "cases": 5,
+        "passed": 5,
+        "minimum_power_search": false
+      }
+    },
+    "unlock_condition": {
+      "stage_id": "stage_7_04",
+      "level_id": "epic"
+    }
+  },
+  {
+    "id": "stage_7_05_normal",
+    "stage_id": "stage_7_05",
+    "level_id": "normal",
+    "display_name": "Normal",
+    "description": "Vạn Yêu Cổ Lĩnh · Normal · nền tảng hero Lv60",
+    "order": 1,
+    "recommended_power": 102737,
+    "exp_multiplier": 1,
+    "stamina_cost": 1,
+    "enemy_modifiers": {
+      "hp_mul": 1,
+      "atk_mul": 1,
+      "speed_mul": 1
+    },
+    "loot_table": [
+      {
+        "resource_id": "gold",
+        "min_qty": 720,
+        "max_qty": 1440,
+        "drop_rate": 1,
+        "base_quantity": 1440
+      },
+      {
+        "item_id": "stone_earth_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_water_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_fire_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_wood_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_metal_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      }
+    ],
+    "boss_loot_table": [
+      {
+        "resource_id": "gold",
+        "min_qty": 735,
+        "max_qty": 1470,
+        "drop_rate": 1,
+        "base_quantity": 1470
+      },
+      {
+        "item_id": "stone_earth_low",
+        "min_qty": 1,
+        "max_qty": 25,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 25
+      },
+      {
+        "item_id": "stone_water_low",
+        "min_qty": 1,
+        "max_qty": 25,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 25
+      },
+      {
+        "item_id": "stone_fire_low",
+        "min_qty": 1,
+        "max_qty": 25,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 25
+      },
+      {
+        "item_id": "stone_wood_low",
+        "min_qty": 1,
+        "max_qty": 25,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 25
+      },
+      {
+        "item_id": "stone_metal_low",
+        "min_qty": 1,
+        "max_qty": 25,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 25
+      },
+      {
+        "item_id": "talisman_heavenly_crystal",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.5,
+        "base_quantity": 1
+      }
+    ],
+    "gold_reward": 885,
+    "stage_rules": {
+      "balance_reference_level": 60,
+      "recommendation": {
+        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
+        "reference_hero_level": 60,
+        "cases": 15,
+        "passed": 15,
+        "minimum_power_search": false
+      }
+    },
+    "unlock_condition": {
+      "stage_id": "stage_7_04",
+      "level_id": "normal"
+    }
+  },
+  {
+    "id": "stage_7_05_epic",
+    "stage_id": "stage_7_05",
+    "level_id": "epic",
+    "display_name": "Epic",
+    "description": "Vạn Yêu Cổ Lĩnh · Epic · nền tảng hero Lv60",
+    "order": 2,
+    "recommended_power": 102737,
+    "exp_multiplier": 1.5,
+    "stamina_cost": 2,
+    "enemy_modifiers": {
+      "hp_mul": 1.5,
+      "atk_mul": 1.5,
+      "speed_mul": 1.2
+    },
+    "loot_table": [
+      {
+        "resource_id": "gold",
+        "min_qty": 1295,
+        "max_qty": 2590,
+        "drop_rate": 1,
+        "base_quantity": 2590
+      },
+      {
+        "item_id": "stone_earth_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_water_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_fire_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_wood_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_metal_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "talisman_heavenly_crystal",
+        "min_qty": 1,
+        "max_qty": 8,
+        "drop_rate": 0.3,
+        "base_quantity": 8
+      }
+    ],
+    "boss_loot_table": [
+      {
+        "resource_id": "gold",
+        "min_qty": 1320,
+        "max_qty": 2640,
+        "drop_rate": 1,
+        "base_quantity": 2640
+      },
+      {
+        "item_id": "stone_earth_medium",
+        "min_qty": 1,
+        "max_qty": 20,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 20
+      },
+      {
+        "item_id": "stone_water_medium",
+        "min_qty": 1,
+        "max_qty": 20,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 20
+      },
+      {
+        "item_id": "stone_fire_medium",
+        "min_qty": 1,
+        "max_qty": 20,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 20
+      },
+      {
+        "item_id": "stone_wood_medium",
+        "min_qty": 1,
+        "max_qty": 20,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 20
+      },
+      {
+        "item_id": "stone_metal_medium",
+        "min_qty": 1,
+        "max_qty": 20,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 20
+      },
+      {
+        "item_id": "talisman_heavenly_crystal",
+        "min_qty": 2,
+        "max_qty": 15,
+        "drop_rate": 1,
+        "base_quantity": 15
+      }
+    ],
+    "gold_reward": 1590,
+    "stage_rules": {
+      "balance_reference_level": 60,
+      "recommendation": {
+        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
+        "reference_hero_level": 60,
+        "cases": 15,
+        "passed": 15,
+        "minimum_power_search": false
+      }
+    },
+    "unlock_condition": {
+      "stage_id": "stage_7_05",
+      "level_id": "normal"
+    }
+  },
+  {
+    "id": "stage_7_05_legend",
+    "stage_id": "stage_7_05",
+    "level_id": "legend",
+    "display_name": "Legend",
+    "description": "Vạn Yêu Cổ Lĩnh · Legend · nền tảng hero Lv60",
+    "order": 3,
+    "recommended_power": 102737,
+    "exp_multiplier": 2.25,
+    "stamina_cost": 3,
+    "enemy_modifiers": {
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
+      "speed_mul": 1.4
+    },
+    "loot_table": [
+      {
+        "resource_id": "gold",
+        "min_qty": 2165,
+        "max_qty": 4330,
+        "drop_rate": 1,
+        "base_quantity": 4330
+      },
+      {
+        "item_id": "stone_earth_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_water_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_fire_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_wood_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_metal_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "rune_earth_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_water_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_fire_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_wood_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_metal_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "talisman_heavenly_crystal",
+        "min_qty": 5,
+        "max_qty": 12,
+        "drop_rate": 0.45,
+        "base_quantity": 12
+      }
+    ],
+    "boss_loot_table": [
+      {
+        "resource_id": "gold",
+        "min_qty": 2205,
+        "max_qty": 4410,
+        "drop_rate": 1,
+        "base_quantity": 4410
+      },
+      {
+        "item_id": "rune_earth_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.12,
+        "weight": 12,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_water_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.12,
+        "weight": 12,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_fire_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.12,
+        "weight": 12,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_wood_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.12,
+        "weight": 12,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_metal_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.12,
+        "weight": 12,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "stone_earth_medium",
+        "min_qty": 1,
+        "max_qty": 35,
+        "drop_rate": 0.08,
+        "weight": 8,
+        "group": "rune",
+        "base_quantity": 35
+      },
+      {
+        "item_id": "stone_water_medium",
+        "min_qty": 1,
+        "max_qty": 35,
+        "drop_rate": 0.08,
+        "weight": 8,
+        "group": "rune",
+        "base_quantity": 35
+      },
+      {
+        "item_id": "stone_fire_medium",
+        "min_qty": 1,
+        "max_qty": 35,
+        "drop_rate": 0.08,
+        "weight": 8,
+        "group": "rune",
+        "base_quantity": 35
+      },
+      {
+        "item_id": "stone_wood_medium",
+        "min_qty": 1,
+        "max_qty": 35,
+        "drop_rate": 0.08,
+        "weight": 8,
+        "group": "rune",
+        "base_quantity": 35
+      },
+      {
+        "item_id": "stone_metal_medium",
+        "min_qty": 1,
+        "max_qty": 35,
+        "drop_rate": 0.08,
+        "weight": 8,
+        "group": "rune",
+        "base_quantity": 35
+      },
+      {
+        "item_id": "talisman_heavenly_crystal",
+        "min_qty": 4,
+        "max_qty": 30,
+        "drop_rate": 1,
+        "base_quantity": 30
+      }
+    ],
+    "gold_reward": 2655,
+    "stage_rules": {
+      "balance_reference_level": 60,
+      "recommendation": {
+        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
+        "reference_hero_level": 60,
+        "cases": 15,
+        "passed": 15,
+        "minimum_power_search": false
+      }
+    },
+    "unlock_condition": {
+      "stage_id": "stage_7_05",
+      "level_id": "epic"
+    }
+  },
+  {
+    "id": "stage_7_06_normal",
+    "stage_id": "stage_7_06",
+    "level_id": "normal",
+    "display_name": "Normal",
+    "description": "Vạn Yêu Cổ Lĩnh · Normal · nền tảng hero Lv60",
+    "order": 1,
+    "recommended_power": 102737,
+    "exp_multiplier": 1,
+    "stamina_cost": 1,
+    "enemy_modifiers": {
+      "hp_mul": 1,
+      "atk_mul": 1,
+      "speed_mul": 1
+    },
+    "loot_table": [
+      {
+        "resource_id": "gold",
+        "min_qty": 735,
+        "max_qty": 1470,
+        "drop_rate": 1,
+        "base_quantity": 1470
+      },
+      {
+        "item_id": "stone_earth_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_water_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_fire_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_wood_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_metal_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      }
+    ],
+    "boss_loot_table": [],
+    "gold_reward": 885,
+    "stage_rules": {
+      "balance_reference_level": 60,
+      "recommendation": {
+        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
+        "reference_hero_level": 60,
+        "cases": 5,
+        "passed": 5,
+        "minimum_power_search": false
+      }
+    },
+    "unlock_condition": {
+      "stage_id": "stage_7_05",
+      "level_id": "normal"
+    }
+  },
+  {
+    "id": "stage_7_06_epic",
+    "stage_id": "stage_7_06",
+    "level_id": "epic",
+    "display_name": "Epic",
+    "description": "Vạn Yêu Cổ Lĩnh · Epic · nền tảng hero Lv60",
+    "order": 2,
+    "recommended_power": 102737,
+    "exp_multiplier": 1.5,
+    "stamina_cost": 2,
+    "enemy_modifiers": {
+      "hp_mul": 1.5,
+      "atk_mul": 1.5,
+      "speed_mul": 1.2
+    },
+    "loot_table": [
+      {
+        "resource_id": "gold",
+        "min_qty": 1320,
+        "max_qty": 2640,
+        "drop_rate": 1,
+        "base_quantity": 2640
+      },
+      {
+        "item_id": "stone_earth_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_water_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_fire_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_wood_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_metal_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "talisman_heavenly_crystal",
+        "min_qty": 1,
+        "max_qty": 8,
+        "drop_rate": 0.3,
+        "base_quantity": 8
+      }
+    ],
+    "boss_loot_table": [],
+    "gold_reward": 1590,
+    "stage_rules": {
+      "balance_reference_level": 60,
+      "recommendation": {
+        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
+        "reference_hero_level": 60,
+        "cases": 5,
+        "passed": 5,
+        "minimum_power_search": false
+      }
+    },
+    "unlock_condition": {
+      "stage_id": "stage_7_06",
+      "level_id": "normal"
+    }
+  },
+  {
+    "id": "stage_7_06_legend",
+    "stage_id": "stage_7_06",
+    "level_id": "legend",
+    "display_name": "Legend",
+    "description": "Vạn Yêu Cổ Lĩnh · Legend · nền tảng hero Lv60",
+    "order": 3,
+    "recommended_power": 102737,
+    "exp_multiplier": 2.25,
+    "stamina_cost": 3,
+    "enemy_modifiers": {
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
+      "speed_mul": 1.4
+    },
+    "loot_table": [
+      {
+        "resource_id": "gold",
+        "min_qty": 2205,
+        "max_qty": 4410,
+        "drop_rate": 1,
+        "base_quantity": 4410
+      },
+      {
+        "item_id": "stone_earth_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_water_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_fire_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_wood_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_metal_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "rune_earth_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_water_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_fire_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_wood_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_metal_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "talisman_heavenly_crystal",
+        "min_qty": 5,
+        "max_qty": 12,
+        "drop_rate": 0.45,
+        "base_quantity": 12
+      }
+    ],
+    "boss_loot_table": [],
+    "gold_reward": 2655,
+    "stage_rules": {
+      "balance_reference_level": 60,
+      "recommendation": {
+        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
+        "reference_hero_level": 60,
+        "cases": 5,
+        "passed": 5,
+        "minimum_power_search": false
+      }
+    },
+    "unlock_condition": {
+      "stage_id": "stage_7_06",
+      "level_id": "epic"
+    }
+  },
+  {
+    "id": "stage_7_07_normal",
+    "stage_id": "stage_7_07",
+    "level_id": "normal",
+    "display_name": "Normal",
+    "description": "Vạn Yêu Cổ Lĩnh · Normal · nền tảng hero Lv60",
+    "order": 1,
+    "recommended_power": 102737,
+    "exp_multiplier": 1,
+    "stamina_cost": 1,
+    "enemy_modifiers": {
+      "hp_mul": 1,
+      "atk_mul": 1,
+      "speed_mul": 1
+    },
+    "loot_table": [
+      {
+        "resource_id": "gold",
+        "min_qty": 750,
+        "max_qty": 1500,
+        "drop_rate": 1,
+        "base_quantity": 1500
+      },
+      {
+        "item_id": "stone_earth_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_water_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_fire_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_wood_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_metal_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      }
+    ],
+    "boss_loot_table": [],
+    "gold_reward": 900,
+    "stage_rules": {
+      "balance_reference_level": 60,
+      "recommendation": {
+        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
+        "reference_hero_level": 60,
+        "cases": 5,
+        "passed": 5,
+        "minimum_power_search": false
+      }
+    },
+    "unlock_condition": {
+      "stage_id": "stage_7_06",
+      "level_id": "normal"
+    }
+  },
+  {
+    "id": "stage_7_07_epic",
+    "stage_id": "stage_7_07",
+    "level_id": "epic",
+    "display_name": "Epic",
+    "description": "Vạn Yêu Cổ Lĩnh · Epic · nền tảng hero Lv60",
+    "order": 2,
+    "recommended_power": 102737,
+    "exp_multiplier": 1.5,
+    "stamina_cost": 2,
+    "enemy_modifiers": {
+      "hp_mul": 1.5,
+      "atk_mul": 1.5,
+      "speed_mul": 1.2
+    },
+    "loot_table": [
+      {
+        "resource_id": "gold",
+        "min_qty": 1350,
+        "max_qty": 2700,
+        "drop_rate": 1,
+        "base_quantity": 2700
+      },
+      {
+        "item_id": "stone_earth_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_water_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_fire_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_wood_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_metal_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "talisman_heavenly_crystal",
+        "min_qty": 1,
+        "max_qty": 8,
+        "drop_rate": 0.3,
+        "base_quantity": 8
+      }
+    ],
+    "boss_loot_table": [],
+    "gold_reward": 1620,
+    "stage_rules": {
+      "balance_reference_level": 60,
+      "recommendation": {
+        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
+        "reference_hero_level": 60,
+        "cases": 5,
+        "passed": 5,
+        "minimum_power_search": false
+      }
+    },
+    "unlock_condition": {
+      "stage_id": "stage_7_07",
+      "level_id": "normal"
+    }
+  },
+  {
+    "id": "stage_7_07_legend",
+    "stage_id": "stage_7_07",
+    "level_id": "legend",
+    "display_name": "Legend",
+    "description": "Vạn Yêu Cổ Lĩnh · Legend · nền tảng hero Lv60",
+    "order": 3,
+    "recommended_power": 102737,
+    "exp_multiplier": 2.25,
+    "stamina_cost": 3,
+    "enemy_modifiers": {
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
+      "speed_mul": 1.4
+    },
+    "loot_table": [
+      {
+        "resource_id": "gold",
+        "min_qty": 2245,
+        "max_qty": 4490,
+        "drop_rate": 1,
+        "base_quantity": 4490
+      },
+      {
+        "item_id": "stone_earth_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_water_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_fire_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_wood_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_metal_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "rune_earth_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_water_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_fire_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_wood_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_metal_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "talisman_heavenly_crystal",
+        "min_qty": 5,
+        "max_qty": 12,
+        "drop_rate": 0.45,
+        "base_quantity": 12
+      }
+    ],
+    "boss_loot_table": [],
+    "gold_reward": 2695,
+    "stage_rules": {
+      "balance_reference_level": 60,
+      "recommendation": {
+        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
+        "reference_hero_level": 60,
+        "cases": 5,
+        "passed": 5,
+        "minimum_power_search": false
+      }
+    },
+    "unlock_condition": {
+      "stage_id": "stage_7_07",
+      "level_id": "epic"
+    }
+  },
+  {
+    "id": "stage_7_08_normal",
+    "stage_id": "stage_7_08",
+    "level_id": "normal",
+    "display_name": "Normal",
+    "description": "Vạn Yêu Cổ Lĩnh · Normal · nền tảng hero Lv60",
+    "order": 1,
+    "recommended_power": 102737,
+    "exp_multiplier": 1,
+    "stamina_cost": 1,
+    "enemy_modifiers": {
+      "hp_mul": 1,
+      "atk_mul": 1,
+      "speed_mul": 1
+    },
+    "loot_table": [
+      {
+        "resource_id": "gold",
+        "min_qty": 765,
+        "max_qty": 1530,
+        "drop_rate": 1,
+        "base_quantity": 1530
+      },
+      {
+        "item_id": "stone_earth_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_water_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_fire_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_wood_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_metal_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      }
+    ],
+    "boss_loot_table": [],
+    "gold_reward": 915,
+    "stage_rules": {
+      "balance_reference_level": 60,
+      "recommendation": {
+        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
+        "reference_hero_level": 60,
+        "cases": 5,
+        "passed": 5,
+        "minimum_power_search": false
+      }
+    },
+    "unlock_condition": {
+      "stage_id": "stage_7_07",
+      "level_id": "normal"
+    }
+  },
+  {
+    "id": "stage_7_08_epic",
+    "stage_id": "stage_7_08",
+    "level_id": "epic",
+    "display_name": "Epic",
+    "description": "Vạn Yêu Cổ Lĩnh · Epic · nền tảng hero Lv60",
+    "order": 2,
+    "recommended_power": 102737,
+    "exp_multiplier": 1.5,
+    "stamina_cost": 2,
+    "enemy_modifiers": {
+      "hp_mul": 1.5,
+      "atk_mul": 1.5,
+      "speed_mul": 1.2
+    },
+    "loot_table": [
+      {
+        "resource_id": "gold",
+        "min_qty": 1375,
+        "max_qty": 2750,
+        "drop_rate": 1,
+        "base_quantity": 2750
+      },
+      {
+        "item_id": "stone_earth_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_water_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_fire_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_wood_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_metal_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "talisman_heavenly_crystal",
+        "min_qty": 1,
+        "max_qty": 8,
+        "drop_rate": 0.3,
+        "base_quantity": 8
+      }
+    ],
+    "boss_loot_table": [],
+    "gold_reward": 1645,
+    "stage_rules": {
+      "balance_reference_level": 60,
+      "recommendation": {
+        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
+        "reference_hero_level": 60,
+        "cases": 5,
+        "passed": 5,
+        "minimum_power_search": false
+      }
+    },
+    "unlock_condition": {
+      "stage_id": "stage_7_08",
+      "level_id": "normal"
+    }
+  },
+  {
+    "id": "stage_7_08_legend",
+    "stage_id": "stage_7_08",
+    "level_id": "legend",
+    "display_name": "Legend",
+    "description": "Vạn Yêu Cổ Lĩnh · Legend · nền tảng hero Lv60",
+    "order": 3,
+    "recommended_power": 102737,
+    "exp_multiplier": 2.25,
+    "stamina_cost": 3,
+    "enemy_modifiers": {
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
+      "speed_mul": 1.4
+    },
+    "loot_table": [
+      {
+        "resource_id": "gold",
+        "min_qty": 2295,
+        "max_qty": 4590,
+        "drop_rate": 1,
+        "base_quantity": 4590
+      },
+      {
+        "item_id": "stone_earth_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_water_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_fire_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_wood_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_metal_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "rune_earth_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_water_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_fire_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_wood_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_metal_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "talisman_heavenly_crystal",
+        "min_qty": 5,
+        "max_qty": 12,
+        "drop_rate": 0.45,
+        "base_quantity": 12
+      }
+    ],
+    "boss_loot_table": [],
+    "gold_reward": 2745,
+    "stage_rules": {
+      "balance_reference_level": 60,
+      "recommendation": {
+        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
+        "reference_hero_level": 60,
+        "cases": 5,
+        "passed": 5,
+        "minimum_power_search": false
+      }
+    },
+    "unlock_condition": {
+      "stage_id": "stage_7_08",
+      "level_id": "epic"
+    }
+  },
+  {
+    "id": "stage_7_09_normal",
+    "stage_id": "stage_7_09",
+    "level_id": "normal",
+    "display_name": "Normal",
+    "description": "Vạn Yêu Cổ Lĩnh · Normal · nền tảng hero Lv60",
+    "order": 1,
+    "recommended_power": 102737,
+    "exp_multiplier": 1,
+    "stamina_cost": 1,
+    "enemy_modifiers": {
+      "hp_mul": 1,
+      "atk_mul": 1,
+      "speed_mul": 1
+    },
+    "loot_table": [
+      {
+        "resource_id": "gold",
+        "min_qty": 785,
+        "max_qty": 1570,
+        "drop_rate": 1,
+        "base_quantity": 1570
+      },
+      {
+        "item_id": "stone_earth_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_water_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_fire_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_wood_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_metal_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      }
+    ],
+    "boss_loot_table": [],
+    "gold_reward": 935,
+    "stage_rules": {
+      "balance_reference_level": 60,
+      "recommendation": {
+        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
+        "reference_hero_level": 60,
+        "cases": 5,
+        "passed": 5,
+        "minimum_power_search": false
+      }
+    },
+    "unlock_condition": {
+      "stage_id": "stage_7_08",
+      "level_id": "normal"
+    }
+  },
+  {
+    "id": "stage_7_09_epic",
+    "stage_id": "stage_7_09",
+    "level_id": "epic",
+    "display_name": "Epic",
+    "description": "Vạn Yêu Cổ Lĩnh · Epic · nền tảng hero Lv60",
+    "order": 2,
+    "recommended_power": 102737,
+    "exp_multiplier": 1.5,
+    "stamina_cost": 2,
+    "enemy_modifiers": {
+      "hp_mul": 1.5,
+      "atk_mul": 1.5,
+      "speed_mul": 1.2
+    },
+    "loot_table": [
+      {
+        "resource_id": "gold",
+        "min_qty": 1410,
+        "max_qty": 2820,
+        "drop_rate": 1,
+        "base_quantity": 2820
+      },
+      {
+        "item_id": "stone_earth_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_water_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_fire_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_wood_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_metal_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "talisman_heavenly_crystal",
+        "min_qty": 1,
+        "max_qty": 8,
+        "drop_rate": 0.3,
+        "base_quantity": 8
+      }
+    ],
+    "boss_loot_table": [],
+    "gold_reward": 1680,
+    "stage_rules": {
+      "balance_reference_level": 60,
+      "recommendation": {
+        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
+        "reference_hero_level": 60,
+        "cases": 5,
+        "passed": 5,
+        "minimum_power_search": false
+      }
+    },
+    "unlock_condition": {
+      "stage_id": "stage_7_09",
+      "level_id": "normal"
+    }
+  },
+  {
+    "id": "stage_7_09_legend",
+    "stage_id": "stage_7_09",
+    "level_id": "legend",
+    "display_name": "Legend",
+    "description": "Vạn Yêu Cổ Lĩnh · Legend · nền tảng hero Lv60",
+    "order": 3,
+    "recommended_power": 102737,
+    "exp_multiplier": 2.25,
+    "stamina_cost": 3,
+    "enemy_modifiers": {
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
+      "speed_mul": 1.4
+    },
+    "loot_table": [
+      {
+        "resource_id": "gold",
+        "min_qty": 2355,
+        "max_qty": 4710,
+        "drop_rate": 1,
+        "base_quantity": 4710
+      },
+      {
+        "item_id": "stone_earth_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_water_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_fire_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_wood_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_metal_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "rune_earth_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_water_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_fire_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_wood_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_metal_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "talisman_heavenly_crystal",
+        "min_qty": 5,
+        "max_qty": 12,
+        "drop_rate": 0.45,
+        "base_quantity": 12
+      }
+    ],
+    "boss_loot_table": [],
+    "gold_reward": 2805,
+    "stage_rules": {
+      "balance_reference_level": 60,
+      "recommendation": {
+        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
+        "reference_hero_level": 60,
+        "cases": 5,
+        "passed": 5,
+        "minimum_power_search": false
+      }
+    },
+    "unlock_condition": {
+      "stage_id": "stage_7_09",
+      "level_id": "epic"
+    }
+  },
+  {
+    "id": "stage_7_10_normal",
+    "stage_id": "stage_7_10",
+    "level_id": "normal",
+    "display_name": "Normal",
+    "description": "Vạn Yêu Cổ Lĩnh · Normal · nền tảng hero Lv60",
+    "order": 1,
+    "recommended_power": 102737,
+    "exp_multiplier": 1,
+    "stamina_cost": 1,
+    "enemy_modifiers": {
+      "hp_mul": 1,
+      "atk_mul": 1,
+      "speed_mul": 1
+    },
+    "loot_table": [
+      {
+        "resource_id": "gold",
+        "min_qty": 800,
+        "max_qty": 1600,
+        "drop_rate": 1,
+        "base_quantity": 1600
+      },
+      {
+        "item_id": "stone_earth_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_water_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_fire_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_wood_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      },
+      {
+        "item_id": "stone_metal_low",
+        "min_qty": 1,
+        "max_qty": 15,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 15
+      }
+    ],
+    "boss_loot_table": [
+      {
+        "resource_id": "gold",
+        "min_qty": 840,
+        "max_qty": 1680,
+        "drop_rate": 1,
+        "base_quantity": 1680
+      },
+      {
+        "item_id": "stone_earth_low",
+        "min_qty": 1,
+        "max_qty": 35,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 35
+      },
+      {
+        "item_id": "stone_water_low",
+        "min_qty": 1,
+        "max_qty": 35,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 35
+      },
+      {
+        "item_id": "stone_fire_low",
+        "min_qty": 1,
+        "max_qty": 35,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 35
+      },
+      {
+        "item_id": "stone_wood_low",
+        "min_qty": 1,
+        "max_qty": 35,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 35
+      },
+      {
+        "item_id": "stone_metal_low",
+        "min_qty": 1,
+        "max_qty": 35,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 35
+      },
+      {
+        "item_id": "talisman_heavenly_crystal",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 1,
+        "base_quantity": 10
+      }
+    ],
+    "gold_reward": 990,
+    "stage_rules": {
+      "balance_reference_level": 60,
+      "recommendation": {
+        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
+        "reference_hero_level": 60,
+        "cases": 15,
+        "passed": 15,
+        "minimum_power_search": false
+      }
+    },
+    "unlock_condition": {
+      "stage_id": "stage_7_09",
+      "level_id": "normal"
+    }
+  },
+  {
+    "id": "stage_7_10_epic",
+    "stage_id": "stage_7_10",
+    "level_id": "epic",
+    "display_name": "Epic",
+    "description": "Vạn Yêu Cổ Lĩnh · Epic · nền tảng hero Lv60",
+    "order": 2,
+    "recommended_power": 102737,
+    "exp_multiplier": 1.5,
+    "stamina_cost": 2,
+    "enemy_modifiers": {
+      "hp_mul": 1.5,
+      "atk_mul": 1.5,
+      "speed_mul": 1.2
+    },
+    "loot_table": [
+      {
+        "resource_id": "gold",
+        "min_qty": 1440,
+        "max_qty": 2880,
+        "drop_rate": 1,
+        "base_quantity": 2880
+      },
+      {
+        "item_id": "stone_earth_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_water_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_fire_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_wood_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "stone_metal_medium",
+        "min_qty": 1,
+        "max_qty": 10,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 10
+      },
+      {
+        "item_id": "talisman_heavenly_crystal",
+        "min_qty": 1,
+        "max_qty": 8,
+        "drop_rate": 0.3,
+        "base_quantity": 8
+      }
+    ],
+    "boss_loot_table": [
+      {
+        "resource_id": "gold",
+        "min_qty": 1510,
+        "max_qty": 3020,
+        "drop_rate": 1,
+        "base_quantity": 3020
+      },
+      {
+        "item_id": "stone_earth_medium",
+        "min_qty": 1,
+        "max_qty": 30,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 30
+      },
+      {
+        "item_id": "stone_water_medium",
+        "min_qty": 1,
+        "max_qty": 30,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 30
+      },
+      {
+        "item_id": "stone_fire_medium",
+        "min_qty": 1,
+        "max_qty": 30,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 30
+      },
+      {
+        "item_id": "stone_wood_medium",
+        "min_qty": 1,
+        "max_qty": 30,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 30
+      },
+      {
+        "item_id": "stone_metal_medium",
+        "min_qty": 1,
+        "max_qty": 30,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 30
+      },
+      {
+        "item_id": "talisman_heavenly_crystal",
+        "min_qty": 3,
+        "max_qty": 25,
+        "drop_rate": 1,
+        "base_quantity": 25
+      }
+    ],
+    "gold_reward": 1780,
+    "stage_rules": {
+      "balance_reference_level": 60,
+      "recommendation": {
+        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
+        "reference_hero_level": 60,
+        "cases": 15,
+        "passed": 15,
+        "minimum_power_search": false
+      }
+    },
+    "unlock_condition": {
+      "stage_id": "stage_7_10",
+      "level_id": "normal"
+    }
+  },
+  {
+    "id": "stage_7_10_legend",
+    "stage_id": "stage_7_10",
+    "level_id": "legend",
+    "display_name": "Legend",
+    "description": "Vạn Yêu Cổ Lĩnh · Legend · nền tảng hero Lv60",
+    "order": 3,
+    "recommended_power": 102737,
+    "exp_multiplier": 2.25,
+    "stamina_cost": 3,
+    "enemy_modifiers": {
+      "hp_mul": 2.25,
+      "atk_mul": 2.25,
+      "speed_mul": 1.4
+    },
+    "loot_table": [
+      {
+        "resource_id": "gold",
+        "min_qty": 2405,
+        "max_qty": 4810,
+        "drop_rate": 1,
+        "base_quantity": 4810
+      },
+      {
+        "item_id": "stone_earth_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_water_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_fire_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_wood_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "stone_metal_medium",
+        "min_qty": 1,
+        "max_qty": 22,
+        "drop_rate": 0.16,
+        "weight": 16,
+        "group": "rune",
+        "base_quantity": 22
+      },
+      {
+        "item_id": "rune_earth_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_water_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_fire_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_wood_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "rune_metal_high",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.04,
+        "weight": 4,
+        "group": "rune",
+        "base_quantity": 1
+      },
+      {
+        "item_id": "talisman_heavenly_crystal",
+        "min_qty": 5,
+        "max_qty": 12,
+        "drop_rate": 0.45,
+        "base_quantity": 12
+      }
+    ],
+    "boss_loot_table": [
+      {
+        "resource_id": "gold",
+        "min_qty": 2525,
+        "max_qty": 5050,
+        "drop_rate": 1,
+        "base_quantity": 5050
+      },
+      {
+        "item_id": "rune_earth_high",
+        "min_qty": 1,
+        "max_qty": 2,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 2
+      },
+      {
+        "item_id": "rune_water_high",
+        "min_qty": 1,
+        "max_qty": 2,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 2
+      },
+      {
+        "item_id": "rune_fire_high",
+        "min_qty": 1,
+        "max_qty": 2,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 2
+      },
+      {
+        "item_id": "rune_wood_high",
+        "min_qty": 1,
+        "max_qty": 2,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 2
+      },
+      {
+        "item_id": "rune_metal_high",
+        "min_qty": 1,
+        "max_qty": 2,
+        "drop_rate": 0.2,
+        "weight": 20,
+        "group": "rune",
+        "base_quantity": 2
+      },
+      {
+        "item_id": "talisman_heavenly_crystal",
+        "min_qty": 6,
+        "max_qty": 50,
+        "drop_rate": 1,
+        "base_quantity": 50
+      },
+      {
+        "item_id": "reset_talisman",
+        "min_qty": 1,
+        "max_qty": 1,
+        "drop_rate": 0.05,
+        "base_quantity": 1
+      }
+    ],
+    "gold_reward": 2975,
+    "stage_rules": {
+      "balance_reference_level": 60,
+      "recommendation": {
+        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
+        "reference_hero_level": 60,
+        "cases": 15,
+        "passed": 15,
+        "minimum_power_search": false
+      }
+    },
+    "unlock_condition": {
+      "stage_id": "stage_7_10",
+      "level_id": "epic"
+    }
   }
 ]

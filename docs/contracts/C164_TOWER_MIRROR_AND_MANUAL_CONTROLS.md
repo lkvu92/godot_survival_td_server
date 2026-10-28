@@ -1,6 +1,6 @@
 # C164 Tower mirror and manual controls
 
-Version: 1.0.0
+Version: 1.1.0
 Status: ACTIVE
 
 ## Contract
@@ -28,3 +28,11 @@ manual controls, camera and rendered preview validated. Gate score: 9/10.
 | Version | Date | Change |
 |---|---|---|
 | 1.0.0 | 2026-10-22 | Explicit tower-only mirror stat/root snapshots, run rules v2. |
+
+## Element training cycle (1.1.0)
+
+Tower is combat training. Server assigns water, fire, earth, wood, metal by (floor-1)%5, independent of selected hero. Existing demon visuals, bare attributes, affinity magnitudes, zero roots, scaling, rewards and progress stay unchanged. Swap affinity values between hero and floor elements so elemental strength follows the opponent element without increasing stats. Server run adds demon_element, demon_skill_levels and demon_draft_catalog; AI drafts 19 upgrades from its own catalog using existing rules. Hero draft unchanged. Status floors expose demon_element. Missing cycle/catalog blocks entry; no offline fallback. Old preparing snapshots reject with RUN_RULES_CHANGED. RPC requests unchanged.
+
+| 1.1.0 | 2026-10-28 | Replace mirror skills with deterministic five-element combat training; retain demon artwork and stat scaling. |
+
+Validation 1.1.0: backend build, client static and complete server static suite PASS. Element-cycle regression PASS across every hero and 30 floors, including independent AI draft and preserved bare stats/scaling. Godot battle/world/preparation/resize/balance/control assertions PASS; process exits 1 with existing missing ui_progress_fill_1m_400_30.png.png texture from the current asset tree. Gate score 9/10.

@@ -2939,7 +2939,7 @@
       {
         "level": 1,
         "stats": {
-          "damage_pct": 20,
+          "damage_pct": 40,
           "speed_pct": 230,
           "range": 680,
           "projectile_count": 1,
@@ -2950,7 +2950,7 @@
         },
         "description_rows": [
           "Single target",
-          "Damage 20% ATK",
+          "Damage 40% ATK",
           "Poison 12.5% ATK/s for 2s",
           "Darts 1",
           "CD 2.4s"
@@ -2966,7 +2966,7 @@
       {
         "level": 2,
         "stats": {
-          "damage_pct": 22.5,
+          "damage_pct": 55,
           "speed_pct": 244,
           "range": 700,
           "projectile_count": 2,
@@ -2977,7 +2977,7 @@
         },
         "description_rows": [
           "Single target",
-          "Damage 22.5% ATK",
+          "Damage 55% ATK",
           "Poison 15% ATK/s for 2s",
           "Darts 2",
           "CD 2.2s"
@@ -2993,7 +2993,7 @@
       {
         "level": 3,
         "stats": {
-          "damage_pct": 25,
+          "damage_pct": 70,
           "speed_pct": 258,
           "range": 720,
           "projectile_count": 2,
@@ -3004,7 +3004,7 @@
         },
         "description_rows": [
           "Single target",
-          "Damage 25% ATK",
+          "Damage 70% ATK",
           "Poison 17.5% ATK/s for 2s",
           "Darts 2",
           "CD 2s"
@@ -3020,7 +3020,7 @@
       {
         "level": 4,
         "stats": {
-          "damage_pct": 27.5,
+          "damage_pct": 85,
           "speed_pct": 274,
           "range": 740,
           "projectile_count": 3,
@@ -3031,7 +3031,7 @@
         },
         "description_rows": [
           "Single target",
-          "Damage 27.5% ATK",
+          "Damage 85% ATK",
           "Poison 20% ATK/s for 2s",
           "Darts 3",
           "CD 1.8s"
@@ -3047,7 +3047,7 @@
       {
         "level": 5,
         "stats": {
-          "damage_pct": 30,
+          "damage_pct": 100,
           "speed_pct": 292,
           "range": 760,
           "projectile_count": 3,
@@ -3058,7 +3058,7 @@
         },
         "description_rows": [
           "Single target",
-          "Damage 30% ATK",
+          "Damage 100% ATK",
           "Poison 22.5% ATK/s for 2s",
           "Darts 3",
           "CD 1.6s"

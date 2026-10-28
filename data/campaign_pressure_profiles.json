@@ -132,6 +132,21 @@
         "single_target_check",
         "crowd_check"
       ]
+    },
+    {
+      "arc_id": "arc_van_yeu_co_linh",
+      "version": 1,
+      "power_start": 1,
+      "power_end": 1.315,
+      "curve": "ease_in_out",
+      "opening_allowed_roles": [
+        "normal",
+        "ranger"
+      ],
+      "late_requirements": [
+        "single_target_check",
+        "crowd_check"
+      ]
     }
   ]
 }

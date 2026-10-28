@@ -122,9 +122,9 @@ for (const stage of stages.filter(candidate => campaignArcIds.has(candidate.arc_
 }
 assert.equal(legacyStages, 50, 'original five arcs retain their 50 stages');
 assert.equal(legacyWaves, 985, 'original five arcs retain their 985 waves');
-assert.equal(stageCount, 60);
-assert.equal(waveCount, 1185);
-assert.equal(combinations, 180);
+assert.equal(stageCount, 70);
+assert.equal(waveCount, 1385);
+assert.equal(combinations, 210);
 const actualBefore = clone(stages);
 assert.equal(rebalanceWaveExp(stages), 0, 'seed already exact');
 assert.deepEqual(stages, actualBefore);

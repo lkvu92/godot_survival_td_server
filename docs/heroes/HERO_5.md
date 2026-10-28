@@ -1,7 +1,7 @@
 # Hero 5 — Vạn Tượng Quán Âm
 
-Version: 1.0.5
-Cập nhật: 2026-10-24
+Version: 1.1.0
+Cập nhật: 2026-10-29
 
 [Danh sách 5 hero](../HERO_SKILLS_CURRENT.md) · [Config skill nguồn](../../data/skills.json)
 
@@ -15,6 +15,16 @@ Các cột Lv1–Lv5 là **cấp skill trong trận**. Level hero mở skill và
 | 2 | Lục Tự Đại Minh Ấn | 10 | 5 | `buddha_six_syllable` / `active` |
 | 3 | Như Lai Thần Chưởng | 20 | 10 | `buddha_palm` / `active` |
 | 4 | Vạn Trượng Kim Thân | 30 | 15 | `buddha_golden_body` / `active` |
+
+## Chỉ số hero và tăng cấp — C238
+
+[Bảng chung và hệ số JSON](../HERO_STATS_CURRENT.md). Lv dưới đây là cấp hero ngoài trận, khác cấp skill. Cấp tạm trong trận dùng cùng hệ số với mức 25% cho nhóm nhân.
+
+| Lv | HP | ATK | DEF | Tốc chạy | Tốc đánh | Tầm đánh | Chí mạng (%) | ST chí mạng (%) | Hồi HP/10s (%) | HP hồi/10s | Sức tấn công lý thuyết |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 1 | 470.00 | 24.00 | 12.00 | 285.00 | 1.50 | 350.00 | 8.00 | 165.00 | 2.00 | 9.40 | 37.87 |
+| 50 | 10285.58 | 830.28 | 131.06 | 314.31 | 2.44 | 350.00 | 27.60 | 238.50 | 6.90 | 709.70 | 2803.20 |
+| 70 | 36242.72 | 3526.92 | 347.73 | 327.13 | 2.98 | 350.00 | 35.60 | 268.50 | 8.90 | 3225.60 | 16816.80 |
 
 ## Skill 1 — Hoàng Kim Chỉ
 

@@ -1,7 +1,7 @@
 # Hero 3 — Vô Cực Kiếm Tôn
 
-Version: 1.0.0
-Cập nhật: 2026-10-24
+Version: 1.1.0
+Cập nhật: 2026-10-29
 
 [Danh sách 5 hero](../HERO_SKILLS_CURRENT.md) · [Config skill nguồn](../../data/skills.json)
 
@@ -15,6 +15,16 @@ Các cột Lv1–Lv5 là **cấp skill trong trận**. Level hero mở skill và
 | 2 | Kiếm Ấn Giáng Lâm | 10 | 5 | `two_phase_aoe` / `active` |
 | 3 | Vạn Kiếm Liên Hoàn | 20 | 10 | `arc_sequence` / `active` |
 | 4 | Thất Tinh Trận | 30 | 15 | `hero_aura` / `passive` |
+
+## Chỉ số hero và tăng cấp — C238
+
+[Bảng chung và hệ số JSON](../HERO_STATS_CURRENT.md). Lv dưới đây là cấp hero ngoài trận, khác cấp skill. Cấp tạm trong trận dùng cùng hệ số với mức 25% cho nhóm nhân.
+
+| Lv | HP | ATK | DEF | Tốc chạy | Tốc đánh | Tầm đánh | Chí mạng (%) | ST chí mạng (%) | Hồi HP/10s (%) | HP hồi/10s | Sức tấn công lý thuyết |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 1 | 440.00 | 26.00 | 15.00 | 290.00 | 1.55 | 250.00 | 8.00 | 165.00 | 1.50 | 6.60 | 42.40 |
+| 50 | 7646.10 | 899.47 | 163.82 | 319.83 | 2.52 | 250.00 | 27.60 | 238.50 | 6.40 | 489.35 | 3138.03 |
+| 70 | 24522.08 | 3820.83 | 434.66 | 332.87 | 3.08 | 250.00 | 35.60 | 268.50 | 8.40 | 2059.86 | 18825.47 |
 
 ## Skill 1 — Kiếm Phiến
 

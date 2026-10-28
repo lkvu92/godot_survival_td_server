@@ -75,3 +75,11 @@ Gate 4: static client và backend; parser Godot; test mapping/5 level/budget/ass
 | 1.16.2 | 2026-10-27 | Hấp Huyết Thứ hit một lần ở nhịp siết gai. |
 | 1.16.1 | 2026-10-27 | Đồng bộ asset chuẩn hóa 400px/frame. |
 | 1.16.0 | 2026-10-27 | Baseline ID 2–15; shared with client C015. |
+
+## Addendum 1.18.0 - Upgrade gold x1000 (2026-10-28)
+
+Talisman and element enhancement gold costs are multiplied by 1000. Current level L: below 10 = 10000+4000L; 10..19 = 50000+10000(L-10); 20..29 = 200000+20000(L-20). Talisman seed gold coefficients and element server debit/client preview agree. Material quantities, chances, charm effects, crafting and repair unchanged. RPC shapes unchanged; server validates/debits before attempt and consumes on failure as before. No offline fallback. Publish progression alongside runtime to activate talisman seed costs.
+
+| 1.18.0 | 2026-10-28 | Multiply talisman and element enhancement gold costs by 1000. |
+
+Validation 1.18.0: runtime build and complete server/client static suites PASS. Cost regression verifies exact x1000 and talisman/element parity at levels 1-29 plus element Lv.0. Godot element preview assertions PASS levels 0-29 (sandbox certificate-store warning). Source/seed updated; running databases have not been published. Gate score 9/10.

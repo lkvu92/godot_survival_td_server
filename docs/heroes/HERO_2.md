@@ -1,7 +1,7 @@
 # Hero 2 — Liệt Diễm Tiễn Tôn
 
-Version: 1.0.0
-Cập nhật: 2026-10-24
+Version: 1.1.0
+Cập nhật: 2026-10-29
 
 [Danh sách 5 hero](../HERO_SKILLS_CURRENT.md) · [Config skill nguồn](../../data/skills.json)
 
@@ -15,6 +15,16 @@ Các cột Lv1–Lv5 là **cấp skill trong trận**. Level hero mở skill và
 | 2 | Chu Tước Hỏa Xung | 10 | 5 | `hero_2_phoenix` / `active` |
 | 3 | Phần Thiên Tiễn Ý | 20 | 10 | `hero_2_flame_arrow_mastery` / `passive` |
 | 4 | Tam Tài Diệt Thế Tiễn | 30 | 15 | `hero_2_triangle_volley` / `active` |
+
+## Chỉ số hero và tăng cấp — C238
+
+[Bảng chung và hệ số JSON](../HERO_STATS_CURRENT.md). Lv dưới đây là cấp hero ngoài trận, khác cấp skill. Cấp tạm trong trận dùng cùng hệ số với mức 25% cho nhóm nhân.
+
+| Lv | HP | ATK | DEF | Tốc chạy | Tốc đánh | Tầm đánh | Chí mạng (%) | ST chí mạng (%) | Hồi HP/10s (%) | HP hồi/10s | Sức tấn công lý thuyết |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 1 | 360.00 | 30.00 | 5.00 | 295.00 | 1.45 | 450.00 | 12.00 | 175.00 | 1.00 | 3.60 | 47.42 |
+| 50 | 4962.19 | 1302.82 | 34.17 | 325.34 | 2.60 | 450.00 | 36.50 | 273.00 | 4.92 | 244.14 | 5529.33 |
+| 70 | 14478.45 | 6072.40 | 74.86 | 338.61 | 3.30 | 450.00 | 46.50 | 313.00 | 6.52 | 944.00 | 39914.90 |
 
 ## Skill 1 — Liệt Diễm Liên Tiễn
 

@@ -846,6 +846,10 @@ function seedExtensionColumns() {
     "heroes": {
       "basic_attack_range": "REAL"
     },
+    "enemies": {
+      "collision_radius": "REAL",
+      "balance_reference_level": "INT"
+    },
     "arcs": {
       "boss_skill_ids": "JSONB",
       "enemy_visual_scale_multiplier": "REAL"
@@ -2640,6 +2644,7 @@ function processHero(row) {
 }
 function processEnemy(row) {
   if (!row) return row;
+  processSeedExtensions(row, "enemies");
   row.attack_skill = parseJsonb(row.attack_skill);
   row.attributes = parseJsonb(row.attributes);
   row.boss_skills = parseJsonb(row.boss_skills);
@@ -3351,7 +3356,8 @@ function canonicalHeroStates(nk, source) {
       exp: existing ? Math.max(0, Number(existing.exp || 0)) : 0,
       next_level_exp: existing ? Math.max(0, Number(existing.next_level_exp || 1e3)) : 1e3,
       owned: existing ? existing.owned === true : freeHero,
-      current_attribute: existing && existing.current_attribute ? existing.current_attribute : parseJsonObject(hero.attributes)
+      // C238: derived stats must follow current balance, including existing heroes.
+      current_attribute: progressionHeroAttributes(nk, id, existing ? Math.max(1, Number(existing.level || 1)) : 1)
     };
   });
 }
@@ -4900,9 +4906,9 @@ function talismanUpgradeQuote(nk, level, items, resources, talismanId = 0) {
   if (!isFinite(quantityPerLevel) || quantityPerLevel <= 0) return { error: "Missing Heavenly Crystal cost config; reseed progression", success: false };
   const materialQuantity = currentLevel * quantityPerLevel;
   const gold = talismanJsonObject(upgrade.gold);
-  let goldCost = Number(gold.low_base || 10) + currentLevel * Number(gold.low_growth || 4);
-  if (targetLevel >= 21) goldCost = Number(gold.high_base || 200) + (currentLevel - 20) * Number(gold.high_growth || 20);
-  else if (targetLevel >= 11) goldCost = Number(gold.medium_base || 50) + (currentLevel - 10) * Number(gold.medium_growth || 10);
+  let goldCost = Number(gold.low_base || 1e4) + currentLevel * Number(gold.low_growth || 4e3);
+  if (targetLevel >= 21) goldCost = Number(gold.high_base || 2e5) + (currentLevel - 20) * Number(gold.high_growth || 2e4);
+  else if (targetLevel >= 11) goldCost = Number(gold.medium_base || 5e4) + (currentLevel - 10) * Number(gold.medium_growth || 1e4);
   const materialId = String(tier.material_id || "");
   const milestones = talismanJsonObject(upgrade.fragment_milestones);
   const fallbackMilestone = [10, 20, 30].indexOf(targetLevel) >= 0 ? targetLevel : 0;
@@ -5420,7 +5426,7 @@ function elementUpgradeRequirement(nk, elementName, level) {
   const fallback = 1 << level - tierStart + 1;
   const stoneCount = Math.max(1, Number(costs[Math.min(level, Math.max(costs.length - 1, 0))] || fallback));
   const stoneId = tiers === "high" ? `rune_${elementName}_high` : `stone_${elementName}_${tiers}`;
-  const goldCost = level >= 20 ? 200 + (level - 20) * 20 : level >= 10 ? 50 + (level - 10) * 10 : 10 + level * 4;
+  const goldCost = level >= 20 ? 2e5 + (level - 20) * 2e4 : level >= 10 ? 5e4 + (level - 10) * 1e4 : 1e4 + level * 4e3;
   return { stoneId, stoneCount, goldCost };
 }
 function elementSuccessRate(level) {
@@ -5816,7 +5822,7 @@ function trialTowerStatus(ctx, logger, nk, _payload) {
   const fail = (code, message) => JSON.stringify({ success: false, code, message });
   if (!ctx.userId) return fail(401, "Authentication required");
   const config = readContentConfig(nk, "trial_tower");
-  if (config.floor_count !== 30 || config.daily_tickets !== 5 || config.ticket_cap !== 20 || config.base_stat_multiplier !== 0.7 || config.stat_increase_per_floor !== 0.1 || config.speed_increase_per_floor !== 0.05 || !Array.isArray(config.floors) || config.floors.length !== 30)
+  if (JSON.stringify(config.element_cycle) !== JSON.stringify(["water", "fire", "earth", "wood", "metal"]) || config.floor_count !== 30 || config.daily_tickets !== 5 || config.ticket_cap !== 20 || config.base_stat_multiplier !== 0.7 || config.stat_increase_per_floor !== 0.1 || config.speed_increase_per_floor !== 0.05 || !Array.isArray(config.floors) || config.floors.length !== 30)
     return fail(503, "Th\xE1p ch\u01B0a \u0111\u01B0\u1EE3c c\u1EA5u h\xECnh.");
   const validRewards = (rewards) => Array.isArray(rewards) && rewards.every((r) => r && typeof r.label === "string" && r.label.trim().length > 0);
   for (let i = 0; i < config.floors.length; i++) {
@@ -5857,6 +5863,7 @@ function trialTowerStatus(ctx, logger, nk, _payload) {
     }
     return JSON.stringify({ success: true, snapshot: {
       floors: config.floors.map((f) => Object.assign({}, f, {
+        demon_element: config.element_cycle[(f.floor - 1) % 5],
         first_rewards: towerRewardEntries(nk, f.first_rewards, rewardProfile, f.floor),
         repeat_rewards: towerRewardEntries(nk, f.repeat_rewards, rewardProfile, f.floor),
         stat_multiplier: Math.round((config.base_stat_multiplier + (f.floor - 1) * config.stat_increase_per_floor) * 1e4) / 1e4,
@@ -5947,6 +5954,18 @@ function startTrialTower(ctx, logger, nk, payload) {
   const starting = cpArray(hero.starting_skills).map((s) => typeof s === "string" ? s : s.skill_id || s.id).find((id) => draftCatalog.some((c) => c.skill_id === id));
   if (starting) skills[starting] = 1;
   if (!Object.keys(skills).length) return fail("CONFIG_INVALID", "Ch\u01B0a c\u1EA5u h\xECnh k\u1EF9 n\u0103ng.");
+  const demonElement = config.element_cycle[(req.floor - 1) % 5];
+  const demonHero = catalog.heroes.filter((v) => v.element === demonElement).sort((a, b) => String(a.id).localeCompare(String(b.id)))[0];
+  if (!demonHero) return fail("CONFIG_INVALID", "Tower training element is not configured.");
+  const demonRows = nk.sqlQuery("SELECT id,display_name,criteria_unlock,hero_level_unlock,levels FROM game_skills WHERE id IN (SELECT jsonb_array_elements_text(skill_pool) FROM game_heroes WHERE id=$1) ORDER BY id", [demonHero.id]);
+  const demonDraftCatalog = demonRows.filter((s) => cpArray(s.levels).length > 0 && Number(s.hero_level_unlock || 1) <= level && Number(cpObject(s.criteria_unlock).level || 1) <= 20).map((s) => ({ id: s.id, skill_id: s.id, title: s.display_name, priority: 0, max_level: cpArray(s.levels).length, required_skill: cpObject(s.criteria_unlock).required_skill || "", icon_id: s.id })).concat(prep.supports);
+  const demonSkills = {};
+  const demonStarting = cpArray(demonHero.starting_skills).map((s) => typeof s === "string" ? s : s.skill_id || s.id).find((id) => demonDraftCatalog.some((c) => c.skill_id === id));
+  if (!demonStarting) return fail("CONFIG_INVALID", "Tower training skills are not configured.");
+  demonSkills[demonStarting] = 1;
+  const originalAffinity = demonElementProfile.affinities[hero.element] || 0;
+  demonElementProfile.affinities[hero.element] = demonElementProfile.affinities[demonElement] || 0;
+  demonElementProfile.affinities[demonElement] = originalAffinity;
   const issued = talismanCreateStageRun(nk, ctx.userId, "stage_trial_tower", "floor_" + req.floor);
   const run = Object.assign(issued.run, {
     request_id: req.request_id,
@@ -5961,6 +5980,9 @@ function startTrialTower(ctx, logger, nk, payload) {
     demon_attributes: demonAttributes,
     hero_element_profile: heroElementProfile,
     demon_element_profile: demonElementProfile,
+    demon_element: demonElement,
+    demon_skill_levels: demonSkills,
+    demon_draft_catalog: demonDraftCatalog,
     phase: "preparing",
     combat_level: 20,
     upgrade_count: 19,
@@ -6014,7 +6036,7 @@ function prepareTrialTower(ctx, _logger, nk, payload) {
   const row = rows[0], run = row && cpObject(row.value);
   if (!run || run.run_id !== req.run_id || run.stage_id !== "stage_trial_tower" || run.status !== "active") return fail("RUN_MISMATCH", "Tr\u1EADn kh\xF4ng h\u1EE3p l\u1EC7.");
   if (Date.now() > run.expires_at_ms) return fail("RUN_EXPIRED", "Tr\u1EADn \u0111\xE3 h\u1EBFt h\u1EA1n.");
-  if (run.skill_unlock_version !== 5) return fail("RUN_RULES_CHANGED", "Lu\u1EADt k\u1EF9 n\u0103ng \u0111\xE3 thay \u0111\u1ED5i. H\xE3y v\u1EC1 th\xE1p \u0111\u1EC3 t\u1EA1o tr\u1EADn m\u1EDBi.");
+  if (run.skill_unlock_version !== 5 || !run.demon_draft_catalog || !run.demon_skill_levels) return fail("RUN_RULES_CHANGED", "Lu\u1EADt k\u1EF9 n\u0103ng \u0111\xE3 thay \u0111\u1ED5i. H\xE3y v\u1EC1 th\xE1p \u0111\u1EC3 t\u1EA1o tr\u1EADn m\u1EDBi.");
   if (run.phase === "countdown") return JSON.stringify(run.player_picks && JSON.stringify(run.player_picks) === JSON.stringify(req.picks) ? { success: true, run } : { success: false, code: "BUILD_LOCKED", message: "Build \u0111\xE3 x\xE1c nh\u1EADn." });
   if (run.phase !== "preparing" || !Array.isArray(run.draft_catalog)) return fail("RUN_MISMATCH", "H\xE3y v\xE0o l\u1EA1i th\xE1p.");
   const levels = Object.assign({}, run.skill_levels);
@@ -6023,9 +6045,9 @@ function prepareTrialTower(ctx, _logger, nk, payload) {
     if (!c || !towerDraftLegal(c, levels)) return fail("INVALID_BUILD", "N\xE2ng c\u1EA5p kh\xF4ng h\u1EE3p l\u1EC7.");
     towerDraftApply(c, levels);
   }
-  const aiLevels = Object.assign({}, run.skill_levels), aiPicks = [];
+  const aiLevels = Object.assign({}, run.demon_skill_levels), aiPicks = [];
   for (let i = 0; i < 19; i++) {
-    const pool = run.draft_catalog.filter((c) => towerDraftLegal(c, aiLevels)), offer = [];
+    const pool = run.demon_draft_catalog.filter((c) => towerDraftLegal(c, aiLevels)), offer = [];
     while (pool.length && offer.length < 3) offer.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]);
     if (!offer.length) return fail("CONFIG_INVALID", "Kh\xF4ng \u0111\u1EE7 n\xE2ng c\u1EA5p cho T\xE2m Ma.");
     const priority = Math.min(...offer.map((c) => c.priority)), best = offer.filter((c) => c.priority === priority), chosen = best[Math.floor(Math.random() * best.length)];
@@ -10040,7 +10062,7 @@ function sweepWrite(nk, userId, s, full) {
   nk.storageWrite(writes);
 }
 function campaignFinalBossStage(stage, isBoss) {
-  return isBoss === true && /^stage_[1-6]_10$/.test(stage);
+  return isBoss === true && /^stage_[1-7]_10$/.test(stage);
 }
 function sweepRewardTable(nk, stage, mode, stageRow, level, grade, rules = null) {
   const boss = parseJsonb(level.boss_loot_table) || [], normal = parseJsonb(level.loot_table) || [];
@@ -10049,7 +10071,7 @@ function sweepRewardTable(nk, stage, mode, stageRow, level, grade, rules = null)
   if (mode === "legend" && campaignFinalBossStage(stage, stageRow.is_boss)) {
     const arcs = nk.sqlQuery("SELECT element FROM game_arcs WHERE id = $1", [stageRow.arc_id]);
     const element = arcs.length ? String(arcs[0].element || "") : "";
-    const mixed = stageRow.arc_id === "arc_ngu_to_quy_khu";
+    const mixed = ["arc_ngu_to_quy_khu", "arc_van_yeu_co_linh"].indexOf(stageRow.arc_id) >= 0;
     for (const tier of [{ name: "H\u1EA1 ph\u1EA9m", weight: 0.85 }, { name: "Trung ph\u1EA9m", weight: 0.15 }]) {
       const candidates = nk.sqlQuery("SELECT id, element FROM game_talismans WHERE tier = $1 ORDER BY id", [tier.name]);
       const match = candidates.filter((r) => String(r.element || "") === element), other = candidates.filter((r) => String(r.element || "") !== element);

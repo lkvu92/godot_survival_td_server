@@ -1,9 +1,11 @@
 {
   "contracts": [
+    {"id":"C238_HERO_GROWTH_BALANCE","version":"1.0.0","status":"ACTIVE","updated_at":"2026-10-29","contract_file":"docs/contracts/C238_HERO_GROWTH_BALANCE.md"},
+    {"id": "C237_ARC7_VAN_YEU_CO_LINH", "version": "1.4.0", "status": "ACTIVE", "updated_at": "2026-10-29", "contract_file": "docs/contracts/C237_ARC7_VAN_YEU_CO_LINH.md"},
     {"id": "C234_GIFT_CODES", "version": "1.1.0", "status": "ACTIVE", "updated_at": "2026-10-28", "contract_file": "docs/contracts/C234_GIFT_CODES.md"},
     {"id":"C232_ACCOUNT_IDENTITY","version":"1.2.3","status":"IN_PROGRESS","updated_at":"2026-10-28","contract_file":"docs/contracts/C232_ACCOUNT_IDENTITY.md"},
     {"id":"C230_MID_TIER_TALISMAN_SKILLS","version":"1.0.0","status":"IN_PROGRESS","updated_at":"2026-10-27","contract_file":"docs/contracts/C230_MID_TIER_TALISMAN_SKILLS.md"},
-    {"id":"C015_TALISMAN_EQUIPMENT_SYSTEM","version":"1.17.0","status":"IN_PROGRESS","updated_at":"2026-10-27","contract_file":"docs/contracts/C015_TALISMAN_EQUIPMENT_SYSTEM.md"},
+    {"id":"C015_TALISMAN_EQUIPMENT_SYSTEM","version":"1.18.0","status":"IN_PROGRESS","updated_at":"2026-10-27","contract_file":"docs/contracts/C015_TALISMAN_EQUIPMENT_SYSTEM.md"},
     {"id":"C227_ORDERED_WAVE_SPAWNING","version":"1.0.0","status":"IN_PROGRESS","updated_at":"2026-10-27","contract_file":"docs/contracts/C227_ORDERED_WAVE_SPAWNING.md"},
     {"id":"C225_LEVEL_70","version":"1.0.0","status":"IN_PROGRESS","updated_at":"2026-10-27","contract_file":"docs/contracts/C225_LEVEL_70.md"},
     {"id":"C224_VIP_BENEFITS_MILESTONES","version":"1.1.1","status":"IN_PROGRESS","updated_at":"2026-10-26","contract_file":"docs/contracts/C224_VIP_BENEFITS_MILESTONES.md"},
@@ -70,9 +72,9 @@
     },
     {
       "id": "C196_HERO4_SKILL_REBALANCE",
-      "version": "1.4.0",
+      "version": "1.5.0",
       "status": "IN_PROGRESS",
-      "updated_at": "2026-10-27",
+      "updated_at": "2026-10-29",
       "contract_file": "docs/contracts/C196_HERO4_SKILL_REBALANCE.md"
     },
     {
@@ -259,9 +261,9 @@
     },
     {
       "id": "C164_TOWER_MIRROR_AND_MANUAL_CONTROLS",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "status": "ACTIVE",
-      "updated_at": "2026-10-22",
+      "updated_at": "2026-10-28",
       "contract_file": "docs/contracts/C164_TOWER_MIRROR_AND_MANUAL_CONTROLS.md"
     },
     {

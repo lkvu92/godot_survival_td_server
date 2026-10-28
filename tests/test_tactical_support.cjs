@@ -57,7 +57,7 @@ const reset = () => {
   writes = 0;
   active = {run_id: 'tactical-run', stage_id: 'stage_trial_tower', status: 'active',
     phase: 'preparing', skill_unlock_version: 5, expires_at_ms: Date.now() + 60000,
-    skill_levels: {}, draft_catalog: tower.preparation.supports};
+    demon_skill_levels: {}, demon_draft_catalog: tower.preparation.supports, skill_levels: {}, draft_catalog: tower.preparation.supports};
 };
 const prepare = picks => JSON.parse(ctx.prepareTrialTower({userId: 'u'}, {}, nk, JSON.stringify({run_id: 'tactical-run', picks})));
 reset();

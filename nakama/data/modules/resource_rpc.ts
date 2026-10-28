@@ -21,7 +21,7 @@ function elementUpgradeRequirement(nk: nkruntime.Nakama, elementName: string, le
     const fallback = 1 << (level - tierStart + 1);
     const stoneCount = Math.max(1, Number(costs[Math.min(level, Math.max(costs.length - 1, 0))] || fallback));
     const stoneId = tiers === "high" ? `rune_${elementName}_high` : `stone_${elementName}_${tiers}`;
-    const goldCost = level >= 20 ? 200 + (level - 20) * 20 : (level >= 10 ? 50 + (level - 10) * 10 : 10 + level * 4);
+    const goldCost = level >= 20 ? 200000 + (level - 20) * 20000 : (level >= 10 ? 50000 + (level - 10) * 10000 : 10000 + level * 4000);
     return { stoneId, stoneCount, goldCost };
 }
 

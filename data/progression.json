@@ -84,7 +84,7 @@
         "stone_growth_multiplier": 2
       }
     ],
-    "gold_cost": "Existing gold formulas are unchanged.",
+    "gold_cost": "Talisman and element upgrade gold formulas multiplied by 1000 (C015 v1.18.0).",
     "success_rate": "Existing success-rate formulas are unchanged; resources are consumed on failure."
   },
   "element_combat": {
@@ -234,7 +234,8 @@
         "stage_3_10",
         "stage_4_10",
         "stage_5_10",
-        "stage_6_10"
+        "stage_6_10",
+        "stage_7_10"
       ],
       "quantity_weights": {
         "0": 30,
@@ -678,12 +679,12 @@
         }
       ],
       "gold": {
-        "low_base": 10,
-        "low_growth": 4,
-        "medium_base": 50,
-        "medium_growth": 10,
-        "high_base": 200,
-        "high_growth": 20
+        "low_base": 10000,
+        "low_growth": 4000,
+        "medium_base": 50000,
+        "medium_growth": 10000,
+        "high_base": 200000,
+        "high_growth": 20000
       }
     }
   },

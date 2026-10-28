@@ -1,0 +1,1207 @@
+{
+  "version": 1,
+  "animations": 45,
+  "vfx": 30,
+  "files": [
+    {
+      "path": "client/assets/creep/arc7/pha_son_cu_vien/pha_son_cu_vien_idle_3x3.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/creep/arc7/pha_son_cu_vien/pha_son_cu_vien_run_3x3.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/creep/arc7/pha_son_cu_vien/pha_son_cu_vien_attack_3x3.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/creep/arc7/pha_son_cu_vien/pha_son_cu_vien_hit_3x3.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/creep/arc7/pha_son_cu_vien/pha_son_cu_vien_die_3x3.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/creep/arc7/huyet_man_cuong_su/huyet_man_cuong_su_idle_3x3.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/creep/arc7/huyet_man_cuong_su/huyet_man_cuong_su_run_repair2.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/creep/arc7/huyet_man_cuong_su/huyet_man_cuong_su_attack_repair2.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/creep/arc7/huyet_man_cuong_su/huyet_man_cuong_su_hit_3x3.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/creep/arc7/huyet_man_cuong_su/huyet_man_cuong_su_die_3x3.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/creep/arc7/co_giap_long_te/co_giap_long_te_idle_3x3.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/creep/arc7/co_giap_long_te/co_giap_long_te_run_3x3.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/creep/arc7/co_giap_long_te/co_giap_long_te_attack_3x3.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/creep/arc7/co_giap_long_te/co_giap_long_te_hit_3x3.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/creep/arc7/co_giap_long_te/co_giap_long_te_die_3x3.png",
+      "size": [
+        512,
+        512
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        170.66666666666666,
+        170.66666666666666
+      ]
+    },
+    {
+      "path": "client/assets/creep/arc7/doc_tich_man_ngac/doc_tich_man_ngac_idle_3x3.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/creep/arc7/doc_tich_man_ngac/doc_tich_man_ngac_run_3x3.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/creep/arc7/doc_tich_man_ngac/doc_tich_man_ngac_attack_3x3.png",
+      "size": [
+        512,
+        512
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        170.66666666666666,
+        170.66666666666666
+      ]
+    },
+    {
+      "path": "client/assets/creep/arc7/doc_tich_man_ngac/doc_tich_man_ngac_hit_3x3.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/creep/arc7/doc_tich_man_ngac/doc_tich_man_ngac_die_3x3.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/creep/arc7/loi_trao_hung_bi/loi_trao_hung_bi_idle_3x3.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/creep/arc7/loi_trao_hung_bi/loi_trao_hung_bi_run_3x3.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/creep/arc7/loi_trao_hung_bi/loi_trao_hung_bi_attack_3x3.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/creep/arc7/loi_trao_hung_bi/loi_trao_hung_bi_hit_3x3.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/creep/arc7/loi_trao_hung_bi/loi_trao_hung_bi_die_3x3.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/creep/arc7/huyen_lan_long_bao/huyen_lan_long_bao_idle_3x3.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/creep/arc7/huyen_lan_long_bao/huyen_lan_long_bao_run_3x3.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/creep/arc7/huyen_lan_long_bao/huyen_lan_long_bao_attack_3x3.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/creep/arc7/huyen_lan_long_bao/huyen_lan_long_bao_hit_3x3.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/creep/arc7/huyen_lan_long_bao/huyen_lan_long_bao_die_3x3.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/creep/arc7/man_cot_toan_nghe/man_cot_toan_nghe_idle_3x3.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/creep/arc7/man_cot_toan_nghe/man_cot_toan_nghe_run_3x3.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/creep/arc7/man_cot_toan_nghe/man_cot_toan_nghe_attack_3x3.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/creep/arc7/man_cot_toan_nghe/man_cot_toan_nghe_hit_3x3.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/creep/arc7/man_cot_toan_nghe/man_cot_toan_nghe_die_3x3.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/boss/bach_ho_yeu_vuong/bach_ho_yeu_vuong_idle.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/boss/bach_ho_yeu_vuong/bach_ho_yeu_vuong_run.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/boss/bach_ho_yeu_vuong/bach_ho_yeu_vuong_attack.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/boss/bach_ho_yeu_vuong/bach_ho_yeu_vuong_hit.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/boss/bach_ho_yeu_vuong/bach_ho_yeu_vuong_die.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/boss/chu_tuoc_nu_vuong/chu_tuoc_nu_vuong_idle.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/boss/chu_tuoc_nu_vuong/chu_tuoc_nu_vuong_run.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/boss/chu_tuoc_nu_vuong/chu_tuoc_nu_vuong_attack.png",
+      "size": [
+        1536,
+        1494
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        498.0
+      ]
+    },
+    {
+      "path": "client/assets/boss/chu_tuoc_nu_vuong/chu_tuoc_nu_vuong_hit.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/boss/chu_tuoc_nu_vuong/chu_tuoc_nu_vuong_die.png",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        512.0,
+        512.0
+      ]
+    },
+    {
+      "path": "client/assets/skill_vfx/creep/arc7/bach_ho_yeu_vuong/b01/layer-a-four-tiger-claw-arcs.png",
+      "size": [
+        1200,
+        1200
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        400.0,
+        400.0
+      ]
+    },
+    {
+      "path": "client/assets/skill_vfx/creep/arc7/bach_ho_yeu_vuong/b01/layer-b-white-gold-contact.png",
+      "size": [
+        1200,
+        1200
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        400.0,
+        400.0
+      ]
+    },
+    {
+      "path": "client/assets/skill_vfx/creep/arc7/bach_ho_yeu_vuong/b02/layer-a-tiger-pounce-flow.png",
+      "size": [
+        1200,
+        1200
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        400.0,
+        400.0
+      ]
+    },
+    {
+      "path": "client/assets/skill_vfx/creep/arc7/bach_ho_yeu_vuong/b03/layer-a-tiger-roar-wave.png",
+      "size": [
+        1200,
+        825
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        400.0,
+        275.0
+      ]
+    },
+    {
+      "path": "client/assets/skill_vfx/creep/arc7/bach_ho_yeu_vuong/b03/layer-b-tiger-roar-mark.png",
+      "size": [
+        1200,
+        1200
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        400.0,
+        400.0
+      ]
+    },
+    {
+      "path": "client/assets/skill_vfx/creep/arc7/bach_ho_yeu_vuong/b04/layer-a-bloodline-stripe-awaken.png",
+      "size": [
+        1200,
+        1200
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        400.0,
+        400.0
+      ]
+    },
+    {
+      "path": "client/assets/skill_vfx/creep/arc7/bach_ho_yeu_vuong/b04/layer-b-dominion-stomp-wave.png",
+      "size": [
+        1200,
+        1200
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        400.0,
+        400.0
+      ]
+    },
+    {
+      "path": "client/assets/skill_vfx/creep/arc7/bach_ho_yeu_vuong/b04/layer-c-arm-bloodline-flow.png",
+      "size": [
+        1200,
+        1200
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        400.0,
+        400.0
+      ]
+    },
+    {
+      "path": "client/assets/skill_vfx/creep/arc7/chu_tuoc_nu_vuong/z01/layer-a-palm-fire-charge.png",
+      "size": [
+        1200,
+        1200
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        400.0,
+        400.0
+      ]
+    },
+    {
+      "path": "client/assets/skill_vfx/creep/arc7/chu_tuoc_nu_vuong/z01/layer-b-fire-feather-projectile.png",
+      "size": [
+        1200,
+        1200
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        400.0,
+        400.0
+      ]
+    },
+    {
+      "path": "client/assets/skill_vfx/creep/arc7/chu_tuoc_nu_vuong/z01/layer-c-fire-feather-impact.png",
+      "size": [
+        1200,
+        1200
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        400.0,
+        400.0
+      ]
+    },
+    {
+      "path": "client/assets/skill_vfx/creep/arc7/chu_tuoc_nu_vuong/z02/layer-a-flame-wing-sweep.png",
+      "size": [
+        1200,
+        1200
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        400.0,
+        400.0
+      ]
+    },
+    {
+      "path": "client/assets/skill_vfx/creep/arc7/chu_tuoc_nu_vuong/z03/layer-a-falling-feather-warning.png",
+      "size": [
+        1200,
+        1200
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        400.0,
+        400.0
+      ]
+    },
+    {
+      "path": "client/assets/skill_vfx/creep/arc7/chu_tuoc_nu_vuong/z03/layer-b-descending-fire-feather.png",
+      "size": [
+        1200,
+        1200
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        400.0,
+        400.0
+      ]
+    },
+    {
+      "path": "client/assets/skill_vfx/creep/arc7/chu_tuoc_nu_vuong/z04/layer-a-vermilion-bird-apparition.png",
+      "size": [
+        1200,
+        1200
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        400.0,
+        400.0
+      ]
+    },
+    {
+      "path": "client/assets/skill_vfx/creep/arc7/chu_tuoc_nu_vuong/z04/layer-b-heaven-burning-wave.png",
+      "size": [
+        1200,
+        1200
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        400.0,
+        400.0
+      ]
+    },
+    {
+      "path": "client/assets/skill_vfx/creep/arc7/chu_tuoc_nu_vuong/z04/layer-c-burning-ring-zone.png",
+      "size": [
+        1200,
+        1200
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        400.0,
+        400.0
+      ]
+    },
+    {
+      "path": "client/assets/skill_vfx/creep/arc7/co_giap_long_te/c03/layer-a-horn-rush-flow.png",
+      "size": [
+        1200,
+        1200
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        400.0,
+        400.0
+      ]
+    },
+    {
+      "path": "client/assets/skill_vfx/creep/arc7/co_giap_long_te/c03/layer-b-horn-impact.png",
+      "size": [
+        1200,
+        1200
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        400.0,
+        400.0
+      ]
+    },
+    {
+      "path": "client/assets/skill_vfx/creep/arc7/doc_tich_man_ngac/c04/layer-a-venom-projectile.png",
+      "size": [
+        1200,
+        1200
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        400.0,
+        400.0
+      ]
+    },
+    {
+      "path": "client/assets/skill_vfx/creep/arc7/doc_tich_man_ngac/c04/layer-b-venom-splash.png",
+      "size": [
+        1200,
+        1200
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        400.0,
+        400.0
+      ]
+    },
+    {
+      "path": "client/assets/skill_vfx/creep/arc7/huyen_lan_long_bao/c06/layer-a-jade-pounce-flow.png",
+      "size": [
+        1200,
+        1200
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        400.0,
+        400.0
+      ]
+    },
+    {
+      "path": "client/assets/skill_vfx/creep/arc7/huyen_lan_long_bao/c06/layer-b-jade-claw-contact.png",
+      "size": [
+        1200,
+        1200
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        400.0,
+        400.0
+      ]
+    },
+    {
+      "path": "client/assets/skill_vfx/creep/arc7/huyet_man_cuong_su/c02/layer-a-blood-fang-bite.png",
+      "size": [
+        1200,
+        1200
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        400.0,
+        400.0
+      ]
+    },
+    {
+      "path": "client/assets/skill_vfx/creep/arc7/loi_trao_hung_bi/c05/layer-a-thunder-claw-sweep.png",
+      "size": [
+        1200,
+        1200
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        400.0,
+        400.0
+      ]
+    },
+    {
+      "path": "client/assets/skill_vfx/creep/arc7/loi_trao_hung_bi/c05/layer-b-electric-impact.png",
+      "size": [
+        1200,
+        1200
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        400.0,
+        400.0
+      ]
+    },
+    {
+      "path": "client/assets/skill_vfx/creep/arc7/man_cot_toan_nghe/c07/layer-a-bone-qi-projectile.png",
+      "size": [
+        1200,
+        1200
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        400.0,
+        400.0
+      ]
+    },
+    {
+      "path": "client/assets/skill_vfx/creep/arc7/man_cot_toan_nghe/c07/layer-b-bone-qi-impact.png",
+      "size": [
+        1200,
+        1200
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        400.0,
+        400.0
+      ]
+    },
+    {
+      "path": "client/assets/skill_vfx/creep/arc7/pha_son_cu_vien/c01/layer-a-compressed-fist-wave.png",
+      "size": [
+        1200,
+        1200
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        400.0,
+        400.0
+      ]
+    },
+    {
+      "path": "client/assets/skill_vfx/creep/arc7/pha_son_cu_vien/c01/layer-b-stone-impact.png",
+      "size": [
+        1200,
+        1200
+      ],
+      "mode": "RGBA",
+      "grid": [
+        3,
+        3
+      ],
+      "cell": [
+        400.0,
+        400.0
+      ]
+    }
+  ]
+}

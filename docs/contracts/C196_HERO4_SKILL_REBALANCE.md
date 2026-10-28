@@ -1,7 +1,19 @@
 # C196 Hero 4 poison skill rebalance
 
-Version: 1.4.0
+Version: 1.5.0
 Status: IN_PROGRESS
+
+## Revision 1.5.0 — Skill 1 recovery after C238
+
+Supersedes Skill1 direct damage from v1.4: 40/55/70/85/100% ATK per dart. Preserve poison DPS 12.5/15/17.5/20/22.5 for 2s, cooldown 2.4/2.2/2/1.8/1.6, dart count 1/2/2/3/3, range, speed, visuals and every other skill. The purpose is to restore the primary skill after reduced persistent ATK growth; attack speed does not replace its own skill cooldown. No changes to poison stacking, RPC schema or offline rules. Authoritative source is server/data/skills.json; local rollout updates only this skill's levels with backup/readback, preserves other skills and copies the published settings snapshot for a new config version. Refresh authenticated bootstrap; no production deployment.
+
+Raw direct volley budget, assuming every dart hits the same target: 20/45/50/82.5/90 → 40/110/140/255/300% ATK per cast. This excludes crit/DEF, missed darts and poison. Poison uses strongest/refresh, so do not multiply its duration budget by dart count. At hero Lv70 (ATK 1927.80), skill Lv5 per-dart direct damage before mitigation increases 578.34 → 1927.80; all-three-hit direct volley 1735.02 → 5783.41. This is a coefficient check, not measured combat DPS.
+
+### Changelog addition
+
+| Version | Date | Change |
+|---|---|---|
+| 1.5.0 | 2026-10-29 | Recover Skill1 direct-hit curve after C238; preserve poison and timing. |
 
 ## Schema and server authority
 Validation 1.4.0: raw-budget/data regression and retained revision1.3 invariants PASS; Godot Hero4Piercing PASS including both-leg poison falloff and unchanged slow; Hero4PoisonTraps and Hero4Revision13 PASS; client static PASS. Source comparison proves every other skill including Skill4 unchanged. Selective local DB update changes only levels/description of Skill1–3, preserves other fields/skills/settings, and advances config41→42. Backup: workspace .tmp/hero4-poison-redistribution/1793093934907/. Updated client is required for Skill2 poison falloff; no production deployment. Existing vortex stun-dummy regression remains outside this revision; no full-suite acceptance claim.
@@ -83,3 +95,7 @@ H?i Ho?n ??c Lu?n pierces all hostile actors intersecting each swept movement se
 | 1.2.0 | 2026-10-26 | Skill2 swept piercing on both legs and linear direct damage 100% to30% at max range. |
 
 Validation1.2.0: TestHero4Piercing PASS for all five level options, multiple targets crossed in one frame, exact100/82.5/65/47.5/30% spatial damage, returning-leg hits, endpoint clamp, off-line exclusion and pool option reset. Client static PASS. Local config version33 contains minimum multiplier0.3. Separate TestHero4Vortex fails its pre-existing dummy stun-distribution assertion; that test path and status behavior were not changed in this revision.
+
+## Validation 1.5.0 (2026-10-29)
+
+PASS targeted revision13 and poison-redistribution regressions; complete server/client static runners PASS. Source comparison against HEAD confirms only Skill1 direct damage and its tooltip rows changed. Local DB update/readback PASS, every other skill and field preserved, previous growth/levels kept; new config version copies existing published settings. No runtime code change or restart needed. Refresh login/bootstrap for new skill config. Real combat playtest remains pending; no production deployment.

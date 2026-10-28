@@ -1,7 +1,7 @@
 # Hero 4 — U Ảnh Độc Tôn
 
-Version: 1.1.0
-Cập nhật: 2026-10-27
+Version: 1.3.0
+Cập nhật: 2026-10-29
 
 [Danh sách 5 hero](../HERO_SKILLS_CURRENT.md) · [Config skill nguồn](../../data/skills.json)
 
@@ -16,17 +16,27 @@ Các cột Lv1–Lv5 là **cấp skill trong trận**. Level hero mở skill và
 | 3 | Hủ Cốt Độc Cạm | 20 | 10 | `trap` / `active` |
 | 4 | Vạn Độc Thần Phong | 30 | 15 | `poison_vortex` / `active` |
 
-**C196 v1.4:** Skill 1 giảm 50% sát thương trực tiếp; Skill 2–3 chuyển 50% sát thương trực tiếp sang độc, giữ tổng hệ số thô khi trúng một lần và độc chạy đủ thời gian. Độc vẫn dùng strongest/refresh, nên không coi đây là tổng damage bảo đảm khi trúng nhiều lần hoặc chồng với độc khác.
+**C196 v1.5:** Skill 1 tăng sát thương trực tiếp lên 40/55/70/85/100% ATK sau C238; Skill 2–3 chuyển 50% sát thương trực tiếp sang độc, giữ tổng hệ số thô khi trúng một lần và độc chạy đủ thời gian. Độc vẫn dùng strongest/refresh, nên không coi đây là tổng damage bảo đảm khi trúng nhiều lần hoặc chồng với độc khác.
+
+## Chỉ số hero và tăng cấp — C238
+
+[Bảng chung và hệ số JSON](../HERO_STATS_CURRENT.md). Lv dưới đây là cấp hero ngoài trận, khác cấp skill. Cấp tạm trong trận dùng cùng hệ số với mức 25% cho nhóm nhân.
+
+| Lv | HP | ATK | DEF | Tốc chạy | Tốc đánh | Tầm đánh | Chí mạng (%) | ST chí mạng (%) | Hồi HP/10s (%) | HP hồi/10s | Sức tấn công lý thuyết |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 1 | 370.00 | 25.00 | 6.00 | 335.00 | 1.95 | 400.00 | 16.00 | 180.00 | 1.20 | 4.44 | 54.99 |
+| 50 | 5100.02 | 547.11 | 41.00 | 387.96 | 5.15 | 400.00 | 40.50 | 278.00 | 5.12 | 261.12 | 4844.73 |
+| 70 | 14880.63 | 1927.80 | 89.84 | 411.92 | 7.65 | 400.00 | 50.50 | 318.00 | 6.72 | 999.98 | 30968.12 |
 
 ## Skill 1 — Độc Phi Tiêu
 
-Mỗi tiêu gây 20/22,5/25/27,5/30% ATK trực tiếp và đặt độc 12,5/15/17,5/20/22,5% ATK **mỗi giây**, trong 2s. Số tiêu 1/2/2/3/3, bắn nối tiếp theo `volley_interval`; không nhân toàn bộ độc với số tiêu vì độc thường dùng max potency/refresh.
+Mỗi tiêu gây 40/55/70/85/100% ATK trực tiếp và đặt độc 12,5/15/17,5/20/22,5% ATK **mỗi giây**, trong 2s. Số tiêu 1/2/2/3/3, bắn nối tiếp theo `volley_interval`; không nhân toàn bộ độc với số tiêu vì độc thường dùng max potency/refresh.
 
 ### Chỉ số gameplay
 
 | Thông số | Lv1 | Lv2 | Lv3 | Lv4 | Lv5 |
 |---|---:|---:|---:|---:|---:|
-| Sát thương (% ATK) (`damage_pct`) | 20 | 22.5 | 25 | 27.5 | 30 |
+| Sát thương (% ATK) (`damage_pct`) | 40 | 55 | 70 | 85 | 100 |
 | Tốc độ bay (% tốc độ di chuyển hero) (`speed_pct`) | 230 | 244 | 258 | 274 | 292 |
 | Range cơ sở (px) (`range`) | 680 | 700 | 720 | 740 | 760 |
 | Số projectile (`projectile_count`) | 1 | 2 | 2 | 3 | 3 |

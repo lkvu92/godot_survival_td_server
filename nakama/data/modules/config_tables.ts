@@ -3,6 +3,10 @@ function seedExtensionColumns(): {[table: string]: {[column: string]: string}} {
     "heroes": {
         "basic_attack_range": "REAL"
     },
+    "enemies": {
+        "collision_radius": "REAL",
+        "balance_reference_level": "INT"
+    },
     "arcs": {
         "boss_skill_ids": "JSONB",
         "enemy_visual_scale_multiplier": "REAL"
