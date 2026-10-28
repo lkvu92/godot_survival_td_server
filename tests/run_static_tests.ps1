@@ -2,6 +2,8 @@ $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path $PSScriptRoot -Parent
 Push-Location $repoRoot
 try {
+    & node tests/test_gift_codes.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Gift code atomic redemption regressions failed' }
     & node --test services/account-identity/test/security.test.js services/account-identity/test/mail-template.test.js
     if ($LASTEXITCODE -ne 0) { throw 'C232 account identity security regression failed' }
     & node tests/test_mid_tier_talisman_config.cjs

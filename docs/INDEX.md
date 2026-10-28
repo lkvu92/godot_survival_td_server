@@ -1,3 +1,4 @@
+- [C234 Gift codes](contracts/C234_GIFT_CODES.md): server management, atomic mail redemption, welcome/opening/tester campaigns and Profile dialog. [Operations](GIFT_CODES.md) · [Validation](reports/C234_GIFT_CODES_VALIDATION.md).
 - [C134 stamina storage cap](contracts/C134_RESULT_AD_SYSTEM_CONFIG.md) v1.0.2: storage 200, natural regeneration 30; daily-pack/current/legacy grants and regression expectations aligned.
 - [C232 Verified account identity](contracts/C232_ACCOUNT_IDENTITY.md): Gmail SMTP confirmation links, verified email registration and account deletion; v1.1.0 jade/gold production mail templates. [Validation and SMTP status](reports/C232_ACCOUNT_IDENTITY_VALIDATION.md).
 - [Arc 6 Ngũ Tố Quy Khư plan](ARC6_NGU_TO_QUY_KHU_PLAN.md) and [C221](contracts/C221_ARC6_NGU_TO_QUY_KHU.md) v1.1.1: mixed-element campaign, per-stage Lv51–60 shared creep-stat curves, and Arc 2 ice variants rendered at their source size.

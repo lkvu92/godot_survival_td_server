@@ -6,7 +6,7 @@ const access=vm.runInContext('adminExpTestAccess',context),grant=vm.runInContext
 let db,writes,conflict,configValid;
 const clone=v=>JSON.parse(JSON.stringify(v));
 const accounts={a:'lkvu92@gmail.com',b:'LKVU921@GMAIL.COM',other:'other@gmail.com'};
-context.getRemoteConfigValue=()=>configValid?Array.from({length:51},(_,i)=>i*1000):[];
+context.getRemoteConfigValue=()=>configValid?Array.from({length:71},(_,i)=>i*1000):[];
 const nk={
  sqlQuery(sql,args){
   if(sql.includes('FROM users')){
@@ -43,5 +43,6 @@ reset();db.player_stage_runs={collection:'player_stage_runs',value:{status:'acti
 reset();db.player_profiles.value.breakthrough={in_tribulation:true};assert.equal(call('a').code,'ACTIVITY_ACTIVE');
 reset();conflict=true;assert.equal(call('a').code,'STATE_CONFLICT');assert.equal(writes,0);
 reset();configValid=false;assert.equal(call('a').code,'CONFIG_INVALID');assert.equal(writes,0);
-reset();db.player_profiles.value.level=50;assert.equal(call('a').hero.next_level_exp,0);
+reset();db.player_profiles.value.level=50;assert.equal(call('a').hero.next_level_exp,1000);
+reset();db.player_profiles.value.level=70;assert.equal(call('a').hero.next_level_exp,0);
 console.log('PASS C186 EXP test: two-account DB allowlist, forged input, owned hero, current user cap, stat recomputation, replay, activity/CAS/config guards');

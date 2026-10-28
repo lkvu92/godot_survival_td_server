@@ -197,6 +197,9 @@ function InitModule(
 ): void {
     // Phase 2: Create tables on startup
     createServerRegistryTables(nk);
+    initializer.registerRpc('gift_code_redeem',linkedRpc_gift_code_redeem);
+    initializer.registerRpc('gift_code_admin',linkedRpc_gift_code_admin);
+    initializer.registerRpc('operator_gift_codes',operatorGiftCodes);
     createMailboxTables(nk);
     initializer.registerRpc('mail_summary',linkedRpc_mail_summary);
     initializer.registerRpc('mail_list',linkedRpc_mail_list);
