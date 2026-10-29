@@ -1,5 +1,14 @@
 # Arc 7 — Vạn Yêu Cổ Lĩnh: Rừng Thiêng Đẫm Máu
 
+## Revision 1.5.0 — Campaign continuation (2026-10-29)
+
+Implemented: shared Arc6 CORE population/roles, shared formation/EXP utilities,
+Lv60 role-normalized bases and continuing authored HP/ATK/DEF curves. This
+supersedes the old standalone 1.00–1.315 stage curve and count cap of 15.
+See reports/ARC7_PROGRESSION_V2.md for 135 mortal runs and limitations. Previous
+all-pass balance evidence is invalid for this revision; full per-hero loadout
+tuning and minimum-power recommendation are not claimed by the new audit.
+
 Ngày: 2026-10-29. Trạng thái: kế hoạch tích hợp, chưa triển khai gameplay. Contract C237 v1.1.0. Background/minimap ?? t?o v? ??ng k?; gameplay ch?a tri?n khai.
 
 ## Phạm vi đã chốt

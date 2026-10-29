@@ -1,6 +1,7 @@
 {
   "version": 1,
-  "valid_for_balance": true,
+  "valid_for_balance": false,
+  "invalidated_reason": "Superseded by C237 1.5.0 progression catalog; retain historical measurements only.",
   "combat_digest": "1185c3dc36d248d2e6709e7d5f60edcd1658583d47c1e9af74c3ecdfc25c7bca",
   "reference_level": 60,
   "policy": "Lv60 base, no equipment/affinity/ThanLuan; ordinary offered cards; real damage/death",

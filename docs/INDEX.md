@@ -1,6 +1,7 @@
+- [C237 Chu Tước rework](contracts/C237_ARC7_VAN_YEU_CO_LINH.md) v1.6.1: six-angle feather shots converge on the locked snapshot center; retains Lv60 campaign progression.
 - [C196 v1.5 Skill 1 H4](contracts/C196_HERO4_SKILL_REBALANCE.md): phục hồi sát thương trực tiếp 40/55/70/85/100% ATK sau C238; giữ nguyên độc và hồi chiêu.
 - [C238 Hero growth balance](contracts/C238_HERO_GROWTH_BALANCE.md) v1.0.0: [Lv1/50/70 simulation and exact curves](HERO_STATS_CURRENT.md), round-2 growth for all five heroes.
-- [C237 Arc 7 Van Yeu Co Linh](contracts/C237_ARC7_VAN_YEU_CO_LINH.md) v1.4.0 ACTIVE: fixed Lv60 baseline, seven creeps, random elements, Bach Ho stage 5 and Chu Tuoc stage 10.
+- [C237 Arc 7 Van Yeu Co Linh](contracts/C237_ARC7_VAN_YEU_CO_LINH.md) v1.4.1 ACTIVE: fixed Lv60 baseline, seven creeps, random elements, Bach Ho stage 5 and Chu Tuoc stage 10.
 - [C234 Gift codes](contracts/C234_GIFT_CODES.md): server management, atomic mail redemption, welcome/opening/tester campaigns and Profile dialog. [Operations](GIFT_CODES.md) · [Validation](reports/C234_GIFT_CODES_VALIDATION.md).
 - [C134 stamina storage cap](contracts/C134_RESULT_AD_SYSTEM_CONFIG.md) v1.0.2: storage 200, natural regeneration 30; daily-pack/current/legacy grants and regression expectations aligned.
 - [C232 Verified account identity](contracts/C232_ACCOUNT_IDENTITY.md): Gmail SMTP confirmation links, verified email registration and account deletion; v1.1.0 jade/gold production mail templates. [Validation and SMTP status](reports/C232_ACCOUNT_IDENTITY_VALIDATION.md).
@@ -286,3 +287,7 @@ C197 v1.1.0: fixed golden phantom, 0.5s protection, actual-hit repeat damage and
 C164 v1.1.0: Tower elemental combat training cycle (water/fire/earth/wood/metal).
 
 C015 v1.18.0: talisman and element enhancement gold x1000.
+- [C237 Bach Ho rework](contracts/C237_ARC7_VAN_YEU_CO_LINH.md) v1.7.0 ACTIVE: triple punches, tracking claws, four directional kicks, player-HP-triggered Cuong Da; two new layered VFX sheets.
+- C237 v1.7.1: reserve Cuong Da seal for HP-triggered B04; explicit outward wave expansion, six pulses; distinguish B02 speed buff.
+- C237 v1.8.0: Cuong Da uses boss/caster HP below50%, activates through every control state immediately on nonlethal damage; supersedes player-HP interpretation.
+- C237 v1.8.1: protect Phoenix Z04 lethal passive through control, exact four expanding waves and50% revival after4s; prevent duplicated wave0.

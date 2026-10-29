@@ -1,9 +1,14 @@
 # C192 Arc-wide campaign difficulty unlocks
 
-Version: 1.0.0
+Version: 1.1.0
 Status: ACTIVE
 
 ## Schema and eligibility
+
+Campaign arc admission requires both level_min and Normal completion of every
+stage in the preceding campaign arc by sort_order (excluding training arc_0).
+The first campaign arc requires only level_min. Stale grants cannot bypass this
+predicate. Locked arcs remain selectable for viewing both requirements.
 
 Existing profile.completed_stage_levels [{stage_id,level_id}] remains authoritative.
 For a campaign arc, Epic requires Normal wins on every configured Normal stage
@@ -25,6 +30,9 @@ use the new predicate. Normal next-stage/next-arc progression remains unchanged.
 
 ## Presentation and offline
 
+Arc catalog names and lore use cultivation-world prose for all eight regions.
+ArcSelect keeps unlock requirements outside the scrolling lore area.
+
 Existing mode stars reflect availability; no new assets/signals. Missing catalog
 or incomplete prerequisite list denies advanced modes. C121 online-only, no local
 configuration or gameplay fallback.
@@ -33,6 +41,7 @@ configuration or gameplay fallback.
 
 | Version | Date | Change |
 |---|---|---|
+| 1.1.0 | 2026-10-29 | Require minimum level AND full previous Normal arc clear; show locked arc requirements. |
 | 1.0.0 | 2026-10-24 | Unlock difficulties per fully cleared arc, replace per-stage mode grants and guard new admissions. |
 
 Validation: backend build/postbuild and server/client static suites PASS.

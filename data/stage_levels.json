@@ -19637,7 +19637,7 @@
     "display_name": "Normal",
     "description": "Vạn Yêu Cổ Lĩnh · Normal · nền tảng hero Lv60",
     "order": 1,
-    "recommended_power": 102737,
+    "recommended_power": 13978,
     "exp_multiplier": 1,
     "stamina_cost": 1,
     "enemy_modifiers": {
@@ -19704,11 +19704,8 @@
     "stage_rules": {
       "balance_reference_level": 60,
       "recommendation": {
-        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
-        "reference_hero_level": 60,
-        "cases": 15,
-        "passed": 15,
-        "minimum_power_search": false
+        "model": "arc7_lv60_progression_v2_pending_runtime",
+        "requires_balance_reaudit": true
       }
     },
     "unlock_condition": {
@@ -19723,7 +19720,7 @@
     "display_name": "Epic",
     "description": "Vạn Yêu Cổ Lĩnh · Epic · nền tảng hero Lv60",
     "order": 2,
-    "recommended_power": 102737,
+    "recommended_power": 22832,
     "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
@@ -19797,11 +19794,8 @@
     "stage_rules": {
       "balance_reference_level": 60,
       "recommendation": {
-        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
-        "reference_hero_level": 60,
-        "cases": 15,
-        "passed": 15,
-        "minimum_power_search": false
+        "model": "arc7_lv60_progression_v2_pending_runtime",
+        "requires_balance_reaudit": true
       }
     },
     "unlock_condition": {
@@ -19816,7 +19810,7 @@
     "display_name": "Legend",
     "description": "Vạn Yêu Cổ Lĩnh · Legend · nền tảng hero Lv60",
     "order": 3,
-    "recommended_power": 102737,
+    "recommended_power": 27835,
     "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
@@ -19935,11 +19929,8 @@
     "stage_rules": {
       "balance_reference_level": 60,
       "recommendation": {
-        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
-        "reference_hero_level": 60,
-        "cases": 15,
-        "passed": 15,
-        "minimum_power_search": false
+        "model": "arc7_lv60_progression_v2_pending_runtime",
+        "requires_balance_reaudit": true
       }
     },
     "unlock_condition": {
@@ -19954,7 +19945,7 @@
     "display_name": "Normal",
     "description": "Vạn Yêu Cổ Lĩnh · Normal · nền tảng hero Lv60",
     "order": 1,
-    "recommended_power": 102737,
+    "recommended_power": 13978,
     "exp_multiplier": 1,
     "stamina_cost": 1,
     "enemy_modifiers": {
@@ -20021,11 +20012,8 @@
     "stage_rules": {
       "balance_reference_level": 60,
       "recommendation": {
-        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
-        "reference_hero_level": 60,
-        "cases": 5,
-        "passed": 5,
-        "minimum_power_search": false
+        "model": "arc7_lv60_progression_v2_pending_runtime",
+        "requires_balance_reaudit": true
       }
     },
     "unlock_condition": {
@@ -20040,7 +20028,7 @@
     "display_name": "Epic",
     "description": "Vạn Yêu Cổ Lĩnh · Epic · nền tảng hero Lv60",
     "order": 2,
-    "recommended_power": 102737,
+    "recommended_power": 22832,
     "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
@@ -20114,11 +20102,8 @@
     "stage_rules": {
       "balance_reference_level": 60,
       "recommendation": {
-        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
-        "reference_hero_level": 60,
-        "cases": 5,
-        "passed": 5,
-        "minimum_power_search": false
+        "model": "arc7_lv60_progression_v2_pending_runtime",
+        "requires_balance_reaudit": true
       }
     },
     "unlock_condition": {
@@ -20133,7 +20118,7 @@
     "display_name": "Legend",
     "description": "Vạn Yêu Cổ Lĩnh · Legend · nền tảng hero Lv60",
     "order": 3,
-    "recommended_power": 102737,
+    "recommended_power": 27835,
     "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
@@ -20252,11 +20237,8 @@
     "stage_rules": {
       "balance_reference_level": 60,
       "recommendation": {
-        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
-        "reference_hero_level": 60,
-        "cases": 5,
-        "passed": 5,
-        "minimum_power_search": false
+        "model": "arc7_lv60_progression_v2_pending_runtime",
+        "requires_balance_reaudit": true
       }
     },
     "unlock_condition": {
@@ -20271,7 +20253,7 @@
     "display_name": "Normal",
     "description": "Vạn Yêu Cổ Lĩnh · Normal · nền tảng hero Lv60",
     "order": 1,
-    "recommended_power": 102737,
+    "recommended_power": 13978,
     "exp_multiplier": 1,
     "stamina_cost": 1,
     "enemy_modifiers": {
@@ -20338,11 +20320,8 @@
     "stage_rules": {
       "balance_reference_level": 60,
       "recommendation": {
-        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
-        "reference_hero_level": 60,
-        "cases": 5,
-        "passed": 5,
-        "minimum_power_search": false
+        "model": "arc7_lv60_progression_v2_pending_runtime",
+        "requires_balance_reaudit": true
       }
     },
     "unlock_condition": {
@@ -20357,7 +20336,7 @@
     "display_name": "Epic",
     "description": "Vạn Yêu Cổ Lĩnh · Epic · nền tảng hero Lv60",
     "order": 2,
-    "recommended_power": 102737,
+    "recommended_power": 22832,
     "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
@@ -20431,11 +20410,8 @@
     "stage_rules": {
       "balance_reference_level": 60,
       "recommendation": {
-        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
-        "reference_hero_level": 60,
-        "cases": 5,
-        "passed": 5,
-        "minimum_power_search": false
+        "model": "arc7_lv60_progression_v2_pending_runtime",
+        "requires_balance_reaudit": true
       }
     },
     "unlock_condition": {
@@ -20450,7 +20426,7 @@
     "display_name": "Legend",
     "description": "Vạn Yêu Cổ Lĩnh · Legend · nền tảng hero Lv60",
     "order": 3,
-    "recommended_power": 102737,
+    "recommended_power": 27835,
     "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
@@ -20569,11 +20545,8 @@
     "stage_rules": {
       "balance_reference_level": 60,
       "recommendation": {
-        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
-        "reference_hero_level": 60,
-        "cases": 5,
-        "passed": 5,
-        "minimum_power_search": false
+        "model": "arc7_lv60_progression_v2_pending_runtime",
+        "requires_balance_reaudit": true
       }
     },
     "unlock_condition": {
@@ -20588,7 +20561,7 @@
     "display_name": "Normal",
     "description": "Vạn Yêu Cổ Lĩnh · Normal · nền tảng hero Lv60",
     "order": 1,
-    "recommended_power": 102737,
+    "recommended_power": 15410,
     "exp_multiplier": 1,
     "stamina_cost": 1,
     "enemy_modifiers": {
@@ -20655,11 +20628,8 @@
     "stage_rules": {
       "balance_reference_level": 60,
       "recommendation": {
-        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
-        "reference_hero_level": 60,
-        "cases": 5,
-        "passed": 5,
-        "minimum_power_search": false
+        "model": "arc7_lv60_progression_v2_pending_runtime",
+        "requires_balance_reaudit": true
       }
     },
     "unlock_condition": {
@@ -20674,7 +20644,7 @@
     "display_name": "Epic",
     "description": "Vạn Yêu Cổ Lĩnh · Epic · nền tảng hero Lv60",
     "order": 2,
-    "recommended_power": 102737,
+    "recommended_power": 25207,
     "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
@@ -20748,11 +20718,8 @@
     "stage_rules": {
       "balance_reference_level": 60,
       "recommendation": {
-        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
-        "reference_hero_level": 60,
-        "cases": 5,
-        "passed": 5,
-        "minimum_power_search": false
+        "model": "arc7_lv60_progression_v2_pending_runtime",
+        "requires_balance_reaudit": true
       }
     },
     "unlock_condition": {
@@ -20767,7 +20734,7 @@
     "display_name": "Legend",
     "description": "Vạn Yêu Cổ Lĩnh · Legend · nền tảng hero Lv60",
     "order": 3,
-    "recommended_power": 102737,
+    "recommended_power": 30744,
     "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
@@ -20886,11 +20853,8 @@
     "stage_rules": {
       "balance_reference_level": 60,
       "recommendation": {
-        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
-        "reference_hero_level": 60,
-        "cases": 5,
-        "passed": 5,
-        "minimum_power_search": false
+        "model": "arc7_lv60_progression_v2_pending_runtime",
+        "requires_balance_reaudit": true
       }
     },
     "unlock_condition": {
@@ -20905,7 +20869,7 @@
     "display_name": "Normal",
     "description": "Vạn Yêu Cổ Lĩnh · Normal · nền tảng hero Lv60",
     "order": 1,
-    "recommended_power": 102737,
+    "recommended_power": 15410,
     "exp_multiplier": 1,
     "stamina_cost": 1,
     "enemy_modifiers": {
@@ -21032,11 +20996,8 @@
     "stage_rules": {
       "balance_reference_level": 60,
       "recommendation": {
-        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
-        "reference_hero_level": 60,
-        "cases": 15,
-        "passed": 15,
-        "minimum_power_search": false
+        "model": "arc7_lv60_progression_v2_pending_runtime",
+        "requires_balance_reaudit": true
       }
     },
     "unlock_condition": {
@@ -21051,7 +21012,7 @@
     "display_name": "Epic",
     "description": "Vạn Yêu Cổ Lĩnh · Epic · nền tảng hero Lv60",
     "order": 2,
-    "recommended_power": 102737,
+    "recommended_power": 25207,
     "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
@@ -21185,11 +21146,8 @@
     "stage_rules": {
       "balance_reference_level": 60,
       "recommendation": {
-        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
-        "reference_hero_level": 60,
-        "cases": 15,
-        "passed": 15,
-        "minimum_power_search": false
+        "model": "arc7_lv60_progression_v2_pending_runtime",
+        "requires_balance_reaudit": true
       }
     },
     "unlock_condition": {
@@ -21204,7 +21162,7 @@
     "display_name": "Legend",
     "description": "Vạn Yêu Cổ Lĩnh · Legend · nền tảng hero Lv60",
     "order": 3,
-    "recommended_power": 102737,
+    "recommended_power": 30744,
     "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
@@ -21428,11 +21386,8 @@
     "stage_rules": {
       "balance_reference_level": 60,
       "recommendation": {
-        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
-        "reference_hero_level": 60,
-        "cases": 15,
-        "passed": 15,
-        "minimum_power_search": false
+        "model": "arc7_lv60_progression_v2_pending_runtime",
+        "requires_balance_reaudit": true
       }
     },
     "unlock_condition": {
@@ -21447,7 +21402,7 @@
     "display_name": "Normal",
     "description": "Vạn Yêu Cổ Lĩnh · Normal · nền tảng hero Lv60",
     "order": 1,
-    "recommended_power": 102737,
+    "recommended_power": 15410,
     "exp_multiplier": 1,
     "stamina_cost": 1,
     "enemy_modifiers": {
@@ -21514,11 +21469,8 @@
     "stage_rules": {
       "balance_reference_level": 60,
       "recommendation": {
-        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
-        "reference_hero_level": 60,
-        "cases": 5,
-        "passed": 5,
-        "minimum_power_search": false
+        "model": "arc7_lv60_progression_v2_pending_runtime",
+        "requires_balance_reaudit": true
       }
     },
     "unlock_condition": {
@@ -21533,7 +21485,7 @@
     "display_name": "Epic",
     "description": "Vạn Yêu Cổ Lĩnh · Epic · nền tảng hero Lv60",
     "order": 2,
-    "recommended_power": 102737,
+    "recommended_power": 25207,
     "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
@@ -21607,11 +21559,8 @@
     "stage_rules": {
       "balance_reference_level": 60,
       "recommendation": {
-        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
-        "reference_hero_level": 60,
-        "cases": 5,
-        "passed": 5,
-        "minimum_power_search": false
+        "model": "arc7_lv60_progression_v2_pending_runtime",
+        "requires_balance_reaudit": true
       }
     },
     "unlock_condition": {
@@ -21626,7 +21575,7 @@
     "display_name": "Legend",
     "description": "Vạn Yêu Cổ Lĩnh · Legend · nền tảng hero Lv60",
     "order": 3,
-    "recommended_power": 102737,
+    "recommended_power": 30744,
     "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
@@ -21745,11 +21694,8 @@
     "stage_rules": {
       "balance_reference_level": 60,
       "recommendation": {
-        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
-        "reference_hero_level": 60,
-        "cases": 5,
-        "passed": 5,
-        "minimum_power_search": false
+        "model": "arc7_lv60_progression_v2_pending_runtime",
+        "requires_balance_reaudit": true
       }
     },
     "unlock_condition": {
@@ -21764,7 +21710,7 @@
     "display_name": "Normal",
     "description": "Vạn Yêu Cổ Lĩnh · Normal · nền tảng hero Lv60",
     "order": 1,
-    "recommended_power": 102737,
+    "recommended_power": 16995,
     "exp_multiplier": 1,
     "stamina_cost": 1,
     "enemy_modifiers": {
@@ -21831,11 +21777,8 @@
     "stage_rules": {
       "balance_reference_level": 60,
       "recommendation": {
-        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
-        "reference_hero_level": 60,
-        "cases": 5,
-        "passed": 5,
-        "minimum_power_search": false
+        "model": "arc7_lv60_progression_v2_pending_runtime",
+        "requires_balance_reaudit": true
       }
     },
     "unlock_condition": {
@@ -21850,7 +21793,7 @@
     "display_name": "Epic",
     "description": "Vạn Yêu Cổ Lĩnh · Epic · nền tảng hero Lv60",
     "order": 2,
-    "recommended_power": 102737,
+    "recommended_power": 27835,
     "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
@@ -21924,11 +21867,8 @@
     "stage_rules": {
       "balance_reference_level": 60,
       "recommendation": {
-        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
-        "reference_hero_level": 60,
-        "cases": 5,
-        "passed": 5,
-        "minimum_power_search": false
+        "model": "arc7_lv60_progression_v2_pending_runtime",
+        "requires_balance_reaudit": true
       }
     },
     "unlock_condition": {
@@ -21943,7 +21883,7 @@
     "display_name": "Legend",
     "description": "Vạn Yêu Cổ Lĩnh · Legend · nền tảng hero Lv60",
     "order": 3,
-    "recommended_power": 102737,
+    "recommended_power": 33965,
     "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
@@ -22062,11 +22002,8 @@
     "stage_rules": {
       "balance_reference_level": 60,
       "recommendation": {
-        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
-        "reference_hero_level": 60,
-        "cases": 5,
-        "passed": 5,
-        "minimum_power_search": false
+        "model": "arc7_lv60_progression_v2_pending_runtime",
+        "requires_balance_reaudit": true
       }
     },
     "unlock_condition": {
@@ -22081,7 +22018,7 @@
     "display_name": "Normal",
     "description": "Vạn Yêu Cổ Lĩnh · Normal · nền tảng hero Lv60",
     "order": 1,
-    "recommended_power": 102737,
+    "recommended_power": 16995,
     "exp_multiplier": 1,
     "stamina_cost": 1,
     "enemy_modifiers": {
@@ -22148,11 +22085,8 @@
     "stage_rules": {
       "balance_reference_level": 60,
       "recommendation": {
-        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
-        "reference_hero_level": 60,
-        "cases": 5,
-        "passed": 5,
-        "minimum_power_search": false
+        "model": "arc7_lv60_progression_v2_pending_runtime",
+        "requires_balance_reaudit": true
       }
     },
     "unlock_condition": {
@@ -22167,7 +22101,7 @@
     "display_name": "Epic",
     "description": "Vạn Yêu Cổ Lĩnh · Epic · nền tảng hero Lv60",
     "order": 2,
-    "recommended_power": 102737,
+    "recommended_power": 27835,
     "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
@@ -22241,11 +22175,8 @@
     "stage_rules": {
       "balance_reference_level": 60,
       "recommendation": {
-        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
-        "reference_hero_level": 60,
-        "cases": 5,
-        "passed": 5,
-        "minimum_power_search": false
+        "model": "arc7_lv60_progression_v2_pending_runtime",
+        "requires_balance_reaudit": true
       }
     },
     "unlock_condition": {
@@ -22260,7 +22191,7 @@
     "display_name": "Legend",
     "description": "Vạn Yêu Cổ Lĩnh · Legend · nền tảng hero Lv60",
     "order": 3,
-    "recommended_power": 102737,
+    "recommended_power": 33965,
     "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
@@ -22379,11 +22310,8 @@
     "stage_rules": {
       "balance_reference_level": 60,
       "recommendation": {
-        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
-        "reference_hero_level": 60,
-        "cases": 5,
-        "passed": 5,
-        "minimum_power_search": false
+        "model": "arc7_lv60_progression_v2_pending_runtime",
+        "requires_balance_reaudit": true
       }
     },
     "unlock_condition": {
@@ -22398,7 +22326,7 @@
     "display_name": "Normal",
     "description": "Vạn Yêu Cổ Lĩnh · Normal · nền tảng hero Lv60",
     "order": 1,
-    "recommended_power": 102737,
+    "recommended_power": 16995,
     "exp_multiplier": 1,
     "stamina_cost": 1,
     "enemy_modifiers": {
@@ -22465,11 +22393,8 @@
     "stage_rules": {
       "balance_reference_level": 60,
       "recommendation": {
-        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
-        "reference_hero_level": 60,
-        "cases": 5,
-        "passed": 5,
-        "minimum_power_search": false
+        "model": "arc7_lv60_progression_v2_pending_runtime",
+        "requires_balance_reaudit": true
       }
     },
     "unlock_condition": {
@@ -22484,7 +22409,7 @@
     "display_name": "Epic",
     "description": "Vạn Yêu Cổ Lĩnh · Epic · nền tảng hero Lv60",
     "order": 2,
-    "recommended_power": 102737,
+    "recommended_power": 27835,
     "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
@@ -22558,11 +22483,8 @@
     "stage_rules": {
       "balance_reference_level": 60,
       "recommendation": {
-        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
-        "reference_hero_level": 60,
-        "cases": 5,
-        "passed": 5,
-        "minimum_power_search": false
+        "model": "arc7_lv60_progression_v2_pending_runtime",
+        "requires_balance_reaudit": true
       }
     },
     "unlock_condition": {
@@ -22577,7 +22499,7 @@
     "display_name": "Legend",
     "description": "Vạn Yêu Cổ Lĩnh · Legend · nền tảng hero Lv60",
     "order": 3,
-    "recommended_power": 102737,
+    "recommended_power": 33965,
     "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
@@ -22696,11 +22618,8 @@
     "stage_rules": {
       "balance_reference_level": 60,
       "recommendation": {
-        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
-        "reference_hero_level": 60,
-        "cases": 5,
-        "passed": 5,
-        "minimum_power_search": false
+        "model": "arc7_lv60_progression_v2_pending_runtime",
+        "requires_balance_reaudit": true
       }
     },
     "unlock_condition": {
@@ -22715,7 +22634,7 @@
     "display_name": "Normal",
     "description": "Vạn Yêu Cổ Lĩnh · Normal · nền tảng hero Lv60",
     "order": 1,
-    "recommended_power": 102737,
+    "recommended_power": 18747,
     "exp_multiplier": 1,
     "stamina_cost": 1,
     "enemy_modifiers": {
@@ -22842,11 +22761,8 @@
     "stage_rules": {
       "balance_reference_level": 60,
       "recommendation": {
-        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
-        "reference_hero_level": 60,
-        "cases": 15,
-        "passed": 15,
-        "minimum_power_search": false
+        "model": "arc7_lv60_progression_v2_pending_runtime",
+        "requires_balance_reaudit": true
       }
     },
     "unlock_condition": {
@@ -22861,7 +22777,7 @@
     "display_name": "Epic",
     "description": "Vạn Yêu Cổ Lĩnh · Epic · nền tảng hero Lv60",
     "order": 2,
-    "recommended_power": 102737,
+    "recommended_power": 30744,
     "exp_multiplier": 1.5,
     "stamina_cost": 2,
     "enemy_modifiers": {
@@ -22995,11 +22911,8 @@
     "stage_rules": {
       "balance_reference_level": 60,
       "recommendation": {
-        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
-        "reference_hero_level": 60,
-        "cases": 15,
-        "passed": 15,
-        "minimum_power_search": false
+        "model": "arc7_lv60_progression_v2_pending_runtime",
+        "requires_balance_reaudit": true
       }
     },
     "unlock_condition": {
@@ -23014,7 +22927,7 @@
     "display_name": "Legend",
     "description": "Vạn Yêu Cổ Lĩnh · Legend · nền tảng hero Lv60",
     "order": 3,
-    "recommended_power": 102737,
+    "recommended_power": 37530,
     "exp_multiplier": 2.25,
     "stamina_cost": 3,
     "enemy_modifiers": {
@@ -23200,11 +23113,8 @@
     "stage_rules": {
       "balance_reference_level": 60,
       "recommendation": {
-        "model": "godot_lv60_neutral_mortal_kite_offered_cards_v1",
-        "reference_hero_level": 60,
-        "cases": 15,
-        "passed": 15,
-        "minimum_power_search": false
+        "model": "arc7_lv60_progression_v2_pending_runtime",
+        "requires_balance_reaudit": true
       }
     },
     "unlock_condition": {

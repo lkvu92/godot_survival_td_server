@@ -1,6 +1,9 @@
 /* C237: deterministic Arc7 catalog; no runtime RNG, profile or live DB writes. */
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const {getWaveExp}=require('./campaign_wave_exp.cjs');
+const progression=require('./arc7_progression.cjs');
+const {applySpawnFormation}=require('./campaign_spawn_formation.cjs');
+const {rebalanceWaveExp}=require('./campaign_wave_exp.cjs');
 const ARC='arc_van_yeu_co_linh',VERSION=1,SEED=70261029;
 const ELEMENTS=['metal','water','wood','fire','earth'];
 const SPECIES=[
@@ -22,15 +25,15 @@ function rng(seed){let v=seed>>>0;return()=>{v=(Math.imul(v,1664525)+1013904223)
 function bloodline(manual=false){return {id:'beast_bloodline',display_name:'Cổ Huyết Bạo Thể',params:{hp_below_pct:.3,atk_multiplier:1.35,move_speed_multiplier:1.15,max_triggers:1,duration_seconds:null,manual_activation:manual}};}
 function skill(id,type,radius,mult,extra={}){return {id,type,display_name:{C01:'Phá Nham Quyền',C02:'Huyết Nha Phệ',C03:'Thiết Giác Xung',C04:'Chướng Độc Thóa',C05:'Lôi Liệt Trảo',C06:'Huyền Ảnh Tập',C07:'Cốt Khí Phá',B01:'Bạch Kim Hổ Trảo',B02:'Liệp Ảnh Vồ Sát',B03:'Hổ Khiếu Chấn Lĩnh',B04:'Bạo Thể · Vạn Yêu Phục',Z01:'Xích Vũ Liên Châu',Z02:'Liệt Dực Hoành Tảo',Z03:'Thiên Vũ Lạc Hỏa',Z04:'Chu Tước · Phần Thiên Lĩnh'}[id],radius,damage_multiplier:mult,warning_time:.35,recovery:.3,...extra};}
 function bossSkills(final){return final?[
- skill('Z01','vermilion_volley',30,.55,{basic:true,warning_time:.45,projectile_speed:320,projectile_lifetime:3,hit_radius:18,volley_interval:.16,cooldown:2.8,initial_cooldown:0,range:600}),
- skill('Z02','vermilion_sweep',170,1.25,{warning_time:.8,half_angle:1.15,cooldown:7,initial_cooldown:3,range:230}),
- skill('Z03','vermilion_rain',65,.9,{warning_time:1.0,fall_interval:.2,cooldown:10,initial_cooldown:6,range:750}),
- skill('Z04','vermilion_domain',235,1.0,{warning_time:1.1,inner_radius:140,duration:3,tick_interval:.75,dot_multiplier:.22,cooldown:17,initial_cooldown:11,range:650}),
+ skill('Z01','vermilion_volley',85,1,{display_name:'Phần Tâm Hỏa Chưởng',vermilion_version:2,basic:true,warning_time:.45,projectile_speed:320,projectile_lifetime:3,hit_radius:18,volley_interval:.2,burn_multiplier:.05,burn_duration:4,cooldown:2.8,initial_cooldown:0,range:600}),
+ skill('Z02','vermilion_sweep',150,.2,{display_name:'Lục Vũ Hỏa Trận',vermilion_version:2,warning_time:.2,half_angle:1.15,duration:2,shot_count:6,shot_interval:.2,flight_duration:.35,launch_distance:300,hit_radius:18,impact_multiplier:.1,bleed_multiplier:.1,bleed_duration:4,burn_multiplier:.05,tick_interval:1,cooldown:7,initial_cooldown:3,range:600}),
+skill('Z03','vermilion_rain',150,.5,{display_name:'Phượng Hoàng Phần Nguyên',vermilion_version:2,warning_time:0,duration:2,fall_interval:.5,eruption_count:4,eruption_radius:85,slow_percent:.3,burn_multiplier:.05,burn_duration:4,cooldown:10,initial_cooldown:6,range:750}),
+ skill('Z04','vermilion_domain',235,.05,{display_name:'Niết Bàn Trọng Sinh',vermilion_version:2,passive:true,activation:'on_death',warning_time:0,inner_radius:0,duration:4,tick_interval:1,dot_multiplier:.05,wave_count:4,wave_duration:.8,slow_percent:.4,revive_hp_ratio:.5,cooldown:300,initial_cooldown:0,range:650}),
  ]:[
- skill('B01','tiger_claw',100,1,{basic:true,warning_time:.4,half_angle:1.05,cooldown:2,initial_cooldown:0,range:120}),
- skill('B02','tiger_pounce',65,1.25,{dash_distance:260,dash_duration:.42,warning_time:.8,cooldown:7,initial_cooldown:2,range:470}),
- skill('B03','tiger_roar',210,.85,{warning_time:.8,wave_duration:.55,knockback_distance:45,cooldown:11,initial_cooldown:5,range:300}),
- skill('B04','tiger_bloodline',160,.7,{warning_time:1,hp_below_pct:.3,once:true,cooldown:9999,initial_cooldown:0,range:1200}),
+ skill('B01','tiger_claw',100,.35,{display_name:'Bạch Hổ Tam Quyền',tiger_version:2,basic:true,warning_time:.2,half_angle:1.05,punch_count:3,punch_interval:.2,paralysis_chance:.1,paralysis_duration:.5,cooldown:2,initial_cooldown:0,range:180}),
+ skill('B02','tiger_pounce',110,1,{display_name:'Liên Hoàn Hổ Trảo',tiger_version:2,dash_distance:260,dash_duration:.42,warning_time:.3,slash_count:2,slash_interval:.5,buff_duration:2,move_speed_multiplier:1.3,attack_speed_multiplier:1.3,bleed_chance:.5,bleed_multiplier:.1,bleed_duration:4,cooldown:7,initial_cooldown:2,range:470}),
+ skill('B03','tiger_roar',210,1,{display_name:'Hổ Trận Tứ Phương',tiger_version:2,warning_time:0,wave_duration:.55,field_duration:2,field_tick_interval:1,paralysis_chance:.3,paralysis_duration:.5,tails_duration:1,stun_chance:.5,stun_duration:.5,kick_count:4,kick_interval:.25,kick_damage_multiplier:.3,kick_origin_distance:120,knockback_distance:50,cooldown:11,initial_cooldown:5,range:600}),
+ skill('B04','tiger_bloodline',320,.05,{display_name:'Cuồng Dã',tiger_version:2,passive:true,activation:'self_hp_below',hp_below_pct:.5,warning_time:0,duration:6,pulse_count:6,pulse_interval:1,wave_duration:.75,paralysis_chance:.15,paralysis_duration:.5,buff_duration:6,move_speed_multiplier:1.3,attack_speed_multiplier:1.25,cleanse_on_activate:true,cooldown:300,initial_cooldown:0,range:1200}),
  ];}
 function buildEnemies(){const rows=[];for(const e of ELEMENTS){for(const [id,name,code,type,hp,atk,def,speed,range,as] of SPECIES){
  const extra=type==='beast_dash'?{dash_distance:code==='C03'?160:200,dash_duration:code==='C03'?.5:.32,warning_time:.65}:type==='beast_bolt'?{projectile_speed:code==='C04'?260:320,projectile_lifetime:3.5,hit_radius:16}:{};
@@ -50,6 +53,13 @@ function buildStages(){const result=[];for(let i=1;i<=10;i++){const random=rng(S
 function equalRunes(table){const groups=new Map();for(const row of table||[]){if(row.group!=='rune')continue;const key=row.item_id.replace(/_(metal|water|wood|fire|earth)_/,'_');if(!groups.has(key))groups.set(key,[]);groups.get(key).push(row);}for(const rows of groups.values()){if(rows.length!==5)throw Error('Incomplete rune pool');const weight=rows.reduce((s,r)=>s+r.weight,0)/5;for(const row of rows){row.weight=weight;row.drop_rate=round(weight/100);}}return table;}
 function buildCatalog(catalog){const stage_levels=[];for(let i=1;i<=10;i++)for(const mode of ['normal','epic','legend']){const template=catalog.stage_levels.find(r=>r.stage_id===`stage_6_${String(i).padStart(2,'0')}`&&r.level_id===mode);if(!template)throw Error('Missing Arc6 economy');const row=clone(template);row.id=`${stageId(i)}_${mode}`;row.stage_id=stageId(i);row.description=`Vạn Yêu Cổ Lĩnh · ${row.display_name} · nền tảng hero Lv60`;row.unlock_condition=mode==='normal'?{stage_id:i===1?'stage_6_10':stageId(i-1),level_id:'normal'}:{stage_id:stageId(i),level_id:mode==='epic'?'normal':'epic'};row.gold_reward+=Math.round(150*(mode==='normal'?1:mode==='epic'?1.8:3));equalRunes(row.loot_table);equalRunes(row.boss_loot_table);row.stage_rules={...(row.stage_rules||{}),balance_reference_level:60,recommendation:{model:'arc7_lv60_base_pending_runtime_v1',requires_balance_reaudit:true}};stage_levels.push(row);}
  const result = {arcs:[{id:ARC,display_name:'Vạn Yêu Cổ Lĩnh',description:'Rừng Thiêng Đẫm Máu. Yêu tộc lấy nhục thân và huyết mạch thượng cổ làm gốc; kẻ yếu là mồi cho kẻ mạnh.',level_min:61,level_max:70,enabled_if:{type:'always'},element:'',order:7,enemy_visual_scale_multiplier:1,boss_skill_ids:[],stage_ids:Array.from({length:10},(_,i)=>stageId(i+1))}],enemies:buildEnemies(),stages:buildStages(),stage_levels};
+ const existingArc=catalog.arcs.find(arc=>arc.id===ARC);
+ if(existingArc){result.arcs[0].display_name=existingArc.display_name;result.arcs[0].description=existingArc.description;}
+ progression.normalize(result.enemies,catalog);
+ progression.waves(result.stages,result.enemies);
+ applySpawnFormation(result.stages,result.enemies);
+ rebalanceWaveExp(result.stages);
+ for(const row of result.stage_levels){row.stage_rules.recommendation={model:'arc7_lv60_progression_v2_pending_runtime',requires_balance_reaudit:true};}
  const reportPath=path.join(__dirname,'../docs/reports/ARC7_RUNTIME_ACCEPTANCE.json');
  if(fs.existsSync(reportPath)){
   const report=JSON.parse(fs.readFileSync(reportPath,'utf8'));
@@ -59,7 +69,7 @@ function buildCatalog(catalog){const stage_levels=[];for(let i=1;i<=10;i++)for(c
   }
  }
  return result;}
-function loadCatalog(root){return Object.fromEntries(['arcs','enemies','stages','stage_levels','progression','campaign_pressure_profiles','enemy_skills'].map(k=>[k,JSON.parse(fs.readFileSync(path.join(root,'data',k+'.json'),'utf8'))]));}
+function loadCatalog(root){return Object.fromEntries(['arcs','enemies','stages','stage_levels','progression','campaign_pressure_profiles','enemy_skills','heroes'].map(k=>[k,JSON.parse(fs.readFileSync(path.join(root,'data',k+'.json'),'utf8'))]));}
 function mergeCatalog(catalog,built){const out=clone(catalog);out.enemy_skills=[...(out.enemy_skills||[]).filter(r=>r.id!==BLOODLINE_DEFINITION.id),clone(BLOODLINE_DEFINITION)];for(const [key,rows]of Object.entries(built)){const ids=new Set(rows.map(r=>r.id));const replacements=new Map(rows.map(r=>[r.id,r]));out[key]=out[key].map(r=>replacements.get(r.id)||r).concat(rows.filter(r=>!catalog[key].some(old=>old.id===r.id)));}const eligible=out.progression.talisman_system.fragment_drop.eligible_stages;if(!eligible.includes('stage_7_10'))eligible.push('stage_7_10');if(!out.campaign_pressure_profiles.profiles.some(r=>r.arc_id===ARC))out.campaign_pressure_profiles.profiles.push({arc_id:ARC,version:1,power_start:1,power_end:1.315,curve:'ease_in_out',opening_allowed_roles:['normal','ranger'],late_requirements:['single_target_check','crowd_check']});return out;}
 const combatDigest=b=>crypto.createHash('sha256').update(JSON.stringify({enemies:b.enemies,stages:b.stages})).digest('hex');
 const catalogDigest=b=>crypto.createHash('sha256').update(JSON.stringify(b)).digest('hex');

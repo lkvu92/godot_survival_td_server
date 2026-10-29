@@ -54,11 +54,12 @@ for (let index = 1; index <= 5; index++) {
   const earthIds = talismans.filter(row => row.element === 'earth').map(row => 'talisman_fragment_' + row.id);
   assert(Math.abs(old.filter(row => earthIds.includes(row.item_id)).reduce((sum, row) => sum + row.weight, 0) - 0.75) < 1e-12);
 }
-// Normal completion and historical reconciliation unlock Arc 7 at account Lv.50.
-const arcs = [{id: 'arc_ngu_to_quy_khu', sort_order: 6}, {id: arc, sort_order: 7}];
+// Arc 7 also requires its configured minimum account level.
+const arcs = [{id: 'arc_ngu_to_quy_khu', sort_order: 6, level_min:51}, {id: arc, sort_order: 7, level_min:61}];
 const stages = [{id: 'stage_6_10', arc_id: arcs[0].id, sort_order: 10}, ...Array.from({length: 10}, (_, i) => ({id: `stage_7_${String(i + 1).padStart(2, '0')}`, arc_id: arc, sort_order: i + 1}))];
 const rows = stages.flatMap(row => ['normal', 'epic', 'legend'].map(level_id => ({stage_id: row.id, arc_id: row.arc_id, level_id})));
 const unlockNk = {sqlQuery(sql, args) {
+  if (sql.includes('SELECT id, level_min, sort_order FROM game_arcs')) return clone(arcs);
   if (sql.includes('AS stage_id')) return clone(rows);
   if (sql.includes('FROM game_stages WHERE id')) return clone(stages.filter(row => row.id === args[0]));
   if (sql.includes('FROM game_stages WHERE arc_id')) return clone(stages.filter(row => row.arc_id === args[0] && (!sql.includes('sort_order >') || row.sort_order > args[1])).slice(0, 1));
@@ -66,18 +67,21 @@ const unlockNk = {sqlQuery(sql, args) {
   if (sql.includes('FROM game_arcs WHERE sort_order >')) return clone(arcs.filter(row => row.sort_order > args[0]).slice(0, 1));
   throw Error('Unexpected unlock SQL: ' + sql);
 }};
-const profile = {level: 50, unlocked_arcs: [arcs[0].id], unlocked_stages: [{stage_id: 'stage_6_10', unlocked_levels: ['normal']}], completed_stage_levels: []};
+const profile = {level: 61, unlocked_arcs: [arcs[0].id], unlocked_stages: [{stage_id: 'stage_6_10', unlocked_levels: ['normal']}], completed_stage_levels: []};
 fn('progressionCompleteStage')(unlockNk, profile, 'stage_6_10', 'normal');
 assert(profile.unlocked_arcs.includes(arc));
 assert(profile.unlocked_stages.some(row => row.stage_id === 'stage_7_01'));
-assert.equal(profile.level, 50);
+assert.equal(profile.level, 61);
+const underLevel = {level:60, completed_stage_levels:[{stage_id:'stage_6_10',level_id:'normal'}]};
+fn('progressionReconcileCampaignUnlocks')(unlockNk, underLevel);
+assert(!underLevel.unlocked_arcs.includes(arc));
 assert(!fn('progressionArcModeAllowed')(unlockNk, profile, 'stage_7_01', 'epic'));
 for (const row of stages.filter(row => row.arc_id === arc)) fn('progressionCompleteStage')(unlockNk, profile, row.id, 'normal');
 assert(fn('progressionArcModeAllowed')(unlockNk, profile, 'stage_7_01', 'epic'));
 assert(!fn('progressionArcModeAllowed')(unlockNk, profile, 'stage_7_01', 'legend'));
 for (const row of stages.filter(row => row.arc_id === arc)) fn('progressionCompleteStage')(unlockNk, profile, row.id, 'epic');
 assert(fn('progressionArcModeAllowed')(unlockNk, profile, 'stage_7_01', 'legend'));
-const historical = {level: 50, completed_stage_levels: [{stage_id: 'stage_6_10', level_id: 'normal'}]};
+const historical = {level: 61, completed_stage_levels: [{stage_id: 'stage_6_10', level_id: 'normal'}]};
 assert(fn('progressionReconcileCampaignUnlocks')(unlockNk, historical));
 assert(historical.unlocked_arcs.includes(arc));
 assert(!fn('progressionReconcileCampaignUnlocks')(unlockNk, historical), 'Reconciliation is idempotent');
@@ -120,4 +124,4 @@ for (const [stageId, isBoss, expectTicket] of [['stage_7_10', true, true], ['sta
   const ticket = doubled.total_loot.find(row => row.item_id === 'tower_sweep_ticket');
   assert.equal(ticket?.quantity || 0, expectTicket ? 1 : 0, 'Ad summary must not double fixed ticket grants');
 }
-console.log('PASS C237 backend: equal-element fragment weights/preview, old 75/25 parity, tier/final exclusions, actual final ticket grants, account-Lv50 next-arc unlock and difficulty/reconciliation');
+console.log('PASS C237 backend: equal-element rewards, tickets, Lv61 gate, below-level denial and difficulty reconciliation');

@@ -4,7 +4,7 @@
     "order": 0,
     "display_name": "Diễn Võ Trường",
     "element": "water",
-    "description": "Đấu trường thử nghiệm với Dummy Boss 1.000.000 HP, ATK = 1, DEF bình thường, range 1/3 màn hình.",
+    "description": "Sân Thí Luyện Của Người Tu Đạo\n\nGiữa sơn môn, Diễn Võ Trường tọa lạc trên một nền đá xanh khắc đầy trận văn cổ. Kết giới bao quanh ngăn dư ba pháp thuật, còn những khôi lỗi do trưởng lão luyện chế luôn sẵn sàng tiếp chiêu của môn hạ. Đây là nơi tu sĩ bước đầu làm quen với linh lực, thử pháp bảo và rèn luyện thân pháp trước khi xuống núi.\n\nKhông có sinh tử tranh đoạt, mỗi lần giao thủ đều là một dịp nhìn lại chỗ sơ hở trong đạo pháp của bản thân. Hãy dùng sân thí luyện để lĩnh hội nhịp xuất chiêu, điều tức chân khí và tìm ra con đường chiến đấu phù hợp với linh căn của mình.",
     "stage_ids": [
       "stage_0_1",
       "stage_0_admin_test"
@@ -12,8 +12,8 @@
   },
   {
     "id": "arc_2",
-    "display_name": "Hỏa Giới",
-    "description": "Hỏa Sơn Quỷ Vực - Thử thách khởi đầu rực lửa, người chơi tận dụng chân khí Thủy khắc Hỏa để phá tan quỷ vực.",
+    "display_name": "Hỏa Nguyên Giới",
+    "description": "Hỏa Sơn Quỷ Vực: Tro Tàn Của Kiếp Hỏa\n\nNơi tận cùng của những dãy núi đỏ sẫm, địa hỏa cuồn cuộn trào qua các vết nứt như huyết mạch của một cự thú đang say ngủ. Tương truyền, một trận thiên hỏa thuở xa xưa đã thiêu rụi tông môn trấn giữ vùng này, để lại biển dung nham cùng những tàn hồn chưa chịu tiêu tán. Tro nóng phủ kín trời, ngày đêm chỉ còn phân biệt qua sắc lửa dưới chân.\n\nYêu vật hấp thu hỏa sát quanh năm trở nên hung bạo, sẵn sàng lao vào tu sĩ giữa những đợt sóng nhiệt. Muốn vượt qua quỷ vực, người tu đạo phải giữ tâm thần thanh tỉnh, vận chuyển thủy linh khí để chế ngự liệt diễm và tìm đường sống giữa vòng vây. Tận đáy hỏa sơn, kẻ cai quản kiếp hỏa vẫn chờ người đủ sức bước qua tro tàn.",
     "level_min": 1,
     "level_max": 10,
     "enabled_if": {
@@ -40,8 +40,8 @@
   },
   {
     "id": "arc_frozen_realm",
-    "display_name": "Băng Giới",
-    "description": "Băng Nguyên Hoang Dã - Thử thách băng tuyết cực hàn, quái vật đông đảo và dai sức thử thách trình độ người chơi.",
+    "display_name": "Thủy Nguyên Giới",
+    "description": "Băng Nguyên Hoang Dã: Hàn Uyên Vạn Năm\n\nQua khỏi biển lửa là một cõi trời trắng xóa, nơi thủy linh khí ngưng kết thành băng suốt vạn năm không tan. Những cung điện cổ chìm dưới tầng tuyết dày, cột băng mọc lên từ vực sâu như những thanh kiếm chĩa vào thiên khung. Mỗi cơn gió lướt qua đều mang theo hàn ý có thể xuyên thấu hộ thể chân khí.\n\nDưới mặt hồ đóng băng, yêu vật ngủ vùi từ thời viễn cổ dần thức tỉnh theo bước chân người lạ. Chúng ẩn hiện trong phong tuyết, bền bỉ bám đuổi con mồi cho đến khi linh lực cạn kiệt. Tu sĩ phải giữ vững khí hải, điều động thổ linh lực khắc chế dòng hàn lưu và tránh để bản thân bị vây kín giữa băng nguyên. Nơi sâu nhất của hàn uyên vẫn còn phong ấn một uy áp lạnh lẽo chưa từng khuất phục trước năm tháng.",
     "level_min": 11,
     "level_max": 20,
     "enabled_if": {
@@ -67,8 +67,8 @@
   },
   {
     "id": "arc_verdant_realm",
-    "display_name": "Mộc Giới",
-    "description": "U Tối Rừng Thiêng - Đầm lầy độc mộc và quái hồi phục mạnh mẽ, thử thách khống chế và dồn sát thương AoE.",
+    "display_name": "Mộc Nguyên Giới",
+    "description": "U Lâm Độc Chướng: Sinh Cơ Nuốt Chửng\n\nMộc Nguyên Giới từng là linh viên của một tiên môn đã biến mất. Khi đại trận hộ sơn mất người chủ trì, linh khí sinh trưởng không ngừng tích tụ, khiến cỏ cây vượt khỏi luân thường. Rễ cổ thụ xuyên qua điện ngọc, dây leo siết nát bia đá, còn những đóa linh hoa rực rỡ lại nở trên hài cốt của kẻ lạc đường.\n\nSinh cơ nơi đây dồi dào đến mức trở thành tai họa. Yêu mộc hút linh lực từ lòng đất để liền lại vết thương, độc chướng lặng lẽ bào mòn kinh mạch giữa những tầng lá tối tăm. Tu sĩ muốn thoát khỏi u lâm phải biết dùng kim khí cắt đứt dây leo, chớ để sự chần chừ tiếp sức cho rừng sâu. Dưới tán cổ thụ lâu đời nhất, một ý chí đang lắng nghe mọi tiếng động qua hàng vạn rễ cây.",
     "level_min": 21,
     "level_max": 30,
     "enabled_if": {
@@ -95,8 +95,8 @@
   },
   {
     "id": "arc_iron_bastion",
-    "display_name": "Kim Giới",
-    "description": "Thiết Giáp Pháo Đài - Bức tường phòng thủ kiên cố, người chơi cần đòn bạo kích (Crit) để xuyên phá giáp dày.",
+    "display_name": "Kim Nguyên Giới",
+    "description": "Thiết Giáp Cổ Thành: Kiếm Ý Bất Diệt\n\nGiữa hoang nguyên phủ đầy cát sắt, một cổ thành bằng huyền thiết vẫn sừng sững sau vô số lần đổi dời thiên địa. Nơi đây từng là thánh địa luyện khí, ngày đêm vang tiếng búa rèn cùng kiếm minh. Khi chủ nhân cổ thành bế quan rồi biệt tích, những trận pháp và khôi lỗi hộ thành vẫn tiếp tục vận hành, coi mọi sinh linh bước qua cổng là kẻ xâm nhập.\n\nKim sát ngưng tụ thành lưỡi gió, thiết giáp phản chiếu ánh sáng lạnh lẽo giữa các hành lang đổ nát. Những cỗ khôi lỗi mang giáp dày tiến bước không biết mệt, buộc tu sĩ phải quan sát sơ hở và dồn uy lực vào đúng thời cơ. Chỉ có chân hỏa được tôi luyện cùng đạo tâm kiên định mới đủ sức phá vỡ thế phòng ngự ấy. Trong lò luyện trung tâm, tiếng kiếm ngân vẫn vang lên như có người đang chờ ngày xuất quan.",
     "level_min": 31,
     "level_max": 40,
     "enabled_if": {
@@ -123,8 +123,8 @@
   },
   {
     "id": "arc_titan_realm",
-    "display_name": "Thổ Giới",
-    "description": "Thần Sơn Cổ Đại - Thử thách tột cùng đòi hỏi người chơi tích lũy cấp độ Hero và Cổ Ngữ Ngũ Hành đỉnh cao.",
+    "display_name": "Thổ Nguyên Giới",
+    "description": "Thần Sơn Cổ Đại: Sơn Hà Trấn Đạo\n\nNhững dãy thần sơn nối nhau dựng đứng giữa biển mây vàng sẫm, tựa sống lưng của một vị cổ thần đã hóa đá. Thổ linh khí lắng đọng qua vô số niên đại khiến từng hạt bụi cũng nặng trĩu, mỗi bước tiến sâu đều như mang thêm một ngọn núi trên vai. Trên vách đá còn lưu những đạo phù văn không ai đọc hết, kể về lời thề trấn giữ địa mạch từ thuở khai thiên.\n\nThạch linh và cự thú thức dậy khi người ngoài chạm đến long mạch, dùng thân thể bền chắc nghiền nát mọi ý định xâm nhập. Tu sĩ phải mượn sức mộc linh phá thế thổ, giữ thân pháp linh hoạt giữa những đợt địa chấn và bồi đắp căn cơ đủ vững để chịu uy áp thần sơn. Vượt qua nơi này là bước cuối cùng trước khi rời khỏi trật tự quen thuộc của Ngũ Hành Giới.",
     "level_min": 41,
     "level_max": 50,
     "enabled_if": {
@@ -151,8 +151,8 @@
   },
   {
     "id": "arc_ngu_to_quy_khu",
-    "display_name": "Ngũ Tố Quy Khư",
-    "description": "Vạn vật sinh từ hỗn độn, quy về hư vô. Linh khí Ngũ Hành cắn xé, không còn ranh giới.",
+    "display_name": "Ngũ Tổ Quy Khư",
+    "description": "Vết Rạn Của Quy Tắc\n\nVượt ra khỏi sự ổn định của Ngũ Hành Giới, tu sĩ sẽ rơi vào một cấm địa dị thường mang tên Hỗn Độn Ngũ Hành Trận. Tương truyền, nơi đây từng là chiến trường của một vị đại năng thời viễn cổ khi ngài cố gắng nghịch chuyển ngũ hành để ngưng luyện Hỗn Độn Chi Khí thất bại, khiến quy tắc thiên địa vỡ vụn và cắn xé lẫn nhau suốt vạn năm qua.\n\nSinh vật sinh tồn nơi đây không còn mang thuộc tính thuần khiết mà bị dị biến thành những quái thai dị dạng. Ở chốn này, mọi bài học sách vở về khắc hệ đều bị thử thách đến cùng cực. Kẻ sống sót không thể chỉ dựa vào một món pháp bảo hay một loại linh căn sở trường, mà phải rèn giũa bản lĩnh hoán chuyển chiêu thức trong chớp mắt, dùng sự biến hóa của chính mình để chế ngự sự hỗn loạn của thiên địa.",
     "level_min": 51,
     "level_max": 60,
     "enabled_if": {
@@ -180,7 +180,7 @@
   {
     "id": "arc_van_yeu_co_linh",
     "display_name": "Vạn Yêu Cổ Lĩnh",
-    "description": "Rừng Thiêng Đẫm Máu. Yêu tộc lấy nhục thân và huyết mạch thượng cổ làm gốc; kẻ yếu là mồi cho kẻ mạnh.",
+    "description": "Rừng Thiêng Đẫm Máu\n\nRời khỏi vùng đất hỗn mang của quy tắc, tu sĩ sẽ tiến vào ranh giới của sự nguyên thủy tàn bạo mang tên Vạn Yêu Cổ Lĩnh. Đây là dãy sơn mạch hùng vĩ trải dài vô tận, nơi ánh mặt trời dường như chưa từng chạm tới mặt đất bởi những tán cây cổ thụ khổng lồ đan cài che kín bầu trời. Dưới lớp thảm mục ngàn năm là chướng khí độc màu tím ngắt lãng đãng trôi, xen lẫn những bộ xương hóa thạch khổng lồ của cự thú thời hồng hoang cắm ngổn ngang như những bia mộ vô danh.\n\nCổ Lĩnh là lãnh địa tuyệt đối của Yêu tộc, giống loài không màng đến việc lĩnh ngộ đạo pháp huyền ảo, mà lấy nhục thân cường hãn và huyết mạch thượng cổ làm gốc rễ sinh tồn. Mỗi tấc đất nơi đây đều thấm đẫm mùi tanh tưởi của máu và quy luật tàn khốc: kẻ yếu là mồi ngon cho kẻ mạnh. Tu sĩ bước vào rừng sâu sẽ cảm nhận rõ rệt một cỗ áp bách huyết mạch vô hình đè nặng lên vai, khiến chân khí lưu chuyển chậm chạp.\n\nTận sâu trong Cổ Lĩnh, những Yêu Vương ngàn năm tọa trấn mang theo Pháp Tướng hung thú khổng lồ, chỉ một tiếng gầm cũng đủ làm chấn động tâm can, phá vỡ ngưng niệm chân khí của người tu đạo.",
     "level_min": 61,
     "level_max": 70,
     "enabled_if": {

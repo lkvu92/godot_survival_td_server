@@ -588,6 +588,7 @@ function progressionReconcileLevelUnlocks(nk: nkruntime.Nakama, profile: any): v
     const unlockedStages: any[] = Array.isArray(profile.unlocked_stages) ? profile.unlocked_stages : [];
     for (let i = 0; i < arcs.length; i++) {
         const arcId = String(arcs[i].id || "");
+        if (!progressionCampaignArcAllowed(nk, profile, arcId)) continue;
         if (arcId && unlockedArcs.indexOf(arcId) === -1) unlockedArcs.push(arcId);
         const stages = nk.sqlQuery("SELECT id FROM game_stages WHERE arc_id = $1 ORDER BY sort_order LIMIT 1", [arcId]);
         const stageId = stages.length > 0 ? String(stages[0].id || "") : "";
@@ -750,6 +751,11 @@ function progressionCompleteStage(nk: nkruntime.Nakama, profile: any, stageId: s
                     if (nextArcRows.length > 0) {
                         const nextArcId = String(nextArcRows[0].id || "");
                         const unlockedArcs: string[] = Array.isArray(profile.unlocked_arcs) ? profile.unlocked_arcs : [];
+                        if (!progressionCampaignArcAllowed(nk, profile, nextArcId)) {
+                            profile.unlocked_stages = unlockedStages;
+                            progressionReconcileArcModes(nk, profile);
+                            return;
+                        }
                         if (nextArcId && unlockedArcs.indexOf(nextArcId) === -1) unlockedArcs.push(nextArcId);
                         profile.unlocked_arcs = unlockedArcs;
                         const firstStageRows = nk.sqlQuery("SELECT id FROM game_stages WHERE arc_id = $1 ORDER BY sort_order LIMIT 1", [nextArcId]);
@@ -785,6 +791,7 @@ function progressionReconcileCampaignUnlocks(nk: nkruntime.Nakama, profile: any)
         const nextArcRows = nk.sqlQuery("SELECT id FROM game_arcs WHERE sort_order > $1 ORDER BY sort_order LIMIT 1", [arcRows[0].sort_order]);
         if (nextArcRows.length === 0) continue;
         const nextArcId = String(nextArcRows[0].id || "");
+        if (!progressionCampaignArcAllowed(nk, profile, nextArcId)) continue;
         if (nextArcId && unlockedArcs.indexOf(nextArcId) === -1) {
             unlockedArcs.push(nextArcId);
             changed = true;
@@ -1276,7 +1283,20 @@ function progressionArcModeFromRows(profile:any,stageId:string,mode:string,rows:
     return all('normal')&&(mode==='epic'||all('epic'));
 }
 function progressionArcModeAllowed(nk:nkruntime.Nakama,profile:any,stageId:string,mode:string):boolean {
+    const stageRows = nk.sqlQuery('SELECT arc_id, sort_order FROM game_stages WHERE id = $1', [stageId]);
+    if (!stageRows.length || !progressionCampaignArcAllowed(nk, profile, String(stageRows[0].arc_id))) return false;
     return mode==='normal'||progressionArcModeFromRows(profile,stageId,mode,progressionArcModeRows(nk));
+}
+
+function progressionCampaignArcAllowed(nk:nkruntime.Nakama,profile:any,arcId:string):boolean {
+    if (arcId === 'arc_0') return true;
+    const arcs = nk.sqlQuery('SELECT id, level_min, sort_order FROM game_arcs ORDER BY sort_order', []).filter((arc:any)=>arc.id !== 'arc_0');
+    const index = arcs.findIndex((arc:any)=>arc.id === arcId);
+    if (index < 0 || Number(profile.level || 1) < Number(arcs[index].level_min || 1)) return false;
+    if (index === 0) return true;
+    const stages = nk.sqlQuery('SELECT id FROM game_stages WHERE arc_id = $1 ORDER BY sort_order', [arcs[index-1].id]);
+    const completed = Array.isArray(profile.completed_stage_levels) ? profile.completed_stage_levels : [];
+    return stages.length > 0 && stages.every((stage:any)=>completed.some((entry:any)=>entry.stage_id === stage.id && entry.level_id === 'normal'));
 }
 function progressionReconcileArcModes(nk:nkruntime.Nakama,profile:any):boolean {
     const rows=progressionArcModeRows(nk),stages=Array.isArray(profile.unlocked_stages)?profile.unlocked_stages:[];
