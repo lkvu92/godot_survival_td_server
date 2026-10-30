@@ -91,7 +91,7 @@ function vipEnsureMilestoneMails(nk:nkruntime.Nakama,userId:string,vip:any):numb
 }
 function mailVisibleSql():string {return "COALESCE((value->>'deleted_at_ms')::BIGINT,0)=0 AND (value->>'purge_at_ms' IS NULL OR (value->>'purge_at_ms')::BIGINT>$3)";}
 function mailSummary(nk:nkruntime.Nakama,userId:string,now:number):any {
-    const rows=nk.sqlQuery(`SELECT COUNT(*) FILTER(WHERE value->>'read_at_ms' IS NULL)::INT AS unread_count,
+    const rows=nk.sqlQuery(`SELECT COUNT(*) FILTER(WHERE value->>'read_at_ms' IS NULL AND value->>'claimed_at_ms' IS NULL)::INT AS unread_count,
       COUNT(*) FILTER(WHERE jsonb_array_length(value->'attachments')>0 AND value->>'claimed_at_ms' IS NULL
         AND (value->>'expires_at_ms' IS NULL OR (value->>'expires_at_ms')::BIGINT>$3))::INT AS claimable_count
       FROM storage WHERE collection='player_mail' AND user_id=$1::UUID AND left(key,length($2))=$2 AND ($2<>'' OR left(key,2)='m_') AND ${mailVisibleSql()}`,[userId,mailPrefix(nk),now]);
@@ -99,7 +99,7 @@ function mailSummary(nk:nkruntime.Nakama,userId:string,now:number):any {
 }
 function mailPresent(nk:nkruntime.Nakama,row:any,now:number):any {
     const expired=row.expires_at_ms!==null&&now>=row.expires_at_ms;
-    return Object.assign({},row,{expired,expiring:row.expires_at_ms!==null&&!expired&&row.expires_at_ms-now<=mailSettings(nk).warning_hours*3600000,
+    return Object.assign({},row,{expired,expiring:row.expires_at_ms!==null&&!expired&&row.expires_at_ms-now<=mailSettings(nk).warning_hours*3600000,read_at_ms:row.read_at_ms||row.claimed_at_ms||null,
         can_claim:row.attachments.length>0&&!row.claimed_at_ms&&!expired&&!row.deleted_at_ms,
         can_delete:row.attachments.length===0||!!row.claimed_at_ms});
 }
@@ -151,7 +151,7 @@ function mailClaimOne(nk:nkruntime.Nakama,userId:string,id:string):any {
     }
     // Recheck the wall clock immediately before the atomic write, including bulk requests.
     if(mail.expires_at_ms!==null&&Date.now()>=mail.expires_at_ms)return mailError('MAIL_EXPIRED','Thư đã hết hạn nhận thưởng.');
-    mail.claimed_at_ms=Date.now();mail.version++;
+    const claimNow=Date.now();mail.claimed_at_ms=claimNow;if(!mail.read_at_ms)mail.read_at_ms=claimNow;mail.version++;
     writes.push(Object.assign(mailWrite(mail,userId),{version:stored.version}));
     try{mailCombatRuntime(nk,userId).storageWrite(writes);}catch(_e){return mailError('DATA_CHANGED','Dữ liệu vừa thay đổi. Vui lòng thử lại.');}
     mailPush(nk,userId,id);
@@ -173,7 +173,7 @@ function mailList(nk:nkruntime.Nakama,userId:string,req:any):any {
     const limit=Number.isSafeInteger(req.limit)?Math.min(50,Math.max(1,req.limit)):20;
     let cursor:any=[Number.MAX_SAFE_INTEGER,'~'];
     if(req.cursor){cursor=JSON.parse(req.cursor);if(!Array.isArray(cursor)||cursor.length!==2||!Number.isSafeInteger(cursor[0])||typeof cursor[1]!=='string'||cursor[1].length>150)throw new Error('INVALID_CURSOR');}
-    const clauses:any={all:'TRUE',unread:"value->>'read_at_ms' IS NULL",read:"value->>'read_at_ms' IS NOT NULL",reward:"jsonb_array_length(value->'attachments')>0",
+    const clauses:any={all:'TRUE',unread:"value->>'read_at_ms' IS NULL AND value->>'claimed_at_ms' IS NULL",read:"(value->>'read_at_ms' IS NOT NULL OR value->>'claimed_at_ms' IS NOT NULL)",reward:"jsonb_array_length(value->'attachments')>0",
         expiring:"value->>'expires_at_ms' IS NOT NULL AND (value->>'expires_at_ms')::BIGINT>$3 AND (value->>'expires_at_ms')::BIGINT<=$7",
         system:"value->>'category'='system'",battle_report:"value->>'category'='battle_report'"};
     const rows=nk.sqlQuery(`SELECT key,value FROM storage WHERE collection='player_mail' AND user_id=$1::UUID AND left(key,length($2))=$2 AND ($2<>'' OR left(key,2)='m_')
@@ -188,7 +188,7 @@ function mailBulk(nk:nkruntime.Nakama,userId:string,req:any,action:string):any {
         AND ${mailVisibleSql()} ORDER BY key LIMIT 26`,[userId,mailPrefix(nk),Date.now(),cursor]);
     const more=rows.length>25;if(more)rows.pop();const results=[];let latest:any={};
     for(const stored of rows) {
-        const row=parseJsonObject(stored.value),eligible=action==='claim'?mailPresent(nk,row,Date.now()).can_claim:!!row.read_at_ms&&mailPresent(nk,row,Date.now()).can_delete;
+        const row=parseJsonObject(stored.value),present=mailPresent(nk,row,Date.now()),eligible=action==='claim'?present.can_claim:!!present.read_at_ms&&present.can_delete;
         if(!eligible){results.push({id:row.id,success:false,code:'INELIGIBLE'});continue;}
         const result=mailMutateOne(nk,userId,row.id,action);results.push({id:row.id,success:result.success,code:result.code||''});
         if(result.profile)latest={profile:result.profile,inventory:result.inventory,heroes:result.heroes||[]};
@@ -337,6 +337,6 @@ function mailCombatRuntime(base:nkruntime.Nakama,userId:string):nkruntime.Nakama
 function mailSyncWeeklyClaim(nk:nkruntime.Nakama,userId:string,payload:string):void {
     const req=serverRequest(payload),id=mailId(nk,'weekly:'+req.period_id+':'+req.board_id);
     const stored=mailRead(nk,userId,id);if(!stored||stored.value.claimed_at_ms)return;
-    stored.value.claimed_at_ms=Date.now();stored.value.version++;
+    const claimNow=Date.now();stored.value.claimed_at_ms=claimNow;if(!stored.value.read_at_ms)stored.value.read_at_ms=claimNow;stored.value.version++;
     try{nk.storageWrite([Object.assign(mailWrite(stored.value,userId),{version:stored.version})]);mailPush(nk,userId,id);}catch(_e){/* Shared weekly marker still prevents a duplicate grant. */}
 }

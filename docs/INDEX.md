@@ -291,3 +291,9 @@ C015 v1.18.0: talisman and element enhancement gold x1000.
 - C237 v1.7.1: reserve Cuong Da seal for HP-triggered B04; explicit outward wave expansion, six pulses; distinguish B02 speed buff.
 - C237 v1.8.0: Cuong Da uses boss/caster HP below50%, activates through every control state immediately on nonlethal damage; supersedes player-HP interpretation.
 - C237 v1.8.1: protect Phoenix Z04 lethal passive through control, exact four expanding waves and50% revival after4s; prevent duplicated wave0.
+
+- C224 v1.3.0: one bounty claim per quest; server-selected VIP/normal value and legacy single-claim guards.
+
+- C173 v1.1.0: Gold Vault new-purchase reward is 2.5M Gold; existing paid snapshots preserved.
+
+- C173 v1.2.0: exact 4/7 daily reward bundles and 2.5M Gold Vault; pricing revision 250002.

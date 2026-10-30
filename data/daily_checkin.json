@@ -1,27 +1,48 @@
 {
-  "campaign_id": "new_account_28d_v1",
-  "title": "ĐIỂM DANH 28 NGÀY",
+  "campaign_id": "server_month_1_v1",
+  "title": "ĐIỂM DANH 30 NGÀY",
   "subtitle": "Điểm danh mỗi ngày để nhận quà tu tiên quý giá",
   "timezone": "Asia/Ho_Chi_Minh",
-  "duration_days": 28,
+  "duration_days": 30,
   "catchup_gem_cost": 50,
   "campaigns": [
     {
-      "campaign_id": "new_account_28d_v1",
-      "title": "ĐIỂM DANH TÂN THỦ 28 NGÀY",
-      "subtitle": "Điểm danh mỗi ngày để nhận quà tu tiên quý giá",
-      "start_mode": "account_created",
-      "duration_days": 28,
-      "priority": 10
+      "campaign_id": "server_month_1_v1",
+      "title": "ĐIỂM DANH KHAI MỞ MÁY CHỦ",
+      "subtitle": "Hành trình tu tiên 30 ngày đầu từ khi mở máy chủ",
+      "start_mode": "server_opened",
+      "cycle_index": 1,
+      "offset_days": 0,
+      "duration_days": 30,
+      "priority": 100
     },
     {
-      "campaign_id": "monthly_2026_10_v1",
-      "title": "ĐIỂM DANH THÁNG 10",
-      "subtitle": "Chiến dịch điểm danh mở cho toàn bộ người chơi",
-      "start_mode": "fixed",
-      "starts_at": "2026-10-01T00:00:00+07:00",
-      "duration_days": 28,
+      "campaign_id": "server_month_2_v1",
+      "title": "ĐIỂM DANH 30 NGÀY • KỲ II",
+      "subtitle": "Hành trình tu tiên chu kỳ thứ 2 sau khi mở máy chủ",
+      "start_mode": "server_opened",
+      "cycle_index": 2,
+      "offset_days": 30,
+      "duration_days": 30,
       "priority": 100
+    },
+    {
+      "campaign_id": "server_month_3_v1",
+      "title": "ĐIỂM DANH 30 NGÀY • KỲ III",
+      "subtitle": "Hành trình tu tiên chu kỳ thứ 3 sau khi mở máy chủ",
+      "start_mode": "server_opened",
+      "cycle_index": 3,
+      "offset_days": 60,
+      "duration_days": 30,
+      "priority": 100
+    },
+    {
+      "campaign_id": "new_account_28d_v1",
+      "title": "ĐIỂM DANH TÂN THỦ 30 NGÀY",
+      "subtitle": "Điểm danh mỗi ngày để nhận quà tu tiên quý giá",
+      "start_mode": "account_created",
+      "duration_days": 30,
+      "priority": 10
     }
   ],
   "days": [
@@ -52,6 +73,8 @@
     {"day":25,"name":"Ngày 25","reward_name":"200 Đá Quý","icon_type":"pack","icon_key":"gem_sack","grants":[{"type":"resource","id":"gems","amount":200}]},
     {"day":26,"name":"Ngày 26","reward_name":"150.000 Vàng","icon_type":"pack","icon_key":"gold_chest","grants":[{"type":"resource","id":"gold","amount":150000}]},
     {"day":27,"name":"Ngày 27","reward_name":"40 Rune hệ ngẫu nhiên","icon_type":"extra","icon_key":"dismantle","grants":[{"type":"random_item","pool":["stone_metal_low","stone_wood_low","stone_water_low","stone_fire_low","stone_earth_low"],"amount":40}]},
-    {"day":28,"name":"Ngày 28","reward_name":"50 Mảnh Thanh Phong Kiếm","icon_type":"pack","icon_key":"starter_pack","is_special":true,"grants":[{"type":"item","id":"talisman_fragment_1","amount":50}]}
+    {"day":28,"name":"Ngày 28","reward_name":"50 Mảnh Thanh Phong Kiếm","icon_type":"pack","icon_key":"starter_pack","is_special":true,"grants":[{"type":"item","id":"talisman_fragment_1","amount":50}]},
+    {"day":29,"name":"Ngày 29","reward_name":"200.000 Vàng","icon_type":"pack","icon_key":"gold_chest","grants":[{"type":"resource","id":"gold","amount":200000}]},
+    {"day":30,"name":"Ngày 30","reward_name":"250 Đá Quý","icon_type":"pack","icon_key":"gem_sack","is_special":true,"grants":[{"type":"resource","id":"gems","amount":250}]}
   ]
 }

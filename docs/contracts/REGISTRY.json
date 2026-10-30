@@ -8,7 +8,7 @@
     {"id":"C015_TALISMAN_EQUIPMENT_SYSTEM","version":"1.18.0","status":"IN_PROGRESS","updated_at":"2026-10-27","contract_file":"docs/contracts/C015_TALISMAN_EQUIPMENT_SYSTEM.md"},
     {"id":"C227_ORDERED_WAVE_SPAWNING","version":"1.0.0","status":"IN_PROGRESS","updated_at":"2026-10-27","contract_file":"docs/contracts/C227_ORDERED_WAVE_SPAWNING.md"},
     {"id":"C225_LEVEL_70","version":"1.0.0","status":"IN_PROGRESS","updated_at":"2026-10-27","contract_file":"docs/contracts/C225_LEVEL_70.md"},
-    {"id":"C224_VIP_BENEFITS_MILESTONES","version":"1.1.1","status":"IN_PROGRESS","updated_at":"2026-10-26","contract_file":"docs/contracts/C224_VIP_BENEFITS_MILESTONES.md"},
+    {"id":"C224_VIP_BENEFITS_MILESTONES","version":"1.3.0","status":"IN_PROGRESS","updated_at":"2026-10-30","contract_file":"docs/contracts/C224_VIP_BENEFITS_MILESTONES.md"},
     {"id":"C223_AUTO_CARD_PICK","version":"1.1.2","status":"IN_PROGRESS","updated_at":"2026-10-27","contract_file":"docs/contracts/C223_AUTO_CARD_PICK.md"},
     {"id":"C222_BOSS_SKILL_RANGE","version":"1.0.0","status":"IN_PROGRESS","updated_at":"2026-10-26","contract_file":"docs/contracts/C222_BOSS_SKILL_RANGE.md"},
     {"id":"C221_ARC6_NGU_TO_QUY_KHU","version":"1.1.1","status":"IN_PROGRESS","updated_at":"2026-10-27","contract_file":"docs/contracts/C221_ARC6_NGU_TO_QUY_KHU.md"},
@@ -205,9 +205,9 @@
     },
     {
       "id": "C173_CURRENCY_PRICING",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "status": "ACTIVE",
-      "updated_at": "2026-10-22",
+      "updated_at": "2026-10-30",
       "contract_file": "docs/contracts/C173_CURRENCY_PRICING.md"
     },
     {

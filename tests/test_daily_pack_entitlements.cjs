@@ -58,7 +58,7 @@ for (const pack of packs) {
   for (let day=0;day<30;day++) {
     now=start+day*DAY;
     const result=invoke(claim,{product_id:pack.id}); assert.equal(result.status,'success'); assert(!result.idempotent);
-    assert.equal(db.player_profiles.value.stamina,Math.min(STAMINA_STORAGE_MAX,30+(day+1)*(pack.id==='daily_deal'?5:10)),'Every daily grant respects available storage');
+    assert.equal(db.player_profiles.value.stamina,Math.min(STAMINA_STORAGE_MAX,30+(day+1)*(pack.id==='daily_deal'?15:30)),'Every daily grant respects available storage');
     assert(!readStatus(pack.id).claimable);
     const after=clone(db);
     assert(invoke(claim,{product_id:pack.id}).idempotent);
@@ -66,13 +66,13 @@ for (const pack of packs) {
     now=start+(day+1)*DAY-1;
     assert(!readStatus(pack.id).claimable,'No early claim at next-day boundary');
   }
-  assert.equal(db.player_profiles.value.resources.gems, pack.id==='daily_deal'?300:900);
-  assert.equal(db.player_inventory.value.items.find(i=>i.item_id==='campaign_sweep_ticket').quantity,pack.id==='daily_deal'?5:30,'One-time tickets and daily tickets remain separate');
-  assert.equal(db.player_profiles.value.stamina,Math.min(STAMINA_STORAGE_MAX,30+(pack.id==='daily_deal'?150:300)),'Unspent stamina accumulates only up to configured storage capacity');
-  if (pack.id==='daily_deal') assert.equal(db.player_profiles.value.resources.gold,75000);
+  assert.equal(db.player_profiles.value.resources.gems, pack.id==='daily_deal'?1500:3000);
+  assert.equal(db.player_inventory.value.items.find(i=>i.item_id==='campaign_sweep_ticket').quantity,pack.id==='daily_deal'?150:300,'Every requested ticket grant recurs daily');
+  assert.equal(db.player_profiles.value.stamina,Math.min(STAMINA_STORAGE_MAX,30+(pack.id==='daily_deal'?450:900)),'Unspent stamina accumulates only up to configured storage capacity');
+  if (pack.id==='daily_deal') assert.equal(db.player_profiles.value.resources.gold,750000);
   else {
-    assert.equal(db.player_profiles.value.resources.gold,150000);
-    for (const id of ['talisman_enhance_charm','element_enlightenment_charm']) assert.equal(db.player_inventory.value.items.find(i=>i.item_id===id).quantity,1);
+    assert.equal(db.player_profiles.value.resources.gold,1500000);
+    for (const id of ['talisman_enhance_charm','element_enlightenment_charm','exp_boost_card_10']) assert.equal(db.player_inventory.value.items.find(i=>i.item_id===id).quantity,30);
     assert(!db.player_inventory.value.items.some(i=>i.item_id==='reset_talisman'));
   }
   now=start+30*DAY;
@@ -86,7 +86,7 @@ for (const p of packs) grant(nk,'buyer','receipt-'+p.id,p.id,'consumable',p.rewa
 assert(readStatus('daily_deal').claimable && readStatus('flash_sale').claimable,'Both products can coexist');
 now+=3*DAY;
 invoke(claim,{product_id:'flash_sale'});
-assert.equal(db.player_profiles.value.resources.gems,30,'Missed days are not banked');
+assert.equal(db.player_profiles.value.resources.gems,100,'Missed days are not banked');
 db.player_stage_runs={value:{status:'active',expires_at_ms:now+DAY},version:'1'};
 assert.equal(invoke(claim,{product_id:'daily_deal'}).code,409,'Do not mutate rewards during combat');
 reset();
@@ -107,7 +107,7 @@ const purchaseNk = {...nk, uuidv4:()=> 'monthly-order',
 const newOrder=JSON.parse(order(user,{},purchaseNk,JSON.stringify({product_id:'daily_deal'})));
 assert.equal(newOrder.data.purchase_order_id,'monthly-order','Do not launch new monthly purchase against old one-time snapshot');
 assert(JSON.parse(insertedOrder[3]).some(r=>r.metadata.daily_pack_days===30));
-assert(JSON.parse(insertedOrder[3]).every(r=>r.metadata.pricing_version===250001));
+assert(JSON.parse(insertedOrder[3]).every(r=>r.metadata.pricing_version===250002));
 // Old recurring orders also must not be reused for today's lower daily rewards.
 const originalQuery=purchaseNk.sqlQuery;
 purchaseNk.sqlQuery=(sql,args)=>sql.includes('FROM monetization_purchase_orders')

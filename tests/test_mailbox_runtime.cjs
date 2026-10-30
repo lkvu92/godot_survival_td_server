@@ -11,7 +11,7 @@ const base={sqlQuery(sql,args){
  if(sql.includes('sha256'))return[{hash:crypto.createHash('sha256').update(args[0]).digest('hex')}];
  if(sql.includes('FROM game_arcs'))return[{display_name:'Arc Test'}];
  if(sql.includes('FROM game_items'))return args[0]==='ticket'?[{id:'ticket',stackable:true,max_stack:999}]:[];
- if(sql.includes('FROM game_heroes'))return args[0]==='hero_5'?[{id:'hero_5'}]:[];
+ if(sql.includes('FROM game_heroes'))return args[0]==='hero_5'?[{id:'hero_5'}]:[];if(sql.includes("FROM storage WHERE collection='player_mail'")&&sql.includes('ORDER BY key LIMIT 26'))return[...store.values()].filter(r=>r.collection==='player_mail'&&r.userId===args[0]&&r.key.startsWith(args[1])&&r.key>args[3]&&!r.value.deleted_at_ms&&(r.value.purge_at_ms===null||r.value.purge_at_ms>args[2])).sort((a,b)=>a.key.localeCompare(b.key)).slice(0,26).map(r=>({key:r.key.slice(args[1].length),value:copy(r.value)}));
  throw Error('Unexpected SQL '+sql);
 },storageRead(refs){return refs.map(r=>store.get(key(r))).filter(Boolean).map(copy);},
  storageWrite(writes){
@@ -31,7 +31,7 @@ const deliver=overrides=>fn('deliverMail')(nk,userId,{...input,...overrides});
 const claim=id=>fn('mailClaimOne')(nk,userId,id),read=(collection,key)=>nk.storageRead([{collection,key,userId}])[0];
 const id=deliver({}).id;assert.equal(deliver({}).idempotent,true);assert.equal(notifications,1);
 fail=true;assert.equal(claim(id).code,'DATA_CHANGED');assert.equal(read('player_profiles','main').value.resources.gold,0);assert.equal(read('player_inventory','items').value.items.length,0);assert.equal(read('player_mail',id).value.claimed_at_ms,null);
-assert.equal(claim(id).success,true);assert.equal(read('player_profiles','main').value.resources.gold,7);assert.equal(read('player_profiles','main').value.exp,3);assert.equal(read('player_inventory','items').value.items[0].quantity,2);
+assert.equal(claim(id).success,true);assert.equal(read('player_profiles','main').value.resources.gold,7);assert.equal(read('player_profiles','main').value.exp,3);assert.equal(read('player_inventory','items').value.items[0].quantity,2);assert.equal(read('player_mail',id).value.read_at_ms,read('player_mail',id).value.claimed_at_ms);
 assert.equal(claim(id).already_claimed,true);assert.equal(read('player_profiles','main').value.resources.gold,7);
 const purchase=fn('applyPurchaseMailRewards')(nk,userId,'purchase-hero-mail','first_topup_pack','non_consumable',[{reward_type:'hero',reward_id:'hero_5',quantity:1}]);
 assert(purchase.mail&&purchase.mail.id,'paid hero must be sent through purchase mail');
@@ -47,7 +47,7 @@ const foreign=fn('characterRuntime')(base,{...scope,serverId:'s002'});assert.equ
 const weekly=deliver({source_id:'weekly:1:combat_power',weekly:{period_id:'1',board_id:'combat_power'}}).id;
 seed('weekly_leaderboard_claims','1_combat_power',{rewards:[]});assert.equal(claim(weekly).already_claimed,true);assert.equal(read('player_profiles','main').value.resources.gold,7);
 assert.equal(fn('mailMutateOne')(nk,userId,infinite,'delete').code,'UNCLAIMED_REWARD');
-assert.equal(fn('mailMutateOne')(nk,userId,id,'delete').success,true);
+assert.equal(fn('mailMutateOne')(nk,userId,id,'delete').success,true);const bulkId=deliver({source_id:'bulk_claim_delete',attachments:[{type:'resource',id:'gold',amount:1}]}).id;assert(fn('mailBulk')(nk,userId,{},'claim').results.some(r=>r.id===bulkId&&r.success));assert.equal(read('player_mail',bulkId).value.read_at_ms,read('player_mail',bulkId).value.claimed_at_ms);assert(fn('mailBulk')(nk,userId,{},'delete').results.some(r=>r.id===bulkId&&r.success));assert(read('player_mail',bulkId).value.deleted_at_ms!==null);
 base.storageDelete=refs=>refs.forEach(r=>store.delete(key(r)));
 nk.storageDelete([{collection:'player_mail',key:id,userId,version:read('player_mail',id).version}]);
 assert.equal(deliver({}).idempotent,true,'purging mail does not purge delivery identity');
@@ -80,18 +80,13 @@ for(const product of packCatalog){
  assert.throws(()=>fn('applyPurchaseMailRewards')(nk,userId,grantId,product.id,'consumable',product.rewards),/pre-commit/);
  assert.deepEqual(store,before,'failed transaction cannot activate daily pack or leak bonus mail');
  const granted=fn('applyPurchaseMailRewards')(nk,userId,grantId,product.id,'consumable',product.rewards);
- assert(granted.mail&&granted.mail.id,'instant bonus goes to purchase mail');
+ assert(!granted.mail,'New daily-only bundles must not issue an extra instant bonus mail');
  const entitlement=read('player_profiles','main').value.daily_packs[product.id];
  assert(entitlement.rewards.every(r=>product.rewards.some(p=>p.metadata?.daily_pack_days===30&&p.reward_id===r.reward_id&&p.quantity===r.quantity)));
- // Flash-sale now includes six boost cards in addition to the two upgrade charms (C182).
- assert.equal(read('player_mail',granted.mail.id).value.attachments.length,product.id==='daily_deal'?1:8);
+ assert.equal(entitlement.rewards.length,product.id==='daily_deal'?4:7,'All requested reward lines enter the daily entitlement');
  const activated=new Map([...store].map(([k,v])=>[k,copy(v)]));
  assert(fn('applyPurchaseMailRewards')(nk,userId,grantId,product.id,'consumable',product.rewards).idempotent);
  assert.deepEqual(store,activated,'purchase replay cannot duplicate mail or change expiry');
- assert.equal(claim(granted.mail.id).success,true);
- assert.equal(claim(granted.mail.id).already_claimed,true);
- const inv=read('player_inventory','items').value.items;
- if(product.id==='daily_deal')assert.equal(inv.find(i=>i.item_id==='campaign_sweep_ticket').quantity,5);
- else for(const id of ['talisman_enhance_charm','element_enlightenment_charm'])assert.equal(inv.find(i=>i.item_id===id).quantity,1);
+
 }
-console.log('PASS C147/C173: atomic claims, expiry, scoped ownership, mixed-pack activation/bonus mail rollback, immutable daily snapshots and durable replay suppression');
+console.log('PASS C147/C173: atomic claims, expiry, scoped ownership, daily-only activation rollback, immutable daily snapshots and durable replay suppression');

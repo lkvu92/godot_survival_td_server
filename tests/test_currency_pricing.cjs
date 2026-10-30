@@ -18,16 +18,18 @@ const p=id=>packs.find(p=>p.id===id);
 assert.equal(p('gem_sack').rewards.filter(r=>r.metadata?.condition!=='first_purchase').reduce((s,r)=>s+r.quantity,0),2000);
 assert.equal(p('gem_sack').rewards.reduce((s,r)=>s+r.quantity,0),4000);
 assert.equal(p('gem_chest').rewards.reduce((s,r)=>s+r.quantity,0),10000);
-assert.equal(p('gold_vault').rewards[0].quantity,1000000);
-const unit={gems:1,gold:1/250,stamina:2,campaign_sweep_ticket:20,talisman_enhance_charm:80,element_enlightenment_charm:80};
-for(const [id,value] of [['daily_deal',1000],['flash_sale',2860]]){
+assert.equal(p('gold_vault').rewards[0].quantity,2500000);
+const exactDaily={
+ daily_deal:[['campaign_sweep_ticket',5],['gems',50],['gold',25000],['stamina',15]],
+ flash_sale:[['talisman_enhance_charm',1],['element_enlightenment_charm',1],['exp_boost_card_10',1],['gems',100],['gold',50000],['stamina',30],['campaign_sweep_ticket',10]]
+};
+for(const [id,expected] of Object.entries(exactDaily)){
  const pack=p(id);
- // C182 adds event-only premium cards without a direct shop valuation.
- const priced=pack.rewards.filter(r=>r.metadata?.event_pack!=='boost');
- const total=priced.reduce((sum,r)=>sum+r.quantity*unit[r.reward_id]*(r.metadata?.daily_pack_days===30?30:1),0);
- assert.equal(total,value,id+' total catalog valuation');
- assert(pack.rewards.some(r=>!r.metadata?.daily_pack_days),'instant bonus exists');
+ assert.deepEqual(pack.rewards.map(r=>[r.reward_id,r.quantity]),expected,id+' must match exact requested list without extras');
  assert.equal(pack.duration_days,30);
- assert(pack.rewards.every(r=>r.metadata.pricing_version===pack.pricing_version));
+ assert.equal(pack.pricing_version,250002);
+ assert(pack.rewards.every(r=>r.metadata.pricing_version===250002&&r.metadata.daily_pack_days===30));
 }
-console.log('PASS C173 pricing: dual-currency ratios, stamina, hero prices, first-purchase bonus and full 30-day pack valuations');
+assert.equal(p('gold_vault').pricing_version,250002);
+assert.equal(p('gold_vault').rewards[0].metadata.pricing_version,250002);
+console.log('PASS C173 pricing: dual-currency ratios, stamina, hero prices, first-purchase bonus and exact user-approved daily bundles and 2.5M Gold Vault');

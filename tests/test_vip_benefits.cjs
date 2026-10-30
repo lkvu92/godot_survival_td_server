@@ -89,15 +89,75 @@ const list=JSON.parse(fn('eventList')(ctx,logger,nk,'{}'));
 assert(list.success,JSON.stringify(list));
 const event=list.active_events[0];assert.equal(event.quests[0].rewards.normal[0].amount,120);assert.equal(event.quests[0].rewards.vip.grants[0].amount,240);
 const claim=JSON.parse(fn('eventClaim')(ctx,logger,nk,JSON.stringify({event_id:campaign.event_id,occurrence_id:event.occurrence_id,quest_id:'level',track:'normal',vip:12})));
-assert(claim.success,JSON.stringify(claim));assert.equal(claim.grants[0].amount,120);
+assert(claim.success,JSON.stringify(claim));assert.equal(claim.grants[0].amount,240);assert.equal(claim.track,"vip");
 assert(!JSON.parse(fn('eventClaim')(ctx,logger,nk,JSON.stringify({event_id:campaign.event_id,occurrence_id:event.occurrence_id,quest_id:'level',track:'normal'}))).success);
+
+// A quest is a single entitlement, including legacy track markers and VIP upgrades.
+const request=(id,track='normal')=>JSON.stringify({event_id:campaign.event_id,occurrence_id:event.occurrence_id,quest_id:id,track});
+const settle=(id,track='normal')=>JSON.parse(fn('eventClaim')(ctx,logger,nk,request(id,track)));
+const addQuest=id=>campaign.quests.push({...copy(campaign.quests[0]),quest_id:id});
+const balance=()=>read('player_profiles','main').value.resources.gold;
+const questView=id=>JSON.parse(fn('eventList')(ctx,logger,nk,'{}')).active_events[0].quests.find(q=>q.quest_id===id);
+assert.equal(questView('level').reward_track,'vip');
+assert(questView('level').claimed.normal && questView('level').claimed.vip);
+let beforeBounty=balance();
+assert(!settle('level','vip').success,'Normal request settled VIP must block later VIP request');
+assert.equal(balance(),beforeBounty);
+for(const legacyTrack of ['normal','vip']){
+  const id='legacy_'+legacyTrack;addQuest(id);
+  const stored=fn('eventReadState')(nk,userId,campaign,fn('eventOccurrence')(campaign,Date.now()));
+  stored.state.claimed[id]={[legacyTrack]:true};
+  nk.storageWrite([{collection:'player_event_progress',key:stored.key,userId,value:stored.state,version:stored.object.version}]);
+  for(const track of ['normal','vip'])assert(!settle(id,track).success,'Legacy '+legacyTrack+' blocks '+track);
+  assert(questView(id).claimed.normal && questView(id).claimed.vip);
+}
+addQuest('free');vipExp=0;
+assert(!settle('free','vip').success,'Non-VIP cannot force VIP payout');
+const free=settle('free');assert(free.success);assert.equal(free.track,'normal');assert.equal(free.grants[0].amount,100);
+vipExp=1000;
+assert(!settle('free','vip').success,'VIP upgrade never unlocks a second grant');
+addQuest('vip_first');const vipFirst=settle('vip_first','vip');assert(vipFirst.success);assert.equal(vipFirst.grants[0].amount,240);
+assert(!settle('vip_first','normal').success,'VIP first blocks normal');
+addQuest('no_vip');campaign.quests[campaign.quests.length-1].rewards.vip.grants=[];
+assert.equal(settle('no_vip').grants[0].amount,120,'No VIP variant uses normal value with the existing bonus');
+addQuest('injected_failure');beforeBounty=balance();fail=true;
+assert.throws(()=>settle('injected_failure'),/INJECTED_FAILURE/);
+assert.equal(balance(),beforeBounty);assert(!questView('injected_failure').claimed.normal);
+assert(settle('injected_failure').success,'Failed atomic write may retry once');
+addQuest('concurrent');beforeBounty=balance();
+const originalWrite=nk.storageWrite;let racing=true;
+nk.storageWrite=writes=>{
+  if(racing && writes.some(w=>w.collection==='player_event_progress')){
+    racing=false;assert(settle('concurrent','vip').success);
+  }
+  return originalWrite(writes);
+};
+assert.throws(()=>settle('concurrent','normal'),/CAS_CONFLICT/);
+nk.storageWrite=originalWrite;
+assert.equal(balance()-beforeBounty,240,'Competing normal/VIP requests grant exactly once');
+assert(!settle('concurrent').success);
+console.log('PASS bounty single claim: server-selected value, both request orders, legacy markers, VIP upgrade, fallback, rollback and concurrent CAS');
 const status=JSON.parse(fn('dailyCheckinStatus')(ctx,logger,nk,'{}'));assert(status.success,JSON.stringify(status));assert.equal(status.days[0].grants[0].amount,120);
 const checkClaim=JSON.parse(fn('dailyCheckinClaim')(ctx,logger,nk,JSON.stringify({campaign_id:'vip_checkin',day:1,vip:12})));
 assert(checkClaim.success,JSON.stringify(checkClaim));assert.equal(checkClaim.grants[0].amount,120);assert.equal(checkClaim.state.days[0].grants[0].amount,120,'Preview never compounds after claim');
 assert(!JSON.parse(fn('dailyCheckinClaim')(ctx,logger,nk,JSON.stringify({campaign_id:'vip_checkin',day:1}))).success);
-checkin.campaign_id='vip_catchup';checkin.start_mode='fixed';checkin.starts_at=new Date(now-86400000).toISOString();checkin.duration_days=3;
+checkin.campaign_id='vip_catchup';checkin.start_mode='fixed';checkin.starts_at=new Date(Date.now()-86400000).toISOString();checkin.duration_days=3;
 const gemsBefore=read('player_profiles','main').value.resources.gems;
 const caught=JSON.parse(fn('dailyCheckinClaim')(ctx,logger,nk,JSON.stringify({campaign_id:'vip_catchup',day:1})));
 assert(caught.success,JSON.stringify(caught));assert.equal(caught.grants[0].amount,120);assert.equal(caught.gem_cost,10,'VIP does not increase catch-up price');
 assert.equal(read('player_profiles','main').value.resources.gems,gemsBefore-10);
+const fixedNow = Date.parse('2026-10-29T12:00:00+07:00');
+const realCheckinConfig = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'daily_checkin.json'), 'utf8'));
+assert.equal(realCheckinConfig.duration_days, 30);
+assert.equal(realCheckinConfig.days.length, 30);
+const dayMs = 86400000;
+const m1Sel = fn('checkinSelectCampaign')(realCheckinConfig, fixedNow, fixedNow - 5 * dayMs, fixedNow - 10 * dayMs);
+assert.equal(m1Sel.campaign.campaign_id, 'server_month_1_v1');
+assert.equal(m1Sel.window.open_day, 11);
+const m2Sel = fn('checkinSelectCampaign')(realCheckinConfig, fixedNow, fixedNow - 5 * dayMs, fixedNow - 35 * dayMs);
+assert.equal(m2Sel.campaign.campaign_id, 'server_month_2_v1');
+assert.equal(m2Sel.window.open_day, 6);
+const m3Sel = fn('checkinSelectCampaign')(realCheckinConfig, fixedNow, fixedNow - 5 * dayMs, fixedNow - 65 * dayMs);
+assert.equal(m3Sel.campaign.campaign_id, 'server_month_3_v1');
+assert.equal(m3Sel.window.open_day, 6);
 console.log('PASS C224: exact12 gifts, five-element pools, one-type medium fragments, VIP0–12 base scaling, authoritative bounty/check-in preview+claim, replay, atomic mail failure, frozen randomness, purge ledger, server isolation and claim-once');

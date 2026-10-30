@@ -222,8 +222,8 @@
     "daily": [
       {
         "id": "daily_deal",
-        "pricing_version": 250001,
-        "name": "Lễ Bao Hàng Ngày",
+        "pricing_version": 250002,
+        "name": "Lễ Bao Hằng Ngày",
         "price": "$0.99",
         "product_id": "daily_deal",
         "active": true,
@@ -237,33 +237,34 @@
             "reward_id": "campaign_sweep_ticket",
             "quantity": 5,
             "metadata": {
-              "pricing_version": 250001
+              "pricing_version": 250002,
+              "daily_pack_days": 30
             }
           },
           {
             "reward_type": "currency",
             "reward_id": "gems",
-            "quantity": 10,
+            "quantity": 50,
             "metadata": {
-              "pricing_version": 250001,
+              "pricing_version": 250002,
               "daily_pack_days": 30
             }
           },
           {
             "reward_type": "currency",
             "reward_id": "gold",
-            "quantity": 2500,
+            "quantity": 25000,
             "metadata": {
-              "pricing_version": 250001,
+              "pricing_version": 250002,
               "daily_pack_days": 30
             }
           },
           {
             "reward_type": "stamina",
             "reward_id": "stamina",
-            "quantity": 5,
+            "quantity": 15,
             "metadata": {
-              "pricing_version": 250001,
+              "pricing_version": 250002,
               "daily_pack_days": 30
             }
           }
@@ -271,12 +272,12 @@
         "icon_type": "pack",
         "icon_key": "daily_deal",
         "badge": "30 NGÀY",
-        "desc": "Nhận ngay 5 Vé Càn Quét qua thư. Mỗi ngày: 10 Gem + 2.500 Vàng + 5 Thể Lực trong 30 ngày; không cộng dồn ngày bỏ lỡ.",
-        "reward_summary": "Ngay: 5 Vé qua thư. Mỗi ngày: 10 Gem + 2.500 Vàng + 5 TL (30 ngày)"
+        "desc": "Mỗi ngày: 5 Vé Càn Quét + 50 Gem + 25.000 Vàng + 15 Thể Lực trong 30 ngày; không cộng dồn ngày bỏ lỡ.",
+        "reward_summary": "Mỗi ngày: 5 Vé Càn Quét + 50 Gem + 25.000 Vàng + 15 Thể Lực (30 ngày)"
       },
       {
         "id": "flash_sale",
-        "pricing_version": 250001,
+        "pricing_version": 250002,
         "duration_days": 30,
         "name": "Gói Sự Kiện Đột Phá",
         "price": "$2.99",
@@ -289,7 +290,8 @@
             "reward_id": "talisman_enhance_charm",
             "quantity": 1,
             "metadata": {
-              "pricing_version": 250001
+              "pricing_version": 250002,
+              "daily_pack_days": 30
             }
           },
           {
@@ -297,96 +299,52 @@
             "reward_id": "element_enlightenment_charm",
             "quantity": 1,
             "metadata": {
-              "pricing_version": 250001
+              "pricing_version": 250002,
+              "daily_pack_days": 30
             }
           },
           {
             "reward_type": "item",
-            "reward_id": "exp_boost_card_50",
+            "reward_id": "exp_boost_card_10",
             "quantity": 1,
             "metadata": {
-              "pricing_version": 250001,
-              "event_pack": "boost"
-            }
-          },
-          {
-            "reward_type": "item",
-            "reward_id": "gold_boost_card_x2",
-            "quantity": 1,
-            "metadata": {
-              "pricing_version": 250001,
-              "event_pack": "boost"
-            }
-          },
-          {
-            "reward_type": "item",
-            "reward_id": "exp_boost_card_x5",
-            "quantity": 1,
-            "metadata": {
-              "pricing_version": 250001,
-              "event_pack": "boost"
-            }
-          },
-          {
-            "reward_type": "item",
-            "reward_id": "gold_boost_card_50",
-            "quantity": 1,
-            "metadata": {
-              "pricing_version": 250001,
-              "event_pack": "boost"
-            }
-          },
-          {
-            "reward_type": "item",
-            "reward_id": "exp_boost_card_x2",
-            "quantity": 1,
-            "metadata": {
-              "pricing_version": 250001,
-              "event_pack": "boost"
-            }
-          },
-          {
-            "reward_type": "item",
-            "reward_id": "gold_boost_card_x5",
-            "quantity": 1,
-            "metadata": {
-              "pricing_version": 250001,
-              "event_pack": "boost"
+              "pricing_version": 250002,
+              "daily_pack_days": 30
             }
           },
           {
             "reward_type": "currency",
             "reward_id": "gems",
-            "quantity": 30,
+            "quantity": 100,
             "metadata": {
-              "pricing_version": 250001,
+              "pricing_version": 250002,
               "daily_pack_days": 30
             }
           },
           {
             "reward_type": "currency",
             "reward_id": "gold",
-            "quantity": 5000,
+            "quantity": 50000,
             "metadata": {
-              "pricing_version": 250001,
+              "pricing_version": 250002,
               "daily_pack_days": 30
             }
           },
           {
             "reward_type": "stamina",
             "reward_id": "stamina",
-            "quantity": 10,
+            "quantity": 30,
             "metadata": {
-              "pricing_version": 250001,
+              "pricing_version": 250002,
               "daily_pack_days": 30
             }
           },
           {
             "reward_type": "item",
             "reward_id": "campaign_sweep_ticket",
-            "quantity": 1,
+            "quantity": 10,
             "metadata": {
-              "pricing_version": 250001,
+              "pricing_version": 250002,
               "daily_pack_days": 30
             }
           }
@@ -394,8 +352,8 @@
         "icon_type": "pack",
         "icon_key": "flash_sale",
         "badge": "SỰ KIỆN",
-        "desc": "Nhận ngay 1 Cường Hóa Phù, 1 Ngộ Đạo Phù và 6 Thẻ tăng thưởng cao cấp qua thư. Mỗi ngày: 30 Gem + 5.000 Vàng + 10 Thể Lực + 1 Vé Càn Quét trong 30 ngày; không cộng dồn ngày bỏ lỡ.",
-        "reward_summary": "Ngay: 2 Phù + 6 Thẻ tăng thưởng. Mỗi ngày: 30 Gem + 5.000 Vàng + 10 TL + 1 Vé (30 ngày)"
+        "desc": "Mỗi ngày: 1 Cường Hóa Phù + 1 Ngộ Đạo Phù + 1 Thẻ EXP +10% + 100 Gem + 50.000 Vàng + 30 Thể Lực + 10 Vé Càn Quét trong 30 ngày; không cộng dồn ngày bỏ lỡ.",
+        "reward_summary": "Mỗi ngày: 1 Cường Hóa Phù + 1 Ngộ Đạo Phù + 1 Thẻ EXP +10% + 100 Gem + 50.000 Vàng + 30 Thể Lực + 10 Vé Càn Quét (30 ngày)"
       }
     ],
     "resources": [
@@ -467,14 +425,18 @@
           {
             "reward_type": "currency",
             "reward_id": "gold",
-            "quantity": 1000000
+            "quantity": 2500000,
+            "metadata": {
+              "pricing_version": 250002
+            }
           }
         ],
         "icon_type": "pack",
         "icon_key": "gold_vault",
         "badge": "DỒI DÀO",
-        "desc": "1.000.000 Vàng để cường hóa ngũ hành",
-        "reward_summary": "1.000.000 Vàng"
+        "desc": "2.500.000 Vàng để cường hóa ngũ hành",
+        "reward_summary": "2.500.000 Vàng",
+        "pricing_version": 250002
       }
     ]
   }

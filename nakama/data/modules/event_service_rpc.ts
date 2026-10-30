@@ -204,11 +204,13 @@ function eventView(nk:nkruntime.Nakama,campaign: any, occurrence: any, state: an
         tracks.normal=vipScaleRewardGrants(nk,tracks.normal,Number(profile.vip||0));
         tracks.vip.grants=vipScaleRewardGrants(nk,tracks.vip.grants,Number(profile.vip||0));
         const questClaims = eventObject(claimed[id]);
+        const alreadyClaimed = questClaims.normal === true || questClaims.vip === true;
+        const rewardTrack = tracks.vip.grants.length > 0 && Number(profile.vip || 0) >= Number(tracks.vip.required_vip || 1) ? "vip" : "normal";
         return { quest_id: id, name: String(quest.name || id), type: String(quest.type || ""),
             target, progress: Math.min(progress, target), completed: progress >= target,
             icon_type: String(quest.icon_type || "pack"), icon_key: String(quest.icon_key || "gem_pouch"),
             filters: eventObject(quest.filters), rewards: tracks,
-            claimed: { normal: questClaims.normal === true, vip: questClaims.vip === true } };
+            reward_track: rewardTrack, claimed: { normal: alreadyClaimed, vip: alreadyClaimed } };
     });
     let status = occurrence.phase === "upcoming" ? "upcoming" : (requirements.eligible ? "processing" : "ineligible");
     if (status === "processing" && quests.length > 0 && quests.every((quest: any) => quest.completed)) status = "completed";
@@ -350,8 +352,8 @@ const eventClaim: nkruntime.RpcFunction = (ctx, _logger, nk, payload): string =>
     const eventId = String(req.event_id || "");
     const occurrenceId = String(req.occurrence_id || "");
     const questId = String(req.quest_id || "");
-    const track = String(req.track || "normal");
-    if (track !== "normal" && track !== "vip") return JSON.stringify({ success: false, message: "Invalid reward track" });
+    const requestedTrack = String(req.track || "normal");
+    if (requestedTrack !== "normal" && requestedTrack !== "vip") return JSON.stringify({ success: false, message: "Invalid reward track" });
     const campaign = eventDefinitions(nk).find((entry: any) => String(entry.event_id) === eventId);
     const occurrence = campaign ? eventOccurrence(campaign, Date.now()) : null;
     if (!campaign || !occurrence || occurrence.phase !== "active" || occurrence.occurrence_id !== occurrenceId) {
@@ -379,11 +381,13 @@ const eventClaim: nkruntime.RpcFunction = (ctx, _logger, nk, payload): string =>
     const progress = eventQuestProgress(quest, stored.state, profile, compliance);
     if (progress < Math.max(1, Number(quest.target || 1))) return JSON.stringify({ success: false, message: "Quest is not completed" });
     const questClaims = eventObject(stored.state.claimed[questId]);
-    if (questClaims[track] === true) return JSON.stringify({ success: false, message: "Reward was already claimed" });
+    if (questClaims.normal === true || questClaims.vip === true) return JSON.stringify({ success: false, message: "Reward was already claimed" });
     const tracks = eventRewardTracks(quest);
+    const vipEligible = tracks.vip.grants.length > 0 && Number(profile.vip || 0) >= Number(tracks.vip.required_vip || 1);
+    const track = vipEligible ? "vip" : "normal";
     const grants = track === "normal" ? tracks.normal : tracks.vip.grants;
     if (!Array.isArray(grants) || grants.length === 0) return JSON.stringify({ success: false, message: "Reward track is unavailable" });
-    if (track === "vip" && Number(profile.vip || 0) < Number(tracks.vip.required_vip || 1)) {
+    if (requestedTrack === "vip" && !vipEligible) {
         return JSON.stringify({ success: false, message: "VIP requirement is not met" });
     }
     const issued = eventApplyGrants(nk, profile, items, vipScaleRewardGrants(nk,grants,Number(profile.vip||0)));

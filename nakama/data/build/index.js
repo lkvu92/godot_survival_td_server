@@ -2317,6 +2317,8 @@ function eventView(nk, campaign, occurrence, state, profile, compliance) {
     tracks.normal = vipScaleRewardGrants(nk, tracks.normal, Number(profile.vip || 0));
     tracks.vip.grants = vipScaleRewardGrants(nk, tracks.vip.grants, Number(profile.vip || 0));
     const questClaims = eventObject(claimed[id]);
+    const alreadyClaimed = questClaims.normal === true || questClaims.vip === true;
+    const rewardTrack = tracks.vip.grants.length > 0 && Number(profile.vip || 0) >= Number(tracks.vip.required_vip || 1) ? "vip" : "normal";
     return {
       quest_id: id,
       name: String(quest.name || id),
@@ -2328,7 +2330,8 @@ function eventView(nk, campaign, occurrence, state, profile, compliance) {
       icon_key: String(quest.icon_key || "gem_pouch"),
       filters: eventObject(quest.filters),
       rewards: tracks,
-      claimed: { normal: questClaims.normal === true, vip: questClaims.vip === true }
+      reward_track: rewardTrack,
+      claimed: { normal: alreadyClaimed, vip: alreadyClaimed }
     };
   });
   let status = occurrence.phase === "upcoming" ? "upcoming" : requirements.eligible ? "processing" : "ineligible";
@@ -2482,8 +2485,8 @@ const eventClaim = (ctx, _logger, nk, payload) => {
   const eventId = String(req.event_id || "");
   const occurrenceId = String(req.occurrence_id || "");
   const questId = String(req.quest_id || "");
-  const track = String(req.track || "normal");
-  if (track !== "normal" && track !== "vip") return JSON.stringify({ success: false, message: "Invalid reward track" });
+  const requestedTrack = String(req.track || "normal");
+  if (requestedTrack !== "normal" && requestedTrack !== "vip") return JSON.stringify({ success: false, message: "Invalid reward track" });
   const campaign = eventDefinitions(nk).find((entry) => String(entry.event_id) === eventId);
   const occurrence = campaign ? eventOccurrence(campaign, Date.now()) : null;
   if (!campaign || !occurrence || occurrence.phase !== "active" || occurrence.occurrence_id !== occurrenceId) {
@@ -2511,11 +2514,13 @@ const eventClaim = (ctx, _logger, nk, payload) => {
   const progress = eventQuestProgress(quest, stored.state, profile, compliance);
   if (progress < Math.max(1, Number(quest.target || 1))) return JSON.stringify({ success: false, message: "Quest is not completed" });
   const questClaims = eventObject(stored.state.claimed[questId]);
-  if (questClaims[track] === true) return JSON.stringify({ success: false, message: "Reward was already claimed" });
+  if (questClaims.normal === true || questClaims.vip === true) return JSON.stringify({ success: false, message: "Reward was already claimed" });
   const tracks = eventRewardTracks(quest);
+  const vipEligible = tracks.vip.grants.length > 0 && Number(profile.vip || 0) >= Number(tracks.vip.required_vip || 1);
+  const track = vipEligible ? "vip" : "normal";
   const grants = track === "normal" ? tracks.normal : tracks.vip.grants;
   if (!Array.isArray(grants) || grants.length === 0) return JSON.stringify({ success: false, message: "Reward track is unavailable" });
-  if (track === "vip" && Number(profile.vip || 0) < Number(tracks.vip.required_vip || 1)) {
+  if (requestedTrack === "vip" && !vipEligible) {
     return JSON.stringify({ success: false, message: "VIP requirement is not met" });
   }
   const issued = eventApplyGrants(nk, profile, items, vipScaleRewardGrants(nk, grants, Number(profile.vip || 0)));
@@ -8916,36 +8921,60 @@ function checkinAccountCreatedAtMs(nk, userId, fallback) {
   const rows = nk.sqlQuery("SELECT EXTRACT(EPOCH FROM create_time) * 1000 AS created_at_ms FROM users WHERE id = $1::UUID", [userId]);
   return rows.length > 0 ? Math.max(0, Number(rows[0].created_at_ms || fallback)) : fallback;
 }
+function checkinServerOpenedAtMs(nk, fallback) {
+  const scope = nk.__characterContext;
+  const serverId = scope ? scope.serverId : "s001";
+  try {
+    const rows = nk.sqlQuery(`SELECT EXTRACT(EPOCH FROM COALESCE(
+            (SELECT a.created_at FROM server_operation_audit a WHERE a.server_id = s.server_id AND a.action = 'enable' ORDER BY a.created_at ASC LIMIT 1),
+            s.opens_at, s.created_at
+        )) * 1000 AS opened_at_ms FROM game_servers s WHERE s.server_id = $1`, [serverId]);
+    if (rows.length > 0 && Number(rows[0].opened_at_ms) > 0) return Math.max(0, Number(rows[0].opened_at_ms));
+  } catch (_e) {
+  }
+  return fallback;
+}
 function checkinCampaigns(config) {
   const definitions = Array.isArray(config.campaigns) && config.campaigns.length > 0 ? config.campaigns : [config];
   return definitions.map((raw) => {
     const campaign = raw && typeof raw === "object" ? raw : {};
+    const duration = Math.max(1, Math.floor(Number(campaign.duration_days || config.duration_days || 30)));
+    const cycle = Math.max(1, Math.floor(Number(campaign.cycle_index || 1)));
+    const offsetDays = campaign.offset_days !== void 0 ? Math.max(0, Math.floor(Number(campaign.offset_days))) : (cycle - 1) * duration;
     return {
       campaign_id: String(campaign.campaign_id || config.campaign_id || "daily_checkin"),
       title: String(campaign.title || config.title || "\u0110I\u1EC2M DANH"),
       subtitle: String(campaign.subtitle || config.subtitle || ""),
-      start_mode: String(campaign.start_mode || config.start_mode || "account_created"),
+      start_mode: String(campaign.start_mode || config.start_mode || "server_opened"),
       starts_at: String(campaign.starts_at || ""),
       ends_at: String(campaign.ends_at || ""),
-      duration_days: Math.max(1, Math.floor(Number(campaign.duration_days || config.duration_days || 28))),
+      duration_days: duration,
+      cycle_index: cycle,
+      offset_days: offsetDays,
       catchup_gem_cost: Math.max(0, Math.floor(Number(campaign.catchup_gem_cost || config.catchup_gem_cost || 50))),
       priority: Math.floor(Number(campaign.priority || 0)),
-      days: Array.isArray(campaign.days) && campaign.days.length > 0 ? campaign.days : config.days
+      days: (Array.isArray(campaign.days) && campaign.days.length > 0 ? campaign.days : config.days || []).slice(0, duration)
     };
   }).filter((campaign) => campaign.campaign_id.length > 0 && Array.isArray(campaign.days) && campaign.days.length > 0);
 }
-function checkinCampaignStartMs(campaign, accountCreatedAtMs) {
+function checkinCampaignStartMs(campaign, accountCreatedAtMs, serverOpenedAtMs = 0) {
   if (campaign.start_mode === "fixed") {
     const parsed = Date.parse(String(campaign.starts_at || ""));
     return isNaN(parsed) ? 0 : parsed;
   }
+  if (campaign.start_mode === "server_opened") {
+    const baseMs = serverOpenedAtMs > 0 ? serverOpenedAtMs : accountCreatedAtMs;
+    if (baseMs <= 0) return 0;
+    const baseDay = checkinLocalDay(baseMs) + Math.max(0, Math.floor(Number(campaign.offset_days || 0)));
+    return baseDay * 864e5 - 7 * 60 * 60 * 1e3;
+  }
   return accountCreatedAtMs;
 }
-function checkinCampaignWindow(campaign, now, accountCreatedAtMs) {
-  const startMs = checkinCampaignStartMs(campaign, accountCreatedAtMs);
+function checkinCampaignWindow(campaign, now, accountCreatedAtMs, serverOpenedAtMs = 0) {
+  const startMs = checkinCampaignStartMs(campaign, accountCreatedAtMs, serverOpenedAtMs);
   if (startMs <= 0) return { active: false, start_ms: 0, end_ms: 0, open_day: 0 };
   const startDay = checkinLocalDay(startMs);
-  const duration = Math.max(1, Number(campaign.duration_days || 28));
+  const duration = Math.max(1, Number(campaign.duration_days || 30));
   let endMs = (startDay + duration) * 864e5 - 7 * 60 * 60 * 1e3;
   if (campaign.ends_at) {
     const configuredEnd = Date.parse(String(campaign.ends_at));
@@ -8959,9 +8988,9 @@ function checkinCampaignWindow(campaign, now, accountCreatedAtMs) {
     open_day: openDay
   };
 }
-function checkinSelectCampaign(config, now, accountCreatedAtMs) {
+function checkinSelectCampaign(config, now, accountCreatedAtMs, serverOpenedAtMs = 0) {
   const active = checkinCampaigns(config).map((campaign) => {
-    return { campaign, window: checkinCampaignWindow(campaign, now, accountCreatedAtMs) };
+    return { campaign, window: checkinCampaignWindow(campaign, now, accountCreatedAtMs, serverOpenedAtMs) };
   }).filter((entry) => entry.window.active);
   active.sort((a, b) => Number(b.campaign.priority) - Number(a.campaign.priority) || Number(b.window.start_ms) - Number(a.window.start_ms));
   return active.length > 0 ? active[0] : null;
@@ -8981,7 +9010,7 @@ function checkinState(source, campaignId, startMs) {
   };
 }
 function checkinStatusFor(state, campaign, window) {
-  const duration = Math.max(1, Math.floor(Number(campaign.duration_days || campaign.days.length || 28)));
+  const duration = Math.max(1, Math.floor(Number(campaign.duration_days || campaign.days.length || 30)));
   const openDay = Number(window.open_day || 0);
   const claimed = state.claimed_days.slice().sort((a, b) => a - b);
   let earliestMissedDay = 0;
@@ -9070,7 +9099,8 @@ const dailyCheckinStatus = (ctx, _logger, nk, _payload) => {
   const config = checkinConfig(nk);
   const now = Date.now();
   const accountCreatedAtMs = checkinAccountCreatedAtMs(nk, ctx.userId, now);
-  const selected = checkinSelectCampaign(config, now, accountCreatedAtMs);
+  const serverOpenedAtMs = checkinServerOpenedAtMs(nk, accountCreatedAtMs);
+  const selected = checkinSelectCampaign(config, now, accountCreatedAtMs, serverOpenedAtMs);
   if (!selected) return JSON.stringify({ success: true, active: false, campaign_id: "", claimed_days: [], days: [] });
   const stored = checkinReadState(nk, ctx.userId, selected.campaign, selected.window);
   if (!stored.object) {
@@ -9098,7 +9128,8 @@ const dailyCheckinClaim = (ctx, _logger, nk, payload) => {
   const config = checkinConfig(nk);
   const now = Date.now();
   const accountCreatedAtMs = checkinAccountCreatedAtMs(nk, ctx.userId, now);
-  const selected = checkinSelectCampaign(config, now, accountCreatedAtMs);
+  const serverOpenedAtMs = checkinServerOpenedAtMs(nk, accountCreatedAtMs);
+  const selected = checkinSelectCampaign(config, now, accountCreatedAtMs, serverOpenedAtMs);
   if (!selected) return JSON.stringify({ success: false, message: "No check-in campaign is active", active: false });
   if (req.campaign_id && String(req.campaign_id) !== selected.campaign.campaign_id) {
     return JSON.stringify({ success: false, message: "Check-in campaign has changed; refresh and try again" });
@@ -11027,7 +11058,7 @@ function mailVisibleSql() {
   return "COALESCE((value->>'deleted_at_ms')::BIGINT,0)=0 AND (value->>'purge_at_ms' IS NULL OR (value->>'purge_at_ms')::BIGINT>$3)";
 }
 function mailSummary(nk, userId, now) {
-  const rows = nk.sqlQuery(`SELECT COUNT(*) FILTER(WHERE value->>'read_at_ms' IS NULL)::INT AS unread_count,
+  const rows = nk.sqlQuery(`SELECT COUNT(*) FILTER(WHERE value->>'read_at_ms' IS NULL AND value->>'claimed_at_ms' IS NULL)::INT AS unread_count,
       COUNT(*) FILTER(WHERE jsonb_array_length(value->'attachments')>0 AND value->>'claimed_at_ms' IS NULL
         AND (value->>'expires_at_ms' IS NULL OR (value->>'expires_at_ms')::BIGINT>$3))::INT AS claimable_count
       FROM storage WHERE collection='player_mail' AND user_id=$1::UUID AND left(key,length($2))=$2 AND ($2<>'' OR left(key,2)='m_') AND ${mailVisibleSql()}`, [userId, mailPrefix(nk), now]);
@@ -11038,6 +11069,7 @@ function mailPresent(nk, row, now) {
   return Object.assign({}, row, {
     expired,
     expiring: row.expires_at_ms !== null && !expired && row.expires_at_ms - now <= mailSettings(nk).warning_hours * 36e5,
+    read_at_ms: row.read_at_ms || row.claimed_at_ms || null,
     can_claim: row.attachments.length > 0 && !row.claimed_at_ms && !expired && !row.deleted_at_ms,
     can_delete: row.attachments.length === 0 || !!row.claimed_at_ms
   });
@@ -11101,7 +11133,9 @@ function mailClaimOne(nk, userId, id) {
     });
   }
   if (mail.expires_at_ms !== null && Date.now() >= mail.expires_at_ms) return mailError("MAIL_EXPIRED", "Th\u01B0 \u0111\xE3 h\u1EBFt h\u1EA1n nh\u1EADn th\u01B0\u1EDFng.");
-  mail.claimed_at_ms = Date.now();
+  const claimNow = Date.now();
+  mail.claimed_at_ms = claimNow;
+  if (!mail.read_at_ms) mail.read_at_ms = claimNow;
   mail.version++;
   writes.push(Object.assign(mailWrite(mail, userId), { version: stored.version }));
   try {
@@ -11140,8 +11174,8 @@ function mailList(nk, userId, req) {
   }
   const clauses = {
     all: "TRUE",
-    unread: "value->>'read_at_ms' IS NULL",
-    read: "value->>'read_at_ms' IS NOT NULL",
+    unread: "value->>'read_at_ms' IS NULL AND value->>'claimed_at_ms' IS NULL",
+    read: "(value->>'read_at_ms' IS NOT NULL OR value->>'claimed_at_ms' IS NOT NULL)",
     reward: "jsonb_array_length(value->'attachments')>0",
     expiring: "value->>'expires_at_ms' IS NOT NULL AND (value->>'expires_at_ms')::BIGINT>$3 AND (value->>'expires_at_ms')::BIGINT<=$7",
     system: "value->>'category'='system'",
@@ -11165,7 +11199,7 @@ function mailBulk(nk, userId, req, action) {
   const results = [];
   let latest = {};
   for (const stored of rows) {
-    const row = parseJsonObject(stored.value), eligible = action === "claim" ? mailPresent(nk, row, Date.now()).can_claim : !!row.read_at_ms && mailPresent(nk, row, Date.now()).can_delete;
+    const row = parseJsonObject(stored.value), present = mailPresent(nk, row, Date.now()), eligible = action === "claim" ? present.can_claim : !!present.read_at_ms && present.can_delete;
     if (!eligible) {
       results.push({ id: row.id, success: false, code: "INELIGIBLE" });
       continue;
@@ -11396,7 +11430,9 @@ function mailSyncWeeklyClaim(nk, userId, payload) {
   const req = serverRequest(payload), id = mailId(nk, "weekly:" + req.period_id + ":" + req.board_id);
   const stored = mailRead(nk, userId, id);
   if (!stored || stored.value.claimed_at_ms) return;
-  stored.value.claimed_at_ms = Date.now();
+  const claimNow = Date.now();
+  stored.value.claimed_at_ms = claimNow;
+  if (!stored.value.read_at_ms) stored.value.read_at_ms = claimNow;
   stored.value.version++;
   try {
     nk.storageWrite([Object.assign(mailWrite(stored.value, userId), { version: stored.version })]);

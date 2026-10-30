@@ -24,38 +24,62 @@ function checkinAccountCreatedAtMs(nk: nkruntime.Nakama, userId: string, fallbac
     return rows.length > 0 ? Math.max(0, Number(rows[0].created_at_ms || fallback)) : fallback;
 }
 
+function checkinServerOpenedAtMs(nk: nkruntime.Nakama, fallback: number): number {
+    const scope = (nk as any).__characterContext;
+    const serverId = scope ? scope.serverId : "s001";
+    try {
+        const rows = nk.sqlQuery(`SELECT EXTRACT(EPOCH FROM COALESCE(
+            (SELECT a.created_at FROM server_operation_audit a WHERE a.server_id = s.server_id AND a.action = 'enable' ORDER BY a.created_at ASC LIMIT 1),
+            s.opens_at, s.created_at
+        )) * 1000 AS opened_at_ms FROM game_servers s WHERE s.server_id = $1`, [serverId]);
+        if (rows.length > 0 && Number(rows[0].opened_at_ms) > 0) return Math.max(0, Number(rows[0].opened_at_ms));
+    } catch (_e) {}
+    return fallback;
+}
+
 function checkinCampaigns(config: any): any[] {
     const definitions = Array.isArray(config.campaigns) && config.campaigns.length > 0 ? config.campaigns : [config];
     return definitions.map((raw: any) => {
         const campaign = raw && typeof raw === "object" ? raw : {};
+        const duration = Math.max(1, Math.floor(Number(campaign.duration_days || config.duration_days || 30)));
+        const cycle = Math.max(1, Math.floor(Number(campaign.cycle_index || 1)));
+        const offsetDays = campaign.offset_days !== undefined ? Math.max(0, Math.floor(Number(campaign.offset_days))) : (cycle - 1) * duration;
         return {
             campaign_id: String(campaign.campaign_id || config.campaign_id || "daily_checkin"),
             title: String(campaign.title || config.title || "ĐIỂM DANH"),
             subtitle: String(campaign.subtitle || config.subtitle || ""),
-            start_mode: String(campaign.start_mode || config.start_mode || "account_created"),
+            start_mode: String(campaign.start_mode || config.start_mode || "server_opened"),
             starts_at: String(campaign.starts_at || ""),
             ends_at: String(campaign.ends_at || ""),
-            duration_days: Math.max(1, Math.floor(Number(campaign.duration_days || config.duration_days || 28))),
+            duration_days: duration,
+            cycle_index: cycle,
+            offset_days: offsetDays,
             catchup_gem_cost: Math.max(0, Math.floor(Number(campaign.catchup_gem_cost || config.catchup_gem_cost || 50))),
             priority: Math.floor(Number(campaign.priority || 0)),
-            days: Array.isArray(campaign.days) && campaign.days.length > 0 ? campaign.days : config.days
+            days: (Array.isArray(campaign.days) && campaign.days.length > 0 ? campaign.days : (config.days || [])).slice(0, duration)
         };
     }).filter((campaign: any) => campaign.campaign_id.length > 0 && Array.isArray(campaign.days) && campaign.days.length > 0);
 }
 
-function checkinCampaignStartMs(campaign: any, accountCreatedAtMs: number): number {
+function checkinCampaignStartMs(campaign: any, accountCreatedAtMs: number, serverOpenedAtMs: number = 0): number {
     if (campaign.start_mode === "fixed") {
         const parsed = Date.parse(String(campaign.starts_at || ""));
         return isNaN(parsed) ? 0 : parsed;
     }
+    if (campaign.start_mode === "server_opened") {
+        const baseMs = serverOpenedAtMs > 0 ? serverOpenedAtMs : accountCreatedAtMs;
+        if (baseMs <= 0) return 0;
+        const baseDay = checkinLocalDay(baseMs) + Math.max(0, Math.floor(Number(campaign.offset_days || 0)));
+        return baseDay * 86400000 - 7 * 60 * 60 * 1000;
+    }
     return accountCreatedAtMs;
 }
 
-function checkinCampaignWindow(campaign: any, now: number, accountCreatedAtMs: number): any {
-    const startMs = checkinCampaignStartMs(campaign, accountCreatedAtMs);
+function checkinCampaignWindow(campaign: any, now: number, accountCreatedAtMs: number, serverOpenedAtMs: number = 0): any {
+    const startMs = checkinCampaignStartMs(campaign, accountCreatedAtMs, serverOpenedAtMs);
     if (startMs <= 0) return { active: false, start_ms: 0, end_ms: 0, open_day: 0 };
     const startDay = checkinLocalDay(startMs);
-    const duration = Math.max(1, Number(campaign.duration_days || 28));
+    const duration = Math.max(1, Number(campaign.duration_days || 30));
     let endMs = (startDay + duration) * 86400000 - 7 * 60 * 60 * 1000;
     if (campaign.ends_at) {
         const configuredEnd = Date.parse(String(campaign.ends_at));
@@ -66,9 +90,9 @@ function checkinCampaignWindow(campaign: any, now: number, accountCreatedAtMs: n
         start_ms: startMs, end_ms: endMs, open_day: openDay };
 }
 
-function checkinSelectCampaign(config: any, now: number, accountCreatedAtMs: number): any {
+function checkinSelectCampaign(config: any, now: number, accountCreatedAtMs: number, serverOpenedAtMs: number = 0): any {
     const active = checkinCampaigns(config).map((campaign: any) => {
-        return { campaign, window: checkinCampaignWindow(campaign, now, accountCreatedAtMs) };
+        return { campaign, window: checkinCampaignWindow(campaign, now, accountCreatedAtMs, serverOpenedAtMs) };
     }).filter((entry: any) => entry.window.active);
     active.sort((a: any, b: any) => Number(b.campaign.priority) - Number(a.campaign.priority)
         || Number(b.window.start_ms) - Number(a.window.start_ms));
@@ -93,7 +117,7 @@ function checkinState(source: any, campaignId: string, startMs: number): any {
 }
 
 function checkinStatusFor(state: any, campaign: any, window: any): any {
-    const duration = Math.max(1, Math.floor(Number(campaign.duration_days || campaign.days.length || 28)));
+    const duration = Math.max(1, Math.floor(Number(campaign.duration_days || campaign.days.length || 30)));
     const openDay = Number(window.open_day || 0);
     const claimed: number[] = state.claimed_days.slice().sort((a: number, b: number) => a - b);
     let earliestMissedDay = 0;
@@ -177,7 +201,8 @@ const dailyCheckinStatus: nkruntime.RpcFunction = (ctx, _logger, nk, _payload): 
     const config = checkinConfig(nk);
     const now = Date.now();
     const accountCreatedAtMs = checkinAccountCreatedAtMs(nk, ctx.userId, now);
-    const selected = checkinSelectCampaign(config, now, accountCreatedAtMs);
+    const serverOpenedAtMs = checkinServerOpenedAtMs(nk, accountCreatedAtMs);
+    const selected = checkinSelectCampaign(config, now, accountCreatedAtMs, serverOpenedAtMs);
     if (!selected) return JSON.stringify({ success: true, active: false, campaign_id: "", claimed_days: [], days: [] });
     const stored = checkinReadState(nk, ctx.userId, selected.campaign, selected.window);
     if (!stored.object) {
@@ -195,7 +220,8 @@ const dailyCheckinClaim: nkruntime.RpcFunction = (ctx, _logger, nk, payload): st
     const config = checkinConfig(nk);
     const now = Date.now();
     const accountCreatedAtMs = checkinAccountCreatedAtMs(nk, ctx.userId, now);
-    const selected = checkinSelectCampaign(config, now, accountCreatedAtMs);
+    const serverOpenedAtMs = checkinServerOpenedAtMs(nk, accountCreatedAtMs);
+    const selected = checkinSelectCampaign(config, now, accountCreatedAtMs, serverOpenedAtMs);
     if (!selected) return JSON.stringify({ success: false, message: "No check-in campaign is active", active: false });
     if (req.campaign_id && String(req.campaign_id) !== selected.campaign.campaign_id) {
         return JSON.stringify({ success: false, message: "Check-in campaign has changed; refresh and try again" });

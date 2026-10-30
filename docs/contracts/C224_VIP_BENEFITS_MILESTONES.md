@@ -1,8 +1,8 @@
 # C224 — VIP reward bonuses and milestone mail
 
-Version: 1.1.1
+Version: 1.3.0
 Status: IN_PROGRESS
-Updated: 2026-10-26
+Updated: 2026-10-30
 
 ## Authority and data
 
@@ -45,3 +45,15 @@ Home opens VIP preview after mouse/touch release using a deferred open, rather t
 | Version | Date | Change |
 |---|---|---|
 | 1.1.1 | 2026-10-26 | Open Home VIP after gesture release, preventing emulated touch/mouse click-through. |
+
+## 1.3.0 ? One bounty reward per quest (2026-10-30)
+
+Each event quest/occurrence has one claim shared across normal and VIP values. The server chooses VIP grants when the scoped ledger VIP meets required_vip and a VIP grant exists; otherwise normal grants. Preserve the existing linear VIP bonus, applied once to the selected configured value. Never add the normal and VIP grants together. A legacy normal OR VIP claim closes the whole quest, including after VIP upgrade; no retroactive second grant or automatic clawback.
+
+RPC event_claim retains the track request for compatibility, but a normal request from an eligible VIP settles the VIP value and the response track identifies the actual selection. Invalid tracks and unauthorized VIP requests are rejected. event_list/event_claim quest views add reward_track and expose both claimed flags as true if either stored track is claimed. Existing storage shape is retained; selected track marker, profile and inventory remain one atomic CAS batch. Client prioritizes any claimed marker, otherwise displays/binds the server-selected reward track. Missing configuration/network still blocks mutation per C121; no local reward fallback.
+
+| Version | Date | Change |
+|---|---|---|
+| 1.3.0 | 2026-10-30 | One bounty claim per quest; server selects normal or VIP value and legacy claims block both paths. |
+
+Validation v1.3.0: backend build/runtime packaging and test_vip_benefits PASS, including server-selected value with existing bonus, normal/VIP request orders, legacy single-track markers, later VIP upgrade, absent VIP variant, injected atomic write failure and interleaved CAS race (exactly one grant). Godot TestEventSingleClaim and client static suite PASS. Full server static suite is blocked by the unrelated existing Arc6 test mock rejecting progression query SELECT id, level_min, sort_order FROM game_arcs ORDER BY sort_order (tests/test_arc6_backend.cjs:67). Contract remains IN_PROGRESS for that full-suite gate. No server deployment or account-data mutation performed.

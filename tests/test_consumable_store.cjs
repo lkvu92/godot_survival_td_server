@@ -43,7 +43,8 @@ for(const item of boostCards.map(row=>row[0]).filter(id=>!id.endsWith('_10')&&!i
  assert.equal(offers.filter(p=>p.item_id===item).length,0,item+' must remain event-pack only');
 const eventPack=(packs.packs_by_tab.daily||[]).find(p=>p.id==='flash_sale');
 const highBoostIds=['exp_boost_card_50','exp_boost_card_x2','exp_boost_card_x5','gold_boost_card_50','gold_boost_card_x2','gold_boost_card_x5'];
-assert(eventPack && highBoostIds.every(id=>eventPack.rewards.some(r=>r.reward_type==='item'&&r.reward_id===id&&r.metadata&&r.metadata.event_pack==='boost')),'event pack must grant every high boost card');
+assert(eventPack && eventPack.rewards.some(r=>r.reward_id==='exp_boost_card_10'&&r.quantity===1),'event pack grants exactly the requested EXP10 card');
+assert(!eventPack.rewards.some(r=>highBoostIds.includes(r.reward_id)),'old premium cards are removed from the event pack');
 assert(!JSON.stringify(tower).match(/(?:exp|gold)_boost_card_(?:50|x2|x5)/),'Trial Tower must not grant high boost cards');
 const prices = {
  rename_talisman:[1000,0,'epic'], spirit_root_reset:[5000,0,'mythic'],
