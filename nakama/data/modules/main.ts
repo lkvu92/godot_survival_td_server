@@ -577,6 +577,12 @@ function InitModule(
     initializer.registerRpc('admin_config_toggle', rpcAdminConfigToggle);
     initializer.registerRpc('admin_config_validate', rpcAdminConfigValidate);
     initializer.registerRpc('admin_config_rollback', rpcAdminConfigRollback);
+    initializer.registerRpc('admin_item_list', rpcAdminItemList);
+    initializer.registerRpc('admin_item_get', rpcAdminItemGet);
+    initializer.registerRpc('admin_item_update', rpcAdminItemUpdate);
+    initializer.registerRpc('admin_item_toggle', rpcAdminItemToggle);
+    initializer.registerRpc('admin_item_group_update', rpcAdminItemGroupUpdate);
+    initializer.registerRpc('item_batch_get', rpcItemBatchGet);
     initializer.registerRpc('admin_server_list',rpcAdminServerList);
     initializer.registerRpc('admin_server_inspect',rpcAdminServerInspect);
     initializer.registerRpc('admin_server_create',rpcAdminServerCreate);

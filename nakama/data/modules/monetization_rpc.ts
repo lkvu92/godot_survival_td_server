@@ -737,7 +737,7 @@ const createPurchaseOrder: nkruntime.RpcFunction = (ctx, _logger, nk, payload) =
         if (profiles.length && dailyPackState(profiles[0].value, Date.now())[productId].active) return monetizationError(409, "Daily pack already active; claim its daily reward instead");
     }
     const previous = nk.sqlQuery(
-        "SELECT id, status, fulfillment_type, reward_snapshot, platform, store_product_id FROM monetization_purchase_orders WHERE user_id = $1 AND product_id = $2 AND target_server_id=$3 AND target_generation=$4 AND status IN ('pending','fulfilled') ORDER BY created_at DESC",
+        "SELECT id, status, catalog_retired, fulfillment_type, reward_snapshot, platform, store_product_id FROM monetization_purchase_orders WHERE user_id = $1 AND product_id = $2 AND target_server_id=$3 AND target_generation=$4 AND status IN ('pending','fulfilled') ORDER BY created_at DESC",
         [ctx.userId, productId,target?target.serverId:'',target?target.generation:0]
     );
     const fulfilled = previous.filter((row: any) => String(row.status) === "fulfilled");
@@ -758,7 +758,7 @@ const createPurchaseOrder: nkruntime.RpcFunction = (ctx, _logger, nk, payload) =
     // Keep old snapshots claimable, but do not launch a new advertised purchase
     // against an older catalog version or a legacy one-time monthly order.
     const catalogPricingVersion = Number((parseJsonb(product.ui) || {}).pricing_version || 0);
-    const pending = previous.find((row: any) => String(row.status) === "pending" && (!monthlyCatalog || (
+    const pending = previous.find((row: any) => String(row.status) === "pending" && row.catalog_retired !== true && (!monthlyCatalog || (
         Array.isArray(parseJsonb(row.reward_snapshot)) && parseJsonb(row.reward_snapshot).length > 0
         && parseJsonb(row.reward_snapshot).some((line: any) => Number((line.metadata || {}).daily_pack_days) === 30)))
         && (!catalogPricingVersion || (Array.isArray(parseJsonb(row.reward_snapshot)) && parseJsonb(row.reward_snapshot).length > 0
@@ -787,12 +787,20 @@ const createPurchaseOrder: nkruntime.RpcFunction = (ctx, _logger, nk, payload) =
     const vipExp = Number(vip && vip.product_exp ? vip.product_exp[productId] : NaN);
     if (!Number.isSafeInteger(vipExp) || vipExp <= 0) return monetizationError(409, "VIP product config is missing; seed vip config before selling this pack");
     const orderId = nk.uuidv4();
-    nk.sqlExec(`INSERT INTO monetization_purchase_orders
+    // Release only the old checkout slots observed by this request. Receipts
+    // remain pending/claimable with their immutable original reward snapshots.
+    for (const old of previous.filter((row: any) => String(row.status) === 'pending' && row.catalog_retired !== true)) {
+        nk.sqlExec(`UPDATE monetization_purchase_orders SET catalog_retired=TRUE,updated_at=NOW()
+            WHERE id=$1 AND user_id=$2 AND product_id=$3 AND target_server_id=$4 AND target_generation=$5 AND status='pending' AND catalog_retired=FALSE`,
+            [String(old.id),ctx.userId,productId,target?target.serverId:'',target?target.generation:0]);
+    }
+    try {nk.sqlExec(`INSERT INTO monetization_purchase_orders
         (id, user_id, product_id, status, reward_snapshot, fulfillment_type, vip_exp, vip_environment,
          platform,store_product_id,target_server_id,target_generation)
         VALUES ($1,$2,$3,'pending',$4::jsonb,$5,$6,$7,$8,$9,$10,$11)`,
         [orderId, ctx.userId, productId, JSON.stringify(rewards), String(product.fulfillment_type), vipExp, monetizationMode(ctx),
-            orderPlatform,storeProductId,target?target.serverId:"",target?target.generation:0]);
+            orderPlatform,storeProductId,target?target.serverId:"",target?target.generation:0]);}
+    catch(error){if(String(error).indexOf('purchase_orders_one_pending_scope_uq')>=0)return monetizationError(409,'Đạo hữu vừa tạo đơn hàng khác. Hãy tải lại cửa hàng rồi thử lại.');throw error;}
     return JSON.stringify({ status: "success", data: { purchase_order_id: orderId, product_id: productId,
         platform:orderPlatform,store_product_id:storeProductId,
         fulfillment_type: String(product.fulfillment_type), rewards } });

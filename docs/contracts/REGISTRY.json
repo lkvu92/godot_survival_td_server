@@ -635,9 +635,9 @@
     },
     {
       "id": "C109_STORE_CATALOG_PURCHASE_ORDER",
-      "version": "1.1.2",
+      "version": "1.2.0",
       "status": "ACTIVE",
-      "updated_at": "2026-10-20",
+      "updated_at": "2026-11-04",
       "contract_file": "docs/contracts/C109_STORE_CATALOG_PURCHASE_ORDER.md"
     },
     {

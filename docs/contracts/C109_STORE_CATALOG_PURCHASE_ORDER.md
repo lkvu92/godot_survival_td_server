@@ -1,6 +1,12 @@
 # C109 Store catalog and purchase orders
 
-Version: 1.1.2 | Status: ACTIVE | Updated: 2026-10-20
+Version: 1.2.0 | Status: ACTIVE | Updated: 2026-11-04
+
+## Pending order catalog rollover
+
+`create_purchase_order {product_id,platform}` keeps its response schema. Orders gain `catalog_retired BOOLEAN NOT NULL DEFAULT FALSE`. The scoped unique pending index applies only to non-retired orders. A pending snapshot incompatible with the current pricing version or 30-day catalog is retired from new checkout after validating the new rewards/VIP configuration. Only previously observed IDs belonging to the authenticated user and validated server/generation can be retired. Matching pending snapshots are reused. Concurrent insert conflicts return 409 and never escape as a runtime exception. Repeating checkout after rollover reuses the new order.
+
+Retirement does not change status, receipt bindings, rewards, VIP snapshots or ledger records: original pending receipts remain claimable/restorable under the existing verification and deduplication rules. No player balances are edited and no pending orders are deleted. Schema migration runs before RPC availability, removes the obsolete global pending index and replaces the scoped index atomically. Client monetization RPCs preserve per-call transport errors instead of replacing them with a generic missing-response error. Missing sessions still return 401; catalog or database conflicts must not invalidate authentication. All mutations require online server confirmation.
 
 ## Google verifier deployment
 
@@ -26,6 +32,7 @@ Generate the targeted SQL with `node nakama/build_daily_pack_patch.cjs` (reviewa
 
 | Version | Date | Change |
 |---|---|---|
+| 1.2.0 | 2026-11-04 | Retire incompatible pending checkout snapshots without losing receipt recovery; scoped uniqueness, concurrent conflict handling and original client errors. |
 | 1.1.2 | 2026-10-20 | Wire production verifier package and read-only Google credentials; document deployment validation. |
 | 1.1.1 | 2026-10-18 | Increase Gem Sack base/first bonus to 1000 each, Gem Chest to 5000 and Gold Vault to 1000000; synchronize descriptions. |
 | 1.1.0 | 2026-10-18 | Thirty purchase-relative daily claim windows, atomic rewards, repeat protection, shop claim states and paid stamina overflow preservation. |

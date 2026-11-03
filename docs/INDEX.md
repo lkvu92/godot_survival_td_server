@@ -346,3 +346,5 @@ C255: [Gameplay VIP config](contracts/C255_GAMEPLAY_VIP.md) - x3 speed and auto-
 C256: [Inventory tags](contracts/C256_INVENTORY_TAGS.md) - semantic multi-tag catalog and inventory filters.
 
 [Enemy attack speed reduction](reports/ENEMY_ATTACK_SPEED_REDUCTION.md) - 30% creep/boss rate reduction, local release 88.
+
+- C109 v1.2.0: pending catalog rollover preserves original receipts and scoped checkout uniqueness; client retains RPC transport errors.

@@ -62,7 +62,7 @@ function createMonetizationTables(nk: nkruntime.Nakama, logger: nkruntime.Logger
             PRIMARY KEY(platform,product_id), UNIQUE(platform,store_product_id)
         )`, []);
     nk.sqlExec("CREATE INDEX IF NOT EXISTS purchase_orders_user_status_idx ON monetization_purchase_orders(user_id, status, created_at DESC)", []);
-    nk.sqlExec("CREATE UNIQUE INDEX IF NOT EXISTS purchase_orders_one_pending_uq ON monetization_purchase_orders(user_id, product_id) WHERE status = 'pending'", []);
+    // Scoped checkout uniqueness is installed below, after the scope migration.
     nk.sqlExec("CREATE UNIQUE INDEX IF NOT EXISTS purchase_orders_token_uq ON monetization_purchase_orders(purchase_token_hash) WHERE purchase_token_hash <> ''", []);
     nk.sqlExec(`
         CREATE TABLE IF NOT EXISTS player_monetization_entitlements (
@@ -179,8 +179,10 @@ function createMonetizationTables(nk: nkruntime.Nakama, logger: nkruntime.Logger
     for(const table of ['monetization_purchases','monetization_ad_rewards','monetization_daily_reward_claims','monetization_daily_fragment_rewards']) {
         nk.sqlExec('ALTER TABLE '+table+" ADD COLUMN IF NOT EXISTS target_server_id TEXT NOT NULL DEFAULT ''; ALTER TABLE "+table+' ADD COLUMN IF NOT EXISTS target_generation INT NOT NULL DEFAULT 0',[]);
     }
-    nk.sqlExec(`DROP INDEX IF EXISTS purchase_orders_one_pending_uq;
-      CREATE UNIQUE INDEX IF NOT EXISTS purchase_orders_one_pending_scope_uq ON monetization_purchase_orders(user_id,product_id,target_server_id,target_generation) WHERE status='pending';
+    nk.sqlExec(`ALTER TABLE monetization_purchase_orders ADD COLUMN IF NOT EXISTS catalog_retired BOOLEAN NOT NULL DEFAULT FALSE;
+      DROP INDEX IF EXISTS purchase_orders_one_pending_uq;
+      DROP INDEX IF EXISTS purchase_orders_one_pending_scope_uq;
+      CREATE UNIQUE INDEX purchase_orders_one_pending_scope_uq ON monetization_purchase_orders(user_id,product_id,target_server_id,target_generation) WHERE status='pending' AND catalog_retired=FALSE;
       CREATE TABLE IF NOT EXISTS store_receipt_reservations (
         token_hash TEXT PRIMARY KEY,order_id TEXT NOT NULL UNIQUE REFERENCES monetization_purchase_orders(id),
         user_id TEXT NOT NULL,target_server_id TEXT NOT NULL,target_generation INT NOT NULL,
