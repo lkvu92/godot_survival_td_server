@@ -348,3 +348,5 @@ C256: [Inventory tags](contracts/C256_INVENTORY_TAGS.md) - semantic multi-tag ca
 [Enemy attack speed reduction](reports/ENEMY_ATTACK_SPEED_REDUCTION.md) - 30% creep/boss rate reduction, local release 88.
 
 - C109 v1.2.0: pending catalog rollover preserves original receipts and scoped checkout uniqueness; client retains RPC transport errors.
+
+- C245 v1.4.0: exact numbered history pagination, five transactions/page and one content scroll without sticky summary.

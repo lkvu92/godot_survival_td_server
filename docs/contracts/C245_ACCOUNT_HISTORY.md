@@ -1,5 +1,5 @@
 # C245 Account history (B2)
-Version 1.3.1; Status IN_PROGRESS.
+Version 1.4.0; Status IN_PROGRESS.
 
 C246 extension: verified records return paid_amount/currency/price_source/refunded_amount/financial_synced_at as decimal strings. Unknown metadata stays null. No token/buyer data returned. Changelog 1.1.0: verified financial fields.
 
@@ -17,3 +17,5 @@ Changelog 1.2.0 (2026-11-03): client presentation uses inventory UiTiledBorderCa
 Changelog 1.3.0: client implements parchment/jade mockup via existing UI utilities/assets, one requested transaction per portrait page; server API unchanged.
 
 Changelog 1.3.1: client uses registered server header half-overlapping top border, TabUI balance title, larger icons and separate ScrollBarUI transaction viewport. Server protocol unchanged.
+
+Changelog 1.4.0 (2026-11-04): numbered requests {page,limit:5,status} return {page,limit,total_count,total_pages,transactions,next_cursor} with exact account/status totals and arbitrary-page access. Missing page retains legacy cursor requests. Invalid/mixed page and cursor rejected; out-of-range pages clamp to the last page, empty results use page 1/1. New client requires numbered metadata and uses five rows per page. Entire summary/filter/list scrolls in one content_scroll; only footer controls remain fixed. No nested 280px list. Numbered pages are current read snapshots and may shift under concurrent new transactions; refresh resets to page 1. No local history fallback.

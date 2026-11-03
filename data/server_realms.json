@@ -6,10 +6,6 @@
       "display_name": "Thanh Vân Giới"
     },
     {
-      "server_id": "s002",
-      "display_name": "Thiên Nam Vực"
-    },
-    {
       "server_id": "s003",
       "display_name": "Vân Hải Giới"
     },
@@ -80,6 +76,10 @@
     {
       "server_id": "s020",
       "display_name": "Thái Hư Tiên Vực"
+    },
+    {
+      "server_id": "s588",
+      "display_name": "Thiên Nam Vực"
     }
   ]
 }

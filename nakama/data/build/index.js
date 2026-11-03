@@ -12642,6 +12642,22 @@ function rpcItemBatchGet(_ctx, _l, nk, payload) {
   });
 }
 
+var __defProp = Object.defineProperty;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
 function compliancePolicy(nk, ctx) {
   const active = getActiveRemoteConfig(nk);
   const p = active.config && active.config.system && active.config.system.compliance_policy;
@@ -12972,14 +12988,17 @@ function accountHistoryPolicy(p) {
   if (!p || p.schema_version !== 1 || !Number.isSafeInteger(p.revision) || p.revision < 1 || !Number.isSafeInteger(p.page_size) || !Number.isSafeInteger(p.max_page_size) || p.page_size < 1 || p.max_page_size < p.page_size || p.max_page_size > 50 || !Array.isArray(p.allowed_statuses) || p.allowed_statuses.some((s) => statuses.indexOf(s) < 0) || !Number.isSafeInteger(p.display_utc_offset_seconds) || Math.abs(p.display_utc_offset_seconds) > 50400) throw Error("HISTORY_POLICY_INVALID");
   return p;
 }
-function accountHistoryQuery() {
+function accountHistoryCte() {
   return `WITH history AS (
       SELECT 'order:'||o.id AS reference,o.product_id,o.platform,
       CASE WHEN EXISTS(SELECT 1 FROM monetization_purchases p WHERE p.user_id=o.user_id AND COALESCE(NULLIF(p.purchase_order_id,''),p.request_id)=o.id AND p.status='voided') THEN 'voided' ELSE o.status END AS status,
       o.created_at,o.target_server_id,o.target_generation,o.id AS financial_order_ref FROM monetization_purchase_orders o WHERE o.user_id=$1
       UNION ALL
       SELECT 'legacy:'||p.id::text,p.product_id,p.platform,p.status,p.created_at,p.target_server_id,p.target_generation,NULL::text
-      FROM monetization_purchases p WHERE p.user_id=$1 AND NOT EXISTS(SELECT 1 FROM monetization_purchase_orders o WHERE o.user_id=p.user_id AND o.id=COALESCE(NULLIF(p.purchase_order_id,''),p.request_id)))
+      FROM monetization_purchases p WHERE p.user_id=$1 AND NOT EXISTS(SELECT 1 FROM monetization_purchase_orders o WHERE o.user_id=p.user_id AND o.id=COALESCE(NULLIF(p.purchase_order_id,''),p.request_id)))`;
+}
+function accountHistoryQuery() {
+  return accountHistoryCte() + `
       SELECT reference,product_id,COALESCE((SELECT display_name FROM game_store_products s WHERE s.product_id=history.product_id),product_id) AS product_name,platform,status,to_char(created_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS created_at,target_server_id,target_generation,
       f.original_amount::text AS paid_amount,f.currency,f.source AS price_source,to_char(f.last_synced_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS financial_synced_at,snap.refunded_amount::text AS refunded_amount
       FROM history LEFT JOIN payment_financial_records f ON f.purchase_order_id=history.financial_order_ref
@@ -13003,7 +13022,9 @@ function accountHistory(ctx, _logger, nk, payload) {
   const status = String(req.status || "");
   if (status && policy.allowed_statuses.indexOf(status) < 0) return JSON.stringify({ success: false, reason: "INVALID_FILTER", message: "B\u1ED9 l\u1ECDc giao d\u1ECBch ch\u01B0a h\u1EE3p l\u1EC7." });
   if (req.limit !== void 0 && (!Number.isSafeInteger(req.limit) || req.limit < 1)) return JSON.stringify({ success: false, reason: "INVALID_PAGE", message: "S\u1ED1 d\xF2ng tra c\u1EE9u ch\u01B0a h\u1EE3p l\u1EC7." });
-  const limit = Math.min(req.limit || policy.page_size, policy.max_page_size);
+  const numbered = req.page !== void 0;
+  if (numbered && (!Number.isSafeInteger(req.page) || req.page < 1 || req.cursor)) return JSON.stringify({ success: false, reason: "INVALID_PAGE", message: "Trang tra c\u1EE9u ch\u01B0a h\u1EE3p l\u1EC7." });
+  const limit = Math.min(req.limit || (numbered ? 5 : policy.page_size), policy.max_page_size);
   let cursor = { created_at: "", reference: "" };
   if (req.cursor) {
     try {
@@ -13014,7 +13035,14 @@ function accountHistory(ctx, _logger, nk, payload) {
       return JSON.stringify({ success: false, reason: "INVALID_CURSOR", message: "Trang tra c\u1EE9u \u0111\xE3 thay \u0111\u1ED5i. \u0110\u1EA1o h\u1EEFu h\xE3y t\u1EA3i l\u1EA1i." });
     }
   }
-  const rows = nk.sqlQuery(accountHistoryQuery(), [ctx.userId, status, cursor.created_at, cursor.reference, limit + 1]);
+  let page = 1, totalCount = 0, totalPages = 1;
+  if (numbered) {
+    const counts = nk.sqlQuery(accountHistoryCte() + " SELECT COUNT(*)::BIGINT AS total_count FROM history WHERE ($2='' OR status=$2)", [ctx.userId, status]);
+    totalCount = Number(counts[0].total_count);
+    totalPages = Math.max(1, Math.ceil(totalCount / limit));
+    page = Math.min(req.page, totalPages);
+  }
+  const rows = nk.sqlQuery(accountHistoryQuery() + (numbered ? " OFFSET $6" : ""), numbered ? [ctx.userId, status, "", "", limit + 1, (page - 1) * limit] : [ctx.userId, status, cursor.created_at, cursor.reference, limit + 1]);
   const hasMore = rows.length > limit, transactions = rows.slice(0, limit).map((r) => ({ reference: r.reference, product_id: r.product_id, product_name: r.product_name, platform: r.platform, status: r.status, created_at: r.created_at, target_server_id: r.target_server_id, target_generation: Number(r.target_generation), paid_amount: r.paid_amount == null ? null : String(r.paid_amount), currency: r.currency || null, price_recorded: r.paid_amount != null, price_source: r.price_source || null, refunded_amount: r.refunded_amount == null ? null : String(r.refunded_amount), financial_synced_at: r.financial_synced_at || null }));
   const last = transactions[transactions.length - 1];
   const stored = nk.storageRead([{ collection: "player_profiles", key: "main", userId: ctx.userId }, { collection: "player_inventory", key: "items", userId: ctx.userId }]);
@@ -13024,7 +13052,7 @@ function accountHistory(ctx, _logger, nk, payload) {
   const now = Date.now() / 1e3, day = new Date((now + 25200) * 1e3).toISOString().slice(0, 10);
   const activity = nk.sqlQuery("SELECT seconds FROM player_health_activity WHERE user_id=$1::uuid AND day=$2", [ctx.userId, day]);
   const combat = nk.sqlQuery("SELECT COALESCE(SUM(seconds+GREATEST(0,LEAST($3,lease_until)-last_at)),0) AS seconds FROM compliance_playtime WHERE user_id=$1::uuid AND day=$2", [ctx.userId, day, now]);
-  return JSON.stringify({ success: true, config_version: active.version, server_time: now, policy, summary: { resources, inventory_entry_count: inventory && Array.isArray(inventory.value.items) ? inventory.value.items.length : 0, activity_seconds: activity.length ? Number(activity[0].seconds) : 0, combat_seconds: combat.length ? Number(combat[0].seconds) : 0 }, transactions, next_cursor: hasMore ? JSON.stringify({ created_at: last.created_at, reference: last.reference }) : "" });
+  return JSON.stringify(__spreadValues({ success: true, config_version: active.version, server_time: now, policy, summary: { resources, inventory_entry_count: inventory && Array.isArray(inventory.value.items) ? inventory.value.items.length : 0, activity_seconds: activity.length ? Number(activity[0].seconds) : 0, combat_seconds: combat.length ? Number(combat[0].seconds) : 0 }, transactions, next_cursor: hasMore ? JSON.stringify({ created_at: last.created_at, reference: last.reference }) : "" }, numbered ? { page, limit, total_count: totalCount, total_pages: totalPages } : {}));
 }
 function healthHeartbeat(ctx, logger, nk, payload) {
   if (!ctx.userId) return JSON.stringify({ success: false });
