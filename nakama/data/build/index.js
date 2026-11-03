@@ -12551,6 +12551,9 @@ function complianceCombatGate(id, ctx, nk) {
 function linkedRpc_health_heartbeat(ctx, logger, nk, payload) {
   return accountGuardedRpc("health_heartbeat", healthHeartbeat)(ctx, logger, nk, payload);
 }
+function linkedRpc_admin_asset_trace(ctx, logger, nk, payload) {
+  return accountGuardedRpc("admin_asset_trace", adminAssetTrace)(ctx, logger, nk, payload);
+}
 function accountHistoryPolicy(p) {
   const statuses = ["pending", "validated", "fulfilled", "failed", "cancelled", "expired", "voided", "granted", "verified", "consumed"];
   if (!p || p.schema_version !== 1 || !Number.isSafeInteger(p.revision) || p.revision < 1 || !Number.isSafeInteger(p.page_size) || !Number.isSafeInteger(p.max_page_size) || p.page_size < 1 || p.max_page_size < p.page_size || p.max_page_size > 50 || !Array.isArray(p.allowed_statuses) || p.allowed_statuses.some((s) => statuses.indexOf(s) < 0) || !Number.isSafeInteger(p.display_utc_offset_seconds) || Math.abs(p.display_utc_offset_seconds) > 50400) throw Error("HISTORY_POLICY_INVALID");
@@ -12838,7 +12841,7 @@ function linkedRpc_resolve_purchase_order(c, l, n, p) {
 }
 function InitModule(ctx, logger, nk, initializer) {
   initializer.registerRpc("health_heartbeat", linkedRpc_health_heartbeat);
-  initializer.registerRpc("admin_asset_trace", accountGuardedRpc("admin_asset_trace", adminAssetTrace));
+  initializer.registerRpc("admin_asset_trace", linkedRpc_admin_asset_trace);
   initializer.registerRpc("compliance_access", linkedRpc_compliance_access);
   initializer.registerRpc("account_history", linkedRpc_account_history);
   initializer.registerRpc("google_play_financial_sync", googlePlayFinancialSync);

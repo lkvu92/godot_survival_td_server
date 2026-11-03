@@ -244,6 +244,9 @@ function complianceCombatGate(id:string,ctx:nkruntime.Context,nk:nkruntime.Nakam
 function linkedRpc_health_heartbeat(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
     return accountGuardedRpc('health_heartbeat', healthHeartbeat)(ctx, logger, nk, payload);
 }
+function linkedRpc_admin_asset_trace(ctx:nkruntime.Context,logger:nkruntime.Logger,nk:nkruntime.Nakama,payload:string):string {
+    return accountGuardedRpc('admin_asset_trace',adminAssetTrace)(ctx,logger,nk,payload);
+}
 
 function accountHistoryPolicy(p:any):any {
     const statuses=['pending','validated','fulfilled','failed','cancelled','expired','voided','granted','verified','consumed'];
@@ -516,7 +519,7 @@ function InitModule(
     initializer: nkruntime.Initializer
 ): void {
     initializer.registerRpc('health_heartbeat', linkedRpc_health_heartbeat);
-    initializer.registerRpc('admin_asset_trace',accountGuardedRpc('admin_asset_trace',adminAssetTrace));
+    initializer.registerRpc('admin_asset_trace',linkedRpc_admin_asset_trace);
     initializer.registerRpc('compliance_access', linkedRpc_compliance_access);
     initializer.registerRpc('account_history', linkedRpc_account_history);
     initializer.registerRpc('google_play_financial_sync', googlePlayFinancialSync);

@@ -19,6 +19,7 @@ assert(read('docker-compose.yml').includes('--config /nakama/data/local.yml'), '
 console.log('PASS runtime packaging: canonical build/index.js, matching artifacts, store_purchase v2 registered');
 
 assert(canonical.includes("linkedRpc_mail_claim"), "Runtime missing C147 mailbox RPCs");
+assert(!/registerRpc\(\s*["'][^"']+["']\s*,\s*accountGuardedRpc\(/.test(canonical), 'RPC registration requires a named wrapper, not the result of accountGuardedRpc');
 for (const name of ["docker-compose.yml", "docker-compose.local.yml"]) assert(read(name).includes("mail-worker:"), "Deployment missing mailbox worker");
 
 for (const rpc of ['operator_config_release', 'get_trial_tower_status', 'start_trial_tower', 'prepare_trial_tower', 'finish_trial_tower'])
