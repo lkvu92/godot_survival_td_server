@@ -22,6 +22,7 @@ const useConsumable: nkruntime.RpcFunction = (ctx, _logger, nk, payload): string
     if (!profileObject || !inventoryObject) return fail("Profile is incomplete");
     const profile = talismanJsonObject(profileObject.value), inventory = talismanJsonObject(inventoryObject.value);
     const items = Array.isArray(inventory.items) ? inventory.items : [];
+    const balancesBefore:any={gold:Number((profile.resources||{}).gold||0),gems:Number((profile.resources||{}).gems||0),stamina:Number(profile.stamina||0),exp:Number(profile.exp||0),level:Number(profile.level||1)};
     if (previous) {
         if (previous.value.fingerprint !== fingerprint) return fail("Request ID conflict");
         return JSON.stringify({success:true,duplicate:true,inventory:items,profile,effect:previous.value.effect,receipt_id:requestId});
@@ -107,10 +108,13 @@ const useConsumable: nkruntime.RpcFunction = (ctx, _logger, nk, payload): string
     }
     if (!talismanRemoveItems(items, itemId, quantity)) return fail("Inventory changed");
     inventory.items = items;
+    const assetChanges:any[]=[{type:'item',id:itemId,delta:-quantity,balance_after:talismanItemQuantity(items,itemId)}];
+    const balancesAfter:any={gold:Number((profile.resources||{}).gold||0),gems:Number((profile.resources||{}).gems||0),stamina:Number(profile.stamina||0),exp:Number(profile.exp||0),level:Number(profile.level||1)};
+    Object.keys(balancesBefore).forEach(id=>{if(balancesBefore[id]!==balancesAfter[id])assetChanges.push({type:id==='level'?'progression':'resource',id,delta:balancesAfter[id]-balancesBefore[id],balance_after:balancesAfter[id]});});
     const writes: nkruntime.StorageWriteRequest[] = [
         {collection:"player_profiles",key:"main",userId:ctx.userId,value:profile,version:profileObject.version,permissionRead:1,permissionWrite:0},
         {collection:"player_inventory",key:"items",userId:ctx.userId,value:inventory,version:inventoryObject.version,permissionRead:1,permissionWrite:0},
-        {collection:"player_item_requests",key:requestId,userId:ctx.userId,value:{fingerprint,effect,created_at:now},version:"*",permissionRead:1,permissionWrite:0}
+        {collection:"player_item_requests",key:requestId,userId:ctx.userId,value:{fingerprint,effect,created_at:now,asset_changes:assetChanges},version:"*",permissionRead:0,permissionWrite:0}
     ];
     if (combat && !tribulation) writes.push({collection:"player_stage_runs",key:"active",userId:ctx.userId,value:run,version:runObject.version,permissionRead:1,permissionWrite:0});
     try { nk.storageWrite(writes); } catch (_) { return fail("Data changed; retry the same request"); }
@@ -503,6 +507,7 @@ const talismanAction: nkruntime.RpcFunction = (ctx, _logger, nk, payload): strin
     const items: any[] = Array.isArray(inventoryValue.items) ? inventoryValue.items : [];
     const resources = talismanJsonObject(profile.resources);
 	let rerolledTalent:any=null;
+	const purchaseChanges:any[]=[];
 	let upgradeAttempted = false;
 	let upgradeSucceeded = true;
 	let upgradeSuccessRate = 0;
@@ -584,6 +589,8 @@ const talismanAction: nkruntime.RpcFunction = (ctx, _logger, nk, payload): strin
 			return JSON.stringify({ success: false, message: "Không thể cấp vật phẩm" });
 		}
 		resources[currency] = balance - totalPrice;
+		purchaseChanges.push({type:'resource',id:currency,delta:-totalPrice,balance_after:resources[currency]},
+			{type:'item',id:requestedItemId,delta:totalGrantQuantity,balance_after:talismanItemQuantity(items,requestedItemId)});
 		receipts.push({ request_id: requestId, item_id: requestedItemId, currency, quantity: purchaseQuantity });
 		inventoryValue._store_receipts = receipts.slice(-100);
 		if (requestId) handledRequestIds.push(requestId);
@@ -719,7 +726,7 @@ const talismanAction: nkruntime.RpcFunction = (ctx, _logger, nk, payload): strin
             permissionRead: 1, permissionWrite: 0, version: profileObject.version }
     ];
 	if (isItemRequest) actionWrites.push({collection:"player_item_requests",key:requestId,userId:ctx.userId,
-		value:{fingerprint,rolled:rerolledTalent,created_at:Date.now()},permissionRead:1,permissionWrite:0,version:"*"});
+		value:{fingerprint,rolled:rerolledTalent,created_at:Date.now(),asset_changes:action==='reroll_talent'?[{type:'item',id:'spirit_root_reset',delta:-1,balance_after:talismanItemQuantity(items,'spirit_root_reset')}]:purchaseChanges},permissionRead:0,permissionWrite:0,version:"*"});
     try { nk.storageWrite(actionWrites); } catch (_e) { return JSON.stringify({success:false,message:"Dữ liệu đã thay đổi. Vui lòng đồng bộ rồi thử lại."}); }
 	if (rerolledTalent && typeof writePlayerLeaderboardRecords === "function") {
 		try { writePlayerLeaderboardRecords(nk, ctx.userId, profile, profile.display_name); } catch (_) { }

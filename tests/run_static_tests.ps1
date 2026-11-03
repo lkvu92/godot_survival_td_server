@@ -2,11 +2,25 @@ $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path $PSScriptRoot -Parent
 Push-Location $repoRoot
 try {
+    & node tests/test_profile_consent.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'C251 profile consent regression failed' }
+    & node tests/test_retention_assessment.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'C249 retention assessment regression failed' }
+    & node tests/test_campaign_levelled.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'Campaign levelled migration regression failed' }
+    & node tests/test_arc1_levelled.cjs
+    if ($LASTEXITCODE -ne 0) { throw "Arc 1 levelled migration regression failed" }
+    & node tests/test_creep_boss_skill_atlas.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'C239 creep/boss atlas migration failed' }
+    & node tests/test_shared_combat_damage.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'C240 shared combat damage regression failed' }
+    & node tests/test_enemy_framework.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'C239 enemy framework regression failed' }
     & node tests/test_hero_growth_balance.cjs
     if ($LASTEXITCODE -ne 0) { throw 'C238 hero growth regression failed' }
     & node tests/test_gift_codes.cjs
     if ($LASTEXITCODE -ne 0) { throw 'Gift code atomic redemption regressions failed' }
-    & node --test services/account-identity/test/security.test.js services/account-identity/test/mail-template.test.js
+    & node --test services/account-identity/test/security.test.js services/account-identity/test/mail-template.test.js services/account-identity/test/deletion.test.js services/account-identity/test/link-status.test.js services/account-identity/test/archive-operations.test.js
     if ($LASTEXITCODE -ne 0) { throw 'C232 account identity security regression failed' }
     & node tests/test_mid_tier_talisman_config.cjs
     if ($LASTEXITCODE -ne 0) { throw 'Mid-tier talisman config regression failed' }

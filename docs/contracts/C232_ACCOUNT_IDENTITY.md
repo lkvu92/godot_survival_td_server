@@ -1,6 +1,39 @@
 # C232 — Verified email registration and account deletion
 
-Version: 1.2.3 · Status: IN_PROGRESS · Updated: 2026-10-28
+Version: 3.1.0 · Status: IN_PROGRESS · Updated: 2026-11-03
+
+
+### Changelog 3.1.0 — protected operations (2026-11-03)
+
+C250 bổ sung restore gate cho auth/native/RPC và dịch vụ identity, keyring tương thích snapshot cũ, rotation có CAS, quyền DB theo chức năng, expiry có approval/hold/deadline và backup/restore đối chiếu checkpoint độc lập. Đã TESTED_SCOPED trên DB cô lập và triển khai local; expiry mặc định tắt. Runtime/identity local healthy, catalog config 71 xác thực 70 stages/1385 waves. Production IAM/MFA/offsite/expiry backup/RPO-RTO và Android/email thật còn mở. Thông tin “chưa có code/test backup, RBAC, expiry” trong các phiên bản lịch sử bên dưới được thay bằng kết quả scoped này; không đồng nghĩa production đã nghiệm thu. Runbook: `server/docs/ARCHIVE_RECOVERY_RUNBOOK.md` từ workspace.
+
+## v3 — archive lifecycle core đã triển khai local
+
+**v3.0.1 core IMPLEMENTED_LOCAL / TESTED_SCOPED; production/legal acceptance còn mở.** Confirmation → soft_deleted 14 ngày với reservation và fresh-proof restore → sau deadline archive transaction/saga commit: credentials bị thu hồi, reservation email/phone/provider và suất giám hộ được giải phóng, không còn đường restore → sau 3 tháng lịch từ archived_at, daily worker dọn gameplay theo stable user_id. Giữ user tối thiểu và billing/transaction theo dataset policy riêng; không giữ credential gốc hoặc raw PII vô hạn. Không accountDeleteId cascade khi các dataset cần giữ còn tồn tại.
+
+Schema2 policy, archive_pending/failed/archived và dataset purge checkpoints, scoped hold, migration v2/legacy, backup ledger và status projection được định nghĩa tại [thiết kế kỹ thuật](../ACCOUNT_ARCHIVE_LIFECYCLE.md). Business policy chuẩn tại [B6 policy](../../../client/docs/standards/g2-registration/implementation/retention/B6/archive-policy.md). Secret không nằm trong policy; config thiếu/sai không được giải phóng danh tính hoặc purge. Receipt chỉ đọc trạng thái; archive completion khác gameplay deletion. Chỉ phát release sau acceptance/evidence v3; evidence v2.0 không chứng minh giai đoạn giữ gameplay 3 tháng.
+
+Changelog 3.0.0 (2026-11-02, DESIGN): business-approved14-day restore period, identity release on archive commit,3-calendar-month gameplay retention, minimal user and separate financial retention. Core implementation tested on isolated Nakama/PostgreSQL and deployed locally; production acceptance pending.
+
+### Changelog3.0.1 — implementation
+
+Schema2 policy validated/snapshotted, native3.24.2 SQL adapter atomically archives/detaches/releases; no accountDeleteId. User tombstone and finance retained while gameplay is cleaned after3 calendar months by a daily persistent scheduler. Raw native storage/account/provider hooks and RPC guards reject deleted/archived/stale sessions. Snapshot/archive notices use encrypted outbox; key ID required; scoped host hold/retry has audit. Checkpoints are single-account DB transactions with rollback/retry, not a distributed API saga. No new reservation table: canonical profiles/bindings enforce ownership until atomic detach. Pending v2 jobs require review; destructive legacy worker disabled.
+
+Archive creation trigger is confirmed_deletion with baseline6-month retention, not approved universal legal service-stop logic. No automatic identity/financial expiry, production RBAC/key recovery/backup drill or live Android/SMTP acceptance. Contract remains IN_PROGRESS for these items. See phase-v3 evidence in client registration docs.
+
+## Baseline v2.0 đang chạy local — không phải hành vi đích v3
+
+## Soft deletion v2 (supersedes immediate-deletion behavior below)
+
+Confirmation with fresh ownership proof commits `soft_deleted`, `soft_deleted_at`, `restore_until` and a snapshot of `system.account_deletion`; initial policy is 14 days. Sessions are invalidated and account-link guards block mutations. Canonical users/email/google subject and activation phone profiles remain intact, reserving identity and guardian quota. No accountDeleteId before deadline. GET/email scanners never mutate. Notification email says pending deletion with exact deadline, not completed.
+
+Public restoration request by email is generic/rate-limited; new single-use restore link plus current password is required. Google restoration uses a fresh ID token bound to the retained provider subject. Receipt grants status lookup only. Restore transaction locks job/account state and checks server NOW()<restore_until and soft_deleted; worker uses the same job lock and disallows restore once purge is authorized. Cancelled requests no longer block gameplay; history and receipts remain, new requests get new IDs. No identity merging or reassignment occurs on restore.
+
+After deadline, service prepares encrypted retention archives for the verified activation profiles of the owner and aliases, using separate ACCOUNT_RETENTION_KEY. It records archive receipt/deadline and hard authorization only with valid policy/key and drained leases. Runtime rechecks deadline, version, authorization and hold before cleanup. Missing policy/key/legacy job => deferred/manual review, never immediate deletion. Archive content is inaccessible to public endpoints and is not automatically purged until a separately approved retention process. Backup expiry/restore drills remain incomplete; operational deletion must not claim physical erasure of every copy.
+
+Policy: `{schema_version:1,revision,enabled,soft_delete_days:14,retention_calendar_months:6,operational_purge_enabled:true}`; constraints validated, no fallback on missing config. Post-acceptance deadlines are immutable snapshots. Schema adds v2 job timestamps/policy/archive authorization/hold, encrypted retention archive and notification outbox. `/account/restoration/request {email}`; `/account/action/complete {purpose:restore_account,token,password}`; `/account/restoration/google {id_token}`; `/account/deletion/status {receipt}` returns status, deadline and restore eligibility without PII. Support tooling follows the same policy, no immediate bypass.
+
+Changelog 2.0.0: 14-day soft delete, identity reservation via canonical rows, proof-based restore and retention-gated operational purge. Local rollout/test evidence completed for scoped flow; production acceptance remains open.
 
 ## Behavior
 

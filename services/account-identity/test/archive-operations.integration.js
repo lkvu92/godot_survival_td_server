@@ -1,0 +1,133 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {randomUUID,randomBytes} from 'node:crypto';
+import {execFileSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
+import {mkdir,writeFile,readFile} from 'node:fs/promises';
+import pg from 'pg';
+import {archiveAccount,purgeGameplay} from '../src/archive.js';
+import {rotateArchive,expireArchive,retentionKeys,tickArchiveExpiry} from '../src/archive-operations.js';
+import {encryptBackup,decryptBackup,exportLedger,reconcileLedger} from '../src/archive-recovery.js';
+import {unseal,hash} from '../src/security.js';
+import {policy as originalPolicy} from './archive-policy.fixture.js';
+
+test('C250 real DB roles, rotation, expiry and encrypted pg_dump/restore with current ownership ledger',
+ {skip:process.env.C250_INTEGRATION!=='true',timeout:180000},async t=>{
+ const container='c232-test-postgres-1',meta=JSON.parse(execFileSync('docker',['inspect',container],{encoding:'utf8'}))[0];assert.equal(meta.Config.Labels['com.docker.compose.project'],'c232-test');assert(meta.State.Running);
+ const tag=randomUUID().replaceAll('-','').slice(0,12),sourceName='c250_source_'+tag,targets=[],roleNames=[],clients=[];
+ const config={host:'127.0.0.1',port:25433,user:'postgres',password:'c232-isolated-test-only',database:'postgres'};
+ const admin=new pg.Client(config);await admin.connect();clients.push(admin);
+ const connect=async(database,user='postgres',password=config.password)=>{const db=new pg.Client({...config,database,user,password});await db.connect();clients.push(db);return db;};
+ const docker=(args,input)=>execFileSync('docker',['exec','-i',container,...args],{input,maxBuffer:128*1024*1024,stdio:['pipe','pipe','pipe']});
+ const dump=name=>docker(['pg_dump','-U','postgres','-d',name,'-Fc']);
+ const restore=async(name,bytes)=>{assert(/^c250_restore_[a-z0-9_]+$/.test(name));targets.push(name);await admin.query('CREATE DATABASE '+name);docker(['pg_restore','-U','postgres','-d',name,'--exit-on-error'],bytes);return connect(name);};
+ t.after(async()=>{
+  for(const db of clients.reverse())if(db!==admin)await db.end().catch(()=>{});
+  for(const name of [...targets,sourceName]){assert(/^c250_(source|restore)_[a-z0-9_]+$/.test(name));await admin.query('DROP DATABASE IF EXISTS '+name+' WITH (FORCE)').catch(()=>{});}
+  for(const name of roleNames)await admin.query('DROP ROLE IF EXISTS '+name).catch(()=>{});await admin.end();
+ });
+ const bootstrap=await connect('nakama');
+ for(const file of ['archive-v3.sql','archive-operations.sql','archive-permissions.sql'])await bootstrap.query(await readFile(new URL('../'+file,import.meta.url),'utf8'));
+ await admin.query('CREATE DATABASE '+sourceName);
+ // Schema only from isolated Nakama: never copy real player data or restore the player DB.
+ docker(['pg_restore','-U','postgres','-d',sourceName,'--exit-on-error'],docker(['pg_dump','-U','postgres','-d','nakama','-Fc','--schema-only']));
+ const source=await connect(sourceName),q=(s,p=[])=>source.query(s,p);
+ await q("INSERT INTO account_archive_restore_gate(singleton,state) VALUES(TRUE,'ready')");
+ const roles={};for(const [label,member] of Object.entries({reader:'c250_archive_reader',holder:'c250_archive_hold',rotator:'c250_archive_rotation',expiry:'c250_archive_expiry',unauthorized:null})){
+  const name='c250_'+label+'_'+tag,password=randomBytes(24).toString('hex');roleNames.push(name);await admin.query(`CREATE ROLE ${name} LOGIN PASSWORD '${password}'`);if(member)await admin.query(`GRANT ${member} TO ${name}`);roles[label]=await connect(sourceName,name,password);
+ }
+ const keyOld='c'.repeat(64),keyNew=randomBytes(32).toString('hex'),keys={'test-retention-v1':keyOld,'test-retention-v2':keyNew};
+ const signingKey=randomBytes(32).toString('hex'),backupKey=randomBytes(32).toString('hex');assert.notEqual(signingKey,backupKey);
+ const policy=structuredClone(originalPolicy),old=randomUUID(),job=randomUUID(),newOwner=randomUUID(),canceledUser=randomUUID(),canceledJob=randomUUID(),order='fixture-order-'+tag;
+ const ops={schema_version:1,revision:'fixture-approved',enabled:true,batch_size:10,identity_expiry:{enabled:true,approval_reference:'fixture-approval-only',approved_by:'fixture-reviewer',effective_at:'2020-01-01T00:00:00Z'}};
+ await q('INSERT INTO remote_config_releases(config_version,snapshot,min_app_version,latest_app_version) VALUES(1,$1,\'0.0.0\',\'0.0.0\')',[JSON.stringify({system:{account_deletion:policy,account_archive_operations:ops}})]);
+ await q('INSERT INTO users(id,username,email) VALUES($1,$2,$3)',[old,'old_'+tag,'fixture-'+tag+'@example.test']);
+ await q("INSERT INTO account_link_state(user_id,status) VALUES($1,'deleting')",[old]);
+ await q("INSERT INTO player_login_sessions(user_id,generation) VALUES($1,'fixture-old-session')",[old]);
+ await q(`INSERT INTO account_identity_deletions(id,user_id,receipt_hash,status,flow_version,soft_deleted_at,restore_until,policy_snapshot) VALUES($1,$2,$3,'soft_deleted',3,NOW()-INTERVAL '7 months',NOW()-INTERVAL '1 day',$4::jsonb)`,[job,old,hash(tag),JSON.stringify(policy)]);
+ await q('INSERT INTO users(id,username,custom_id) VALUES($1,$2,$3)',[canceledUser,'cancel_'+tag,'cancel-'+tag]);
+ await q("INSERT INTO account_link_state(user_id,status) VALUES($1,'deleting')",[canceledUser]);
+ await q("INSERT INTO player_login_sessions(user_id,generation) VALUES($1,'old-proof-generation')",[canceledUser]);
+ await q(`INSERT INTO account_identity_deletions(id,user_id,receipt_hash,status,flow_version,soft_deleted_at,restore_until,policy_snapshot) VALUES($1,$2,$3,'soft_deleted',3,NOW(),NOW()+INTERVAL '1 day',$4::jsonb)`,[canceledJob,canceledUser,hash(canceledJob),JSON.stringify(policy)]);
+ for(const collection of ['player_inventory','compliance_activation'])await q("INSERT INTO storage(collection,key,user_id,value,version,read,write) VALUES($1,$2,$3,$4,'fixture',0,0)",[collection,collection==='compliance_activation'?'profile':'main',old,JSON.stringify({fixture:true,full_name:'Fixture only',phone_number:'0900000001',is_phone_verified:true})]);
+ await q("INSERT INTO game_store_products(product_id,pack_id,display_name) VALUES('fixture','fixture','Fixture')");
+ await q("INSERT INTO monetization_purchase_orders(id,user_id,product_id,reward_snapshot,fulfillment_type) VALUES($1,$2,'fixture','[]','consumable')",[order,old]);
+ await q("INSERT INTO payment_financial_records(purchase_order_id,google_order_id,currency,original_amount) VALUES($1,$2,'VND',21000)",[order,'GPA.fixture-'+tag]);
+ const oldLedger=await exportLedger(source,signingKey);
+ await q("UPDATE storage SET read=1,write=1 WHERE user_id=$1 AND collection='player_inventory'",[old]);
+ const backupA=encryptBackup(dump(sourceName),backupKey);assert.throws(()=>decryptBackup(backupA,randomBytes(32).toString('hex')));
+ const tampered=Buffer.from(backupA);tampered[tampered.length-1]^=1;assert.throws(()=>decryptBackup(tampered,backupKey));
+ // Pending request still needs old key after the active policy rotates to a new key ID.
+ await q("UPDATE remote_config_releases SET snapshot=jsonb_set(snapshot,'{system,account_deletion,retention_key_id}','\"test-retention-v2\"')");
+ await q('BEGIN');assert.equal(await archiveAccount(source,job,keyNew,'test-retention-v2',null,keys),true);await q('COMMIT');
+ assert.deepEqual((await q("SELECT read,write FROM storage WHERE user_id=$1 AND collection='player_inventory'",[old])).rows[0],{read:0,write:0},'archived retained gameplay is not public or client-writable');
+ const before=(await q('SELECT retain_until,payload,key_id,content_digest FROM account_retention_archives WHERE deletion_id=$1',[job])).rows[0];assert.equal(before.key_id,'test-retention-v1');
+ await assert.rejects(()=>roles.reader.query('SELECT payload FROM account_retention_archives'),e=>e.code==='42501');
+ assert((await roles.reader.query('SELECT * FROM account_archive_operations_summary')).rows.some(r=>r.status==='archived'));
+ await assert.rejects(()=>roles.unauthorized.query('SELECT public.account_archive_manage($1,\'hold\',\'all\',$2,\'fixture-case\')',[job,randomUUID()]),e=>e.code==='42501');
+ await assert.rejects(()=>rotateArchive(roles.holder,job,keys,'test-retention-v2','fixture-rotation'),e=>e.code==='42501');
+ await assert.rejects(()=>rotateArchive(roles.rotator,job,{'test-retention-v1':randomBytes(32).toString('hex'),'test-retention-v2':keyNew},'test-retention-v2','fixture-rotation'));
+ await assert.rejects(()=>rotateArchive(roles.rotator,job,{'test-retention-v1':keyOld,'test-retention-v2':keyOld},'test-retention-v2','fixture-same-key'),/ROTATION_REQUIRES_NEW_KEY/);
+ assert.equal((await q('SELECT payload FROM account_retention_archives WHERE deletion_id=$1',[job])).rows[0].payload,before.payload);
+ assert.equal(await rotateArchive(roles.rotator,job,keys,'test-retention-v2','fixture-rotation'),true);
+ assert.equal(await rotateArchive(roles.rotator,job,keys,'test-retention-v2','fixture-repeat'),false);
+ const rotated=(await q('SELECT * FROM account_retention_archives WHERE deletion_id=$1',[job])).rows[0];assert.equal(rotated.retain_until.toISOString(),before.retain_until.toISOString());assert.equal(unseal(rotated.payload,keyNew).subjects[0].id,old);
+ assert.equal(await expireArchive(roles.expiry,job,'fixture-early'),false,'gameplay must be purged first');
+ const backupB=encryptBackup(dump(sourceName),backupKey);
+ await q("UPDATE account_identity_deletions SET gameplay_purge_at=NOW()-INTERVAL '1 second' WHERE id=$1",[job]);await q('BEGIN');assert.equal(await purgeGameplay(source,job),true);await q('COMMIT');
+ const hid=randomUUID();await roles.holder.query("SELECT account_archive_manage($1,'hold','identity_expiry',$2,'fixture-hold')",[job,hid]);assert.equal(await expireArchive(roles.expiry,job,'fixture-held'),false);
+ await roles.holder.query("SELECT account_archive_manage($1,'release',NULL,$2,'fixture-release')",[job,hid]);
+ await q("UPDATE account_retention_archives SET retain_until=NOW()+INTERVAL '1 day' WHERE deletion_id=$1",[job]);assert.equal(await expireArchive(roles.expiry,job,'fixture-before-deadline'),false);
+ await q("UPDATE account_retention_archives SET retain_until=NOW()-INTERVAL '1 second' WHERE deletion_id=$1",[job]);
+ await q("UPDATE remote_config_releases SET snapshot=jsonb_set(snapshot,'{system,account_archive_operations,identity_expiry,enabled}','false')");await assert.rejects(()=>expireArchive(roles.expiry,job,'fixture-disabled'));
+ await q("UPDATE remote_config_releases SET snapshot=jsonb_set(snapshot,'{system,account_archive_operations,identity_expiry,enabled}','true')");
+ assert.equal(await tickArchiveExpiry(roles.expiry),1,'restricted worker can discover and expire without reading ciphertext');assert.equal(await expireArchive(roles.expiry,job,'fixture-repeat'),false);
+ await assert.rejects(()=>roles.expiry.query('SELECT payload FROM account_retention_archives'),e=>e.code==='42501');
+ const expired=(await q('SELECT payload,key_id,expired_at FROM account_retention_archives WHERE deletion_id=$1',[job])).rows[0];assert.equal(expired.payload,'');assert.equal(expired.key_id,null);assert(expired.expired_at);
+ await assert.rejects(()=>rotateArchive(roles.rotator,job,keys,'test-retention-v1','fixture-expired-rotate'),/EXPIRED_OR_MISSING/);
+ assert.equal((await q('SELECT original_amount FROM payment_financial_records WHERE purchase_order_id=$1',[order])).rows[0].original_amount,'21000.000000000');
+ await q('INSERT INTO users(id,username,email) VALUES($1,$2,$3)',[newOwner,'new_'+tag,'fixture-'+tag+'@example.test']);
+ await q("INSERT INTO storage(collection,key,user_id,value,version,read,write) VALUES('privacy_consent','state',$1,$2,'fixture-consent',0,0)",[newOwner,JSON.stringify({revision:2,choices:{game_marketing_email:false}})]);
+ await q("UPDATE account_identity_deletions SET status='cancelled' WHERE id=$1",[canceledJob]);await q("UPDATE account_link_state SET status='active' WHERE user_id=$1",[canceledUser]);
+ const ledger=await exportLedger(source,signingKey),backupC=encryptBackup(dump(sourceName),backupKey);
+ const artifactDir=new URL('../../../../tmp/c250-operations/'+tag+'/',import.meta.url);await mkdir(artifactDir,{recursive:true});
+ for(const [name,bytes] of [['before-archive.enc',backupA],['archive-ciphertext.enc',backupB],['current.enc',backupC],['current-ledger.enc',encryptBackup(Buffer.from(JSON.stringify(ledger)),backupKey)]])await writeFile(new URL(name,artifactDir),bytes);
+ const oldDb=await restore('c250_restore_old_'+tag,decryptBackup(backupA,backupKey));
+ const badLedger={...ledger,mac:(ledger.mac[0]==='0'?'1':'0')+ledger.mac.slice(1)};
+ await assert.rejects(()=>reconcileLedger(oldDb,badLedger,signingKey,ledger.checkpoint));assert.equal((await oldDb.query('SELECT state FROM account_archive_restore_gate')).rows[0].state,'blocked');
+ await assert.rejects(()=>reconcileLedger(oldDb,oldLedger,signingKey,ledger.checkpoint));assert.equal((await oldDb.query('SELECT state FROM account_archive_restore_gate')).rows[0].state,'blocked','valid but stale ledger cannot open gate');
+ const oldReport=await reconcileLedger(oldDb,ledger,signingKey,ledger.checkpoint);assert.equal(oldReport.state,'blocked');assert.equal(oldReport.missing_current_owners,1);
+ assert.equal((await oldDb.query('SELECT email FROM users WHERE id=$1',[old])).rows[0].email,null);assert.equal((await oldDb.query('SELECT 1 FROM storage WHERE user_id=$1',[old])).rowCount,0,'old gameplay not resurrected');
+ assert.equal((await oldDb.query('SELECT status FROM account_link_state WHERE user_id=$1',[canceledUser])).rows[0].status,'active','current cancelled request is not restored as deleting');
+ assert.notEqual((await oldDb.query('SELECT generation FROM player_login_sessions WHERE user_id=$1',[canceledUser])).rows[0].generation,'old-proof-generation');
+ const midDb=await restore('c250_restore_cipher_'+tag,decryptBackup(backupB,backupKey));const midReport=await reconcileLedger(midDb,ledger,signingKey,ledger.checkpoint);assert.equal(midReport.state,'blocked');assert.equal((await midDb.query('SELECT payload FROM account_retention_archives WHERE deletion_id=$1',[job])).rows[0].payload,'','expired ciphertext not resurrected');
+ const goodDb=await restore('c250_restore_current_'+tag,decryptBackup(backupC,backupKey));const goodReport=await reconcileLedger(goodDb,ledger,signingKey,ledger.checkpoint);assert.equal(goodReport.state,'ready');
+ assert.equal((await goodDb.query('SELECT email FROM users WHERE id=$1',[newOwner])).rows[0].email,'fixture-'+tag+'@example.test');
+ await goodDb.query("UPDATE storage SET value=$2 WHERE collection='privacy_consent' AND key='state' AND user_id=$1",[newOwner,JSON.stringify({revision:1,choices:{game_marketing_email:true}})]);
+ const staleConsent=await reconcileLedger(goodDb,ledger,signingKey,ledger.checkpoint);assert.equal(staleConsent.state,'blocked');assert.equal(staleConsent.privacy_mismatches,1,'an old grant cannot overwrite a later withdrawal');
+ await goodDb.query("UPDATE storage SET value=$2 WHERE collection='privacy_consent' AND key='state' AND user_id=$1",[newOwner,JSON.stringify({revision:2,choices:{game_marketing_email:false}})]);
+ assert.equal((await reconcileLedger(goodDb,ledger,signingKey,ledger.checkpoint)).state,'ready','matching privacy checkpoint permits further checks');
+ await goodDb.query('UPDATE payment_financial_records SET original_amount=1 WHERE purchase_order_id=$1',[order]);const mismatch=await reconcileLedger(goodDb,ledger,signingKey,ledger.checkpoint);assert.equal(mismatch.state,'blocked');assert.equal(mismatch.financial_mismatches,1);
+ await goodDb.query("UPDATE users SET password=decode('001122','hex') WHERE id=$1",[newOwner]);const passwordMismatch=await reconcileLedger(goodDb,ledger,signingKey,ledger.checkpoint);assert.equal(passwordMismatch.state,'blocked');assert.equal(passwordMismatch.changed_current_claims,1,'restored old credentials cannot open gate');
+ const recoveredAudit=Number((await goodDb.query('SELECT count(*) FROM account_archive_recovered_audit WHERE checkpoint_digest=$1',[ledger.checkpoint])).rows[0].count);assert.equal(recoveredAudit,JSON.parse(ledger.body).audit.length);
+ await assert.rejects(()=>reconcileLedger(source,ledger,signingKey,ledger.checkpoint),/RESTORE_TARGET_NOT_DISPOSABLE/);
+ // Exercise real Nakama auth/native/RPC gates while only the isolated test DB is closed.
+ const http=async(path,body,token,method='POST')=>{const r=await fetch('http://127.0.0.1:27350'+path,{method,headers:{'Content-Type':'application/json',Authorization:token?'Bearer '+token:'Basic '+Buffer.from('c232-test-key:').toString('base64')},body:JSON.stringify(body)});return {http:r.status,...await r.json()};};
+ const session=await http('/v2/account/authenticate/custom?create=true',{id:'c250-gate-'+tag});assert.equal(session.http,200);
+ await bootstrap.query("UPDATE account_archive_restore_gate SET state='blocked' WHERE singleton=TRUE");
+ try{
+  assert.notEqual((await http('/v2/account/authenticate/custom?create=false',{id:'c250-gate-'+tag})).http,200);
+  assert.notEqual((await http('/v2/storage',{objects:[{collection:'fixture',key:'gate',value:'{}'}]},session.token,'PUT')).http,200);
+  const rpc=await http('/v2/rpc/list_servers','{}',session.token);assert.equal(JSON.parse(rpc.payload).reason,'ARCHIVE_RESTORE_BLOCKED');
+ }finally{await bootstrap.query("UPDATE account_archive_restore_gate SET state='ready' WHERE singleton=TRUE");}
+ const actor=(await q("SELECT result->>'actor' AS actor FROM account_archive_audit WHERE deletion_id=$1 AND action='key_rotated'",[job])).rows[0].actor;assert(actor.startsWith('c250_rotator_'),'audit actor is DB login, not spoofed USERNAME');
+ const dumpTool=process.env.PG_DUMP_PATH||'C:/Program Files/PostgreSQL/16/bin/pg_dump.exe',restoreTool=process.env.PG_RESTORE_PATH||'C:/Program Files/PostgreSQL/16/bin/pg_restore.exe';
+ const cliEnv={...process.env,PGHOST:config.host,PGPORT:String(config.port),PGDATABASE:sourceName,PGUSER:config.user,PGPASSWORD:config.password,PG_DUMP_PATH:dumpTool,PG_RESTORE_PATH:restoreTool,ACCOUNT_RECOVERY_BACKUP_KEY:backupKey,ACCOUNT_RECOVERY_SIGNING_KEY:signingKey,ACCOUNT_RECOVERY_ARTIFACT_DIR:fileURLToPath(artifactDir)};
+ const cli=argv=>JSON.parse(execFileSync(process.execPath,[fileURLToPath(new URL('../src/archive-recovery-cli.js',import.meta.url)),...argv],{env:cliEnv,encoding:'utf8',stdio:['pipe','pipe','pipe']}));
+ const saved=cli(['--action=backup','--name=cli-checkpoint']);assert.equal(saved.artifacts_encrypted,true);
+ const cliTarget='c250_restore_cli_'+tag;targets.push(cliTarget);
+ const cliRestored=cli(['--action=restore','--name=cli-restore','--database='+cliTarget,'--confirm='+cliTarget,'--backup=cli-checkpoint.backup.enc','--ledger=cli-checkpoint.ledger.enc','--checkpoint='+saved.checkpoint]);assert.equal(cliRestored.state,'ready');assert.equal(cliRestored.traffic_opened,false);
+ assert.deepEqual(Object.keys(retentionKeys({ACCOUNT_RETENTION_KEY_ID:'test-retention-v2',ACCOUNT_RETENTION_KEY:keyNew,ACCOUNT_RETENTION_KEYS_JSON:JSON.stringify({'test-retention-v1':keyOld})})).sort(),['test-retention-v1','test-retention-v2']);
+ const report={generated_at:new Date().toISOString(),scope:'isolated PostgreSQL16; schema-only Nakama fixture; no player DB restore/expiry',roles:{reader_summary:true,reader_ciphertext_denied:true,unauthorized_hold_denied:true,holder_rotation_denied:true,db_actor_audit:true},rotation:{wrong_key_no_write:true,changed:true,repeated_noop:true,retention_unchanged:true,pending_old_key_supported:true},expiry:{before_gameplay:false,before_retain_until:false,held:false,disabled_denied:true,expired_ciphertext_removed:true,finance_retained:true},encrypted_pg_dump:{artifacts:6,wrong_key_rejected:true,tamper_rejected:true,plaintext_files:0,test_keys_persisted:false},recovery:{stale_checkpoint_rejected:true,tampered_mac_rejected:true,old_backup:oldReport,ciphertext_backup:midReport,current_backup:goodReport,financial_mismatch:mismatch,credential_mismatch:passwordMismatch,cancelled_request_replayed:true,recovered_audit_events:recoveredAudit,live_source_target_denied:true,real_nakama_gate_auth_native_rpc:true,cli_pg_export_snapshot:true,cli_restore:cliRestored},open:['production role/IAM/MFA assignment','offsite/immutable backup and key escrow','RPO/RTO infrastructure drill','Android/email live pending']};
+ const evidence=new URL('../../../../client/docs/standards/g2-registration/evidence/retention/B6/operations/',import.meta.url);await mkdir(evidence,{recursive:true});await writeFile(new URL('integration-results.json',evidence),JSON.stringify(report,null,2)+'\n');
+});

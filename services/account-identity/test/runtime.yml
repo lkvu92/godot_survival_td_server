@@ -9,6 +9,7 @@ runtime:
     - ACCOUNT_IDENTITY_ENABLED=true
     - ACCOUNT_IDENTITY_SECRET=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
     - APP_ENVIRONMENT=develop
+    - COMPLIANCE_ALLOW_MOCK=true
     - MULTI_SERVER_ENABLED=true
     - CONFIG_ADMIN_USER_ID=00000000-0000-0000-0000-000000000001
     - MONETIZATION_VERIFIER_SECRET=c232-test-verifier

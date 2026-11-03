@@ -28,9 +28,9 @@
     "order": 110,
     "expires_after_hours": 0,
     "tags": [
-      "rune",
       "earth",
-      "material"
+      "material",
+      "rune_material"
     ],
     "attributes": {}
   },
@@ -46,9 +46,9 @@
     "order": 120,
     "expires_after_hours": 0,
     "tags": [
-      "rune",
       "fire",
-      "material"
+      "material",
+      "rune_material"
     ],
     "attributes": {}
   },
@@ -64,9 +64,9 @@
     "order": 130,
     "expires_after_hours": 0,
     "tags": [
-      "rune",
       "metal",
-      "material"
+      "material",
+      "rune_material"
     ],
     "attributes": {}
   },
@@ -82,9 +82,9 @@
     "order": 140,
     "expires_after_hours": 0,
     "tags": [
-      "rune",
       "water",
-      "material"
+      "material",
+      "rune_material"
     ],
     "attributes": {}
   },
@@ -100,9 +100,9 @@
     "order": 150,
     "expires_after_hours": 0,
     "tags": [
-      "rune",
       "wood",
-      "material"
+      "material",
+      "rune_material"
     ],
     "attributes": {}
   },
@@ -118,9 +118,9 @@
     "order": 210,
     "expires_after_hours": 720,
     "tags": [
-      "rune",
       "earth",
-      "material"
+      "material",
+      "rune_material"
     ],
     "attributes": {}
   },
@@ -136,9 +136,9 @@
     "order": 220,
     "expires_after_hours": 720,
     "tags": [
-      "rune",
       "fire",
-      "material"
+      "material",
+      "rune_material"
     ],
     "attributes": {}
   },
@@ -154,9 +154,9 @@
     "order": 230,
     "expires_after_hours": 0,
     "tags": [
-      "rune",
       "metal",
-      "material"
+      "material",
+      "rune_material"
     ],
     "attributes": {}
   },
@@ -172,9 +172,9 @@
     "order": 240,
     "expires_after_hours": 0,
     "tags": [
-      "rune",
       "water",
-      "material"
+      "material",
+      "rune_material"
     ],
     "attributes": {}
   },
@@ -190,9 +190,9 @@
     "order": 250,
     "expires_after_hours": 0,
     "tags": [
-      "rune",
       "wood",
-      "material"
+      "material",
+      "rune_material"
     ],
     "attributes": {}
   },
@@ -303,9 +303,10 @@
     "max_stack": 999999,
     "expires_after_hours": 0,
     "tags": [
-      "talisman",
       "upgrade",
-      "heavenly_crystal"
+      "heavenly_crystal",
+      "talisman_material",
+      "material"
     ],
     "attributes": {
       "quality": "low"
@@ -322,9 +323,10 @@
     "stackable": true,
     "max_stack": 999999,
     "tags": [
-      "talisman",
       "upgrade",
-      "heavenly_crystal"
+      "heavenly_crystal",
+      "talisman_material",
+      "material"
     ],
     "attributes": {
       "quality": "mid"
@@ -341,9 +343,10 @@
     "stackable": true,
     "max_stack": 999999,
     "tags": [
-      "talisman",
       "upgrade",
-      "heavenly_crystal"
+      "heavenly_crystal",
+      "talisman_material",
+      "material"
     ],
     "attributes": {
       "quality": "high"
@@ -363,7 +366,9 @@
     "tags": [
       "element",
       "upgrade",
-      "success_charm"
+      "success_charm",
+      "consumable",
+      "charm"
     ],
     "attributes": {
       "upgrade_context": "element",
@@ -382,9 +387,11 @@
     "max_stack": 999999,
     "expires_after_hours": 0,
     "tags": [
-      "talisman",
       "upgrade",
-      "success_charm"
+      "success_charm",
+      "talisman_upgrade",
+      "consumable",
+      "charm"
     ],
     "attributes": {
       "upgrade_context": "talisman",
@@ -406,7 +413,8 @@
       "talisman",
       "attack",
       "metal",
-      "ha_pham"
+      "ha_pham",
+      "equipment"
     ],
     "attributes": {
       "numeric_id": 1,
@@ -458,7 +466,8 @@
       "talisman",
       "attack",
       "fire",
-      "ha_pham"
+      "ha_pham",
+      "equipment"
     ],
     "attributes": {
       "numeric_id": 2,
@@ -510,7 +519,8 @@
       "talisman",
       "attack",
       "metal",
-      "ha_pham"
+      "ha_pham",
+      "equipment"
     ],
     "attributes": {
       "numeric_id": 3,
@@ -562,7 +572,8 @@
       "talisman",
       "defense",
       "metal",
-      "ha_pham"
+      "ha_pham",
+      "equipment"
     ],
     "attributes": {
       "numeric_id": 4,
@@ -614,7 +625,8 @@
       "talisman",
       "speed",
       "water",
-      "ha_pham"
+      "ha_pham",
+      "equipment"
     ],
     "attributes": {
       "numeric_id": 5,
@@ -666,7 +678,8 @@
       "talisman",
       "magic",
       "wood",
-      "ha_pham"
+      "ha_pham",
+      "equipment"
     ],
     "attributes": {
       "numeric_id": 6,
@@ -718,7 +731,8 @@
       "talisman",
       "attack",
       "earth",
-      "ha_pham"
+      "ha_pham",
+      "equipment"
     ],
     "attributes": {
       "numeric_id": 7,
@@ -770,7 +784,8 @@
       "talisman",
       "speed",
       "water",
-      "ha_pham"
+      "ha_pham",
+      "equipment"
     ],
     "attributes": {
       "numeric_id": 8,
@@ -822,7 +837,8 @@
       "talisman",
       "magic",
       "fire",
-      "ha_pham"
+      "ha_pham",
+      "equipment"
     ],
     "attributes": {
       "numeric_id": 9,
@@ -874,7 +890,8 @@
       "talisman",
       "spirit",
       "earth",
-      "ha_pham"
+      "ha_pham",
+      "equipment"
     ],
     "attributes": {
       "numeric_id": 10,
@@ -926,7 +943,8 @@
       "talisman",
       "speed",
       "wood",
-      "ha_pham"
+      "ha_pham",
+      "equipment"
     ],
     "attributes": {
       "numeric_id": 11,
@@ -978,7 +996,8 @@
       "talisman",
       "defense",
       "earth",
-      "ha_pham"
+      "ha_pham",
+      "equipment"
     ],
     "attributes": {
       "numeric_id": 12,
@@ -1030,7 +1049,8 @@
       "talisman",
       "magic",
       "fire",
-      "ha_pham"
+      "ha_pham",
+      "equipment"
     ],
     "attributes": {
       "numeric_id": 13,
@@ -1082,7 +1102,8 @@
       "talisman",
       "spirit",
       "wood",
-      "ha_pham"
+      "ha_pham",
+      "equipment"
     ],
     "attributes": {
       "numeric_id": 14,
@@ -1134,7 +1155,8 @@
       "talisman",
       "spirit",
       "water",
-      "ha_pham"
+      "ha_pham",
+      "equipment"
     ],
     "attributes": {
       "numeric_id": 15,
@@ -1185,7 +1207,8 @@
     "tags": [
       "talisman",
       "attack",
-      "uncommon"
+      "uncommon",
+      "equipment"
     ],
     "attributes": {
       "numeric_id": 16,
@@ -1236,7 +1259,8 @@
     "tags": [
       "talisman",
       "attack",
-      "uncommon"
+      "uncommon",
+      "equipment"
     ],
     "attributes": {
       "numeric_id": 17,
@@ -1287,7 +1311,8 @@
     "tags": [
       "talisman",
       "magic",
-      "uncommon"
+      "uncommon",
+      "equipment"
     ],
     "attributes": {
       "numeric_id": 18,
@@ -1338,7 +1363,8 @@
     "tags": [
       "talisman",
       "magic",
-      "uncommon"
+      "uncommon",
+      "equipment"
     ],
     "attributes": {
       "numeric_id": 19,
@@ -1389,7 +1415,8 @@
     "tags": [
       "talisman",
       "defense",
-      "uncommon"
+      "uncommon",
+      "equipment"
     ],
     "attributes": {
       "numeric_id": 20,
@@ -1440,7 +1467,8 @@
     "tags": [
       "talisman",
       "spirit",
-      "uncommon"
+      "uncommon",
+      "equipment"
     ],
     "attributes": {
       "numeric_id": 21,
@@ -1491,7 +1519,8 @@
     "tags": [
       "talisman",
       "magic",
-      "uncommon"
+      "uncommon",
+      "equipment"
     ],
     "attributes": {
       "numeric_id": 22,
@@ -1542,7 +1571,8 @@
     "tags": [
       "talisman",
       "attack",
-      "uncommon"
+      "uncommon",
+      "equipment"
     ],
     "attributes": {
       "numeric_id": 23,
@@ -1593,7 +1623,8 @@
     "tags": [
       "talisman",
       "spirit",
-      "uncommon"
+      "uncommon",
+      "equipment"
     ],
     "attributes": {
       "numeric_id": 24,
@@ -1644,7 +1675,8 @@
     "tags": [
       "talisman",
       "defense",
-      "uncommon"
+      "uncommon",
+      "equipment"
     ],
     "attributes": {
       "numeric_id": 25,
@@ -1695,7 +1727,8 @@
     "tags": [
       "talisman",
       "attack",
-      "rare"
+      "rare",
+      "equipment"
     ],
     "attributes": {
       "numeric_id": 26,
@@ -1748,7 +1781,8 @@
     "tags": [
       "talisman",
       "defense",
-      "rare"
+      "rare",
+      "equipment"
     ],
     "attributes": {
       "numeric_id": 27,
@@ -1801,7 +1835,8 @@
     "tags": [
       "talisman",
       "spirit",
-      "rare"
+      "rare",
+      "equipment"
     ],
     "attributes": {
       "numeric_id": 28,
@@ -1854,7 +1889,8 @@
     "tags": [
       "talisman",
       "magic",
-      "rare"
+      "rare",
+      "equipment"
     ],
     "attributes": {
       "numeric_id": 29,
@@ -1907,7 +1943,8 @@
     "tags": [
       "talisman",
       "attack",
-      "rare"
+      "rare",
+      "equipment"
     ],
     "attributes": {
       "numeric_id": 30,
@@ -1959,7 +1996,9 @@
     "expires_after_hours": 0,
     "tags": [
       "material",
-      "talisman_fragment"
+      "talisman_fragment",
+      "fragment",
+      "talisman"
     ],
     "attributes": {
       "target_talisman_id": 1,
@@ -1982,7 +2021,9 @@
     "expires_after_hours": 0,
     "tags": [
       "material",
-      "talisman_fragment"
+      "talisman_fragment",
+      "fragment",
+      "talisman"
     ],
     "attributes": {
       "target_talisman_id": 2,
@@ -2005,7 +2046,9 @@
     "expires_after_hours": 0,
     "tags": [
       "material",
-      "talisman_fragment"
+      "talisman_fragment",
+      "fragment",
+      "talisman"
     ],
     "attributes": {
       "target_talisman_id": 3,
@@ -2028,7 +2071,9 @@
     "expires_after_hours": 0,
     "tags": [
       "material",
-      "talisman_fragment"
+      "talisman_fragment",
+      "fragment",
+      "talisman"
     ],
     "attributes": {
       "target_talisman_id": 4,
@@ -2051,7 +2096,9 @@
     "expires_after_hours": 0,
     "tags": [
       "material",
-      "talisman_fragment"
+      "talisman_fragment",
+      "fragment",
+      "talisman"
     ],
     "attributes": {
       "target_talisman_id": 5,
@@ -2074,7 +2121,9 @@
     "expires_after_hours": 0,
     "tags": [
       "material",
-      "talisman_fragment"
+      "talisman_fragment",
+      "fragment",
+      "talisman"
     ],
     "attributes": {
       "target_talisman_id": 6,
@@ -2097,7 +2146,9 @@
     "expires_after_hours": 0,
     "tags": [
       "material",
-      "talisman_fragment"
+      "talisman_fragment",
+      "fragment",
+      "talisman"
     ],
     "attributes": {
       "target_talisman_id": 7,
@@ -2120,7 +2171,9 @@
     "expires_after_hours": 0,
     "tags": [
       "material",
-      "talisman_fragment"
+      "talisman_fragment",
+      "fragment",
+      "talisman"
     ],
     "attributes": {
       "target_talisman_id": 8,
@@ -2143,7 +2196,9 @@
     "expires_after_hours": 0,
     "tags": [
       "material",
-      "talisman_fragment"
+      "talisman_fragment",
+      "fragment",
+      "talisman"
     ],
     "attributes": {
       "target_talisman_id": 9,
@@ -2166,7 +2221,9 @@
     "expires_after_hours": 0,
     "tags": [
       "material",
-      "talisman_fragment"
+      "talisman_fragment",
+      "fragment",
+      "talisman"
     ],
     "attributes": {
       "target_talisman_id": 10,
@@ -2189,7 +2246,9 @@
     "expires_after_hours": 0,
     "tags": [
       "material",
-      "talisman_fragment"
+      "talisman_fragment",
+      "fragment",
+      "talisman"
     ],
     "attributes": {
       "target_talisman_id": 11,
@@ -2212,7 +2271,9 @@
     "expires_after_hours": 0,
     "tags": [
       "material",
-      "talisman_fragment"
+      "talisman_fragment",
+      "fragment",
+      "talisman"
     ],
     "attributes": {
       "target_talisman_id": 12,
@@ -2235,7 +2296,9 @@
     "expires_after_hours": 0,
     "tags": [
       "material",
-      "talisman_fragment"
+      "talisman_fragment",
+      "fragment",
+      "talisman"
     ],
     "attributes": {
       "target_talisman_id": 13,
@@ -2258,7 +2321,9 @@
     "expires_after_hours": 0,
     "tags": [
       "material",
-      "talisman_fragment"
+      "talisman_fragment",
+      "fragment",
+      "talisman"
     ],
     "attributes": {
       "target_talisman_id": 14,
@@ -2281,7 +2346,9 @@
     "expires_after_hours": 0,
     "tags": [
       "material",
-      "talisman_fragment"
+      "talisman_fragment",
+      "fragment",
+      "talisman"
     ],
     "attributes": {
       "target_talisman_id": 15,
@@ -2304,7 +2371,9 @@
     "expires_after_hours": 0,
     "tags": [
       "material",
-      "talisman_fragment"
+      "talisman_fragment",
+      "fragment",
+      "talisman"
     ],
     "attributes": {
       "target_talisman_id": 16,
@@ -2327,7 +2396,9 @@
     "expires_after_hours": 0,
     "tags": [
       "material",
-      "talisman_fragment"
+      "talisman_fragment",
+      "fragment",
+      "talisman"
     ],
     "attributes": {
       "target_talisman_id": 17,
@@ -2350,7 +2421,9 @@
     "expires_after_hours": 0,
     "tags": [
       "material",
-      "talisman_fragment"
+      "talisman_fragment",
+      "fragment",
+      "talisman"
     ],
     "attributes": {
       "target_talisman_id": 18,
@@ -2373,7 +2446,9 @@
     "expires_after_hours": 0,
     "tags": [
       "material",
-      "talisman_fragment"
+      "talisman_fragment",
+      "fragment",
+      "talisman"
     ],
     "attributes": {
       "target_talisman_id": 19,
@@ -2396,7 +2471,9 @@
     "expires_after_hours": 0,
     "tags": [
       "material",
-      "talisman_fragment"
+      "talisman_fragment",
+      "fragment",
+      "talisman"
     ],
     "attributes": {
       "target_talisman_id": 20,
@@ -2419,7 +2496,9 @@
     "expires_after_hours": 0,
     "tags": [
       "material",
-      "talisman_fragment"
+      "talisman_fragment",
+      "fragment",
+      "talisman"
     ],
     "attributes": {
       "target_talisman_id": 21,
@@ -2442,7 +2521,9 @@
     "expires_after_hours": 0,
     "tags": [
       "material",
-      "talisman_fragment"
+      "talisman_fragment",
+      "fragment",
+      "talisman"
     ],
     "attributes": {
       "target_talisman_id": 22,
@@ -2465,7 +2546,9 @@
     "expires_after_hours": 0,
     "tags": [
       "material",
-      "talisman_fragment"
+      "talisman_fragment",
+      "fragment",
+      "talisman"
     ],
     "attributes": {
       "target_talisman_id": 23,
@@ -2488,7 +2571,9 @@
     "expires_after_hours": 0,
     "tags": [
       "material",
-      "talisman_fragment"
+      "talisman_fragment",
+      "fragment",
+      "talisman"
     ],
     "attributes": {
       "target_talisman_id": 24,
@@ -2511,7 +2596,9 @@
     "expires_after_hours": 0,
     "tags": [
       "material",
-      "talisman_fragment"
+      "talisman_fragment",
+      "fragment",
+      "talisman"
     ],
     "attributes": {
       "target_talisman_id": 25,
@@ -2534,7 +2621,9 @@
     "expires_after_hours": 0,
     "tags": [
       "material",
-      "talisman_fragment"
+      "talisman_fragment",
+      "fragment",
+      "talisman"
     ],
     "attributes": {
       "target_talisman_id": 26,
@@ -2557,7 +2646,9 @@
     "expires_after_hours": 0,
     "tags": [
       "material",
-      "talisman_fragment"
+      "talisman_fragment",
+      "fragment",
+      "talisman"
     ],
     "attributes": {
       "target_talisman_id": 27,
@@ -2580,7 +2671,9 @@
     "expires_after_hours": 0,
     "tags": [
       "material",
-      "talisman_fragment"
+      "talisman_fragment",
+      "fragment",
+      "talisman"
     ],
     "attributes": {
       "target_talisman_id": 28,
@@ -2603,7 +2696,9 @@
     "expires_after_hours": 0,
     "tags": [
       "material",
-      "talisman_fragment"
+      "talisman_fragment",
+      "fragment",
+      "talisman"
     ],
     "attributes": {
       "target_talisman_id": 29,
@@ -2626,7 +2721,9 @@
     "expires_after_hours": 0,
     "tags": [
       "material",
-      "talisman_fragment"
+      "talisman_fragment",
+      "fragment",
+      "talisman"
     ],
     "attributes": {
       "target_talisman_id": 30,
@@ -2703,7 +2800,8 @@
     "expires_after_hours": 0,
     "tags": [
       "consumable",
-      "charms"
+      "charms",
+      "charm"
     ],
     "attributes": {
       "atlas_slot": 0,
@@ -2725,7 +2823,8 @@
     "expires_after_hours": 0,
     "tags": [
       "consumable",
-      "fruits"
+      "fruits",
+      "spirit_fruit"
     ],
     "attributes": {
       "atlas_slot": 1,
@@ -2747,7 +2846,8 @@
     "expires_after_hours": 0,
     "tags": [
       "consumable",
-      "fruits"
+      "fruits",
+      "spirit_fruit"
     ],
     "attributes": {
       "atlas_slot": 2,
@@ -2776,7 +2876,8 @@
     "expires_after_hours": 0,
     "tags": [
       "consumable",
-      "fruits"
+      "fruits",
+      "spirit_fruit"
     ],
     "attributes": {
       "atlas_slot": 3,
@@ -2805,7 +2906,8 @@
     "expires_after_hours": 0,
     "tags": [
       "consumable",
-      "fruits"
+      "fruits",
+      "spirit_fruit"
     ],
     "attributes": {
       "atlas_slot": 4,
@@ -2834,7 +2936,8 @@
     "expires_after_hours": 0,
     "tags": [
       "consumable",
-      "fruits"
+      "fruits",
+      "spirit_fruit"
     ],
     "attributes": {
       "atlas_slot": 5,
@@ -2863,7 +2966,8 @@
     "expires_after_hours": 0,
     "tags": [
       "consumable",
-      "fruits"
+      "fruits",
+      "spirit_fruit"
     ],
     "attributes": {
       "atlas_slot": 6,
@@ -2892,7 +2996,8 @@
     "expires_after_hours": 0,
     "tags": [
       "consumable",
-      "fruits"
+      "fruits",
+      "spirit_fruit"
     ],
     "attributes": {
       "atlas_slot": 7,
@@ -2914,7 +3019,8 @@
     "expires_after_hours": 0,
     "tags": [
       "consumable",
-      "fruits"
+      "fruits",
+      "spirit_fruit"
     ],
     "attributes": {
       "atlas_slot": 8,
@@ -2936,7 +3042,8 @@
     "expires_after_hours": 0,
     "tags": [
       "consumable",
-      "fruits"
+      "fruits",
+      "spirit_fruit"
     ],
     "attributes": {
       "atlas_slot": 9,
@@ -2958,7 +3065,8 @@
     "expires_after_hours": 0,
     "tags": [
       "consumable",
-      "charms"
+      "charms",
+      "charm"
     ],
     "attributes": {
       "atlas_slot": 10,
@@ -2985,7 +3093,8 @@
     "expires_after_hours": 0,
     "tags": [
       "consumable",
-      "charms"
+      "charms",
+      "charm"
     ],
     "attributes": {
       "atlas_slot": 11,
@@ -3012,7 +3121,9 @@
     "expires_after_hours": 0,
     "tags": [
       "consumable",
-      "charms"
+      "charms",
+      "charm",
+      "boost"
     ],
     "attributes": {
       "atlas_slot": 12,
@@ -3041,7 +3152,9 @@
     "expires_after_hours": 0,
     "tags": [
       "consumable",
-      "charms"
+      "charms",
+      "charm",
+      "boost"
     ],
     "attributes": {
       "atlas_slot": 13,
@@ -3070,7 +3183,9 @@
     "expires_after_hours": 0,
     "tags": [
       "consumable",
-      "charms"
+      "charms",
+      "charm",
+      "boost"
     ],
     "attributes": {
       "atlas_slot": 14,
@@ -3099,7 +3214,9 @@
     "expires_after_hours": 0,
     "tags": [
       "consumable",
-      "charms"
+      "charms",
+      "charm",
+      "boost"
     ],
     "attributes": {
       "atlas_slot": 15,
@@ -3128,7 +3245,9 @@
     "expires_after_hours": 0,
     "tags": [
       "consumable",
-      "charms"
+      "charms",
+      "charm",
+      "boost"
     ],
     "attributes": {
       "atlas_slot": 16,
@@ -3157,7 +3276,9 @@
     "expires_after_hours": 0,
     "tags": [
       "consumable",
-      "charms"
+      "charms",
+      "charm",
+      "boost"
     ],
     "attributes": {
       "atlas_slot": 17,
@@ -3186,7 +3307,9 @@
     "expires_after_hours": 0,
     "tags": [
       "consumable",
-      "charms"
+      "charms",
+      "charm",
+      "boost"
     ],
     "attributes": {
       "atlas_slot": 18,
@@ -3215,7 +3338,8 @@
     "expires_after_hours": 0,
     "tags": [
       "consumable",
-      "elixirs"
+      "elixirs",
+      "medicine"
     ],
     "attributes": {
       "atlas_slot": 19,
@@ -3244,7 +3368,9 @@
     "expires_after_hours": 0,
     "tags": [
       "consumable",
-      "elixirs"
+      "elixirs",
+      "medicine",
+      "boost"
     ],
     "attributes": {
       "atlas_slot": 20,
@@ -3273,7 +3399,8 @@
     "expires_after_hours": 0,
     "tags": [
       "consumable",
-      "elixirs"
+      "elixirs",
+      "medicine"
     ],
     "attributes": {
       "atlas_slot": 21,
@@ -3285,6 +3412,26 @@
         "kind": "stamina",
         "value": 15
       }
+    }
+  },
+  {
+    "id": "energy_elixir_low",
+    "display_name": "Thể Lực Đan (Hạ)",
+    "description": "Hồi 5 thể lực.",
+    "category": "consumable",
+    "rarity": "rare",
+    "icon_id": "consumable_energy_elixir",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 522,
+    "expires_after_hours": 0,
+    "tags": ["consumable", "elixirs", "medicine"],
+    "attributes": {
+      "atlas_slot": 21,
+      "consumable_family": "elixirs",
+      "use_action": "use_consumable",
+      "enabled": true,
+      "effect": {"context": "inventory", "kind": "stamina", "value": 5}
     }
   },
   {
@@ -3300,7 +3447,8 @@
     "expires_after_hours": 0,
     "tags": [
       "consumable",
-      "charms"
+      "charms",
+      "charm"
     ],
     "attributes": {
       "atlas_slot": 22,
@@ -3342,165 +3490,551 @@
     "id": "tower_sweep_ticket",
     "display_name": "Vé càn quét ma tháp",
     "description": "Càn quét một tầng ma tháp đã đủ điều kiện.",
-    "category": "consumable", "rarity": "rare", "icon_id": "consumable_2", "stackable": true, "max_stack": 999999, "order": 48, "expires_after_hours": 0,
-    "tags": ["sweep", "ticket", "consumable"],
-    "attributes": {"sweep_type": "tower", "atlas_index": 2}
+    "category": "consumable",
+    "rarity": "rare",
+    "icon_id": "consumable_2",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 48,
+    "expires_after_hours": 0,
+    "tags": [
+      "sweep",
+      "ticket",
+      "consumable"
+    ],
+    "attributes": {
+      "sweep_type": "tower",
+      "atlas_index": 2
+    }
   },
   {
     "id": "law_fragment_low",
     "display_name": "Mảnh vỡ pháp tắc hạ phẩm",
     "description": "Nguyên liệu hạ phẩm từ Tâm Ma Tháp, dùng nâng Pháp Tắc lên cấp 2–10.",
-    "category": "material", "rarity": "common", "icon_id": "consumable_10", "stackable": true, "max_stack": 999999, "order": 490, "expires_after_hours": 0,
-    "tags": ["material", "law_fragment", "trial_tower"],
-    "attributes": {"atlas_slot": 10, "material_family": "law_fragment", "tier": "low"}
+    "category": "material",
+    "rarity": "common",
+    "icon_id": "consumable_10",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 490,
+    "expires_after_hours": 0,
+    "tags": [
+      "material",
+      "law_fragment",
+      "trial_tower",
+      "fragment"
+    ],
+    "attributes": {
+      "atlas_slot": 10,
+      "material_family": "law_fragment",
+      "tier": "low"
+    }
   },
   {
     "id": "law_fragment_medium",
     "display_name": "Mảnh vỡ pháp tắc trung phẩm",
     "description": "Nguyên liệu trung phẩm từ Tâm Ma Tháp, dùng nâng Pháp Tắc lên cấp 11–20.",
-    "category": "material", "rarity": "rare", "icon_id": "consumable_11", "stackable": true, "max_stack": 999999, "order": 491, "expires_after_hours": 0,
-    "tags": ["material", "law_fragment", "trial_tower"],
-    "attributes": {"atlas_slot": 11, "material_family": "law_fragment", "tier": "medium"}
+    "category": "material",
+    "rarity": "rare",
+    "icon_id": "consumable_11",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 491,
+    "expires_after_hours": 0,
+    "tags": [
+      "material",
+      "law_fragment",
+      "trial_tower",
+      "fragment"
+    ],
+    "attributes": {
+      "atlas_slot": 11,
+      "material_family": "law_fragment",
+      "tier": "medium"
+    }
   },
   {
     "id": "law_fragment_high",
     "display_name": "Mảnh vỡ pháp tắc thượng phẩm",
     "description": "Nguyên liệu thượng phẩm từ Tâm Ma Tháp, dùng nâng Pháp Tắc lên cấp 21–50.",
-    "category": "material", "rarity": "epic", "icon_id": "consumable_12", "stackable": true, "max_stack": 999999, "order": 492, "expires_after_hours": 0,
-    "tags": ["material", "law_fragment", "trial_tower"],
-    "attributes": {"atlas_slot": 12, "material_family": "law_fragment", "tier": "high"}
+    "category": "material",
+    "rarity": "epic",
+    "icon_id": "consumable_12",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 492,
+    "expires_after_hours": 0,
+    "tags": [
+      "material",
+      "law_fragment",
+      "trial_tower",
+      "fragment"
+    ],
+    "attributes": {
+      "atlas_slot": 12,
+      "material_family": "law_fragment",
+      "tier": "high"
+    }
   },
   {
     "id": "exp_boost_card_10",
     "display_name": "Thẻ EXP +10%",
     "description": "Tăng 10% EXP nhận được từ gameplay trong 24 giờ. Dùng cùng mức để cộng dồn thời gian.",
-    "category": "consumable", "rarity": "common", "icon_id": "consumable_13", "stackable": true, "max_stack": 999999, "order": 523, "expires_after_hours": 0,
-    "tags": ["consumable", "boost_card", "exp_boost"],
-    "attributes": {"atlas_slot": 13, "consumable_family": "boost_cards", "use_action": "use_consumable", "enabled": true, "effect": {"context": "inventory", "kind": "gameplay_boost", "resource": "exp", "multiplier": 1.1, "duration": 86400}}
+    "category": "consumable",
+    "rarity": "common",
+    "icon_id": "consumable_13",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 523,
+    "expires_after_hours": 0,
+    "tags": [
+      "consumable",
+      "boost_card",
+      "exp_boost",
+      "boost"
+    ],
+    "attributes": {
+      "atlas_slot": 13,
+      "consumable_family": "boost_cards",
+      "use_action": "use_consumable",
+      "enabled": true,
+      "effect": {
+        "context": "inventory",
+        "kind": "gameplay_boost",
+        "resource": "exp",
+        "multiplier": 1.1,
+        "duration": 86400
+      }
+    }
   },
   {
     "id": "exp_boost_card_25",
     "display_name": "Thẻ EXP +25%",
     "description": "Tăng 25% EXP nhận được từ gameplay trong 24 giờ. Thẻ mạnh hơn thay thế buff thấp hơn sau khi xác nhận.",
-    "category": "consumable", "rarity": "rare", "icon_id": "consumable_14", "stackable": true, "max_stack": 999999, "order": 524, "expires_after_hours": 0,
-    "tags": ["consumable", "boost_card", "exp_boost"],
-    "attributes": {"atlas_slot": 14, "consumable_family": "boost_cards", "use_action": "use_consumable", "enabled": true, "effect": {"context": "inventory", "kind": "gameplay_boost", "resource": "exp", "multiplier": 1.25, "duration": 86400}}
+    "category": "consumable",
+    "rarity": "rare",
+    "icon_id": "consumable_14",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 524,
+    "expires_after_hours": 0,
+    "tags": [
+      "consumable",
+      "boost_card",
+      "exp_boost",
+      "boost"
+    ],
+    "attributes": {
+      "atlas_slot": 14,
+      "consumable_family": "boost_cards",
+      "use_action": "use_consumable",
+      "enabled": true,
+      "effect": {
+        "context": "inventory",
+        "kind": "gameplay_boost",
+        "resource": "exp",
+        "multiplier": 1.25,
+        "duration": 86400
+      }
+    }
   },
   {
     "id": "exp_boost_card_50",
     "display_name": "Thẻ EXP +50%",
     "description": "Tăng 50% EXP nhận được từ gameplay trong 24 giờ.",
-    "category": "consumable", "rarity": "epic", "icon_id": "consumable_15", "stackable": true, "max_stack": 999999, "order": 525, "expires_after_hours": 0,
-    "tags": ["consumable", "boost_card", "exp_boost"],
-    "attributes": {"atlas_slot": 15, "consumable_family": "boost_cards", "use_action": "use_consumable", "enabled": true, "effect": {"context": "inventory", "kind": "gameplay_boost", "resource": "exp", "multiplier": 1.5, "duration": 86400}}
+    "category": "consumable",
+    "rarity": "epic",
+    "icon_id": "consumable_15",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 525,
+    "expires_after_hours": 0,
+    "tags": [
+      "consumable",
+      "boost_card",
+      "exp_boost",
+      "boost"
+    ],
+    "attributes": {
+      "atlas_slot": 15,
+      "consumable_family": "boost_cards",
+      "use_action": "use_consumable",
+      "enabled": true,
+      "effect": {
+        "context": "inventory",
+        "kind": "gameplay_boost",
+        "resource": "exp",
+        "multiplier": 1.5,
+        "duration": 86400
+      }
+    }
   },
   {
     "id": "exp_boost_card_x2",
     "display_name": "Thẻ EXP x2",
     "description": "Nhân đôi EXP nhận được từ gameplay trong 24 giờ.",
-    "category": "consumable", "rarity": "legendary", "icon_id": "consumable_16", "stackable": true, "max_stack": 999999, "order": 526, "expires_after_hours": 0,
-    "tags": ["consumable", "boost_card", "exp_boost"],
-    "attributes": {"atlas_slot": 16, "consumable_family": "boost_cards", "use_action": "use_consumable", "enabled": true, "effect": {"context": "inventory", "kind": "gameplay_boost", "resource": "exp", "multiplier": 2.0, "duration": 86400}}
+    "category": "consumable",
+    "rarity": "legendary",
+    "icon_id": "consumable_16",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 526,
+    "expires_after_hours": 0,
+    "tags": [
+      "consumable",
+      "boost_card",
+      "exp_boost",
+      "boost"
+    ],
+    "attributes": {
+      "atlas_slot": 16,
+      "consumable_family": "boost_cards",
+      "use_action": "use_consumable",
+      "enabled": true,
+      "effect": {
+        "context": "inventory",
+        "kind": "gameplay_boost",
+        "resource": "exp",
+        "multiplier": 2.0,
+        "duration": 86400
+      }
+    }
   },
   {
     "id": "exp_boost_card_x5",
     "display_name": "Thẻ EXP x5",
     "description": "Nhân năm EXP nhận được từ gameplay trong 24 giờ.",
-    "category": "consumable", "rarity": "mythic", "icon_id": "consumable_17", "stackable": true, "max_stack": 999999, "order": 527, "expires_after_hours": 0,
-    "tags": ["consumable", "boost_card", "exp_boost"],
-    "attributes": {"atlas_slot": 17, "consumable_family": "boost_cards", "use_action": "use_consumable", "enabled": true, "effect": {"context": "inventory", "kind": "gameplay_boost", "resource": "exp", "multiplier": 5.0, "duration": 86400}}
+    "category": "consumable",
+    "rarity": "mythic",
+    "icon_id": "consumable_17",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 527,
+    "expires_after_hours": 0,
+    "tags": [
+      "consumable",
+      "boost_card",
+      "exp_boost",
+      "boost"
+    ],
+    "attributes": {
+      "atlas_slot": 17,
+      "consumable_family": "boost_cards",
+      "use_action": "use_consumable",
+      "enabled": true,
+      "effect": {
+        "context": "inventory",
+        "kind": "gameplay_boost",
+        "resource": "exp",
+        "multiplier": 5.0,
+        "duration": 86400
+      }
+    }
   },
   {
     "id": "gold_boost_card_10",
     "display_name": "Thẻ Gold +10%",
     "description": "Tăng 10% Gold nhận được từ gameplay trong 24 giờ.",
-    "category": "consumable", "rarity": "common", "icon_id": "consumable_18", "stackable": true, "max_stack": 999999, "order": 528, "expires_after_hours": 0,
-    "tags": ["consumable", "boost_card", "gold_boost"],
-    "attributes": {"atlas_slot": 18, "consumable_family": "boost_cards", "use_action": "use_consumable", "enabled": true, "effect": {"context": "inventory", "kind": "gameplay_boost", "resource": "gold", "multiplier": 1.1, "duration": 86400}}
+    "category": "consumable",
+    "rarity": "common",
+    "icon_id": "consumable_18",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 528,
+    "expires_after_hours": 0,
+    "tags": [
+      "consumable",
+      "boost_card",
+      "gold_boost",
+      "boost"
+    ],
+    "attributes": {
+      "atlas_slot": 18,
+      "consumable_family": "boost_cards",
+      "use_action": "use_consumable",
+      "enabled": true,
+      "effect": {
+        "context": "inventory",
+        "kind": "gameplay_boost",
+        "resource": "gold",
+        "multiplier": 1.1,
+        "duration": 86400
+      }
+    }
   },
   {
     "id": "gold_boost_card_25",
     "display_name": "Thẻ Gold +25%",
     "description": "Tăng 25% Gold nhận được từ gameplay trong 24 giờ.",
-    "category": "consumable", "rarity": "rare", "icon_id": "consumable_19", "stackable": true, "max_stack": 999999, "order": 529, "expires_after_hours": 0,
-    "tags": ["consumable", "boost_card", "gold_boost"],
-    "attributes": {"atlas_slot": 19, "consumable_family": "boost_cards", "use_action": "use_consumable", "enabled": true, "effect": {"context": "inventory", "kind": "gameplay_boost", "resource": "gold", "multiplier": 1.25, "duration": 86400}}
+    "category": "consumable",
+    "rarity": "rare",
+    "icon_id": "consumable_19",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 529,
+    "expires_after_hours": 0,
+    "tags": [
+      "consumable",
+      "boost_card",
+      "gold_boost",
+      "boost"
+    ],
+    "attributes": {
+      "atlas_slot": 19,
+      "consumable_family": "boost_cards",
+      "use_action": "use_consumable",
+      "enabled": true,
+      "effect": {
+        "context": "inventory",
+        "kind": "gameplay_boost",
+        "resource": "gold",
+        "multiplier": 1.25,
+        "duration": 86400
+      }
+    }
   },
   {
     "id": "gold_boost_card_50",
     "display_name": "Thẻ Gold +50%",
     "description": "Tăng 50% Gold nhận được từ gameplay trong 24 giờ.",
-    "category": "consumable", "rarity": "epic", "icon_id": "consumable_20", "stackable": true, "max_stack": 999999, "order": 530, "expires_after_hours": 0,
-    "tags": ["consumable", "boost_card", "gold_boost"],
-    "attributes": {"atlas_slot": 20, "consumable_family": "boost_cards", "use_action": "use_consumable", "enabled": true, "effect": {"context": "inventory", "kind": "gameplay_boost", "resource": "gold", "multiplier": 1.5, "duration": 86400}}
+    "category": "consumable",
+    "rarity": "epic",
+    "icon_id": "consumable_20",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 530,
+    "expires_after_hours": 0,
+    "tags": [
+      "consumable",
+      "boost_card",
+      "gold_boost",
+      "boost"
+    ],
+    "attributes": {
+      "atlas_slot": 20,
+      "consumable_family": "boost_cards",
+      "use_action": "use_consumable",
+      "enabled": true,
+      "effect": {
+        "context": "inventory",
+        "kind": "gameplay_boost",
+        "resource": "gold",
+        "multiplier": 1.5,
+        "duration": 86400
+      }
+    }
   },
   {
     "id": "gold_boost_card_x2",
     "display_name": "Thẻ Gold x2",
     "description": "Nhân đôi Gold nhận được từ gameplay trong 24 giờ.",
-    "category": "consumable", "rarity": "legendary", "icon_id": "consumable_21", "stackable": true, "max_stack": 999999, "order": 531, "expires_after_hours": 0,
-    "tags": ["consumable", "boost_card", "gold_boost"],
-    "attributes": {"atlas_slot": 21, "consumable_family": "boost_cards", "use_action": "use_consumable", "enabled": true, "effect": {"context": "inventory", "kind": "gameplay_boost", "resource": "gold", "multiplier": 2.0, "duration": 86400}}
+    "category": "consumable",
+    "rarity": "legendary",
+    "icon_id": "consumable_21",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 531,
+    "expires_after_hours": 0,
+    "tags": [
+      "consumable",
+      "boost_card",
+      "gold_boost",
+      "boost"
+    ],
+    "attributes": {
+      "atlas_slot": 21,
+      "consumable_family": "boost_cards",
+      "use_action": "use_consumable",
+      "enabled": true,
+      "effect": {
+        "context": "inventory",
+        "kind": "gameplay_boost",
+        "resource": "gold",
+        "multiplier": 2.0,
+        "duration": 86400
+      }
+    }
   },
   {
     "id": "gold_boost_card_x5",
     "display_name": "Thẻ Gold x5",
     "description": "Nhân năm Gold nhận được từ gameplay trong 24 giờ.",
-    "category": "consumable", "rarity": "mythic", "icon_id": "consumable_22", "stackable": true, "max_stack": 999999, "order": 532, "expires_after_hours": 0,
-    "tags": ["consumable", "boost_card", "gold_boost"],
-    "attributes": {"atlas_slot": 22, "consumable_family": "boost_cards", "use_action": "use_consumable", "enabled": true, "effect": {"context": "inventory", "kind": "gameplay_boost", "resource": "gold", "multiplier": 5.0, "duration": 86400}}
+    "category": "consumable",
+    "rarity": "mythic",
+    "icon_id": "consumable_22",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 532,
+    "expires_after_hours": 0,
+    "tags": [
+      "consumable",
+      "boost_card",
+      "gold_boost",
+      "boost"
+    ],
+    "attributes": {
+      "atlas_slot": 22,
+      "consumable_family": "boost_cards",
+      "use_action": "use_consumable",
+      "enabled": true,
+      "effect": {
+        "context": "inventory",
+        "kind": "gameplay_boost",
+        "resource": "gold",
+        "multiplier": 5.0,
+        "duration": 86400
+      }
+    }
   },
   {
     "id": "exp_boost_card_10_1h",
     "display_name": "Thẻ EXP +10% (1 giờ)",
     "description": "Tăng 10% EXP nhận được từ gameplay trong 1 giờ. Dùng cùng mức để cộng dồn thời gian.",
-    "category": "consumable", "rarity": "common", "icon_id": "consumable_13", "stackable": true, "max_stack": 999999, "order": 533, "expires_after_hours": 0,
-    "tags": ["consumable", "boost_card", "shop_boost", "exp_boost"],
-    "attributes": {"atlas_slot": 13, "consumable_family": "boost_cards", "use_action": "use_consumable", "enabled": true, "effect": {"context": "inventory", "kind": "gameplay_boost", "resource": "exp", "multiplier": 1.1, "duration": 3600}}
+    "category": "consumable",
+    "rarity": "common",
+    "icon_id": "consumable_13",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 533,
+    "expires_after_hours": 0,
+    "tags": [
+      "consumable",
+      "boost_card",
+      "shop_boost",
+      "exp_boost",
+      "boost"
+    ],
+    "attributes": {
+      "atlas_slot": 13,
+      "consumable_family": "boost_cards",
+      "use_action": "use_consumable",
+      "enabled": true,
+      "effect": {
+        "context": "inventory",
+        "kind": "gameplay_boost",
+        "resource": "exp",
+        "multiplier": 1.1,
+        "duration": 3600
+      }
+    }
   },
   {
     "id": "exp_boost_card_25_1h",
     "display_name": "Thẻ EXP +25% (1 giờ)",
     "description": "Tăng 25% EXP nhận được từ gameplay trong 1 giờ. Thẻ mạnh hơn thay thế buff thấp hơn sau khi xác nhận.",
-    "category": "consumable", "rarity": "rare", "icon_id": "consumable_14", "stackable": true, "max_stack": 999999, "order": 534, "expires_after_hours": 0,
-    "tags": ["consumable", "boost_card", "shop_boost", "exp_boost"],
-    "attributes": {"atlas_slot": 14, "consumable_family": "boost_cards", "use_action": "use_consumable", "enabled": true, "effect": {"context": "inventory", "kind": "gameplay_boost", "resource": "exp", "multiplier": 1.25, "duration": 3600}}
+    "category": "consumable",
+    "rarity": "rare",
+    "icon_id": "consumable_14",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 534,
+    "expires_after_hours": 0,
+    "tags": [
+      "consumable",
+      "boost_card",
+      "shop_boost",
+      "exp_boost",
+      "boost"
+    ],
+    "attributes": {
+      "atlas_slot": 14,
+      "consumable_family": "boost_cards",
+      "use_action": "use_consumable",
+      "enabled": true,
+      "effect": {
+        "context": "inventory",
+        "kind": "gameplay_boost",
+        "resource": "exp",
+        "multiplier": 1.25,
+        "duration": 3600
+      }
+    }
   },
   {
     "id": "gold_boost_card_10_1h",
     "display_name": "Thẻ Gold +10% (1 giờ)",
     "description": "Tăng 10% Gold nhận được từ gameplay trong 1 giờ. Dùng cùng mức để cộng dồn thời gian.",
-    "category": "consumable", "rarity": "common", "icon_id": "consumable_18", "stackable": true, "max_stack": 999999, "order": 535, "expires_after_hours": 0,
-    "tags": ["consumable", "boost_card", "shop_boost", "gold_boost"],
-    "attributes": {"atlas_slot": 18, "consumable_family": "boost_cards", "use_action": "use_consumable", "enabled": true, "effect": {"context": "inventory", "kind": "gameplay_boost", "resource": "gold", "multiplier": 1.1, "duration": 3600}}
+    "category": "consumable",
+    "rarity": "common",
+    "icon_id": "consumable_18",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 535,
+    "expires_after_hours": 0,
+    "tags": [
+      "consumable",
+      "boost_card",
+      "shop_boost",
+      "gold_boost",
+      "boost"
+    ],
+    "attributes": {
+      "atlas_slot": 18,
+      "consumable_family": "boost_cards",
+      "use_action": "use_consumable",
+      "enabled": true,
+      "effect": {
+        "context": "inventory",
+        "kind": "gameplay_boost",
+        "resource": "gold",
+        "multiplier": 1.1,
+        "duration": 3600
+      }
+    }
   },
   {
     "id": "gold_boost_card_25_1h",
     "display_name": "Thẻ Gold +25% (1 giờ)",
     "description": "Tăng 25% Gold nhận được từ gameplay trong 1 giờ. Thẻ mạnh hơn thay thế buff thấp hơn sau khi xác nhận.",
-    "category": "consumable", "rarity": "rare", "icon_id": "consumable_19", "stackable": true, "max_stack": 999999, "order": 536, "expires_after_hours": 0,
-    "tags": ["consumable", "boost_card", "shop_boost", "gold_boost"],
-    "attributes": {"atlas_slot": 19, "consumable_family": "boost_cards", "use_action": "use_consumable", "enabled": true, "effect": {"context": "inventory", "kind": "gameplay_boost", "resource": "gold", "multiplier": 1.25, "duration": 3600}}
+    "category": "consumable",
+    "rarity": "rare",
+    "icon_id": "consumable_19",
+    "stackable": true,
+    "max_stack": 999999,
+    "order": 536,
+    "expires_after_hours": 0,
+    "tags": [
+      "consumable",
+      "boost_card",
+      "shop_boost",
+      "gold_boost",
+      "boost"
+    ],
+    "attributes": {
+      "atlas_slot": 19,
+      "consumable_family": "boost_cards",
+      "use_action": "use_consumable",
+      "enabled": true,
+      "effect": {
+        "context": "inventory",
+        "kind": "gameplay_boost",
+        "resource": "gold",
+        "multiplier": 1.25,
+        "duration": 3600
+      }
+    }
   },
-{
-  "id": "than_luan_boost_charm",
-  "display_name": "Pháp Tắc Phù",
-  "description": "Tăng thêm 50% tỷ lệ thành công hiện có cho một lần nâng cấp Pháp Tắc, tối đa 100%. Phù bị tiêu hao dù nâng cấp thất bại.",
-  "rarity": "rare",
-  "icon_id": "divine_wheel_boost",
-  "order": 66,
-  "category": "consumable",
-  "stackable": true,
-  "max_stack": 999999,
-  "expires_after_hours": 0,
-  "tags": [
-    "than_luan",
-    "upgrade",
-    "success_charm"
-  ],
-  "attributes": {
-    "upgrade_context": "than_luan",
-    "success_rate_multiplier": 1.5
+  {
+    "id": "than_luan_boost_charm",
+    "display_name": "Pháp Tắc Phù",
+    "description": "Tăng thêm 50% tỷ lệ thành công hiện có cho một lần nâng cấp Pháp Tắc, tối đa 100%. Phù bị tiêu hao dù nâng cấp thất bại.",
+    "rarity": "rare",
+    "icon_id": "divine_wheel_boost",
+    "order": 66,
+    "category": "consumable",
+    "stackable": true,
+    "max_stack": 999999,
+    "expires_after_hours": 0,
+    "tags": [
+      "than_luan",
+      "upgrade",
+      "success_charm",
+      "consumable",
+      "charm"
+    ],
+    "attributes": {
+      "upgrade_context": "than_luan",
+      "success_rate_multiplier": 1.5
+    }
   }
-}
 ]

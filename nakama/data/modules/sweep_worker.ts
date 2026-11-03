@@ -12,7 +12,7 @@ function sweepCreateWorkerIndex(nk: nkruntime.Nakama): void {
 
 const rpcSweepTick: nkruntime.RpcFunction = (ctx, logger, nk, _payload) => {
     // Nakama authenticates userless calls with runtime HTTP key at the gateway.
-    if (ctx.userId && ctx.userId !== String((ctx.env || {}).CONFIG_ADMIN_USER_ID || ''))
+    if (ctx.userId && !isConfigAdmin(ctx))
         return JSON.stringify({success:false,code:'FORBIDDEN'});
     const multi = !!ctx.env && ctx.env.MULTI_SERVER_ENABLED === 'true';
     const now = Date.now(), deadline = now + 750;

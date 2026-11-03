@@ -22,7 +22,7 @@ test('browser keeps credentials hidden until validated, and hides consumed links
 
 test('Google proof accepts valid Gmail OAuth even when email registration reports conflict',async t=>{
  const queries=[];
- const db={async query(sql){queries.push(sql);if(sql.includes('RETURNING count'))return {rows:[{count:1}]};if(sql==='SELECT 1 FROM users WHERE email=$1')return {rowCount:1,rows:[{}]};return {rows:[],rowCount:0};},release(){}};
+ const db={async query(sql){queries.push(sql);if(sql.includes('SELECT state FROM account_archive_restore_gate'))return {rows:[{state:'ready'}],rowCount:1};if(sql.includes('RETURNING count'))return {rows:[{count:1}]};if(sql==='SELECT 1 FROM users WHERE email=$1')return {rowCount:1,rows:[{}]};return {rows:[],rowCount:0};},release(){}};
  const pool={...db,async connect(){return db;},async end(){}};
  const secret='a'.repeat(64);
  const app=await createService({ACCOUNT_IDENTITY_SECRET:secret,ACCOUNT_IDENTITY_OUTBOX_KEY:'b'.repeat(64),PGHOST:'unused',PGDATABASE:'unused',PGUSER:'unused',PGPASSWORD:'unused',NAKAMA_HTTP_KEY:'test',SMTP_USER:'test@gmail.com',SMTP_PASSWORD:'test',SMTP_FROM:'test@gmail.com',ACCOUNT_IDENTITY_PUBLIC_URL:'https://identity.example',GOOGLE_WEB_CLIENT_IDS:'google-client',PORT:'0'},
@@ -36,5 +36,6 @@ test('Google proof accepts valid Gmail OAuth even when email registration report
  queries.length=0;
  const proof=await post('internal/google-proof',{id_token:'valid-provider-proof'},true);
  assert.equal(proof.success,true);assert.equal(proof.authoritative_email,'owner@gmail.com');
- assert.equal(queries.some(q=>q.includes('FROM users')||q.includes('account_identity_challenges')),false);
+ assert.equal(queries.some(q=>q.includes('account_identity_challenges')),false);
+ assert.ok(queries.some(q=>q.includes('account_identity_deletions')),'provider login checks reserved identities during deletion');
 });

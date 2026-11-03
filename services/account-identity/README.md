@@ -102,9 +102,9 @@ Device-only/lost-access users can email `admin@lkvustudio.com` without reinstall
 node src/operator.js --user=<account UUID> --confirm=<same UUID> --case=<verified-case-reference>
 ```
 
-This command schedules irreversible deletion across every server and must only run after verification. It is not an HTTP endpoint and is never invoked automatically by this change. Record the job ID/case reference in the restricted support system, pass the status receipt to the requester securely, and retain no credentials in the case notes.
+This command schedules policy-governed soft deletion across every server and must only run after verification. It is not an HTTP endpoint and is never invoked automatically by this change. Record the job ID/case reference in the restricted support system, pass the status receipt to the requester securely, and retain no credentials in the case notes.
 
-Worker retries every 30 seconds after failures; repeated failure moves the job to `manual_review`. Inspect data/FK failures and active account leases. Do not reset `active_requests` blindly: first ensure the process holding the lease is gone and no mutation can still commit. After fixing the cause, authorized operators may set that job to `queued`, `attempts=0` to retry; never mark completed by hand. Logs omit recipient, password, token and SQL payload.
+Worker retries every 30 seconds after failures; repeated failure moves the job to `manual_review`. Inspect data/FK failures and active account leases. Do not reset `active_requests` blindly: first ensure the process holding the lease is gone and no mutation can still commit. After fixing the cause, authorized operators may retry only an authorized v2 job while preserving its archive, deadline, snapshot and hold; never reset it to legacy queued to retry; never mark completed by hand. Logs omit recipient, password, token and SQL payload.
 
 Identity proof links expire after 15 minutes. Expired challenge rows are purged after one day; sent/expired outbox bodies are redacted promptly. Internal abandoned creation markers reconcile after one hour. A pending address is never reserved. Receipt hashes, job user IDs/tombstones and minimal purchase replay records remain restricted for restoration/replay protection; the operator must establish a justified production retention schedule. No arbitrary financial/backup deletion deadline is claimed.
 
@@ -112,7 +112,7 @@ On backup restore keep service closed, restore the current deletion/tombstone le
 
 ## Transactional email design
 
-`src/mail-template.js` renders three purpose-specific HTML + plain-text messages. It uses the game's jade/gold visual language, ivory reading surface, 600px presentation tables and inline essential styles. No remote images/fonts, trackers, scripts or forms are included. Outlook VML button fallback and visible copyable URL accompany the normal CTA. Expiry is the challenge's actual timestamp in GMT+7; delivery does not restart its 15-minute lifetime. Deletion email opens a review page and never implies a click immediately deletes an account.
+`src/mail-template.js` renders four purpose-specific HTML + plain-text messages. It uses the game's jade/gold visual language, ivory reading surface, 600px presentation tables and inline essential styles. No remote images/fonts, trackers, scripts or forms are included. Outlook VML button fallback and visible copyable URL accompany the normal CTA. Expiry is the challenge's actual timestamp in GMT+7; delivery does not restart its 15-minute lifetime. Deletion email opens a review page and never implies a click immediately deletes an account.
 
 Automated contrast checks cover every authored text/background pair at WCAG AA 4.5:1. Browser previews check 760px and 375px layouts and the matching confirmation page. These checks do not certify every inbox client or forced dark-mode transformation; final acceptance must include Gmail mobile/web and the Outlook versions in the supported device matrix.
 
@@ -137,4 +137,20 @@ npm test
 docker compose -p c232-test -f test/compose.yml down
 ```
 
-The isolated compose stack uses ephemeral PostgreSQL on `25432` and actual Nakama 3.24.2 on `27350`. Tests inject a mail transport (no external delivery) and Google verifier (real production code uses Google's library/audience/freshness verification). Neither Gmail delivery nor Android Google account selection is certified by these tests; verify those with configured credentials/device before release. Never point these fixture tests at a real player database.
+The isolated compose stack uses ephemeral PostgreSQL on `25433` and actual Nakama 3.24.2 on `27350`. Tests inject a mail transport (no external delivery) and Google verifier (real production code uses Google's library/audience/freshness verification). Neither Gmail delivery nor Android Google account selection is certified by these tests; verify those with configured credentials/device before release. Never point these fixture tests at a real player database.
+
+## C232 v2 (supersedes older deletion behavior)
+
+Accepted requests enter soft_deleted for system.account_deletion.soft_delete_days (local14), retaining canonical email/provider/profile/phone reservations. Before restore_until, fresh email link+password or subject-bound Google proof can cancel and invalidate the login generation. Receipt alone only reads status. After deadline, a separate ACCOUNT_RETENTION_KEY encrypts the owner/alias profile archive before authorization; the current policy, archive, hold and deadline are rechecked by runtime. Missing key/config defers; legacy jobs require manual_review. Completed means operational deletion, with restricted retention/replay records remaining. Archive auto-expiry, key rotation, full hold RBAC/audit and backup restore certification remain open. See client/docs/standards/g2-registration/implementation/retention/B6/system.md from workspace root. No production rollout or compliance acceptance.
+
+## Planned v3 lifecycle — not implemented
+
+The agreed successor keeps a14-day restoration window, releases credentials/identity reservations only when archive commits, and retains isolated gameplay for3 calendar months after archived_at before a daily cleanup. Minimal user and billing/transaction records have separate retention policies. Runtime remains v2.0; do not publish schema2 or treat current tests as v3 evidence. See ../../docs/ACCOUNT_ARCHIVE_LIFECYCLE.md and B6 archive-policy.md in the client documentation.
+
+## Current implementation v3.0.1 — supersedes older sections
+
+Local schema2 policy is live. archive.js validates policy/key ID/native schema3.24.2 and archives/detaches credentials/releases canonical identity in one PostgreSQL transaction; no native accountDeleteId. Retains user tombstones and financial ownership/payloads. archive-v3.sql supplies gameplay-only cleanup after3 calendar months; daily persisted scheduler drains batches, retries failed atomic account checkpoints. Old delete_tick is disabled. Raw native API hooks also reject archived/stale sessions.
+
+ACCOUNT_RETENTION_KEY_ID must match policy/snapshot; key value remains in private env. Host-only archive-operator supports --action=hold|release|retry --job=UUID --confirm=sameUUID --case=REF, with --scope for hold/--hold UUID for release. Actor comes from host, PG access is the authorization boundary, not certified production RBAC. No public archive access. Schema mismatch/missing key/hold safely defers; no rollback to v2 worker.
+
+Integration uses25433/27350, real DB/Nakama, mock SMTP/Google/OTP.13 package tests and static/UI evidence recorded under client/docs/standards/g2-registration/evidence/retention/B6/phase-v3. Future full migration, identity/archive expiry, financial retention, key rotation/recovery, backup restore, RBAC/MFA and Android/email live remain pending. No production rollout or regulatory compliance claim.

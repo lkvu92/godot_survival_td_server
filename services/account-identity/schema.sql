@@ -1,3 +1,19 @@
+-- C232 v2: existing jobs deliberately default to legacy/manual review.
+ALTER TABLE account_identity_deletions ADD COLUMN IF NOT EXISTS flow_version INT NOT NULL DEFAULT 1,
+ ADD COLUMN IF NOT EXISTS soft_deleted_at TIMESTAMPTZ, ADD COLUMN IF NOT EXISTS restore_until TIMESTAMPTZ,
+ ADD COLUMN IF NOT EXISTS policy_snapshot JSONB, ADD COLUMN IF NOT EXISTS hard_authorized_at TIMESTAMPTZ,
+ ADD COLUMN IF NOT EXISTS hold BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE account_identity_deletions DROP CONSTRAINT IF EXISTS account_identity_deletions_user_id_key;
+CREATE UNIQUE INDEX IF NOT EXISTS identity_deletion_active_owner ON account_identity_deletions(user_id) WHERE status<>'cancelled';
+CREATE TABLE IF NOT EXISTS account_retention_archives(
+ deletion_id UUID PRIMARY KEY REFERENCES account_identity_deletions(id),payload TEXT NOT NULL,
+ created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),retain_until TIMESTAMPTZ NOT NULL,
+ hold BOOLEAN NOT NULL DEFAULT FALSE
+);
+CREATE TABLE IF NOT EXISTS account_deletion_notices(
+ deletion_id UUID PRIMARY KEY REFERENCES account_identity_deletions(id),payload TEXT NOT NULL,
+ status TEXT NOT NULL DEFAULT 'queued',next_attempt_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),lease_until TIMESTAMPTZ
+);
 CREATE TABLE IF NOT EXISTS account_identity_challenges (
  id UUID PRIMARY KEY, token_hash TEXT NOT NULL UNIQUE, purpose TEXT NOT NULL,
  email TEXT NOT NULL, user_id UUID, generation TEXT NOT NULL DEFAULT '',
@@ -17,8 +33,8 @@ CREATE OR REPLACE FUNCTION account_identity_cleanup(uid UUID) RETURNS VOID LANGU
 DECLARE tbl TEXT; field TEXT;
 BEGIN
  IF uid='00000000-0000-0000-0000-000000000000'::UUID THEN RAISE EXCEPTION 'System account'; END IF;
- IF NOT EXISTS(SELECT 1 FROM account_identity_deletions WHERE user_id=uid)
-   AND NOT EXISTS(SELECT 1 FROM account_link_state a JOIN account_identity_deletions d ON d.user_id=a.merged_into WHERE a.user_id=uid AND a.status='archived') THEN RAISE EXCEPTION 'Deletion job required'; END IF;
+ IF NOT EXISTS(SELECT 1 FROM account_identity_deletions WHERE user_id=uid AND flow_version=2 AND status='processing' AND restore_until<=NOW() AND hard_authorized_at IS NOT NULL AND NOT hold)
+   AND NOT EXISTS(SELECT 1 FROM account_link_state a JOIN account_identity_deletions d ON d.user_id=a.merged_into WHERE a.user_id=uid AND a.status='archived' AND d.flow_version=2 AND d.status='processing' AND d.restore_until<=NOW() AND d.hard_authorized_at IS NOT NULL AND NOT d.hold) THEN RAISE EXCEPTION 'Deletion job required'; END IF;
  DELETE FROM account_identity_outbox WHERE challenge_id IN(SELECT id FROM account_identity_challenges WHERE user_id=uid);
  DELETE FROM account_identity_challenges WHERE user_id=uid OR email IN(SELECT email FROM users WHERE id=uid);
  DELETE FROM account_identity_verifications WHERE user_id=uid;

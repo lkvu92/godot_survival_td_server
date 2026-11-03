@@ -8,6 +8,7 @@ const owners=new Map();let sequence=0,handled=0,pushes=[];
 const nk={notificationSend(...args){pushes.push(args);},uuidv4:()=>`server-${++sequence}`,sqlExec(sql,args){
   if(sql.includes('INSERT INTO player_login_sessions')) owners.set(args[0],args[1]);
 },sqlQuery(sql,args){
+  if(sql.includes('FROM account_archive_restore_gate'))return [{state:'ready'}];
   if(sql.includes('FROM player_login_sessions')) return owners.has(args[0])?[{generation:owners.get(args[0])}]:[];
   if(sql.includes('INSERT INTO account_link_state')) return [{user_id:args[0]}];
   return [];

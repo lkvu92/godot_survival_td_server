@@ -64,3 +64,40 @@ Mọi tính năng/nhiệm vụ đều phải vượt qua **GATE** trước khi c
 - `/agent gameplay`: Kích hoạt riêng vai trò Godot Gameplay Core (Services, Managers, JSON).
 - `/agent presentation`: Kích hoạt riêng vai trò Presentation (UI, Sprites, Scenes, VFX).
 - `/agent tester`: Kích hoạt riêng vai trò Tester (Static test, Chaos test, Gate Review).
+
+
+## Tham chiếu bắt buộc: quái, stage và skill dùng chung (C239)
+
+Các đường dẫn dưới đây tính từ root của từng repository.
+
+Trước khi sửa cơ chế sinh quái, growth, difficulty, skill hoặc khắc hệ, đọc:
+- `docs/contracts/C239_LEVELLED_ENEMY_FRAMEWORK.md` — contract và phạm vi áp dụng.
+- `docs/ENEMY_FRAMEWORK.md` — schema, API và cách chạy kiểm chứng; bản hướng dẫn đầy đủ nằm ở `server/docs/ENEMY_FRAMEWORK.md` trong workspace.
+- `docs/reports/C239_ACCEPTANCE.md` — benchmark, giới hạn và quyết định migration.
+
+Quy tắc triển khai:
+- Dùng khung v2 cho thiết kế mới: mỗi loài có base attributes và growth riêng, `Stat(L) = base + (L - 1) * growth`. Không suy stat quái từ base/level hero hoặc power tham chiếu của arc.
+- Loài không sở hữu element cố định hay danh sách skill có thể học. Atlas skill tập trung có element cố định; danh sách có thể học được lọc theo tập hệ của chủ thể. Stage chọn skill ID và level thực sự trang bị; không tự bật toàn bộ skill phù hợp.
+- Skill dùng chung định nghĩa cho creep, boss, pet và hero; damage dựa trên ATK hiện tại của chủ thể và hệ số level skill. Không sao chép định nghĩa theo loài hoặc loại actor. Tính năng học skill từ pet và migration toàn bộ skill legacy chưa nằm trong phạm vi đã hoàn thành.
+- Stage/wave khai báo loài, level, hệ hoặc random hệ có seed, số lượng, skill/level và lịch spawn. Difficulty v2 điều chỉnh level/skill; không chồng multiplier HP/ATK/DEF legacy hoặc enrage dựa trên stat hero.
+- C240 supersedes pilot-only damage rules: use the authoritative server matrix in every mode; defender chooses safest owned element. Empty defender takes 1.30 from five-element hits, all-five takes 1.00. Basic attacks are neutral (1.00 counter, no elemental affinity modifiers); skill damage uses its fixed element once.
+- Compile stat, hệ, skill và bảng tra khắc hệ khi loading; spawn node theo wave. Random dùng RNG riêng có seed. Resume phải resolve lại từ snapshot server, không tin stat/skill payload lưu trong save; pooling phải xóa state của framework.
+- Gameplay data mới thuộc `server/data/progression.json -> enemy_framework`, được cấp qua snapshot server có xác thực. Không tạo gameplay JSON fallback hoặc override ở client. Fixture JSON chỉ dùng trong test harness rõ ràng.
+- V2 hiện opt-in qua `stage_rules.enemy_framework_version: 2`. Không xem trạng thái ACTIVE của framework/pilot là campaign đã migrate hoặc đã cân bằng tương đương. Giữ đường legacy cho stage chưa chuyển; mọi migration tiếp theo phải có benchmark thực chiến phù hợp phạm vi, tử vong thật, seed/loadout/policy được ghi lại và báo cáo chênh lệch theo hero/difficulty.
+
+Kiểm chứng liên quan: `client/tests/run_enemy_framework.ps1`, `server/tests/test_enemy_framework.cjs`, `server/tools/benchmark_enemy_framework.cjs` (đường dẫn tính từ workspace). Không tuyên bố đã cân bằng hoặc đạt hiệu năng mobile chỉ từ static checks hay benchmark headless tăng tốc.
+
+## Required reference: shared damage (C240)
+
+- Read `docs/contracts/C240_SHARED_COMBAT_DAMAGE.md`, `docs/COMBAT_DAMAGE.md` and `docs/reports/C240_ACCEPTANCE.md` before changing damage or adding combat modes.
+- Every mode uses `CombatFormulaService` -> `CombatDamageService`; do not duplicate damage formulas. Actors own immunity/dodge/shields/HP/death.
+- Basics always use `neutral`. Damage uses the fixed skill/component element, never caster element or a second actor counter. Projectiles, areas and DoTs snapshot their element at creation.
+- Element matchups come from validated server snapshots, with no separate hardcoded pilot matrix. Actor elements determine defense and skill eligibility.
+- Preserve the seven-argument take_damage protocol. Raw damage excludes crit/DEF/counter/reductions. New producers require element-forwarding checks and mode regression coverage.
+
+## Arc 1 migration reference (C239 v1.4)
+
+- `server/data/c239_arc1_migration.json` (workspace-relative) authors the 10 order-1 stages of arc_2, including stage_flame_frontier and stage_2_02..10. Do not identify campaign order by stage ID prefix.
+- Read docs/reports/C239_ARC1_ACCEPTANCE.md before editing these stages. Local deployment uses server/tools/install_c239_arc1_local.cjs, with backup/CAS/readback. Generic seed stages remain legacy reference inputs until the separate production rollout. Never use client JSON gameplay fallback.
+- Technical migration gates require spawn/cast/damage/seed/resume/pooling and UI evidence. Balance is a later phase per user instruction; do not block migration on hero clear rates or alter hero stats to force pass.
+- User correction v1.4.1: Arcs 1-5 are single-element and retain their existing element distribution. Only Arc 6+ may spawn multiple elements. Keep creep primary icon at its original HP-bar anchor (-19,2.5); extra icons extend LEFT on the same baseline. Boss primary stays in its HUD badge; extra elements form a row immediately below the boss HP bar. Explicit loadouts preserve fixed skill elements.

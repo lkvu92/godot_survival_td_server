@@ -222,5 +222,20 @@ function createMonetizationTables(nk: nkruntime.Nakama, logger: nkruntime.Logger
         ) SELECT to_jsonb(r) INTO changed FROM revoked r LIMIT 1;
         RETURN changed;
       END $void$;`,[]);
+    nk.sqlExec(`CREATE TABLE IF NOT EXISTS payment_financial_records (
+      purchase_order_id TEXT PRIMARY KEY REFERENCES monetization_purchase_orders(id) ON DELETE CASCADE,
+      google_order_id TEXT NOT NULL UNIQUE,currency TEXT NOT NULL CHECK(currency ~ '^[A-Z]{3}$'),
+      original_amount NUMERIC(30,9) NOT NULL CHECK(original_amount>=0),tax_amount NUMERIC(30,9),
+      source TEXT NOT NULL DEFAULT 'google_orders_api',first_synced_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),last_synced_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
+      CREATE TABLE IF NOT EXISTS payment_financial_snapshots (
+      purchase_order_id TEXT NOT NULL REFERENCES payment_financial_records(purchase_order_id) ON DELETE CASCADE,
+      snapshot_hash TEXT NOT NULL,provider_event_at TIMESTAMPTZ NOT NULL,provider_state TEXT NOT NULL,
+      refunded_amount NUMERIC(30,9) NOT NULL CHECK(refunded_amount>=0),snapshot JSONB NOT NULL,synced_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      PRIMARY KEY(purchase_order_id,snapshot_hash));
+      CREATE INDEX IF NOT EXISTS financial_snapshot_latest_idx ON payment_financial_snapshots(purchase_order_id,provider_event_at DESC,synced_at DESC);
+      CREATE TABLE IF NOT EXISTS payment_financial_attempts (
+      purchase_order_id TEXT PRIMARY KEY REFERENCES monetization_purchase_orders(id) ON DELETE CASCADE,
+      last_attempt_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),failures INT NOT NULL DEFAULT 0);
+      CREATE INDEX IF NOT EXISTS purchase_orders_financial_sync_idx ON monetization_purchase_orders(platform,status,created_at);`,[]);
     logger.info("Monetization tables created/verified.");
 }

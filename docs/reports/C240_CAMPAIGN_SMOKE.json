@@ -1,0 +1,2670 @@
+{
+  "version": 1,
+  "fingerprint": "9c9cf5a0f1f4b4a8b2972eddde441714ef79234819079cabf1fc162e2fb8351d",
+  "source_fingerprint": "de3e27147e56116b2597dc207e1ff338f7c07547ec1b8619c3c1bb5242fe007f",
+  "source_unchanged": true,
+  "technical_status": "PASS",
+  "balance_status": "REVIEW_REQUIRED",
+  "policy": {
+    "mortal": true,
+    "movement": "kite",
+    "hero_level": 60,
+    "target_wave": 20,
+    "ordinary_offered_cards": true,
+    "native_elements": true,
+    "gear": false,
+    "affinity": false,
+    "seed_pairs": true,
+    "headless_accelerated": true,
+    "performance_limitations": "CPU/memory observations include headless engine and parallel process contention; not mobile certification"
+  },
+  "summary": [
+    {
+      "lane": "baseline",
+      "mode": "normal",
+      "cases": 5,
+      "clears": 3,
+      "deaths": 2,
+      "errors": 0,
+      "mean_wave": 18.6,
+      "mean_game_seconds": 501.056666666659,
+      "mean_incoming_damage": 35512.709323835246,
+      "max_compile_usec": 0,
+      "max_peak_memory_bytes": 740285102,
+      "max_peak_process_usec": 98644
+    },
+    {
+      "lane": "pilot",
+      "mode": "normal",
+      "cases": 5,
+      "clears": 3,
+      "deaths": 2,
+      "errors": 0,
+      "mean_wave": 15.4,
+      "mean_game_seconds": 341.21666666665743,
+      "mean_incoming_damage": 35056.47425926418,
+      "max_compile_usec": 29296,
+      "max_peak_memory_bytes": 644948125,
+      "max_peak_process_usec": 87142
+    }
+  ],
+  "results": [
+    {
+      "base_combat_power": 42217,
+      "base_stats": {
+        "atk": 1639.93723562756,
+        "attack_range": 350,
+        "attack_speed": 2.69806440380806,
+        "crit_damage": 2.385,
+        "crit_rate": 0.296,
+        "def": 134.233568697518,
+        "hp": 14937.8222732072,
+        "move_speed": 315.031224801516,
+        "regen_percent_per_10s": 0.0890000000000001
+      },
+      "boss_timing": {
+        "arc7_bach_ho_yeu_vuong_wood": {
+          "killed_at": 721.816666666694,
+          "lifetime": 198.200000000045,
+          "max_hp": 126749.0797065,
+          "spawn_at": 523.616666666649
+        }
+      },
+      "checkpoint_skills": [
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_1_skill_1"
+        },
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_1_skill_2"
+        },
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_1_skill_3"
+        },
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_1_skill_4"
+        }
+      ],
+      "checkpoints": [
+        {
+          "hp": 14966.6222732072,
+          "max_hp": 14966.6222732072,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 4,
+              "max": 5,
+              "skill_id": "hero_1_skill_1"
+            }
+          ],
+          "skills_max": false,
+          "wave": 4
+        },
+        {
+          "hp": 15002.6222732072,
+          "max_hp": 15002.6222732072,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_1_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_1_skill_2"
+            }
+          ],
+          "skills_max": true,
+          "wave": 9
+        },
+        {
+          "hp": 14005.388299073,
+          "max_hp": 15038.6222732072,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_1_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_1_skill_2"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_1_skill_3"
+            }
+          ],
+          "skills_max": true,
+          "wave": 14
+        },
+        {
+          "hp": 12651.091435631,
+          "max_hp": 15074.6222732072,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_1_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_1_skill_2"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_1_skill_3"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_1_skill_4"
+            }
+          ],
+          "skills_max": true,
+          "wave": 19
+        },
+        {
+          "hp": 1949.97985583324,
+          "max_hp": 15081.8222732072,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_1_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_1_skill_2"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_1_skill_3"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_1_skill_4"
+            }
+          ],
+          "skills_max": true,
+          "wave": 20
+        }
+      ],
+      "current_wave": 20,
+      "difficulty": "normal",
+      "elapsed_game_seconds": 721.816666666694,
+      "element_matchup_hit_counts": {},
+      "element_spawn_counts": {
+        "1": 46,
+        "2": 44,
+        "4": 48,
+        "8": 54,
+        "16": 49
+      },
+      "enemy_cast_counts": {
+        "B01": 2,
+        "B02": 24,
+        "B03": 18,
+        "B04": 1,
+        "C01": 19,
+        "C02": 7,
+        "C03": 54,
+        "C04": 51,
+        "C05": 25,
+        "C06": 27,
+        "C07": 65
+      },
+      "expected_skill_count": 4,
+      "framework_compile_usec": 0,
+      "guarantee_skills": false,
+      "healing_received": 70506.3191680344,
+      "hero_id": "hero_1",
+      "hp": 1949.97985583324,
+      "incoming_damage_by_enemy": {
+        "arc7_bach_ho_yeu_vuong_wood": 39307.0097167904,
+        "arc7_co_giap_long_te_earth": 2636.13767827976,
+        "arc7_co_giap_long_te_fire": 3539.50487809457,
+        "arc7_co_giap_long_te_metal": 5361.26523729737,
+        "arc7_co_giap_long_te_water": 4244.4605133883,
+        "arc7_co_giap_long_te_wood": 5406.14087257331,
+        "arc7_doc_tich_man_ngac_earth": 1413.31928007227,
+        "arc7_doc_tich_man_ngac_fire": 190.72618998984,
+        "arc7_doc_tich_man_ngac_metal": 1423.61047301206,
+        "arc7_doc_tich_man_ngac_water": 595.400396743065,
+        "arc7_doc_tich_man_ngac_wood": 1273.43837895042,
+        "arc7_huyen_lan_long_bao_earth": 735.766763171911,
+        "arc7_huyen_lan_long_bao_fire": 453.373530882942,
+        "arc7_huyen_lan_long_bao_metal": 629.333358279157,
+        "arc7_huyen_lan_long_bao_water": 754.777084784254,
+        "arc7_huyen_lan_long_bao_wood": 649.846417298381,
+        "arc7_huyet_man_cuong_su_earth": 186.811164468336,
+        "arc7_huyet_man_cuong_su_fire": 130.767815127835,
+        "arc7_huyet_man_cuong_su_metal": 245.85404447008,
+        "arc7_huyet_man_cuong_su_wood": 406.364213230703,
+        "arc7_loi_trao_hung_bi_earth": 1424.05140269142,
+        "arc7_loi_trao_hung_bi_fire": 463.534789620711,
+        "arc7_loi_trao_hung_bi_metal": 1600.63752843511,
+        "arc7_loi_trao_hung_bi_water": 266.779719901918,
+        "arc7_loi_trao_hung_bi_wood": 747.272798214715,
+        "arc7_man_cot_toan_nghe_earth": 1813.17163844502,
+        "arc7_man_cot_toan_nghe_fire": 1204.88329525506,
+        "arc7_man_cot_toan_nghe_metal": 2444.9237630158,
+        "arc7_man_cot_toan_nghe_water": 613.554922554033,
+        "arc7_man_cot_toan_nghe_wood": 1469.07937368592,
+        "arc7_pha_son_cu_vien_earth": 624.466823484018,
+        "arc7_pha_son_cu_vien_fire": 137.87345005635,
+        "arc7_pha_son_cu_vien_water": 415.790375282606,
+        "arc7_pha_son_cu_vien_wood": 828.233697860683
+      },
+      "incoming_damage_by_skill": {
+        "legacy_or_basic": 83638.1615854083
+      },
+      "incoming_damage_by_type": {
+        "arc7_B01": 426.163520201817,
+        "arc7_B02": 26975.5838862549,
+        "arc7_B03": 7766.01179625088,
+        "arc7_B04": 151.046104738497,
+        "arc7_C01": 2006.36434668366,
+        "arc7_C02": 969.797237296954,
+        "arc7_C03": 21187.5091796333,
+        "arc7_C04": 4475.12407234678,
+        "arc7_C05": 4502.27623886388,
+        "arc7_C06": 3223.09715441665,
+        "arc7_C07": 7545.61299295583,
+        "bleed": 3988.20440934425,
+        "poison": 421.370646420868
+      },
+      "incoming_hit_count": 351,
+      "incoming_total_damage": 83638.1615854083,
+      "loading_usec": 238125,
+      "max_hit": 1137.99749340354,
+      "max_hit_source": "arc7_bach_ho_yeu_vuong_wood",
+      "max_hit_type": "arc7_B02",
+      "max_hp": 15081.8222732072,
+      "mortal": true,
+      "movement": "kite",
+      "movement_policy": "range_65_85_half_speed_strafe_seed_side_v1",
+      "native_elements": true,
+      "outgoing_damage_by_enemy": {
+        "arc7_bach_ho_yeu_vuong_wood": 127013.214290124,
+        "arc7_co_giap_long_te_earth": 49232.3039276017,
+        "arc7_co_giap_long_te_fire": 76415.3309679142,
+        "arc7_co_giap_long_te_metal": 57441.2691839095,
+        "arc7_co_giap_long_te_water": 49468.7663037634,
+        "arc7_co_giap_long_te_wood": 56100.7912789203,
+        "arc7_doc_tich_man_ngac_earth": 28136.8928380855,
+        "arc7_doc_tich_man_ngac_fire": 33291.6136833254,
+        "arc7_doc_tich_man_ngac_metal": 34591.1366166089,
+        "arc7_doc_tich_man_ngac_water": 22356.3175758588,
+        "arc7_doc_tich_man_ngac_wood": 33116.6493408548,
+        "arc7_huyen_lan_long_bao_earth": 27792.3462150055,
+        "arc7_huyen_lan_long_bao_fire": 29368.0426684542,
+        "arc7_huyen_lan_long_bao_metal": 18895.3024864323,
+        "arc7_huyen_lan_long_bao_water": 23849.3651445702,
+        "arc7_huyen_lan_long_bao_wood": 27164.8808847518,
+        "arc7_huyet_man_cuong_su_earth": 33906.108494334,
+        "arc7_huyet_man_cuong_su_fire": 33706.5462067921,
+        "arc7_huyet_man_cuong_su_metal": 25405.8794387914,
+        "arc7_huyet_man_cuong_su_water": 25480.6530890809,
+        "arc7_huyet_man_cuong_su_wood": 25913.0735121479,
+        "arc7_loi_trao_hung_bi_earth": 39431.3981338102,
+        "arc7_loi_trao_hung_bi_fire": 46235.5472148924,
+        "arc7_loi_trao_hung_bi_metal": 28298.3134960468,
+        "arc7_loi_trao_hung_bi_water": 36612.0482011763,
+        "arc7_loi_trao_hung_bi_wood": 36003.3139980955,
+        "arc7_man_cot_toan_nghe_earth": 30254.0479298261,
+        "arc7_man_cot_toan_nghe_fire": 37669.3539941232,
+        "arc7_man_cot_toan_nghe_metal": 27912.9704528852,
+        "arc7_man_cot_toan_nghe_water": 37091.7921217936,
+        "arc7_man_cot_toan_nghe_wood": 27558.949657571,
+        "arc7_pha_son_cu_vien_earth": 36016.2474138024,
+        "arc7_pha_son_cu_vien_fire": 36050.2923385556,
+        "arc7_pha_son_cu_vien_metal": 34032.1626786038,
+        "arc7_pha_son_cu_vien_water": 30384.7251439099,
+        "arc7_pha_son_cu_vien_wood": 28851.0556217761
+      },
+      "peak_alive": 20,
+      "peak_process_usec": 55760,
+      "peak_static_memory_bytes": 723358194,
+      "persistent_level": 60,
+      "reason": "pass",
+      "require_max_skills": false,
+      "run_level": 21,
+      "runtime_stats": {
+        "atk": 1648.56223562756,
+        "attack_range": 350,
+        "attack_speed": 2.77306440380806,
+        "crit_damage": 2.685,
+        "crit_rate": 0.376,
+        "def": 136.483568697519,
+        "hp": 15081.8222732072,
+        "move_speed": 317.831224801516,
+        "regen_percent_per_10s": 0.1
+      },
+      "seed": 239,
+      "stage_id": "stage_7_05",
+      "status": "PASS",
+      "target_wave": 20,
+      "process_exit": 0,
+      "wall_ms": 11135,
+      "timed_out": false,
+      "runtime_errors": false,
+      "requested": {
+        "lane": "baseline",
+        "mode": "normal",
+        "hero": "hero_1",
+        "seed": 239
+      }
+    },
+    {
+      "base_combat_power": 39258,
+      "base_stats": {
+        "atk": 2529.6140634577,
+        "attack_range": 450,
+        "attack_speed": 2.93101634258312,
+        "crit_damage": 2.93,
+        "crit_rate": 0.3147,
+        "def": 50.5751317694849,
+        "hp": 9552.03957677486,
+        "move_speed": 331.90789755874,
+        "regen_percent_per_10s": 0.0572
+      },
+      "boss_timing": {
+        "arc7_bach_ho_yeu_vuong_wood": {
+          "max_hp": 126749.0797065,
+          "spawn_at": 420.016666666651
+        }
+      },
+      "checkpoint_skills": [
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_2_skill_1"
+        },
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_2_skill_2"
+        },
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_2_skill_3"
+        },
+        {
+          "actual": 4,
+          "max": 5,
+          "skill_id": "hero_2_skill_4"
+        }
+      ],
+      "checkpoints": [
+        {
+          "hp": 9572.60961677486,
+          "max_hp": 9572.60961677486,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 4,
+              "max": 5,
+              "skill_id": "hero_2_skill_1"
+            }
+          ],
+          "skills_max": false,
+          "wave": 4
+        },
+        {
+          "hp": 7561.37999257103,
+          "max_hp": 9598.32216677486,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_2_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_2_skill_2"
+            }
+          ],
+          "skills_max": true,
+          "wave": 9
+        },
+        {
+          "hp": 7898.13982786871,
+          "max_hp": 9624.03471677486,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_2_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_2_skill_2"
+            },
+            {
+              "actual": 4,
+              "max": 5,
+              "skill_id": "hero_2_skill_3"
+            }
+          ],
+          "skills_max": false,
+          "wave": 14
+        },
+        {
+          "hp": 1362.11875085654,
+          "max_hp": 9649.74726677485,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_2_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_2_skill_2"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_2_skill_3"
+            },
+            {
+              "actual": 4,
+              "max": 5,
+              "skill_id": "hero_2_skill_4"
+            }
+          ],
+          "skills_max": false,
+          "wave": 19
+        }
+      ],
+      "current_wave": 20,
+      "difficulty": "normal",
+      "elapsed_game_seconds": 428.016666666651,
+      "element_matchup_hit_counts": {},
+      "element_spawn_counts": {
+        "1": 46,
+        "2": 44,
+        "4": 48,
+        "8": 54,
+        "16": 49
+      },
+      "enemy_cast_counts": {
+        "B02": 1,
+        "B03": 1,
+        "C01": 13,
+        "C02": 10,
+        "C03": 33,
+        "C04": 30,
+        "C05": 11,
+        "C06": 15,
+        "C07": 32
+      },
+      "expected_skill_count": 4,
+      "framework_compile_usec": 0,
+      "guarantee_skills": false,
+      "healing_received": 20619.1254614422,
+      "hero_id": "hero_2",
+      "hp": 0,
+      "incoming_damage_by_enemy": {
+        "arc7_bach_ho_yeu_vuong_wood": 2089.3469351449,
+        "arc7_co_giap_long_te_earth": 2266.61042626022,
+        "arc7_co_giap_long_te_fire": 2487.60709156725,
+        "arc7_co_giap_long_te_metal": 3925.99855664697,
+        "arc7_co_giap_long_te_water": 4877.67025309724,
+        "arc7_co_giap_long_te_wood": 1872.2217771217,
+        "arc7_doc_tich_man_ngac_earth": 555.933270246587,
+        "arc7_doc_tich_man_ngac_fire": 435.120037941374,
+        "arc7_doc_tich_man_ngac_wood": 594.58855539228,
+        "arc7_huyen_lan_long_bao_earth": 527.089925725795,
+        "arc7_huyen_lan_long_bao_fire": 367.43718662869,
+        "arc7_huyen_lan_long_bao_metal": 268.726134572473,
+        "arc7_huyen_lan_long_bao_water": 1307.39937695194,
+        "arc7_huyen_lan_long_bao_wood": 701.584040201505,
+        "arc7_huyet_man_cuong_su_earth": 587.629744864643,
+        "arc7_huyet_man_cuong_su_water": 866.424984074707,
+        "arc7_huyet_man_cuong_su_wood": 201.41001010932,
+        "arc7_loi_trao_hung_bi_fire": 316.805240323261,
+        "arc7_loi_trao_hung_bi_metal": 357.716621915314,
+        "arc7_loi_trao_hung_bi_water": 470.921500477521,
+        "arc7_loi_trao_hung_bi_wood": 801.731451134258,
+        "arc7_man_cot_toan_nghe_earth": 469.03217719745,
+        "arc7_man_cot_toan_nghe_fire": 431.819319729534,
+        "arc7_man_cot_toan_nghe_metal": 444.240014518464,
+        "arc7_man_cot_toan_nghe_water": 1163.02544626241,
+        "arc7_man_cot_toan_nghe_wood": 781.913049804647,
+        "arc7_pha_son_cu_vien_earth": 263.577269007605,
+        "arc7_pha_son_cu_vien_metal": 311.057928322285,
+        "arc7_pha_son_cu_vien_water": 552.820885150569
+      },
+      "incoming_damage_by_skill": {
+        "legacy_or_basic": 30297.4592103909
+      },
+      "incoming_damage_by_type": {
+        "arc7_B02": 1266.27086978479,
+        "arc7_B03": 823.076065360111,
+        "arc7_C01": 1127.45608248046,
+        "arc7_C02": 1655.46473904867,
+        "arc7_C03": 15430.1081046934,
+        "arc7_C04": 1484.5114192301,
+        "arc7_C05": 1947.17481385035,
+        "arc7_C06": 3172.2366640804,
+        "arc7_C07": 3290.0300075125,
+        "poison": 101.130444350144
+      },
+      "incoming_hit_count": 76,
+      "incoming_total_damage": 30297.4592103909,
+      "loading_usec": 242511,
+      "max_hit": 853.971780251218,
+      "max_hit_source": "arc7_co_giap_long_te_water",
+      "max_hit_type": "arc7_C03",
+      "max_hp": 9649.74726677485,
+      "mortal": true,
+      "movement": "kite",
+      "movement_policy": "range_65_85_half_speed_strafe_seed_side_v1",
+      "native_elements": true,
+      "outgoing_damage_by_enemy": {
+        "arc7_bach_ho_yeu_vuong_wood": 4898.15429559812,
+        "arc7_co_giap_long_te_earth": 48546.2291017118,
+        "arc7_co_giap_long_te_fire": 72493.0268773506,
+        "arc7_co_giap_long_te_metal": 59243.6109160864,
+        "arc7_co_giap_long_te_water": 49977.9943505055,
+        "arc7_co_giap_long_te_wood": 61933.2053084025,
+        "arc7_doc_tich_man_ngac_earth": 29216.0273591144,
+        "arc7_doc_tich_man_ngac_fire": 32832.9059269195,
+        "arc7_doc_tich_man_ngac_metal": 35719.2364425246,
+        "arc7_doc_tich_man_ngac_water": 22523.7660373452,
+        "arc7_doc_tich_man_ngac_wood": 31491.7634634765,
+        "arc7_huyen_lan_long_bao_earth": 30080.9048242431,
+        "arc7_huyen_lan_long_bao_fire": 29439.8451640951,
+        "arc7_huyen_lan_long_bao_metal": 23849.9411869924,
+        "arc7_huyen_lan_long_bao_water": 24283.8193282885,
+        "arc7_huyen_lan_long_bao_wood": 28146.256458641,
+        "arc7_huyet_man_cuong_su_earth": 33013.619576542,
+        "arc7_huyet_man_cuong_su_fire": 32801.6080214791,
+        "arc7_huyet_man_cuong_su_metal": 28170.3597320629,
+        "arc7_huyet_man_cuong_su_water": 30229.567517816,
+        "arc7_huyet_man_cuong_su_wood": 28498.2622746783,
+        "arc7_loi_trao_hung_bi_earth": 48181.6481326995,
+        "arc7_loi_trao_hung_bi_fire": 41556.5443595446,
+        "arc7_loi_trao_hung_bi_metal": 31388.3364493302,
+        "arc7_loi_trao_hung_bi_water": 35566.2599792728,
+        "arc7_loi_trao_hung_bi_wood": 39127.5963822863,
+        "arc7_man_cot_toan_nghe_earth": 36394.0114367163,
+        "arc7_man_cot_toan_nghe_fire": 42971.3956464608,
+        "arc7_man_cot_toan_nghe_metal": 26148.7669232895,
+        "arc7_man_cot_toan_nghe_water": 33174.8245936141,
+        "arc7_man_cot_toan_nghe_wood": 27839.2463192763,
+        "arc7_pha_son_cu_vien_earth": 43027.1012361102,
+        "arc7_pha_son_cu_vien_fire": 40575.326567231,
+        "arc7_pha_son_cu_vien_metal": 33647.0132616858,
+        "arc7_pha_son_cu_vien_water": 31323.3673945981,
+        "arc7_pha_son_cu_vien_wood": 38074.8400593787
+      },
+      "peak_alive": 17,
+      "peak_process_usec": 34819,
+      "peak_static_memory_bytes": 692529438,
+      "persistent_level": 60,
+      "reason": "hero_died",
+      "require_max_skills": false,
+      "run_level": 20,
+      "runtime_stats": {
+        "atk": 2540.73761345771,
+        "attack_range": 450,
+        "attack_speed": 3.01366634258312,
+        "crit_damage": 3.31,
+        "crit_rate": 0.377400000000001,
+        "def": 51.5251317694849,
+        "effect_accuracy": 0.15,
+        "hp": 9649.74726677485,
+        "move_speed": 334.710397558739,
+        "regen_percent_per_10s": 0.0724
+      },
+      "seed": 239,
+      "stage_id": "stage_7_05",
+      "status": "FAIL",
+      "target_wave": 20,
+      "process_exit": 2,
+      "wall_ms": 8782,
+      "timed_out": false,
+      "runtime_errors": false,
+      "requested": {
+        "lane": "baseline",
+        "mode": "normal",
+        "hero": "hero_2",
+        "seed": 239
+      }
+    },
+    {
+      "base_combat_power": 59225,
+      "base_stats": {
+        "atk": 1853.84209244855,
+        "attack_range": 250,
+        "attack_speed": 2.78799988393499,
+        "crit_damage": 2.535,
+        "crit_rate": 0.316,
+        "def": 266.845512773186,
+        "element_resist_pct": 15,
+        "hp": 13693.0037504399,
+        "move_speed": 326.282339972999,
+        "regen_percent_per_10s": 0.0740000000000001
+      },
+      "boss_timing": {
+        "arc7_bach_ho_yeu_vuong_wood": {
+          "killed_at": 495.216666666647,
+          "lifetime": 122.399999999993,
+          "max_hp": 126749.0797065,
+          "spawn_at": 372.816666666654
+        }
+      },
+      "checkpoint_skills": [
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_3_skill_1"
+        },
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_3_skill_2"
+        },
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_3_skill_3"
+        },
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_3_skill_4"
+        }
+      ],
+      "checkpoints": [
+        {
+          "hp": 13719.4037504399,
+          "max_hp": 13719.4037504399,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 4,
+              "max": 5,
+              "skill_id": "hero_3_skill_1"
+            }
+          ],
+          "skills_max": false,
+          "wave": 4
+        },
+        {
+          "hp": 13752.4037504399,
+          "max_hp": 13752.4037504399,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_3_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_3_skill_2"
+            }
+          ],
+          "skills_max": true,
+          "wave": 9
+        },
+        {
+          "hp": 13567.4353060734,
+          "max_hp": 13785.4037504399,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_3_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_3_skill_2"
+            },
+            {
+              "actual": 4,
+              "max": 5,
+              "skill_id": "hero_3_skill_3"
+            }
+          ],
+          "skills_max": false,
+          "wave": 14
+        },
+        {
+          "hp": 13818.4037504399,
+          "max_hp": 13818.4037504399,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_3_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_3_skill_2"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_3_skill_3"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_3_skill_4"
+            }
+          ],
+          "skills_max": true,
+          "wave": 19
+        },
+        {
+          "hp": 13054.7505661031,
+          "max_hp": 13825.0037504399,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_3_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_3_skill_2"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_3_skill_3"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_3_skill_4"
+            }
+          ],
+          "skills_max": true,
+          "wave": 20
+        }
+      ],
+      "current_wave": 20,
+      "difficulty": "normal",
+      "elapsed_game_seconds": 495.216666666647,
+      "element_matchup_hit_counts": {},
+      "element_spawn_counts": {
+        "1": 46,
+        "2": 44,
+        "4": 48,
+        "8": 54,
+        "16": 49
+      },
+      "enemy_cast_counts": {
+        "B01": 1,
+        "B02": 16,
+        "B03": 11,
+        "B04": 1,
+        "C01": 6,
+        "C02": 2,
+        "C03": 40,
+        "C04": 34,
+        "C05": 6,
+        "C06": 25,
+        "C07": 40
+      },
+      "expected_skill_count": 4,
+      "framework_compile_usec": 0,
+      "guarantee_skills": false,
+      "healing_received": 15156.289451954,
+      "hero_id": "hero_3",
+      "hp": 13054.7505661031,
+      "incoming_damage_by_enemy": {
+        "arc7_bach_ho_yeu_vuong_wood": 8484.6151027903,
+        "arc7_co_giap_long_te_earth": 659.960410649167,
+        "arc7_co_giap_long_te_fire": 809.153179682302,
+        "arc7_co_giap_long_te_metal": 469.974546988149,
+        "arc7_co_giap_long_te_water": 676.908466924015,
+        "arc7_co_giap_long_te_wood": 1024.93093435561,
+        "arc7_doc_tich_man_ngac_earth": 140.659984797609,
+        "arc7_doc_tich_man_ngac_fire": 142.574418800845,
+        "arc7_doc_tich_man_ngac_metal": 115.81508368095,
+        "arc7_doc_tich_man_ngac_water": 144.239856681465,
+        "arc7_doc_tich_man_ngac_wood": 211.365135225999,
+        "arc7_huyen_lan_long_bao_earth": 124.611694233878,
+        "arc7_huyen_lan_long_bao_fire": 256.664709745296,
+        "arc7_huyen_lan_long_bao_metal": 52.0188508637533,
+        "arc7_huyen_lan_long_bao_water": 94.6729157777791,
+        "arc7_huyen_lan_long_bao_wood": 504.093981963537,
+        "arc7_huyet_man_cuong_su_metal": 64.7594556132028,
+        "arc7_loi_trao_hung_bi_earth": 97.7710422027865,
+        "arc7_loi_trao_hung_bi_fire": 124.427259268443,
+        "arc7_loi_trao_hung_bi_wood": 162.023691410702,
+        "arc7_man_cot_toan_nghe_earth": 300.850518748959,
+        "arc7_man_cot_toan_nghe_fire": 324.314716058831,
+        "arc7_man_cot_toan_nghe_water": 292.323357424098,
+        "arc7_man_cot_toan_nghe_wood": 438.813781816305,
+        "arc7_pha_son_cu_vien_earth": 205.546904110448,
+        "unknown": 3.45263647635779
+      },
+      "incoming_damage_by_skill": {
+        "legacy_or_basic": 15923.0899998144,
+        "unknown": 3.45263647635779
+      },
+      "incoming_damage_by_type": {
+        "arc7_B01": 271.950722544661,
+        "arc7_B02": 5278.133929195,
+        "arc7_B03": 2087.11772560221,
+        "arc7_B04": 25.9000688137773,
+        "arc7_C01": 205.546904110448,
+        "arc7_C02": 64.7594556132028,
+        "arc7_C03": 3640.92753859925,
+        "arc7_C04": 687.624238957077,
+        "arc7_C05": 384.221992881932,
+        "arc7_C06": 1032.06215258424,
+        "arc7_C07": 1356.30237404819,
+        "bleed": 821.512656634646,
+        "poison": 70.4828767061493
+      },
+      "incoming_hit_count": 136,
+      "incoming_total_damage": 15926.5426362908,
+      "loading_usec": 234150,
+      "max_hit": 414.926695065899,
+      "max_hit_source": "arc7_bach_ho_yeu_vuong_wood",
+      "max_hit_type": "arc7_B02",
+      "max_hp": 13825.0037504399,
+      "mortal": true,
+      "movement": "kite",
+      "movement_policy": "range_65_85_half_speed_strafe_seed_side_v1",
+      "native_elements": true,
+      "outgoing_damage_by_enemy": {
+        "arc7_bach_ho_yeu_vuong_wood": 126778.026162906,
+        "arc7_co_giap_long_te_earth": 51671.441753024,
+        "arc7_co_giap_long_te_fire": 77800.0135537684,
+        "arc7_co_giap_long_te_metal": 60806.7725280569,
+        "arc7_co_giap_long_te_water": 50189.3386225886,
+        "arc7_co_giap_long_te_wood": 56929.7145561849,
+        "arc7_doc_tich_man_ngac_earth": 31639.3142525298,
+        "arc7_doc_tich_man_ngac_fire": 31987.6844571827,
+        "arc7_doc_tich_man_ngac_metal": 34512.8240524495,
+        "arc7_doc_tich_man_ngac_water": 30097.9220223081,
+        "arc7_doc_tich_man_ngac_wood": 37337.4195169715,
+        "arc7_huyen_lan_long_bao_earth": 35140.009135943,
+        "arc7_huyen_lan_long_bao_fire": 31317.0208235944,
+        "arc7_huyen_lan_long_bao_metal": 22737.3706528603,
+        "arc7_huyen_lan_long_bao_water": 24312.242904711,
+        "arc7_huyen_lan_long_bao_wood": 26817.0176343646,
+        "arc7_huyet_man_cuong_su_earth": 33230.2190494786,
+        "arc7_huyet_man_cuong_su_fire": 30306.9012388242,
+        "arc7_huyet_man_cuong_su_metal": 37129.5574719953,
+        "arc7_huyet_man_cuong_su_water": 26824.7715398027,
+        "arc7_huyet_man_cuong_su_wood": 27371.2449911152,
+        "arc7_loi_trao_hung_bi_earth": 42486.3395459642,
+        "arc7_loi_trao_hung_bi_fire": 50408.3939548878,
+        "arc7_loi_trao_hung_bi_metal": 29912.4322540086,
+        "arc7_loi_trao_hung_bi_water": 34125.022780144,
+        "arc7_loi_trao_hung_bi_wood": 36017.1535053469,
+        "arc7_man_cot_toan_nghe_earth": 34338.9421552358,
+        "arc7_man_cot_toan_nghe_fire": 41190.711646373,
+        "arc7_man_cot_toan_nghe_metal": 39921.2377357107,
+        "arc7_man_cot_toan_nghe_water": 31689.9398527244,
+        "arc7_man_cot_toan_nghe_wood": 29600.9932347673,
+        "arc7_pha_son_cu_vien_earth": 41427.5456965299,
+        "arc7_pha_son_cu_vien_fire": 41516.1014757461,
+        "arc7_pha_son_cu_vien_metal": 37923.4385748179,
+        "arc7_pha_son_cu_vien_water": 36612.5932262783,
+        "arc7_pha_son_cu_vien_wood": 32882.9661275694
+      },
+      "peak_alive": 18,
+      "peak_process_usec": 41984,
+      "peak_static_memory_bytes": 716726982,
+      "persistent_level": 60,
+      "reason": "pass",
+      "require_max_skills": false,
+      "run_level": 21,
+      "runtime_stats": {
+        "atk": 1863.59209244855,
+        "attack_range": 250,
+        "attack_speed": 2.86549988393499,
+        "crit_damage": 2.835,
+        "crit_rate": 0.396,
+        "def": 270.595512773186,
+        "dodge_rate": 0.3,
+        "element_resist_pct": 15,
+        "hp": 13825.0037504399,
+        "move_speed": 395.018807967598,
+        "regen_percent_per_10s": 0.0940000000000001
+      },
+      "seed": 239,
+      "stage_id": "stage_7_05",
+      "status": "PASS",
+      "target_wave": 20,
+      "process_exit": 0,
+      "wall_ms": 9082,
+      "timed_out": false,
+      "runtime_errors": false,
+      "requested": {
+        "lane": "baseline",
+        "mode": "normal",
+        "hero": "hero_3",
+        "seed": 239
+      }
+    },
+    {
+      "base_combat_power": 18466,
+      "base_stats": {
+        "atk": 1026.99154316384,
+        "attack_range": 400,
+        "attack_speed": 5.1176162370243,
+        "crit_damage": 2.508,
+        "crit_rate": 0.455,
+        "def": 60.6901581233819,
+        "hp": 9451.12825118383,
+        "move_speed": 399.76047755247,
+        "regen_percent_per_10s": 0.0592
+      },
+      "boss_timing": {},
+      "checkpoint_skills": [
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_4_skill_1"
+        },
+        {
+          "actual": 4,
+          "max": 5,
+          "skill_id": "hero_4_skill_2"
+        }
+      ],
+      "checkpoints": [
+        {
+          "hp": 9472.01771118382,
+          "max_hp": 9472.01771118382,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 4,
+              "max": 5,
+              "skill_id": "hero_4_skill_1"
+            }
+          ],
+          "skills_max": false,
+          "wave": 4
+        },
+        {
+          "hp": 9498.12953618382,
+          "max_hp": 9498.12953618382,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_4_skill_1"
+            },
+            {
+              "actual": 4,
+              "max": 5,
+              "skill_id": "hero_4_skill_2"
+            }
+          ],
+          "skills_max": false,
+          "wave": 9
+        }
+      ],
+      "current_wave": 13,
+      "difficulty": "normal",
+      "elapsed_game_seconds": 345.216666666656,
+      "element_matchup_hit_counts": {},
+      "element_spawn_counts": {
+        "1": 22,
+        "2": 19,
+        "4": 27,
+        "8": 25,
+        "16": 27
+      },
+      "enemy_cast_counts": {
+        "C01": 9,
+        "C02": 9,
+        "C03": 20,
+        "C04": 26,
+        "C05": 9,
+        "C06": 12,
+        "C07": 37
+      },
+      "expected_skill_count": 4,
+      "framework_compile_usec": 0,
+      "guarantee_skills": false,
+      "healing_received": 9473.85801360469,
+      "hero_id": "hero_4",
+      "hp": 0,
+      "incoming_damage_by_enemy": {
+        "arc7_co_giap_long_te_earth": 928.727261100393,
+        "arc7_co_giap_long_te_fire": 1479.40193900461,
+        "arc7_co_giap_long_te_metal": 2040.56821672808,
+        "arc7_co_giap_long_te_water": 768.151006790855,
+        "arc7_co_giap_long_te_wood": 2343.23080404675,
+        "arc7_doc_tich_man_ngac_earth": 631.492086873799,
+        "arc7_doc_tich_man_ngac_wood": 383.172870758912,
+        "arc7_huyen_lan_long_bao_earth": 309.276923473772,
+        "arc7_huyen_lan_long_bao_fire": 612.322120323264,
+        "arc7_huyen_lan_long_bao_metal": 238.741574103992,
+        "arc7_huyen_lan_long_bao_wood": 229.038785220961,
+        "arc7_huyet_man_cuong_su_earth": 176.668761940606,
+        "arc7_huyet_man_cuong_su_fire": 292.474441086006,
+        "arc7_huyet_man_cuong_su_metal": 289.793419485079,
+        "arc7_huyet_man_cuong_su_wood": 245.548319876815,
+        "arc7_loi_trao_hung_bi_earth": 400.484922568636,
+        "arc7_loi_trao_hung_bi_fire": 793.71835654675,
+        "arc7_loi_trao_hung_bi_metal": 412.122992822351,
+        "arc7_loi_trao_hung_bi_water": 309.527043870278,
+        "arc7_man_cot_toan_nghe_earth": 598.763864986951,
+        "arc7_man_cot_toan_nghe_fire": 730.264030011043,
+        "arc7_man_cot_toan_nghe_metal": 2103.69583870344,
+        "arc7_man_cot_toan_nghe_water": 923.281899194978,
+        "arc7_man_cot_toan_nghe_wood": 849.587296441908,
+        "arc7_pha_son_cu_vien_earth": 190.993254710012,
+        "arc7_pha_son_cu_vien_wood": 729.591242382583
+      },
+      "incoming_damage_by_skill": {
+        "legacy_or_basic": 19010.6392730528
+      },
+      "incoming_damage_by_type": {
+        "arc7_C01": 920.584497092595,
+        "arc7_C02": 1004.48494238851,
+        "arc7_C03": 7560.0792276707,
+        "arc7_C04": 947.744303413709,
+        "arc7_C05": 1915.85331580801,
+        "arc7_C06": 1389.37940312199,
+        "arc7_C07": 5205.59292933832,
+        "poison": 66.9206542190013
+      },
+      "incoming_hit_count": 56,
+      "incoming_total_damage": 19010.6392730528,
+      "loading_usec": 245394,
+      "max_hit": 768.151006790855,
+      "max_hit_source": "arc7_co_giap_long_te_water",
+      "max_hit_type": "arc7_C03",
+      "max_hp": 9513.79663118382,
+      "mortal": true,
+      "movement": "kite",
+      "movement_policy": "range_65_85_half_speed_strafe_seed_side_v1",
+      "native_elements": true,
+      "outgoing_damage_by_enemy": {
+        "arc7_co_giap_long_te_earth": 22557.397979417,
+        "arc7_co_giap_long_te_fire": 15462.4618002191,
+        "arc7_co_giap_long_te_metal": 14580.2605803841,
+        "arc7_co_giap_long_te_water": 15219.6538939772,
+        "arc7_co_giap_long_te_wood": 21902.201368535,
+        "arc7_doc_tich_man_ngac_earth": 14056.1036580033,
+        "arc7_doc_tich_man_ngac_fire": 8336.32680496275,
+        "arc7_doc_tich_man_ngac_metal": 10080.9358490073,
+        "arc7_doc_tich_man_ngac_water": 9822.90975522968,
+        "arc7_doc_tich_man_ngac_wood": 14786.5930913864,
+        "arc7_huyen_lan_long_bao_earth": 11429.1884705122,
+        "arc7_huyen_lan_long_bao_fire": 14912.1014074021,
+        "arc7_huyen_lan_long_bao_metal": 10220.7053298881,
+        "arc7_huyen_lan_long_bao_water": 7373.81389254444,
+        "arc7_huyen_lan_long_bao_wood": 14415.0412407412,
+        "arc7_huyet_man_cuong_su_earth": 15873.3057377149,
+        "arc7_huyet_man_cuong_su_fire": 11841.8758515626,
+        "arc7_huyet_man_cuong_su_metal": 11903.9554197192,
+        "arc7_huyet_man_cuong_su_water": 10910.7079659572,
+        "arc7_huyet_man_cuong_su_wood": 15083.6733542088,
+        "arc7_loi_trao_hung_bi_earth": 20923.5385922424,
+        "arc7_loi_trao_hung_bi_fire": 15678.3623867564,
+        "arc7_loi_trao_hung_bi_metal": 13085.7949549582,
+        "arc7_loi_trao_hung_bi_water": 15168.22674399,
+        "arc7_loi_trao_hung_bi_wood": 16732.0254466291,
+        "arc7_man_cot_toan_nghe_earth": 10009.4169396627,
+        "arc7_man_cot_toan_nghe_fire": 14310.8258056491,
+        "arc7_man_cot_toan_nghe_metal": 14913.0566646816,
+        "arc7_man_cot_toan_nghe_water": 9734.54470853445,
+        "arc7_man_cot_toan_nghe_wood": 11009.2994151557,
+        "arc7_pha_son_cu_vien_earth": 14533.9660655819,
+        "arc7_pha_son_cu_vien_fire": 17425.1891832124,
+        "arc7_pha_son_cu_vien_metal": 13652.4819617403,
+        "arc7_pha_son_cu_vien_water": 12933.540507912,
+        "arc7_pha_son_cu_vien_wood": 14443.5165490458
+      },
+      "peak_alive": 16,
+      "peak_process_usec": 46025,
+      "peak_static_memory_bytes": 623263041,
+      "persistent_level": 60,
+      "reason": "hero_died",
+      "require_max_skills": false,
+      "run_level": 13,
+      "runtime_stats": {
+        "atk": 1031.86654316384,
+        "attack_range": 400,
+        "attack_speed": 5.21407103702429,
+        "crit_damage": 2.652,
+        "crit_rate": 0.515,
+        "def": 61.4101581233819,
+        "hp": 9513.79663118382,
+        "move_speed": 402.77547755247,
+        "regen_percent_per_10s": 0.0688
+      },
+      "seed": 239,
+      "stage_id": "stage_7_05",
+      "status": "FAIL",
+      "target_wave": 20,
+      "process_exit": 2,
+      "wall_ms": 7378,
+      "timed_out": false,
+      "runtime_errors": false,
+      "requested": {
+        "lane": "baseline",
+        "mode": "normal",
+        "hero": "hero_4",
+        "seed": 239
+      }
+    },
+    {
+      "base_combat_power": 57879,
+      "base_stats": {
+        "atk": 1711.23885456789,
+        "attack_range": 350,
+        "attack_speed": 2.69806440380806,
+        "crit_damage": 2.535,
+        "crit_rate": 0.316,
+        "def": 213.476410218549,
+        "hp": 19307.4410114802,
+        "move_speed": 320.656782387258,
+        "regen_percent_per_10s": 0.079
+      },
+      "boss_timing": {
+        "arc7_bach_ho_yeu_vuong_wood": {
+          "killed_at": 515.016666666647,
+          "lifetime": 92.3999999999957,
+          "max_hp": 126749.0797065,
+          "spawn_at": 422.616666666651
+        }
+      },
+      "checkpoint_skills": [
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_5_skill_1"
+        },
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_5_skill_2"
+        },
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_5_skill_3"
+        },
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_5_skill_4"
+        }
+      ],
+      "checkpoints": [
+        {
+          "hp": 19337.9910114802,
+          "max_hp": 19337.9910114802,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_5_skill_1"
+            }
+          ],
+          "skills_max": true,
+          "wave": 4
+        },
+        {
+          "hp": 19031.2400778143,
+          "max_hp": 19376.1785114802,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_5_skill_1"
+            },
+            {
+              "actual": 4,
+              "max": 5,
+              "skill_id": "hero_5_skill_2"
+            }
+          ],
+          "skills_max": false,
+          "wave": 9
+        },
+        {
+          "hp": 19414.3660114802,
+          "max_hp": 19414.3660114802,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_5_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_5_skill_2"
+            },
+            {
+              "actual": 4,
+              "max": 5,
+              "skill_id": "hero_5_skill_3"
+            }
+          ],
+          "skills_max": false,
+          "wave": 14
+        },
+        {
+          "hp": 19452.5535114802,
+          "max_hp": 19452.5535114802,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_5_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_5_skill_2"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_5_skill_3"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_5_skill_4"
+            }
+          ],
+          "skills_max": true,
+          "wave": 19
+        },
+        {
+          "hp": 18474.5263212174,
+          "max_hp": 19460.1910114802,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_5_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_5_skill_2"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_5_skill_3"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_5_skill_4"
+            }
+          ],
+          "skills_max": true,
+          "wave": 20
+        }
+      ],
+      "current_wave": 20,
+      "difficulty": "normal",
+      "elapsed_game_seconds": 515.016666666647,
+      "element_matchup_hit_counts": {},
+      "element_spawn_counts": {
+        "1": 46,
+        "2": 44,
+        "4": 48,
+        "8": 54,
+        "16": 49
+      },
+      "enemy_cast_counts": {
+        "B01": 19,
+        "B02": 12,
+        "B03": 8,
+        "B04": 1,
+        "C01": 4,
+        "C02": 6,
+        "C03": 42,
+        "C04": 33,
+        "C05": 11,
+        "C06": 22,
+        "C07": 41
+      },
+      "expected_skill_count": 4,
+      "framework_compile_usec": 0,
+      "guarantee_skills": false,
+      "healing_received": 27705.0792237706,
+      "hero_id": "hero_5",
+      "hp": 18474.5263212174,
+      "incoming_damage_by_enemy": {
+        "arc7_bach_ho_yeu_vuong_wood": 12662.0002518371,
+        "arc7_co_giap_long_te_earth": 2622.55529758164,
+        "arc7_co_giap_long_te_fire": 1929.50317178017,
+        "arc7_co_giap_long_te_metal": 1200.33806490191,
+        "arc7_co_giap_long_te_water": 1108.25940023249,
+        "arc7_co_giap_long_te_wood": 1703.74809385076,
+        "arc7_doc_tich_man_ngac_fire": 576.099294775858,
+        "arc7_doc_tich_man_ngac_metal": 208.519379567937,
+        "arc7_doc_tich_man_ngac_water": 139.063029053253,
+        "arc7_doc_tich_man_ngac_wood": 208.519379567937,
+        "arc7_huyen_lan_long_bao_earth": 718.972122558728,
+        "arc7_huyen_lan_long_bao_metal": 251.006732193489,
+        "arc7_huyen_lan_long_bao_water": 273.864865431066,
+        "arc7_huyen_lan_long_bao_wood": 426.484174722654,
+        "arc7_huyet_man_cuong_su_earth": 152.133224937751,
+        "arc7_huyet_man_cuong_su_fire": 160.341377674717,
+        "arc7_huyet_man_cuong_su_wood": 137.866132767673,
+        "arc7_loi_trao_hung_bi_earth": 445.640294622767,
+        "arc7_loi_trao_hung_bi_fire": 151.99649973714,
+        "arc7_loi_trao_hung_bi_metal": 160.64130413484,
+        "arc7_loi_trao_hung_bi_water": 121.482880644011,
+        "arc7_loi_trao_hung_bi_wood": 555.372269150656,
+        "arc7_man_cot_toan_nghe_earth": 917.334410937855,
+        "arc7_man_cot_toan_nghe_fire": 539.213491338461,
+        "arc7_man_cot_toan_nghe_metal": 686.19875112125,
+        "arc7_man_cot_toan_nghe_water": 161.489682231075,
+        "arc7_man_cot_toan_nghe_wood": 221.899876863853,
+        "arc7_pha_son_cu_vien_fire": 147.176741068371,
+        "arc7_pha_son_cu_vien_water": 103.02371874786
+      },
+      "incoming_damage_by_skill": {
+        "legacy_or_basic": 28690.7439140334
+      },
+      "incoming_damage_by_type": {
+        "arc7_B01": 4882.83123484019,
+        "arc7_B02": 5459.06597683996,
+        "arc7_B03": 1637.71979305199,
+        "arc7_B04": 75.820360789444,
+        "arc7_C01": 250.200459816231,
+        "arc7_C02": 450.340735380141,
+        "arc7_C03": 8564.40402834696,
+        "arc7_C04": 1050.84572028013,
+        "arc7_C05": 1435.13324828941,
+        "arc7_C06": 1670.32789490594,
+        "arc7_C07": 2526.1362124925,
+        "bleed": 606.562886315552,
+        "poison": 81.3553626848589
+      },
+      "incoming_hit_count": 185,
+      "incoming_total_damage": 28690.7439140334,
+      "loading_usec": 253518,
+      "max_hit": 538.653081856537,
+      "max_hit_source": "arc7_co_giap_long_te_earth",
+      "max_hit_type": "arc7_C03",
+      "max_hp": 19460.1910114802,
+      "mortal": true,
+      "movement": "kite",
+      "movement_policy": "range_65_85_half_speed_strafe_seed_side_v1",
+      "native_elements": true,
+      "outgoing_damage_by_enemy": {
+        "arc7_bach_ho_yeu_vuong_wood": 126968.200205461,
+        "arc7_co_giap_long_te_earth": 48156.4042438512,
+        "arc7_co_giap_long_te_fire": 75761.0164421341,
+        "arc7_co_giap_long_te_metal": 58535.0766918816,
+        "arc7_co_giap_long_te_water": 50346.0026129369,
+        "arc7_co_giap_long_te_wood": 57524.8499145235,
+        "arc7_doc_tich_man_ngac_earth": 25715.7317015897,
+        "arc7_doc_tich_man_ngac_fire": 26884.9422811406,
+        "arc7_doc_tich_man_ngac_metal": 32314.2914785284,
+        "arc7_doc_tich_man_ngac_water": 27361.4907928197,
+        "arc7_doc_tich_man_ngac_wood": 29686.9809039133,
+        "arc7_huyen_lan_long_bao_earth": 24530.2836650885,
+        "arc7_huyen_lan_long_bao_fire": 26024.6071166738,
+        "arc7_huyen_lan_long_bao_metal": 19488.8426026033,
+        "arc7_huyen_lan_long_bao_water": 23834.2518993394,
+        "arc7_huyen_lan_long_bao_wood": 30698.6103361935,
+        "arc7_huyet_man_cuong_su_earth": 28912.4066798377,
+        "arc7_huyet_man_cuong_su_fire": 30887.3275421295,
+        "arc7_huyet_man_cuong_su_metal": 26276.5091091558,
+        "arc7_huyet_man_cuong_su_water": 26207.3188135692,
+        "arc7_huyet_man_cuong_su_wood": 26381.7923557558,
+        "arc7_loi_trao_hung_bi_earth": 37650.14014304,
+        "arc7_loi_trao_hung_bi_fire": 41355.0856214894,
+        "arc7_loi_trao_hung_bi_metal": 27409.1760005268,
+        "arc7_loi_trao_hung_bi_water": 35505.8904785938,
+        "arc7_loi_trao_hung_bi_wood": 33649.0022697907,
+        "arc7_man_cot_toan_nghe_earth": 30330.4066980918,
+        "arc7_man_cot_toan_nghe_fire": 37303.2707862741,
+        "arc7_man_cot_toan_nghe_metal": 27607.6215987538,
+        "arc7_man_cot_toan_nghe_water": 33201.6090958359,
+        "arc7_man_cot_toan_nghe_wood": 32088.9200521697,
+        "arc7_pha_son_cu_vien_earth": 33059.7789938799,
+        "arc7_pha_son_cu_vien_fire": 39162.4320948229,
+        "arc7_pha_son_cu_vien_metal": 34402.4247158738,
+        "arc7_pha_son_cu_vien_water": 32728.5894105287,
+        "arc7_pha_son_cu_vien_wood": 29562.0509040516
+      },
+      "peak_alive": 19,
+      "peak_process_usec": 98644,
+      "peak_static_memory_bytes": 740285102,
+      "persistent_level": 60,
+      "reason": "pass",
+      "require_max_skills": false,
+      "run_level": 21,
+      "runtime_stats": {
+        "atk": 1720.23885456789,
+        "attack_range": 350,
+        "attack_speed": 2.77306440380806,
+        "crit_damage": 2.835,
+        "crit_rate": 0.396,
+        "def": 216.476410218549,
+        "hp": 19460.1910114802,
+        "move_speed": 323.506782387257,
+        "regen_percent_per_10s": 0.0990000000000001
+      },
+      "seed": 239,
+      "stage_id": "stage_7_05",
+      "status": "PASS",
+      "target_wave": 20,
+      "process_exit": 0,
+      "wall_ms": 9646,
+      "timed_out": false,
+      "runtime_errors": false,
+      "requested": {
+        "lane": "baseline",
+        "mode": "normal",
+        "hero": "hero_5",
+        "seed": 239
+      }
+    },
+    {
+      "base_combat_power": 42217,
+      "base_stats": {
+        "atk": 1639.93723562756,
+        "attack_range": 350,
+        "attack_speed": 2.69806440380806,
+        "crit_damage": 2.385,
+        "crit_rate": 0.296,
+        "def": 134.233568697518,
+        "hp": 14937.8222732072,
+        "move_speed": 315.031224801516,
+        "regen_percent_per_10s": 0.0890000000000001
+      },
+      "boss_timing": {
+        "arc7_bach_ho_yeu_vuong_fire": {
+          "killed_at": 543.616666666653,
+          "lifetime": 120.200000000002,
+          "max_hp": 117000,
+          "spawn_at": 423.416666666651
+        }
+      },
+      "checkpoint_skills": [
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_1_skill_1"
+        },
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_1_skill_2"
+        },
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_1_skill_3"
+        },
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_1_skill_4"
+        }
+      ],
+      "checkpoints": [
+        {
+          "hp": 14583.3748825585,
+          "max_hp": 14966.6222732072,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 4,
+              "max": 5,
+              "skill_id": "hero_1_skill_1"
+            }
+          ],
+          "skills_max": false,
+          "wave": 4
+        },
+        {
+          "hp": 12473.0328761296,
+          "max_hp": 15002.6222732072,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_1_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_1_skill_2"
+            }
+          ],
+          "skills_max": true,
+          "wave": 9
+        },
+        {
+          "hp": 10632.6808891988,
+          "max_hp": 15038.6222732072,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_1_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_1_skill_2"
+            },
+            {
+              "actual": 4,
+              "max": 5,
+              "skill_id": "hero_1_skill_3"
+            }
+          ],
+          "skills_max": false,
+          "wave": 14
+        },
+        {
+          "hp": 5775.37905080867,
+          "max_hp": 15074.6222732072,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_1_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_1_skill_2"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_1_skill_3"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_1_skill_4"
+            }
+          ],
+          "skills_max": true,
+          "wave": 19
+        },
+        {
+          "hp": 11965.3723091427,
+          "max_hp": 15081.8222732072,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_1_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_1_skill_2"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_1_skill_3"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_1_skill_4"
+            }
+          ],
+          "skills_max": true,
+          "wave": 20
+        }
+      ],
+      "current_wave": 20,
+      "difficulty": "normal",
+      "elapsed_game_seconds": 543.616666666653,
+      "element_matchup_hit_counts": {
+        "16:2:1.00": 63,
+        "1:2:1.30": 91,
+        "2:0:1.30": 4,
+        "2:12:1.00": 755,
+        "2:16:1.00": 127,
+        "2:1:0.70": 190,
+        "2:2:1.00": 224,
+        "2:31:1.00": 4,
+        "2:4:1.00": 147,
+        "2:8:1.30": 114,
+        "4:2:1.00": 78,
+        "8:2:0.70": 365
+      },
+      "element_spawn_counts": {
+        "0": 1,
+        "1": 27,
+        "2": 29,
+        "4": 29,
+        "8": 29,
+        "12": 98,
+        "16": 27,
+        "31": 1
+      },
+      "enemy_cast_counts": {
+        "earth_strike": 63,
+        "fire_burst": 17,
+        "fire_strike": 348,
+        "metal_strike": 91,
+        "water_strike": 76,
+        "wood_strike": 78
+      },
+      "expected_skill_count": 4,
+      "framework_compile_usec": 29296,
+      "guarantee_skills": false,
+      "healing_received": 69927.9969836648,
+      "hero_id": "hero_1",
+      "hp": 11965.3723091427,
+      "incoming_damage_by_enemy": {
+        "arc7_bach_ho_yeu_vuong_fire": 12630.4903406791,
+        "arc7_co_giap_long_te_fire": 14221.4023027878,
+        "arc7_doc_tich_man_ngac_fire": 7439.39300211212,
+        "arc7_huyen_lan_long_bao_fire": 6700.19878195932,
+        "arc7_huyet_man_cuong_su_fire": 7617.60426846587,
+        "arc7_loi_trao_hung_bi_fire": 8992.91923358939,
+        "arc7_man_cot_toan_nghe_fire": 8381.74747631196,
+        "arc7_pha_son_cu_vien_fire": 7060.6915418238
+      },
+      "incoming_damage_by_skill": {
+        "earth_strike": 7121.24037406953,
+        "fire_burst": 3419.65497069517,
+        "fire_strike": 32262.6402836464,
+        "metal_strike": 12952.8315760641,
+        "water_strike": 8541.26435732655,
+        "wood_strike": 8746.81538592741
+      },
+      "incoming_damage_by_type": {
+        "normal": 73044.4469477294
+      },
+      "incoming_hit_count": 673,
+      "incoming_total_damage": 73044.4469477294,
+      "loading_usec": 267431,
+      "max_hit": 201.374958071799,
+      "max_hit_source": "arc7_man_cot_toan_nghe_fire",
+      "max_hit_type": "normal",
+      "max_hp": 15081.8222732072,
+      "mortal": true,
+      "movement": "kite",
+      "movement_policy": "range_65_85_half_speed_strafe_seed_side_v1",
+      "native_elements": true,
+      "outgoing_damage_by_enemy": {
+        "arc7_bach_ho_yeu_vuong_fire": 117630.911650126,
+        "arc7_co_giap_long_te_fire": 239806.489727008,
+        "arc7_doc_tich_man_ngac_fire": 125880.036096424,
+        "arc7_huyen_lan_long_bao_fire": 122178.062432297,
+        "arc7_huyet_man_cuong_su_fire": 144602.390563376,
+        "arc7_loi_trao_hung_bi_fire": 156196.797563528,
+        "arc7_man_cot_toan_nghe_fire": 137087.447044012,
+        "arc7_pha_son_cu_vien_fire": 150336.884570968
+      },
+      "peak_alive": 17,
+      "peak_process_usec": 34044,
+      "peak_static_memory_bytes": 634107721,
+      "persistent_level": 60,
+      "reason": "pass",
+      "require_max_skills": false,
+      "run_level": 21,
+      "runtime_stats": {
+        "atk": 1648.56223562756,
+        "attack_range": 350,
+        "attack_speed": 2.77306440380806,
+        "crit_damage": 2.685,
+        "crit_rate": 0.376,
+        "def": 136.483568697519,
+        "hp": 15081.8222732072,
+        "move_speed": 317.831224801516,
+        "regen_percent_per_10s": 0.1
+      },
+      "seed": 239,
+      "stage_id": "stage_c239_pilot",
+      "status": "PASS",
+      "target_wave": 20,
+      "process_exit": 0,
+      "wall_ms": 8604,
+      "timed_out": false,
+      "runtime_errors": false,
+      "requested": {
+        "lane": "pilot",
+        "mode": "normal",
+        "hero": "hero_1",
+        "seed": 239
+      }
+    },
+    {
+      "base_combat_power": 39258,
+      "base_stats": {
+        "atk": 2529.6140634577,
+        "attack_range": 450,
+        "attack_speed": 2.93101634258312,
+        "crit_damage": 2.93,
+        "crit_rate": 0.3147,
+        "def": 50.5751317694849,
+        "hp": 9552.03957677486,
+        "move_speed": 331.90789755874,
+        "regen_percent_per_10s": 0.0572
+      },
+      "boss_timing": {},
+      "checkpoint_skills": [
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_2_skill_1"
+        },
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_2_skill_2"
+        }
+      ],
+      "checkpoints": [
+        {
+          "hp": 8573.17980805025,
+          "max_hp": 9572.60961677486,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_2_skill_1"
+            }
+          ],
+          "skills_max": true,
+          "wave": 4
+        },
+        {
+          "hp": 133.43719860991,
+          "max_hp": 9598.32216677486,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_2_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_2_skill_2"
+            }
+          ],
+          "skills_max": true,
+          "wave": 9
+        }
+      ],
+      "current_wave": 10,
+      "difficulty": "normal",
+      "elapsed_game_seconds": 148.416666666667,
+      "element_matchup_hit_counts": {
+        "16:8:1.00": 18,
+        "1:8:1.00": 11,
+        "2:8:1.30": 14,
+        "4:8:0.70": 11,
+        "8:0:1.30": 2,
+        "8:12:1.00": 53,
+        "8:16:1.00": 44,
+        "8:1:1.00": 24,
+        "8:2:0.70": 21,
+        "8:31:1.00": 3,
+        "8:4:1.30": 22,
+        "8:8:1.00": 74
+      },
+      "element_spawn_counts": {
+        "0": 1,
+        "1": 8,
+        "2": 7,
+        "4": 9,
+        "8": 9,
+        "12": 24,
+        "16": 9,
+        "31": 1
+      },
+      "enemy_cast_counts": {
+        "earth_strike": 18,
+        "fire_strike": 43,
+        "metal_strike": 10,
+        "water_strike": 14,
+        "wood_strike": 11
+      },
+      "expected_skill_count": 4,
+      "framework_compile_usec": 18487,
+      "guarantee_skills": false,
+      "healing_received": 8101.89318649297,
+      "hero_id": "hero_2",
+      "hp": 0,
+      "incoming_damage_by_enemy": {
+        "arc7_co_giap_long_te_fire": 1822.08899707224,
+        "arc7_doc_tich_man_ngac_fire": 1818.96776971313,
+        "arc7_huyen_lan_long_bao_fire": 2877.2190858586,
+        "arc7_huyet_man_cuong_su_fire": 1927.67648318028,
+        "arc7_loi_trao_hung_bi_fire": 2533.53360261576,
+        "arc7_man_cot_toan_nghe_fire": 4192.43194126136,
+        "arc7_pha_son_cu_vien_fire": 2535.64810113406
+      },
+      "incoming_damage_by_skill": {
+        "earth_strike": 2988.01401675038,
+        "fire_strike": 7629.59827590496,
+        "metal_strike": 1854.75099568665,
+        "water_strike": 3934.56921480236,
+        "wood_strike": 1300.63347769108
+      },
+      "incoming_damage_by_type": {
+        "normal": 17707.5659808354
+      },
+      "incoming_hit_count": 97,
+      "incoming_total_damage": 17707.5659808354,
+      "loading_usec": 247661,
+      "max_hit": 305.141313407427,
+      "max_hit_source": "arc7_man_cot_toan_nghe_fire",
+      "max_hit_type": "normal",
+      "max_hp": 9598.32216677486,
+      "mortal": true,
+      "movement": "kite",
+      "movement_policy": "range_65_85_half_speed_strafe_seed_side_v1",
+      "native_elements": true,
+      "outgoing_damage_by_enemy": {
+        "arc7_co_giap_long_te_fire": 31846.906728735,
+        "arc7_doc_tich_man_ngac_fire": 40764.7310013333,
+        "arc7_huyen_lan_long_bao_fire": 43610.138742497,
+        "arc7_huyet_man_cuong_su_fire": 40937.9621099918,
+        "arc7_loi_trao_hung_bi_fire": 43442.3941602398,
+        "arc7_man_cot_toan_nghe_fire": 38318.6253705322,
+        "arc7_pha_son_cu_vien_fire": 69574.042448758
+      },
+      "peak_alive": 10,
+      "peak_process_usec": 15240,
+      "peak_static_memory_bytes": 566458077,
+      "persistent_level": 60,
+      "reason": "hero_died",
+      "require_max_skills": false,
+      "run_level": 10,
+      "runtime_stats": {
+        "atk": 2534.8831134577,
+        "attack_range": 450,
+        "attack_speed": 2.97016634258312,
+        "crit_damage": 3.11,
+        "crit_rate": 0.344400000000001,
+        "def": 51.0251317694849,
+        "hp": 9598.32216677486,
+        "move_speed": 333.23539755874,
+        "regen_percent_per_10s": 0.0644
+      },
+      "seed": 239,
+      "stage_id": "stage_c239_pilot",
+      "status": "FAIL",
+      "target_wave": 20,
+      "process_exit": 2,
+      "wall_ms": 4759,
+      "timed_out": false,
+      "runtime_errors": false,
+      "requested": {
+        "lane": "pilot",
+        "mode": "normal",
+        "hero": "hero_2",
+        "seed": 239
+      }
+    },
+    {
+      "base_combat_power": 59225,
+      "base_stats": {
+        "atk": 1853.84209244855,
+        "attack_range": 250,
+        "attack_speed": 2.78799988393499,
+        "crit_damage": 2.535,
+        "crit_rate": 0.316,
+        "def": 266.845512773186,
+        "element_resist_pct": 15,
+        "hp": 13693.0037504399,
+        "move_speed": 326.282339972999,
+        "regen_percent_per_10s": 0.0740000000000001
+      },
+      "boss_timing": {
+        "arc7_bach_ho_yeu_vuong_fire": {
+          "killed_at": 438.01666666665,
+          "lifetime": 99.1999999999944,
+          "max_hp": 117000,
+          "spawn_at": 338.816666666656
+        }
+      },
+      "checkpoint_skills": [
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_3_skill_1"
+        },
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_3_skill_2"
+        },
+        {
+          "actual": 4,
+          "max": 5,
+          "skill_id": "hero_3_skill_3"
+        },
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_3_skill_4"
+        }
+      ],
+      "checkpoints": [
+        {
+          "hp": 13480.0121967933,
+          "max_hp": 13719.4037504399,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 4,
+              "max": 5,
+              "skill_id": "hero_3_skill_1"
+            }
+          ],
+          "skills_max": false,
+          "wave": 4
+        },
+        {
+          "hp": 13016.0977806506,
+          "max_hp": 13752.4037504399,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_3_skill_1"
+            },
+            {
+              "actual": 4,
+              "max": 5,
+              "skill_id": "hero_3_skill_2"
+            }
+          ],
+          "skills_max": false,
+          "wave": 9
+        },
+        {
+          "hp": 12705.5820793427,
+          "max_hp": 13785.4037504399,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_3_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_3_skill_2"
+            },
+            {
+              "actual": 4,
+              "max": 5,
+              "skill_id": "hero_3_skill_3"
+            }
+          ],
+          "skills_max": false,
+          "wave": 14
+        },
+        {
+          "hp": 13762.4404818333,
+          "max_hp": 13818.4037504399,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_3_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_3_skill_2"
+            },
+            {
+              "actual": 4,
+              "max": 5,
+              "skill_id": "hero_3_skill_3"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_3_skill_4"
+            }
+          ],
+          "skills_max": false,
+          "wave": 19
+        },
+        {
+          "hp": 13578.8900140834,
+          "max_hp": 13825.0037504399,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_3_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_3_skill_2"
+            },
+            {
+              "actual": 4,
+              "max": 5,
+              "skill_id": "hero_3_skill_3"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_3_skill_4"
+            }
+          ],
+          "skills_max": false,
+          "wave": 20
+        }
+      ],
+      "current_wave": 20,
+      "difficulty": "normal",
+      "elapsed_game_seconds": 438.01666666665,
+      "element_matchup_hit_counts": {
+        "16:0:1.30": 4,
+        "16:12:0.70": 937,
+        "16:16:1.00": 154,
+        "16:1:1.30": 118,
+        "16:2:1.00": 150,
+        "16:31:1.00": 2,
+        "16:4:0.70": 174,
+        "16:8:1.00": 143,
+        "1:16:0.70": 39,
+        "2:16:1.00": 43,
+        "4:16:1.30": 54,
+        "8:16:1.00": 258
+      },
+      "element_spawn_counts": {
+        "0": 1,
+        "1": 27,
+        "2": 29,
+        "4": 29,
+        "8": 29,
+        "12": 98,
+        "16": 27,
+        "31": 1
+      },
+      "enemy_cast_counts": {
+        "earth_strike": 42,
+        "fire_burst": 14,
+        "fire_strike": 283,
+        "metal_strike": 39,
+        "water_strike": 47,
+        "wood_strike": 59
+      },
+      "expected_skill_count": 4,
+      "framework_compile_usec": 18239,
+      "guarantee_skills": false,
+      "healing_received": 29980.7209366655,
+      "hero_id": "hero_3",
+      "hp": 13578.8900140834,
+      "incoming_damage_by_enemy": {
+        "arc7_bach_ho_yeu_vuong_fire": 5439.11357347896,
+        "arc7_co_giap_long_te_fire": 4945.9385552608,
+        "arc7_doc_tich_man_ngac_fire": 3918.04741787959,
+        "arc7_huyen_lan_long_bao_fire": 2446.39491631283,
+        "arc7_huyet_man_cuong_su_fire": 2925.79749664999,
+        "arc7_loi_trao_hung_bi_fire": 2930.32837131681,
+        "arc7_man_cot_toan_nghe_fire": 4457.94334805664,
+        "arc7_pha_son_cu_vien_fire": 3163.27099406637
+      },
+      "incoming_damage_by_skill": {
+        "earth_strike": 2441.08924124199,
+        "fire_burst": 1870.4643963095,
+        "fire_strike": 17217.1106293955,
+        "metal_strike": 1587.99309316348,
+        "water_strike": 2752.97416061259,
+        "wood_strike": 4357.20315229888
+      },
+      "incoming_damage_by_type": {
+        "normal": 30226.834673022
+      },
+      "incoming_hit_count": 433,
+      "incoming_total_damage": 30226.834673022,
+      "loading_usec": 230770,
+      "max_hit": 155.872033025792,
+      "max_hit_source": "arc7_bach_ho_yeu_vuong_fire",
+      "max_hit_type": "normal",
+      "max_hp": 13825.0037504399,
+      "mortal": true,
+      "movement": "kite",
+      "movement_policy": "range_65_85_half_speed_strafe_seed_side_v1",
+      "native_elements": true,
+      "outgoing_damage_by_enemy": {
+        "arc7_bach_ho_yeu_vuong_fire": 117115.929776696,
+        "arc7_co_giap_long_te_fire": 250236.7335201,
+        "arc7_doc_tich_man_ngac_fire": 136154.726313744,
+        "arc7_huyen_lan_long_bao_fire": 137746.553863862,
+        "arc7_huyet_man_cuong_su_fire": 140661.038886007,
+        "arc7_loi_trao_hung_bi_fire": 157448.006724979,
+        "arc7_man_cot_toan_nghe_fire": 138107.419125734,
+        "arc7_pha_son_cu_vien_fire": 152285.469601835
+      },
+      "peak_alive": 15,
+      "peak_process_usec": 28882,
+      "peak_static_memory_bytes": 627725037,
+      "persistent_level": 60,
+      "reason": "pass",
+      "require_max_skills": false,
+      "run_level": 21,
+      "runtime_stats": {
+        "atk": 1863.59209244855,
+        "attack_range": 250,
+        "attack_speed": 3.15204987232849,
+        "crit_damage": 2.835,
+        "crit_rate": 0.396,
+        "def": 270.595512773186,
+        "dodge_rate": 0.3,
+        "element_resist_pct": 15,
+        "hp": 13825.0037504399,
+        "move_speed": 395.018807967598,
+        "regen_percent_per_10s": 0.0940000000000001
+      },
+      "seed": 239,
+      "stage_id": "stage_c239_pilot",
+      "status": "PASS",
+      "target_wave": 20,
+      "process_exit": 0,
+      "wall_ms": 7387,
+      "timed_out": false,
+      "runtime_errors": false,
+      "requested": {
+        "lane": "pilot",
+        "mode": "normal",
+        "hero": "hero_3",
+        "seed": 239
+      }
+    },
+    {
+      "base_combat_power": 18466,
+      "base_stats": {
+        "atk": 1026.99154316384,
+        "attack_range": 400,
+        "attack_speed": 5.1176162370243,
+        "crit_damage": 2.508,
+        "crit_rate": 0.455,
+        "def": 60.6901581233819,
+        "hp": 9451.12825118383,
+        "move_speed": 399.76047755247,
+        "regen_percent_per_10s": 0.0592
+      },
+      "boss_timing": {},
+      "checkpoint_skills": [
+        {
+          "actual": 4,
+          "max": 5,
+          "skill_id": "hero_4_skill_1"
+        }
+      ],
+      "checkpoints": [
+        {
+          "hp": 3159.48096501133,
+          "max_hp": 9472.01771118382,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 4,
+              "max": 5,
+              "skill_id": "hero_4_skill_1"
+            }
+          ],
+          "skills_max": false,
+          "wave": 4
+        }
+      ],
+      "current_wave": 7,
+      "difficulty": "normal",
+      "elapsed_game_seconds": 136.816666666667,
+      "element_matchup_hit_counts": {
+        "16:4:0.70": 12,
+        "1:4:1.00": 3,
+        "2:4:1.00": 8,
+        "4:0:1.30": 12,
+        "4:12:0.70": 150,
+        "4:16:1.30": 54,
+        "4:1:1.00": 13,
+        "4:2:1.00": 33,
+        "4:31:1.00": 12,
+        "4:4:1.00": 69,
+        "4:8:0.70": 57,
+        "8:4:1.30": 52
+      },
+      "element_spawn_counts": {
+        "0": 1,
+        "1": 4,
+        "2": 5,
+        "4": 7,
+        "8": 6,
+        "12": 16,
+        "16": 5,
+        "31": 1
+      },
+      "enemy_cast_counts": {
+        "earth_strike": 12,
+        "fire_strike": 51,
+        "metal_strike": 3,
+        "water_strike": 8,
+        "wood_strike": 16
+      },
+      "expected_skill_count": 4,
+      "framework_compile_usec": 19670,
+      "guarantee_skills": false,
+      "healing_received": 7557.52067226517,
+      "hero_id": "hero_4",
+      "hp": 0,
+      "incoming_damage_by_enemy": {
+        "arc7_co_giap_long_te_fire": 363.799704903821,
+        "arc7_doc_tich_man_ngac_fire": 1786.68530638974,
+        "arc7_huyen_lan_long_bao_fire": 3855.9357091853,
+        "arc7_huyet_man_cuong_su_fire": 3128.15181391788,
+        "arc7_loi_trao_hung_bi_fire": 3163.04419194926,
+        "arc7_man_cot_toan_nghe_fire": 2187.07739972266,
+        "arc7_pha_son_cu_vien_fire": 2665.36153597358
+      },
+      "incoming_damage_by_skill": {
+        "earth_strike": 1181.93623101542,
+        "fire_strike": 11227.9109993364,
+        "metal_strike": 531.968368886151,
+        "water_strike": 1538.96921198875,
+        "wood_strike": 2669.27085081554
+      },
+      "incoming_damage_by_type": {
+        "normal": 17150.0556620422
+      },
+      "incoming_hit_count": 91,
+      "incoming_total_damage": 17150.0556620422,
+      "loading_usec": 250975,
+      "max_hit": 277.591674069735,
+      "max_hit_source": "arc7_man_cot_toan_nghe_fire",
+      "max_hit_type": "normal",
+      "max_hp": 9482.46244118382,
+      "mortal": true,
+      "movement": "kite",
+      "movement_policy": "range_65_85_half_speed_strafe_seed_side_v1",
+      "native_elements": true,
+      "outgoing_damage_by_enemy": {
+        "arc7_co_giap_long_te_fire": 6521.52482153909,
+        "arc7_doc_tich_man_ngac_fire": 14759.4133044457,
+        "arc7_huyen_lan_long_bao_fire": 23300.0827439882,
+        "arc7_huyet_man_cuong_su_fire": 23248.3312160244,
+        "arc7_loi_trao_hung_bi_fire": 21562.5434906122,
+        "arc7_man_cot_toan_nghe_fire": 20582.8908671961,
+        "arc7_pha_son_cu_vien_fire": 27581.8112474711
+      },
+      "peak_alive": 7,
+      "peak_process_usec": 24882,
+      "peak_static_memory_bytes": 561099385,
+      "persistent_level": 60,
+      "reason": "hero_died",
+      "require_max_skills": false,
+      "run_level": 7,
+      "runtime_stats": {
+        "atk": 1029.42904316384,
+        "attack_range": 400,
+        "attack_speed": 5.16584363702429,
+        "crit_damage": 2.58,
+        "crit_rate": 0.485,
+        "def": 61.0501581233819,
+        "hp": 9482.46244118382,
+        "move_speed": 401.26797755247,
+        "regen_percent_per_10s": 0.064
+      },
+      "seed": 239,
+      "stage_id": "stage_c239_pilot",
+      "status": "FAIL",
+      "target_wave": 20,
+      "process_exit": 2,
+      "wall_ms": 4663,
+      "timed_out": false,
+      "runtime_errors": false,
+      "requested": {
+        "lane": "pilot",
+        "mode": "normal",
+        "hero": "hero_4",
+        "seed": 239
+      }
+    },
+    {
+      "base_combat_power": 57879,
+      "base_stats": {
+        "atk": 1711.23885456789,
+        "attack_range": 350,
+        "attack_speed": 2.69806440380806,
+        "crit_damage": 2.535,
+        "crit_rate": 0.316,
+        "def": 213.476410218549,
+        "hp": 19307.4410114802,
+        "move_speed": 320.656782387258,
+        "regen_percent_per_10s": 0.079
+      },
+      "boss_timing": {
+        "arc7_bach_ho_yeu_vuong_fire": {
+          "killed_at": 439.21666666665,
+          "lifetime": 77.5999999999956,
+          "max_hp": 117000,
+          "spawn_at": 361.616666666655
+        }
+      },
+      "checkpoint_skills": [
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_5_skill_1"
+        },
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_5_skill_2"
+        },
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_5_skill_3"
+        },
+        {
+          "actual": 5,
+          "max": 5,
+          "skill_id": "hero_5_skill_4"
+        }
+      ],
+      "checkpoints": [
+        {
+          "hp": 19192.2562197876,
+          "max_hp": 19337.9910114802,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 4,
+              "max": 5,
+              "skill_id": "hero_5_skill_1"
+            }
+          ],
+          "skills_max": false,
+          "wave": 4
+        },
+        {
+          "hp": 18824.3616470403,
+          "max_hp": 19376.1785114802,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_5_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_5_skill_2"
+            }
+          ],
+          "skills_max": true,
+          "wave": 9
+        },
+        {
+          "hp": 19282.7346748041,
+          "max_hp": 19414.3660114802,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_5_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_5_skill_2"
+            },
+            {
+              "actual": 4,
+              "max": 5,
+              "skill_id": "hero_5_skill_3"
+            }
+          ],
+          "skills_max": false,
+          "wave": 14
+        },
+        {
+          "hp": 19239.0057962875,
+          "max_hp": 19452.5535114802,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_5_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_5_skill_2"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_5_skill_3"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_5_skill_4"
+            }
+          ],
+          "skills_max": true,
+          "wave": 19
+        },
+        {
+          "hp": 18397.8389942464,
+          "max_hp": 19460.1910114802,
+          "pass": true,
+          "skills": [
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_5_skill_1"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_5_skill_2"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_5_skill_3"
+            },
+            {
+              "actual": 5,
+              "max": 5,
+              "skill_id": "hero_5_skill_4"
+            }
+          ],
+          "skills_max": true,
+          "wave": 20
+        }
+      ],
+      "current_wave": 20,
+      "difficulty": "normal",
+      "elapsed_game_seconds": 439.21666666665,
+      "element_matchup_hit_counts": {
+        "16:1:1.30": 36,
+        "1:0:1.30": 6,
+        "1:12:1.00": 820,
+        "1:16:0.70": 169,
+        "1:1:1.00": 190,
+        "1:2:1.30": 143,
+        "1:31:1.00": 4,
+        "1:4:1.00": 161,
+        "1:8:1.00": 145,
+        "2:1:0.70": 46,
+        "4:1:1.00": 47,
+        "8:1:1.00": 221
+      },
+      "element_spawn_counts": {
+        "0": 1,
+        "1": 27,
+        "2": 29,
+        "4": 29,
+        "8": 29,
+        "12": 98,
+        "16": 27,
+        "31": 1
+      },
+      "enemy_cast_counts": {
+        "earth_strike": 37,
+        "fire_burst": 10,
+        "fire_strike": 223,
+        "metal_strike": 47,
+        "water_strike": 47,
+        "wood_strike": 48
+      },
+      "expected_skill_count": 4,
+      "framework_compile_usec": 25134,
+      "guarantee_skills": false,
+      "healing_received": 36091.116015458,
+      "hero_id": "hero_5",
+      "hp": 18397.8389942464,
+      "incoming_damage_by_enemy": {
+        "arc7_bach_ho_yeu_vuong_fire": 7402.55926902272,
+        "arc7_co_giap_long_te_fire": 6661.60142884825,
+        "arc7_doc_tich_man_ngac_fire": 4635.52691191474,
+        "arc7_huyen_lan_long_bao_fire": 3167.87074186928,
+        "arc7_huyet_man_cuong_su_fire": 3932.88409743024,
+        "arc7_loi_trao_hung_bi_fire": 3896.22430363858,
+        "arc7_man_cot_toan_nghe_fire": 4181.84162989764,
+        "arc7_pha_son_cu_vien_fire": 3274.95965007045
+      },
+      "incoming_damage_by_skill": {
+        "earth_strike": 3730.54454107111,
+        "fire_burst": 2147.30726887682,
+        "fire_strike": 20716.4514461521,
+        "metal_strike": 3905.44609695914,
+        "water_strike": 2745.80793740773,
+        "wood_strike": 3907.91074222492
+      },
+      "incoming_damage_by_type": {
+        "normal": 37153.4680326919
+      },
+      "incoming_hit_count": 396,
+      "incoming_total_damage": 37153.4680326919,
+      "loading_usec": 256066,
+      "max_hit": 214.730726887682,
+      "max_hit_source": "arc7_bach_ho_yeu_vuong_fire",
+      "max_hit_type": "normal",
+      "max_hp": 19460.1910114802,
+      "mortal": true,
+      "movement": "kite",
+      "movement_policy": "range_65_85_half_speed_strafe_seed_side_v1",
+      "native_elements": true,
+      "outgoing_damage_by_enemy": {
+        "arc7_bach_ho_yeu_vuong_fire": 117064.320410649,
+        "arc7_co_giap_long_te_fire": 243149.294588283,
+        "arc7_doc_tich_man_ngac_fire": 114940.28710596,
+        "arc7_huyen_lan_long_bao_fire": 125357.278227157,
+        "arc7_huyet_man_cuong_su_fire": 135181.476699208,
+        "arc7_loi_trao_hung_bi_fire": 149455.196339356,
+        "arc7_man_cot_toan_nghe_fire": 139821.566652168,
+        "arc7_pha_son_cu_vien_fire": 154613.159469641
+      },
+      "peak_alive": 16,
+      "peak_process_usec": 87142,
+      "peak_static_memory_bytes": 644948125,
+      "persistent_level": 60,
+      "reason": "pass",
+      "require_max_skills": false,
+      "run_level": 21,
+      "runtime_stats": {
+        "atk": 1720.23885456789,
+        "attack_range": 350,
+        "attack_speed": 2.77306440380806,
+        "crit_damage": 2.835,
+        "crit_rate": 0.396,
+        "def": 216.476410218549,
+        "hp": 19460.1910114802,
+        "move_speed": 323.506782387257,
+        "regen_percent_per_10s": 0.0990000000000001
+      },
+      "seed": 239,
+      "stage_id": "stage_c239_pilot",
+      "status": "PASS",
+      "target_wave": 20,
+      "process_exit": 0,
+      "wall_ms": 7195,
+      "timed_out": false,
+      "runtime_errors": false,
+      "requested": {
+        "lane": "pilot",
+        "mode": "normal",
+        "hero": "hero_5",
+        "seed": 239
+      }
+    }
+  ]
+}

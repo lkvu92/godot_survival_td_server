@@ -59,6 +59,8 @@ const arcs = [{id: 'arc_titan_realm', sort_order: 5}, {id: arc, sort_order: 6}];
 const stages = [{id: 'stage_5_10', arc_id: arcs[0].id, sort_order: 10}, ...Array.from({length: 10}, (_, i) => ({id: `stage_6_${String(i + 1).padStart(2, '0')}`, arc_id: arc, sort_order: i + 1}))];
 const rows = stages.flatMap(row => ['normal', 'epic', 'legend'].map(level_id => ({stage_id: row.id, arc_id: row.arc_id, level_id})));
 const unlockNk = {sqlQuery(sql, args) {
+  if (sql === 'SELECT id, level_min, sort_order FROM game_arcs ORDER BY sort_order') return clone(arcs);
+  if (sql === 'SELECT id FROM game_stages WHERE arc_id = $1 ORDER BY sort_order') return clone(stages.filter(row => row.arc_id === args[0]));
   if (sql.includes('AS stage_id')) return clone(rows);
   if (sql.includes('FROM game_stages WHERE id')) return clone(stages.filter(row => row.id === args[0]));
   if (sql.includes('FROM game_stages WHERE arc_id')) return clone(stages.filter(row => row.arc_id === args[0] && (!sql.includes('sort_order >') || row.sort_order > args[1])).slice(0, 1));

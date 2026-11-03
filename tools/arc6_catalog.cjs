@@ -86,7 +86,7 @@ function buildEnemies(originals) {
     boss.boss_skills = boss.boss_skills.slice(0, final ? 4 : 2);
     result.push(boss);
   }
-  return result;
+  return require("./creep_boss_skill_atlas.cjs").project(result);
 }
 function buildStages() {
   const result = [];
@@ -185,8 +185,11 @@ function buildLevels(originals) {
   return result;
 }
 function buildCatalog(catalog, recommendations = []) {
-  const arc = {id:ARC,display_name:'Ngũ Tố Quy Khư',description:'Vạn vật sinh từ hỗn độn, quy về hư vô. Linh khí Ngũ Hành cắn xé, không còn ranh giới.',level_min:51,level_max:60,enabled_if:{type:'always'},element:'earth',order:6,enemy_visual_scale_multiplier:ARC6_VISUAL_SCALE_MULTIPLIER,boss_skill_ids:['control_resistance_growth'],stage_ids:Array.from({length:10},(_,i)=>stageId(i+1))};
+  const arc = {id:ARC,display_name:'Ngũ Tố Quy Khư',description:'Vạn vật sinh từ hỗn độn, quy về hư vô. Linh khí Ngũ Hành cắn xé, không còn ranh giới.',level_min:45,level_max:60,enabled_if:{type:'always'},element:'earth',order:6,enemy_visual_scale_multiplier:ARC6_VISUAL_SCALE_MULTIPLIER,boss_skill_ids:['control_resistance_growth'],stage_ids:Array.from({length:10},(_,i)=>stageId(i+1))};
   const result = {arcs:[arc],enemies:buildEnemies(catalog.enemies),stages:buildStages(),stage_levels:buildLevels(catalog.stage_levels)};
+  // Narrative is authored independently of combat regeneration (same rule as Arc 7).
+  const existingArc = catalog.arcs.find(row=>row.id===ARC);
+  if (existingArc) { arc.display_name=existingArc.display_name; arc.description=existingArc.description; }
   for (const measured of recommendations) {
     const level = result.stage_levels.find(row=>row.stage_id===measured.stage_id && row.level_id===measured.level_id);
     if (!level || !Number.isInteger(measured.max_reference_power) || measured.max_reference_power<=0) throw Error('Invalid measured recommendation');

@@ -46,7 +46,8 @@
         "sfx_id": "hero-basic-attack",
         "timing": "cast"
       }
-    ]
+    ],
+    "element": "neutral"
   },
   {
     "id": "frost_orb",
@@ -207,7 +208,8 @@
           }
         ]
       }
-    ]
+    ],
+    "element": "water"
   },
   {
     "id": "lightning_chain",
@@ -307,7 +309,8 @@
           "CD 3.2s"
         ]
       }
-    ]
+    ],
+    "element": "thunder"
   },
   {
     "id": "meteor",
@@ -411,7 +414,8 @@
           "CD 6s"
         ]
       }
-    ]
+    ],
+    "element": "fire"
   },
   {
     "id": "fire_arrow",
@@ -573,7 +577,8 @@
           }
         ]
       }
-    ]
+    ],
+    "element": "fire"
   },
   {
     "id": "ice_shards",
@@ -690,7 +695,8 @@
           "CD 1.35s"
         ]
       }
-    ]
+    ],
+    "element": "water"
   },
   {
     "id": "blizzard",
@@ -834,7 +840,8 @@
           }
         ]
       }
-    ]
+    ],
+    "element": "water"
   },
   {
     "id": "archer_frost_shot",
@@ -995,7 +1002,8 @@
           }
         ]
       }
-    ]
+    ],
+    "element": "water"
   },
   {
     "id": "archer_ice_spike",
@@ -1137,7 +1145,8 @@
           }
         ]
       }
-    ]
+    ],
+    "element": "water"
   },
   {
     "id": "archer_arrow_rain",
@@ -1284,7 +1293,8 @@
           }
         ]
       }
-    ]
+    ],
+    "element": "water"
   },
   {
     "id": "frozen_lance",
@@ -1416,7 +1426,8 @@
           "CD 3.1s"
         ]
       }
-    ]
+    ],
+    "element": "water"
   },
   {
     "id": "hero_3_skill_1",
@@ -1602,7 +1613,8 @@
         "sfx_id": "hero3-skill1",
         "timing": "cast"
       }
-    ]
+    ],
+    "element": "earth"
   },
   {
     "id": "hero_3_skill_2",
@@ -1903,7 +1915,8 @@
       "hero_3_skill_2c_frame_6",
       "hero_3_skill_2c_frame_7",
       "hero_3_skill_2c_frame_8"
-    ]
+    ],
+    "element": "earth"
   },
   {
     "id": "hero_3_skill_3",
@@ -2124,7 +2137,8 @@
         "sfx_id": "hero3-skill3-b",
         "timing": "finisher"
       }
-    ]
+    ],
+    "element": "earth"
   },
   {
     "id": "hero_3_skill_4",
@@ -2315,7 +2329,8 @@
         "sfx_id": "hero3-skill4-cast",
         "timing": "cast"
       }
-    ]
+    ],
+    "element": "earth"
   },
   {
     "id": "hero_2_skill_1",
@@ -2446,7 +2461,8 @@
         "sfx_id": "hero2-skill1-cast",
         "timing": "cast"
       }
-    ]
+    ],
+    "element": "fire"
   },
   {
     "id": "hero_2_skill_2",
@@ -2592,7 +2608,8 @@
         "sfx_id": "hero2-skill2-cast",
         "timing": "cast"
       }
-    ]
+    ],
+    "element": "fire"
   },
   {
     "id": "hero_2_skill_3",
@@ -2705,7 +2722,8 @@
         "sfx_id": "hero2-skill3-cast",
         "timing": "cast"
       }
-    ]
+    ],
+    "element": "fire"
   },
   {
     "id": "hero_2_skill_4",
@@ -2901,7 +2919,8 @@
         "sfx_id": "hero2-skill4-impact",
         "timing": "impact"
       }
-    ]
+    ],
+    "element": "fire"
   },
   {
     "id": "hero_4_skill_1",
@@ -3077,7 +3096,8 @@
         "sfx_id": "hero4-skill1-cast",
         "timing": "cast"
       }
-    ]
+    ],
+    "element": "wood"
   },
   {
     "id": "hero_4_skill_2",
@@ -3308,7 +3328,8 @@
         "sfx_id": "hero4-skill2-cast",
         "timing": "cast"
       }
-    ]
+    ],
+    "element": "wood"
   },
   {
     "id": "hero_4_skill_3",
@@ -3558,7 +3579,8 @@
         "sfx_id": "hero4-skill3-impact",
         "timing": "impact"
       }
-    ]
+    ],
+    "element": "wood"
   },
   {
     "id": "hero_4_skill_4",
@@ -3853,7 +3875,8 @@
         "sfx_id": "hero4-skill4-impact",
         "timing": "impact"
       }
-    ]
+    ],
+    "element": "wood"
   },
   {
     "id": "heal_30_percent",
@@ -3949,7 +3972,8 @@
           "CD 7.5s"
         ]
       }
-    ]
+    ],
+    "element": "neutral"
   },
   {
     "id": "hero_1_skill_1",
@@ -4121,7 +4145,8 @@
         "sfx_id": "hero1-skill1-cast",
         "timing": "cast"
       }
-    ]
+    ],
+    "element": "water"
   },
   {
     "id": "hero_1_skill_2",
@@ -4302,7 +4327,8 @@
         "sfx_id": "hero1-skill2-impact",
         "timing": "impact"
       }
-    ]
+    ],
+    "element": "water"
   },
   {
     "id": "hero_1_skill_3",
@@ -4456,7 +4482,8 @@
         "sfx_id": "hero1-skill4-cast",
         "timing": "cast"
       }
-    ]
+    ],
+    "element": "water"
   },
   {
     "id": "hero_1_skill_4",
@@ -4604,7 +4631,8 @@
         "sfx_id": "hero1-skill3-cast",
         "timing": "cast"
       }
-    ]
+    ],
+    "element": "water"
   },
   {
     "id": "hero_5_skill_1",
@@ -4802,7 +4830,8 @@
         "sfx_id": "hero5-skill1-cast",
         "timing": "cast"
       }
-    ]
+    ],
+    "element": "metal"
   },
   {
     "id": "hero_5_skill_2",
@@ -5018,7 +5047,8 @@
         "sfx_id": "hero5-skill2-cast",
         "timing": "cast"
       }
-    ]
+    ],
+    "element": "metal"
   },
   {
     "id": "hero_5_skill_3",
@@ -5264,7 +5294,8 @@
         "sfx_id": "hero5-skill3-impact",
         "timing": "impact"
       }
-    ]
+    ],
+    "element": "metal"
   },
   {
     "id": "hero_5_skill_4",
@@ -5487,7 +5518,8 @@
         "sfx_id": "hero5-skill4-cast",
         "timing": "cast"
       }
-    ]
+    ],
+    "element": "metal"
   },
   {
     "id": "skill_talisman_1",

@@ -204,6 +204,8 @@ def main(argv=None):
                 if readback.get("success") is not True or readback.get("table") != request["table"] or readback.get("inserted") != expected:
                     raise SeedError("Bundle readback mismatch: " + request["table"])
                 print(f"[OK] {request['table']}: {expected} rows verified atomically")
+                if readback.get("preserved_levelled", 0):
+                    print(f"[INFO] Preserved {readback['preserved_levelled']} deployed v2 stages; legacy stage/wave inputs skipped")
         if args.publish:
             if operator_token:
                 result = invoke_rpc("operator_config_release", {"publish_token": operator_token, "store_url": args.store_url})

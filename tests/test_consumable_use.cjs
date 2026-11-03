@@ -20,8 +20,10 @@ const qty=id=>db['player_inventory:items'].value.items.filter(i=>i.item_id===id)
 function reset(){db={};conflict=false;row('player_profiles','main',{level:10,exp:0,resources:{gold:10,gems:100},stamina:0,elements:{fire:20},talent_score:25,main_element:'fire',element_affinities:vector(5),breakthrough:{history:[]}});row('player_inventory','items',{items:catalog.filter(i=>i.attributes?.atlas_slot!==undefined).map(i=>({item_id:i.id,quantity:10}))});}
 function request(id,request_id='one',extra={}){return JSON.parse(use({userId:'u'},{},nk,JSON.stringify({item_id:id,request_id,quantity:1,...extra})));}
 reset();assert(request('gold_talisman').success);assert.equal(profile().resources.gold,75010);assert.equal(qty('gold_talisman'),9);
+assert.deepEqual(clone(db['player_item_requests:one'].value.asset_changes),[{type:'item',id:'gold_talisman',delta:-1,balance_after:9},{type:'resource',id:'gold',delta:75000,balance_after:75010}]);
 assert(request('gold_talisman').duplicate);assert.equal(profile().resources.gold,75010);assert(!request('energy_elixir').success);
 assert(request('energy_elixir','energy',{quantity:2}).success);assert.equal(profile().stamina,30);
+assert.deepEqual(clone(db['player_item_requests:energy'].value.asset_changes),[{type:'item',id:'energy_elixir',delta:-2,balance_after:8},{type:'resource',id:'stamina',delta:30,balance_after:30}]);
 profile().stamina=vm.runInContext('staminaStorageMax',context)(nk);
 assert(!request('energy_elixir','full').success);assert.equal(qty('energy_elixir'),8);
 reset();assert(request('exp_talisman').success);assert(profile().exp>0);assert(!request('wind_aptitude_fruit','wind').success);

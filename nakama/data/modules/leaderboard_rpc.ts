@@ -242,7 +242,9 @@ const getLeaderboardRecords: nkruntime.RpcFunction = (ctx, logger, nk, payload) 
 
 const gatedSyncPlayerLeaderboards: nkruntime.RpcFunction = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, syncPlayerLeaderboards);
 const gatedGetLeaderboardRecords: nkruntime.RpcFunction = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, getLeaderboardRecords);
-const rpcSyncAllLeaderboards: nkruntime.RpcFunction = (_ctx, logger, nk, _payload) => {
+const rpcSyncAllLeaderboards: nkruntime.RpcFunction = (ctx, logger, nk, _payload) => {
+    // Userless calls are authenticated by the runtime HTTP key at the gateway; user calls must be admin.
+    if (ctx.userId && !isConfigAdmin(ctx)) return JSON.stringify({success:false,code:403,message:"Forbidden"});
     const count = syncAllStoredProfilesToLeaderboards(nk, logger);
     return count < 0 ? JSON.stringify({success:false,code:503,message:"Leaderboard backfill incomplete; inspect server config/logs"})
         : JSON.stringify({ success: true, synced:count, message: "All profiles synced to leaderboards" });

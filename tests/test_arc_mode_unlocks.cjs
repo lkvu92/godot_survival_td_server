@@ -8,6 +8,8 @@ const stages=[{id:'a1',arc_id:'a',sort_order:1},{id:'a2',arc_id:'a',sort_order:2
 let rows=stages.flatMap(s=>['normal','epic','legend'].map(level_id=>({stage_id:s.id,arc_id:s.arc_id,level_id}))),profile,writes;
 const nk={
  sqlQuery(sql,args=[]){
+  if(sql==='SELECT id, level_min, sort_order FROM game_arcs ORDER BY sort_order')return [{id:'a',level_min:1,sort_order:1},{id:'b',level_min:1,sort_order:2}];
+  if(sql==='SELECT id FROM game_stages WHERE arc_id = $1 ORDER BY sort_order')return clone(stages.filter(s=>s.arc_id===args[0]));
   if(sql.includes('AS stage_id'))return clone(rows);
   if(sql.includes('FROM game_stages WHERE id'))return clone(stages.filter(s=>s.id===args[0]));
   if(sql.includes('FROM game_stages WHERE arc_id'))return clone(stages.filter(s=>s.arc_id===args[0]&&s.sort_order>args[1]).slice(0,1));

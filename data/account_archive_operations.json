@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "revision": "unapproved-default",
+  "enabled": false,
+  "batch_size": 25,
+  "identity_expiry": {
+    "enabled": false,
+    "approval_reference": null,
+    "approved_by": null,
+    "effective_at": null
+  }
+}

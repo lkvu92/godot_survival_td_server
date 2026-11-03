@@ -148,9 +148,48 @@ const claimServerWeekly = (ctx, _logger, nk, payload) => {
   return JSON.stringify({ success: true, already_claimed: false, rewards, profile: p.value, inventory: i.value.items });
 };
 
+const adminAssetTrace = (ctx, _logger, nk, payload) => {
+  const denied = requireServerAdmin(ctx);
+  if (denied) return denied;
+  let req;
+  try {
+    req = JSON.parse(payload || "{}");
+  } catch (_e) {
+    return serverFailure("INVALID_REQUEST", 400, "Invalid JSON");
+  }
+  if (!req || typeof req !== "object" || Array.isArray(req) || typeof req.user_id !== "string" || !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(req.user_id) || typeof req.server_id !== "string" || !/^[a-z][a-z0-9_]{0,31}$/.test(req.server_id) || !Number.isSafeInteger(req.generation) || req.generation < 1 || ["item_request", "mail_claim"].indexOf(req.source) < 0) return serverFailure("INVALID_REQUEST", 400, "Invalid trace scope");
+  const prefix = req.server_id + ":g" + req.generation + ":", cursor = req.cursor === void 0 ? "" : req.cursor, limit = req.limit === void 0 ? 20 : req.limit;
+  if (typeof cursor !== "string" || cursor.length > 240 || cursor !== "" && cursor.indexOf(prefix) !== 0 || !Number.isSafeInteger(limit) || limit < 1 || limit > 30) return serverFailure("INVALID_REQUEST", 400, "Invalid pagination");
+  const collection = req.source === "item_request" ? "player_item_requests" : "player_mail_deliveries";
+  const rows = nk.sqlQuery(
+    `SELECT key,value->'created_at' AS created_at,value->'claimed_at_ms' AS claimed_at_ms,
+      value->>'fingerprint' AS fingerprint,value->>'source_type' AS source_type,value->'asset_changes' AS asset_changes
+      FROM storage WHERE user_id=$1::uuid AND collection=$2 AND key LIKE $3 AND key>$4 ORDER BY key LIMIT $5`,
+    [req.user_id, collection, prefix.replace(/_/g, "\\_") + "%", cursor, limit + 1]
+  );
+  const more = rows.length > limit;
+  if (more) rows.pop();
+  return JSON.stringify({ success: true, records: rows.map((r) => ({
+    reference: r.key,
+    at: r.claimed_at_ms || r.created_at || null,
+    fingerprint: r.fingerprint || null,
+    source_type: r.source_type || null,
+    asset_changes: r.asset_changes || null
+  })), next_cursor: more ? rows[rows.length - 1].key : "" });
+};
+function isConfigAdmin(ctx) {
+  const uid = String(ctx.userId || "").trim().toLowerCase();
+  if (!uid) return false;
+  const allowed = String(ctx.env && ctx.env.CONFIG_ADMIN_USER_ID || "").split(",").map((s) => s.trim().toLowerCase()).filter((s) => s.length > 0);
+  return allowed.indexOf(uid) >= 0;
+}
 function requireServerAdmin(ctx) {
-  const configured = String(ctx.env && ctx.env.CONFIG_ADMIN_USER_ID || "");
-  return ctx.userId && configured && ctx.userId === configured ? null : serverFailure("FORBIDDEN", 403, "Forbidden");
+  return isConfigAdmin(ctx) ? null : serverFailure("FORBIDDEN", 403, "Forbidden");
+}
+function rpcAdminWhoami(ctx, _l, _n, _p) {
+  if (!ctx.userId) throw { message: "Authentication required", code: 16 };
+  if (!isConfigAdmin(ctx)) throw { message: "Forbidden", code: 7 };
+  return JSON.stringify({ success: true, user_id: ctx.userId, role: "admin" });
 }
 function serverAdminHandler(action) {
   return (ctx, _logger, nk, payload) => {
@@ -788,6 +827,8 @@ const enterGameServer = (ctx, _logger, nk, payload) => {
 };
 function serverAdmissionRpc(id, handler) {
   const accountOnly = [
+    "compliance_access",
+    "health_heartbeat",
     "session_status",
     "admin_exp_test_access",
     "admin_test_access",
@@ -1152,6 +1193,13 @@ function createGameConfigTables(nk, logger) {
     `, []);
   const defaultSettings = {
     system: {
+      account_archive_operations: { "schema_version": 1, "revision": "unapproved-default", "enabled": false, "batch_size": 25, "identity_expiry": { "enabled": false, "approval_reference": null, "approved_by": null, "effective_at": null } },
+      account_deletion: { "schema_version": 2, "revision": "archive-v3-initial", "enabled": false, "timezone": "Asia/Ho_Chi_Minh", "soft_delete_days": 14, "restore_before_deadline_only": true, "identity_release_event": "archive_committed", "minimal_user_mode": "retained_tombstone", "archive_transition_enabled": false, "gameplay_purge_enabled": false, "retention_key_id": "configure-before-enabling", "notice_template_revision": "archive-1", "worker": { "scan_interval_seconds": 86400, "batch_size": 50, "lease_seconds": 120, "retry_backoff_seconds": 60, "max_attempts": 12 }, "reauth": { "google_max_age_seconds": 300, "email_link_ttl_seconds": 900 }, "datasets": [{ "id": "gameplay", "processor": "account_gameplay_cleanup_v1", "trigger": "archive_committed", "calendar_months": 3 }, { "id": "player_identity", "processor": "protected_identity_archive_v1", "trigger": "confirmed_deletion", "calendar_months": 6 }, { "id": "billing_transaction", "mode": "retain_review_required" }, { "id": "minimal_user", "mode": "retain_review_required" }] },
+      retention_assessment: { schema_version: 1, revision: 1, enabled: false, minimum_calendar_months: 6, trigger: "explicit_service_stop", legal_reviewed: false },
+      payment_financials: { schema_version: 1, revision: 1, enabled: false, batch_size: 20, retry_seconds: 300, resync_seconds: 86400, lookback_days: 365 },
+      account_history: { schema_version: 1, revision: 1, page_size: 10, max_page_size: 30, allowed_statuses: ["pending", "validated", "fulfilled", "failed", "cancelled", "expired", "voided", "granted", "verified", "consumed"], display_utc_offset_seconds: 25200 },
+      payment_reconciliation: { schema_version: 1, revision: 1, lookback_days: 30, pending_grace_seconds: 86400, delivery_grace_seconds: 600 },
+      compliance_policy: { schema_version: 1, revision: 1, game_id: "thong_thien_lo", guardian_below_age: 16, guardian_phone_max_accounts: 3, provider: "mock", otp_ttl_seconds: 300, otp_max_attempts: 5, otp_resend_seconds: 60, otp_rate_window_seconds: 3600, otp_rate_account_max: 5, otp_rate_phone_max: 5, otp_rate_ip_max: 30, lease_seconds: 45, warning_seconds: [900, 600, 300], age_bands: [{ below_age: 18, per_game_seconds: 3600, total_seconds: 10800 }], notice: "Theo quy \u0111\u1ECBnh c\u1EE7a ph\xE1p lu\u1EADt Vi\u1EC7t Nam, \u0111\u1EA1o h\u1EEFu c\u1EA7n x\xE1c th\u1EF1c s\u1ED1 \u0111i\u1EC7n tho\u1EA1i di \u0111\u1ED9ng \u0111\u1EC3 k\xEDch ho\u1EA1t quy\u1EC1n tham gia tr\xF2 ch\u01A1i." },
       campaign_wave_pressure: { version: 1, opening_wave_count: 4, opening_count_multiplier: 0.85, growth_interval: 4, hp_growth: 0.05, def_growth: 0.05, skill_recovery_growth: 0.05 },
       feature_unlocks: FEATURE_DEFAULTS,
       realm_milestones: REALM_MILESTONE_DEFAULTS,
@@ -1172,6 +1220,7 @@ function createGameConfigTables(nk, logger) {
       ads_enabled: false,
       ads_interval_sec: 120,
       payment_enabled: false,
+      gameplay_vip: { speed_3x: 3, auto_card_pick: 4 },
       leaderboard_rewards: { "schema_version": 1, "enabled": true, "claim_days": 30, "boards": { "cultivation_realm": { "enabled": true, "tiers": [{ "from": 1, "to": 1, "rewards": [{ "type": "resource", "id": "gems", "amount": 300 }, { "type": "resource", "id": "gold", "amount": 1e5 }, { "type": "item", "id": "element_enlightenment_charm", "amount": 3 }] }, { "from": 2, "to": 2, "rewards": [{ "type": "resource", "id": "gems", "amount": 250 }, { "type": "resource", "id": "gold", "amount": 9e4 }, { "type": "item", "id": "element_enlightenment_charm", "amount": 3 }] }, { "from": 3, "to": 3, "rewards": [{ "type": "resource", "id": "gems", "amount": 220 }, { "type": "resource", "id": "gold", "amount": 8e4 }, { "type": "item", "id": "element_enlightenment_charm", "amount": 2 }] }, { "from": 4, "to": 4, "rewards": [{ "type": "resource", "id": "gems", "amount": 200 }, { "type": "resource", "id": "gold", "amount": 75e3 }, { "type": "item", "id": "element_enlightenment_charm", "amount": 2 }] }, { "from": 5, "to": 5, "rewards": [{ "type": "resource", "id": "gems", "amount": 180 }, { "type": "resource", "id": "gold", "amount": 7e4 }, { "type": "item", "id": "element_enlightenment_charm", "amount": 2 }] }, { "from": 6, "to": 6, "rewards": [{ "type": "resource", "id": "gems", "amount": 160 }, { "type": "resource", "id": "gold", "amount": 65e3 }, { "type": "item", "id": "element_enlightenment_charm", "amount": 2 }] }, { "from": 7, "to": 7, "rewards": [{ "type": "resource", "id": "gems", "amount": 140 }, { "type": "resource", "id": "gold", "amount": 6e4 }, { "type": "item", "id": "element_enlightenment_charm", "amount": 1 }] }, { "from": 8, "to": 8, "rewards": [{ "type": "resource", "id": "gems", "amount": 120 }, { "type": "resource", "id": "gold", "amount": 55e3 }, { "type": "item", "id": "element_enlightenment_charm", "amount": 1 }] }, { "from": 9, "to": 9, "rewards": [{ "type": "resource", "id": "gems", "amount": 110 }, { "type": "resource", "id": "gold", "amount": 5e4 }, { "type": "item", "id": "element_enlightenment_charm", "amount": 1 }] }, { "from": 10, "to": 10, "rewards": [{ "type": "resource", "id": "gems", "amount": 100 }, { "type": "resource", "id": "gold", "amount": 45e3 }, { "type": "item", "id": "element_enlightenment_charm", "amount": 1 }] }, { "from": 11, "to": 50, "rewards": [{ "type": "resource", "id": "gems", "amount": 80 }, { "type": "resource", "id": "gold", "amount": 35e3 }, { "type": "item", "id": "element_enlightenment_charm", "amount": 1 }] }, { "from": 51, "to": 200, "rewards": [{ "type": "resource", "id": "gems", "amount": 50 }, { "type": "resource", "id": "gold", "amount": 25e3 }, { "type": "item", "id": "element_enlightenment_charm", "amount": 1 }] }, { "from": 201, "to": 500, "rewards": [{ "type": "resource", "id": "gems", "amount": 30 }, { "type": "resource", "id": "gold", "amount": 15e3 }] }] }, "campaign_stage": { "enabled": true, "tiers": [{ "from": 1, "to": 1, "rewards": [{ "type": "resource", "id": "gems", "amount": 300 }, { "type": "resource", "id": "gold", "amount": 1e5 }, { "type": "random_item", "pool": ["talisman_fragment_1", "talisman_fragment_2", "talisman_fragment_3", "talisman_fragment_4", "talisman_fragment_5", "talisman_fragment_6", "talisman_fragment_7", "talisman_fragment_8", "talisman_fragment_9", "talisman_fragment_10", "talisman_fragment_11", "talisman_fragment_12", "talisman_fragment_13", "talisman_fragment_14", "talisman_fragment_15"], "amount": 15 }] }, { "from": 2, "to": 2, "rewards": [{ "type": "resource", "id": "gems", "amount": 250 }, { "type": "resource", "id": "gold", "amount": 9e4 }, { "type": "random_item", "pool": ["talisman_fragment_1", "talisman_fragment_2", "talisman_fragment_3", "talisman_fragment_4", "talisman_fragment_5", "talisman_fragment_6", "talisman_fragment_7", "talisman_fragment_8", "talisman_fragment_9", "talisman_fragment_10", "talisman_fragment_11", "talisman_fragment_12", "talisman_fragment_13", "talisman_fragment_14", "talisman_fragment_15"], "amount": 12 }] }, { "from": 3, "to": 3, "rewards": [{ "type": "resource", "id": "gems", "amount": 220 }, { "type": "resource", "id": "gold", "amount": 8e4 }, { "type": "random_item", "pool": ["talisman_fragment_1", "talisman_fragment_2", "talisman_fragment_3", "talisman_fragment_4", "talisman_fragment_5", "talisman_fragment_6", "talisman_fragment_7", "talisman_fragment_8", "talisman_fragment_9", "talisman_fragment_10", "talisman_fragment_11", "talisman_fragment_12", "talisman_fragment_13", "talisman_fragment_14", "talisman_fragment_15"], "amount": 10 }] }, { "from": 4, "to": 4, "rewards": [{ "type": "resource", "id": "gems", "amount": 200 }, { "type": "resource", "id": "gold", "amount": 75e3 }, { "type": "random_item", "pool": ["talisman_fragment_1", "talisman_fragment_2", "talisman_fragment_3", "talisman_fragment_4", "talisman_fragment_5", "talisman_fragment_6", "talisman_fragment_7", "talisman_fragment_8", "talisman_fragment_9", "talisman_fragment_10", "talisman_fragment_11", "talisman_fragment_12", "talisman_fragment_13", "talisman_fragment_14", "talisman_fragment_15"], "amount": 9 }] }, { "from": 5, "to": 5, "rewards": [{ "type": "resource", "id": "gems", "amount": 180 }, { "type": "resource", "id": "gold", "amount": 7e4 }, { "type": "random_item", "pool": ["talisman_fragment_1", "talisman_fragment_2", "talisman_fragment_3", "talisman_fragment_4", "talisman_fragment_5", "talisman_fragment_6", "talisman_fragment_7", "talisman_fragment_8", "talisman_fragment_9", "talisman_fragment_10", "talisman_fragment_11", "talisman_fragment_12", "talisman_fragment_13", "talisman_fragment_14", "talisman_fragment_15"], "amount": 8 }] }, { "from": 6, "to": 6, "rewards": [{ "type": "resource", "id": "gems", "amount": 160 }, { "type": "resource", "id": "gold", "amount": 65e3 }, { "type": "random_item", "pool": ["talisman_fragment_1", "talisman_fragment_2", "talisman_fragment_3", "talisman_fragment_4", "talisman_fragment_5", "talisman_fragment_6", "talisman_fragment_7", "talisman_fragment_8", "talisman_fragment_9", "talisman_fragment_10", "talisman_fragment_11", "talisman_fragment_12", "talisman_fragment_13", "talisman_fragment_14", "talisman_fragment_15"], "amount": 7 }] }, { "from": 7, "to": 7, "rewards": [{ "type": "resource", "id": "gems", "amount": 140 }, { "type": "resource", "id": "gold", "amount": 6e4 }, { "type": "random_item", "pool": ["talisman_fragment_1", "talisman_fragment_2", "talisman_fragment_3", "talisman_fragment_4", "talisman_fragment_5", "talisman_fragment_6", "talisman_fragment_7", "talisman_fragment_8", "talisman_fragment_9", "talisman_fragment_10", "talisman_fragment_11", "talisman_fragment_12", "talisman_fragment_13", "talisman_fragment_14", "talisman_fragment_15"], "amount": 6 }] }, { "from": 8, "to": 8, "rewards": [{ "type": "resource", "id": "gems", "amount": 120 }, { "type": "resource", "id": "gold", "amount": 55e3 }, { "type": "random_item", "pool": ["talisman_fragment_1", "talisman_fragment_2", "talisman_fragment_3", "talisman_fragment_4", "talisman_fragment_5", "talisman_fragment_6", "talisman_fragment_7", "talisman_fragment_8", "talisman_fragment_9", "talisman_fragment_10", "talisman_fragment_11", "talisman_fragment_12", "talisman_fragment_13", "talisman_fragment_14", "talisman_fragment_15"], "amount": 5 }] }, { "from": 9, "to": 9, "rewards": [{ "type": "resource", "id": "gems", "amount": 110 }, { "type": "resource", "id": "gold", "amount": 5e4 }, { "type": "random_item", "pool": ["talisman_fragment_1", "talisman_fragment_2", "talisman_fragment_3", "talisman_fragment_4", "talisman_fragment_5", "talisman_fragment_6", "talisman_fragment_7", "talisman_fragment_8", "talisman_fragment_9", "talisman_fragment_10", "talisman_fragment_11", "talisman_fragment_12", "talisman_fragment_13", "talisman_fragment_14", "talisman_fragment_15"], "amount": 4 }] }, { "from": 10, "to": 10, "rewards": [{ "type": "resource", "id": "gems", "amount": 100 }, { "type": "resource", "id": "gold", "amount": 45e3 }, { "type": "random_item", "pool": ["talisman_fragment_1", "talisman_fragment_2", "talisman_fragment_3", "talisman_fragment_4", "talisman_fragment_5", "talisman_fragment_6", "talisman_fragment_7", "talisman_fragment_8", "talisman_fragment_9", "talisman_fragment_10", "talisman_fragment_11", "talisman_fragment_12", "talisman_fragment_13", "talisman_fragment_14", "talisman_fragment_15"], "amount": 3 }] }, { "from": 11, "to": 50, "rewards": [{ "type": "resource", "id": "gems", "amount": 80 }, { "type": "resource", "id": "gold", "amount": 35e3 }, { "type": "random_item", "pool": ["talisman_fragment_1", "talisman_fragment_2", "talisman_fragment_3", "talisman_fragment_4", "talisman_fragment_5", "talisman_fragment_6", "talisman_fragment_7", "talisman_fragment_8", "talisman_fragment_9", "talisman_fragment_10", "talisman_fragment_11", "talisman_fragment_12", "talisman_fragment_13", "talisman_fragment_14", "talisman_fragment_15"], "amount": 3 }] }, { "from": 51, "to": 200, "rewards": [{ "type": "resource", "id": "gems", "amount": 50 }, { "type": "resource", "id": "gold", "amount": 25e3 }, { "type": "random_item", "pool": ["talisman_fragment_1", "talisman_fragment_2", "talisman_fragment_3", "talisman_fragment_4", "talisman_fragment_5", "talisman_fragment_6", "talisman_fragment_7", "talisman_fragment_8", "talisman_fragment_9", "talisman_fragment_10", "talisman_fragment_11", "talisman_fragment_12", "talisman_fragment_13", "talisman_fragment_14", "talisman_fragment_15"], "amount": 2 }] }, { "from": 201, "to": 500, "rewards": [{ "type": "resource", "id": "gems", "amount": 30 }, { "type": "resource", "id": "gold", "amount": 15e3 }, { "type": "random_item", "pool": ["talisman_fragment_1", "talisman_fragment_2", "talisman_fragment_3", "talisman_fragment_4", "talisman_fragment_5", "talisman_fragment_6", "talisman_fragment_7", "talisman_fragment_8", "talisman_fragment_9", "talisman_fragment_10", "talisman_fragment_11", "talisman_fragment_12", "talisman_fragment_13", "talisman_fragment_14", "talisman_fragment_15"], "amount": 1 }] }] }, "combat_power": { "enabled": true, "tiers": [{ "from": 1, "to": 1, "rewards": [{ "type": "resource", "id": "gems", "amount": 300 }, { "type": "resource", "id": "gold", "amount": 1e5 }, { "type": "item", "id": "talisman_enhance_charm", "amount": 3 }] }, { "from": 2, "to": 2, "rewards": [{ "type": "resource", "id": "gems", "amount": 250 }, { "type": "resource", "id": "gold", "amount": 9e4 }, { "type": "item", "id": "talisman_enhance_charm", "amount": 3 }] }, { "from": 3, "to": 3, "rewards": [{ "type": "resource", "id": "gems", "amount": 220 }, { "type": "resource", "id": "gold", "amount": 8e4 }, { "type": "item", "id": "talisman_enhance_charm", "amount": 2 }] }, { "from": 4, "to": 4, "rewards": [{ "type": "resource", "id": "gems", "amount": 200 }, { "type": "resource", "id": "gold", "amount": 75e3 }, { "type": "item", "id": "talisman_enhance_charm", "amount": 2 }] }, { "from": 5, "to": 5, "rewards": [{ "type": "resource", "id": "gems", "amount": 180 }, { "type": "resource", "id": "gold", "amount": 7e4 }, { "type": "item", "id": "talisman_enhance_charm", "amount": 2 }] }, { "from": 6, "to": 6, "rewards": [{ "type": "resource", "id": "gems", "amount": 160 }, { "type": "resource", "id": "gold", "amount": 65e3 }, { "type": "item", "id": "talisman_enhance_charm", "amount": 2 }] }, { "from": 7, "to": 7, "rewards": [{ "type": "resource", "id": "gems", "amount": 140 }, { "type": "resource", "id": "gold", "amount": 6e4 }, { "type": "item", "id": "talisman_enhance_charm", "amount": 1 }] }, { "from": 8, "to": 8, "rewards": [{ "type": "resource", "id": "gems", "amount": 120 }, { "type": "resource", "id": "gold", "amount": 55e3 }, { "type": "item", "id": "talisman_enhance_charm", "amount": 1 }] }, { "from": 9, "to": 9, "rewards": [{ "type": "resource", "id": "gems", "amount": 110 }, { "type": "resource", "id": "gold", "amount": 5e4 }, { "type": "item", "id": "talisman_enhance_charm", "amount": 1 }] }, { "from": 10, "to": 10, "rewards": [{ "type": "resource", "id": "gems", "amount": 100 }, { "type": "resource", "id": "gold", "amount": 45e3 }, { "type": "item", "id": "talisman_enhance_charm", "amount": 1 }] }, { "from": 11, "to": 50, "rewards": [{ "type": "resource", "id": "gems", "amount": 80 }, { "type": "resource", "id": "gold", "amount": 35e3 }, { "type": "item", "id": "talisman_enhance_charm", "amount": 1 }] }, { "from": 51, "to": 200, "rewards": [{ "type": "resource", "id": "gems", "amount": 50 }, { "type": "resource", "id": "gold", "amount": 25e3 }, { "type": "item", "id": "talisman_enhance_charm", "amount": 1 }] }, { "from": 201, "to": 500, "rewards": [{ "type": "resource", "id": "gems", "amount": 30 }, { "type": "resource", "id": "gold", "amount": 15e3 }] }] } } },
       rewarded_ads: {
         schema_version: 2,
@@ -1436,6 +1485,21 @@ function createMonetizationTables(nk, logger) {
         ) SELECT to_jsonb(r) INTO changed FROM revoked r LIMIT 1;
         RETURN changed;
       END $void$;`, []);
+  nk.sqlExec(`CREATE TABLE IF NOT EXISTS payment_financial_records (
+      purchase_order_id TEXT PRIMARY KEY REFERENCES monetization_purchase_orders(id) ON DELETE CASCADE,
+      google_order_id TEXT NOT NULL UNIQUE,currency TEXT NOT NULL CHECK(currency ~ '^[A-Z]{3}$'),
+      original_amount NUMERIC(30,9) NOT NULL CHECK(original_amount>=0),tax_amount NUMERIC(30,9),
+      source TEXT NOT NULL DEFAULT 'google_orders_api',first_synced_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),last_synced_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
+      CREATE TABLE IF NOT EXISTS payment_financial_snapshots (
+      purchase_order_id TEXT NOT NULL REFERENCES payment_financial_records(purchase_order_id) ON DELETE CASCADE,
+      snapshot_hash TEXT NOT NULL,provider_event_at TIMESTAMPTZ NOT NULL,provider_state TEXT NOT NULL,
+      refunded_amount NUMERIC(30,9) NOT NULL CHECK(refunded_amount>=0),snapshot JSONB NOT NULL,synced_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      PRIMARY KEY(purchase_order_id,snapshot_hash));
+      CREATE INDEX IF NOT EXISTS financial_snapshot_latest_idx ON payment_financial_snapshots(purchase_order_id,provider_event_at DESC,synced_at DESC);
+      CREATE TABLE IF NOT EXISTS payment_financial_attempts (
+      purchase_order_id TEXT PRIMARY KEY REFERENCES monetization_purchase_orders(id) ON DELETE CASCADE,
+      last_attempt_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),failures INT NOT NULL DEFAULT 0);
+      CREATE INDEX IF NOT EXISTS purchase_orders_financial_sync_idx ON monetization_purchase_orders(platform,status,created_at);`, []);
   logger.info("Monetization tables created/verified.");
 }
 
@@ -1477,12 +1541,119 @@ function seedBindSql(sql, params) {
 function seedPgArray(values) {
   return "{" + values.map((value) => '"' + value.replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '"').join(",") + "}";
 }
+function validNativeSkillPayload(skill, payload) {
+  const castTypes = ["basic_attack", "beast_melee", "beast_dash", "beast_bolt", "tiger_claw", "tiger_pounce", "tiger_roar", "tiger_bloodline", "vermilion_volley", "vermilion_sweep", "vermilion_rain", "vermilion_domain", "ice_claw", "ice_pillar", "ice_bolt", "ice_trinity", "ice_linglong", "fire_claw", "fire_ball", "fire_stomp", "fire_meteor", "fire_formation", "wood_bolt", "wood_vine", "wood_swamp", "wood_soul", "metal_slash", "metal_bolt", "metal_punch", "metal_shatter", "metal_fist", "earth_punch", "earth_orb", "earth_stones", "earth_dragon", "wraith_volley", "wraith_binding", "wraith_calamity", "wraith_ultimate", "slam_aoe", "control_resistance_over_time"], traitIds = ["haste", "damage_shield", "defense_aura", "max_hp_buff", "pierce_guard", "debuff_resistance", "defense_buff", "damage_reflect", "invincible", "beast_bloodline", "regeneration"];
+  const validNumbers = (value) => {
+    if (typeof value === "number") return Number.isFinite(value);
+    if (Array.isArray(value)) return value.every(validNumbers);
+    if (value && typeof value === "object") return Object.keys(value).every((key) => validNumbers(value[key]) && (!["radius", "range", "cooldown", "warning_time", "damage_multiplier"].includes(key) || typeof value[key] !== "number" || value[key] >= 0));
+    return true;
+  };
+  return !!payload && typeof payload === "object" && !Array.isArray(payload) && !!(payload.id || payload.type) && payload.element === skill.element && validNumbers(payload) && (skill.executor === "enemy_cast" ? castTypes.indexOf(payload.type) >= 0 : skill.executor === "enemy_trait" && traitIds.indexOf(payload.id) >= 0 && !!payload.params && typeof payload.params === "object" && !Array.isArray(payload.params));
+}
+function validateEnemyFrameworkCatalog(value) {
+  const object = (v) => !!v && typeof v === "object" && !Array.isArray(v);
+  const nonnegative = (v) => typeof v === "number" && Number.isFinite(v) && v >= 0;
+  const elements = ["neutral", "metal", "water", "wood", "fire", "earth"];
+  if (!object(value) || value.version !== 2 || !Number.isInteger(value.max_level) || value.max_level < 1 || value.max_level > 1e4) return "Invalid enemy framework version/level";
+  if (!object(value.species) || !Object.keys(value.species).length || !object(value.skill_atlas) || !Object.keys(value.skill_atlas).length) return "Missing species/skill atlas";
+  if (value.boss_element_baselines !== void 0) {
+    if (!object(value.boss_element_baselines)) return "Invalid boss element baselines";
+    for (const element of elements.filter((e) => e !== "neutral")) {
+      const row = value.boss_element_baselines[element];
+      if (!object(row) || ["hp", "atk", "def", "attack_speed", "move_speed"].some((stat) => !nonnegative(row[stat]) || row[stat] <= 0)) return "Invalid boss element baseline";
+    }
+  }
+  for (const id of Object.keys(value.species)) {
+    const row = value.species[id];
+    if (row && row.balance_profile !== void 0 && (row.balance_profile !== "element_boss" || !object(value.boss_element_baselines))) return "Invalid boss balance profile";
+    if (!object(row) || ["element", "elements", "skills", "learnable_skills", "balance_reference_level"].some((key) => row[key] !== void 0)) return "Species cannot own elements or skill lists";
+    if (typeof row.visual_definition_id !== "string" || !row.visual_definition_id || !object(row.base_attributes) || !object(row.growth_per_level) || !object(row.reward)) return "Invalid species definition";
+    if (row.presentation_variants !== void 0 && (!Array.isArray(row.presentation_variants) || row.presentation_variants.some((id2) => typeof id2 !== "string" || !id2) || new Set(row.presentation_variants).size !== row.presentation_variants.length)) return "Invalid presentation variants";
+    for (const stat of ["hp", "atk", "def", "move_speed", "attack_speed", "attack_range"]) {
+      if (!nonnegative(row.base_attributes[stat]) || stat !== "def" && row.base_attributes[stat] <= 0 || !nonnegative(row.growth_per_level[stat])) return "Invalid species growth";
+    }
+    for (const stat of Object.keys(row.growth_per_level)) if (!nonnegative(row.growth_per_level[stat]) || !nonnegative(row.base_attributes[stat])) return "Invalid extra growth";
+    for (const stat of Object.keys(row.base_attributes)) if (!nonnegative(row.base_attributes[stat])) return "Invalid base attribute";
+    for (const key of ["exp", "gold"]) if (!Number.isInteger(row.reward[key]) || row.reward[key] < 0) return "Invalid species reward";
+  }
+  for (const id of Object.keys(value.skill_atlas)) {
+    const skill = value.skill_atlas[id], seen = {};
+    if (!object(skill) || skill.id !== id || elements.indexOf(skill.element) < 0 || ["direct", "area", "max_hp", "native"].indexOf(skill.kind) < 0 || !Array.isArray(skill.levels) || !skill.levels.length) return "Invalid shared skill";
+    for (const level of skill.levels) {
+      if (!object(level) || !Number.isInteger(level.level) || level.level < 1 || seen[level.level]) return "Invalid skill level";
+      seen[level.level] = true;
+      if (skill.kind === "native") {
+        if (!validNativeSkillPayload(skill, level.payload)) return "Invalid native skill payload";
+      } else if (skill.kind === "max_hp") {
+        if (!nonnegative(level.hp_multiplier) || level.hp_multiplier < 1) return "Invalid passive";
+      } else {
+        for (const key of ["damage_multiplier", "cooldown", "range"]) if (!nonnegative(level[key]) || level[key] <= 0) return "Invalid skill parameter";
+        if (skill.kind === "area" && (!nonnegative(level.radius) || level.radius <= 0)) return "Invalid skill area";
+        if (!nonnegative(level.slow_percent === void 0 ? 0 : level.slow_percent) || Number(level.slow_percent || 0) >= 1 || !nonnegative(level.slow_duration === void 0 ? 0 : level.slow_duration)) return "Invalid skill slow";
+      }
+    }
+  }
+  if (value.loadout_templates !== void 0) {
+    if (!object(value.loadout_templates)) return "Invalid element loadout templates";
+    for (const templateId of Object.keys(value.loadout_templates)) {
+      const template = value.loadout_templates[templateId];
+      if (!object(template) || !Object.keys(template).length) return "Invalid element loadout template";
+      for (const element of Object.keys(template)) {
+        const refs = template[element], seen = {};
+        if (elements.indexOf(element) < 0 || element === "neutral" || !Array.isArray(refs)) return "Invalid element loadout";
+        let attacks = 0;
+        for (const ref of refs) {
+          if (!object(ref) || !Number.isInteger(ref.level)) return "Invalid loadout reference";
+          const skill = value.skill_atlas[ref.skill_id];
+          if (!skill || !skill.levels.some((row) => row.level === ref.level) || skill.element !== "neutral" && skill.element !== element) return "Incompatible loadout skill";
+          const slot = skill.kind === "native" ? String(ref.slot || "") : "shared", key = ref.skill_id + ":" + slot;
+          if (seen[key]) return "Duplicate loadout skill";
+          seen[key] = true;
+          if (skill.kind === "native") {
+            if (["attack_skill", "boss_skills", "generic_skills"].indexOf(slot) < 0 || slot === "generic_skills" !== (skill.executor === "enemy_trait")) return "Invalid loadout slot";
+            if (slot === "attack_skill" && ++attacks > 1) return "Duplicate loadout attack";
+          }
+        }
+      }
+    }
+  }
+  if (value.native_defaults !== void 0) {
+    if (!object(value.native_defaults)) return "Invalid native defaults";
+    for (const slot of Object.keys(value.native_defaults)) {
+      if (["enemy_skills", "boss_skills"].indexOf(slot) < 0 || !object(value.native_defaults[slot])) return "Invalid native default slot";
+      for (const id of Object.keys(value.native_defaults[slot])) {
+        const ref = value.native_defaults[slot][id], skill = ref && value.skill_atlas[ref.skill_id];
+        if (!skill || skill.kind !== "native" || !Number.isInteger(ref.level) || !skill.levels.some((row) => row.level === ref.level) || slot === "enemy_skills" !== (skill.executor === "enemy_trait")) return "Invalid native default reference";
+      }
+    }
+  }
+  if (value.enemy_skill_bindings !== void 0) {
+    if (!object(value.enemy_skill_bindings)) return "Invalid enemy skill bindings";
+    for (const id of Object.keys(value.enemy_skill_bindings)) {
+      const binding = value.enemy_skill_bindings[id];
+      if (!object(binding)) return "Invalid enemy binding";
+      for (const slot of ["attack_skill", "boss_skills", "generic_skills"]) {
+        const refs = slot === "attack_skill" ? binding[slot] === null ? [] : [binding[slot]] : binding[slot];
+        if (!Array.isArray(refs)) return "Invalid binding slot";
+        for (const ref of refs) {
+          if (!object(ref) || !Number.isInteger(ref.level)) return "Invalid native reference";
+          const skill = value.skill_atlas[ref.skill_id];
+          if (!skill || skill.kind !== "native" || !skill.levels.some((row) => row.level === ref.level) || slot === "generic_skills" !== (skill.executor === "enemy_trait")) return "Missing native reference/level or wrong slot";
+        }
+      }
+    }
+  }
+  return "";
+}
 function validateSeedRequest(data) {
   const tables = ["heroes", "enemies", "items", "skills", "stages", "stage_levels", "arcs", "cards", "effects", "talismans", "store_catalog", "content_configs", "config", "remote_settings"];
   if (tables.indexOf(data.table) < 0) return "Unknown table";
   if (data.replace_all !== void 0 && typeof data.replace_all !== "boolean") return "replace_all must be boolean";
   if (data.table === "config") {
-    return typeof data.config_key !== "string" || !data.config_key || !data.config_value || typeof data.config_value !== "object" || Array.isArray(data.config_value) ? "Invalid config" : "";
+    if (typeof data.config_key !== "string" || !data.config_key || !data.config_value || typeof data.config_value !== "object" || Array.isArray(data.config_value)) return "Invalid config";
+    if (data.config_key === "progression" && data.config_value.enemy_framework !== void 0) return validateEnemyFrameworkCatalog(data.config_value.enemy_framework);
+    return "";
   }
   const ids = {};
   const extensions = seedExtensionColumns()[data.table] || {};
@@ -1491,12 +1662,20 @@ function validateSeedRequest(data) {
     const id = data.table === "remote_settings" ? row.module + ":" + row.key : row.id;
     if (typeof id !== "string" && typeof id !== "number" || !String(id) || ids[String(id)]) return "Missing or duplicate id";
     ids[String(id)] = true;
+    if (data.table === "skills" && ["neutral", "metal", "water", "wood", "fire", "earth", "thunder"].indexOf(row.element) < 0) return "Missing or invalid fixed skill element";
+    if (data.table === "skills" && row.id === "hero_basic_attack" && row.element !== "neutral") return "Basic attack must be neutral";
     if (data.table === "store_catalog") {
       if (typeof row.product_id !== "string" || !row.product_id || ids["product:" + row.product_id]) return "Missing or duplicate product_id";
       ids["product:" + row.product_id] = true;
     }
     if (data.table === "talismans" && (!Number.isInteger(row.id) || row.id <= 0)) return "Invalid talisman id";
     if (["heroes", "enemies", "items", "skills", "stages", "arcs", "cards", "effects"].indexOf(data.table) >= 0 && (typeof row.display_name !== "string" || !row.display_name)) return "Missing display_name";
+    if (data.table === "stages" && Number((row.stage_rules || {}).enemy_framework_version) === 2) {
+      for (const wave of row.waves || []) for (const entry of wave.entries || []) {
+        for (const branch of [entry, ...Object.keys(entry.difficulty_overrides || {}).map((k) => entry.difficulty_overrides[k])])
+          if (!branch || ["modifiers", "attributes", "hp_mul", "atk_mul", "def_mul", "boss_skill_ids"].some((k) => Object.prototype.hasOwnProperty.call(branch, k))) return "Legacy stat/skill override in v2 entry";
+      }
+    }
     if (data.table === "stage_levels" && (!row.stage_id || !row.level_id)) return "Missing stage reference";
     for (const key of Object.keys(extensions)) {
       if (row[key] === void 0) continue;
@@ -1524,7 +1703,7 @@ function validateSeedRequest(data) {
 }
 const seedGameData = (ctx, logger, nk, payload) => {
   var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _A, _B, _C, _D;
-  if (ctx.userId && ctx.userId !== String(ctx.env.CONFIG_ADMIN_USER_ID || "")) {
+  if (ctx.userId && !isConfigAdmin(ctx)) {
     return JSON.stringify({ error: "Forbidden", code: 403 });
   }
   let data;
@@ -1559,6 +1738,7 @@ const seedGameData = (ctx, logger, nk, payload) => {
     const validation = validateSeedRequest(data);
     if (validation) return JSON.stringify({ error: validation });
     let inserted = 0;
+    const preservedLevelledStages = [];
     switch (table) {
       case "heroes":
         if (data.replace_all === true) {
@@ -1710,6 +1890,16 @@ const seedGameData = (ctx, logger, nk, payload) => {
         break;
       case "stages":
         for (const row of rows) {
+          if (Number((row.stage_rules || {}).enemy_framework_version) !== 2) {
+            const deployed = nk.sqlQuery("SELECT id FROM game_stages WHERE id=$1 AND stage_rules->>'enemy_framework_version'='2'", [row.id]);
+            if (deployed.length) {
+              preservedLevelledStages.push(String(row.id));
+              inserted++;
+              continue;
+            }
+            statements.push(`PERFORM id FROM game_stages WHERE id=${seedSqlLiteral(row.id)} FOR UPDATE`);
+            statements.push(`IF EXISTS(SELECT 1 FROM game_stages WHERE id=${seedSqlLiteral(row.id)} AND stage_rules->>'enemy_framework_version'='2') THEN RAISE EXCEPTION 'C239_LEGACY_SEED_DOWNGRADE_BLOCKED'; END IF`);
+          }
           write(`
                     INSERT INTO game_stages (id, arc_id, level, display_name, description,
                         sort_order, exp_weight, is_boss, background, music, enabled_if, difficulty_levels, loot_table)
@@ -2015,6 +2205,7 @@ const seedGameData = (ctx, logger, nk, payload) => {
     }
     const columns = seedExtensionColumns()[table];
     if (columns) for (const row of rows) {
+      if (table === "stages" && preservedLevelledStages.indexOf(String(row.id)) >= 0) continue;
       const fields = Object.keys(columns).filter((key) => key === "metadata" || row[key] !== void 0);
       if (!fields.length) continue;
       const params = [row.id];
@@ -2050,10 +2241,10 @@ const seedGameData = (ctx, logger, nk, payload) => {
       const predicates = fields.map((key, index) => `${key} IS NOT DISTINCT FROM (jsonb_populate_record(NULL::game_${table},jsonb_build_object('${key}',${seedSqlLiteral(params[index + 1])}${columns[key] === "JSONB" ? "::jsonb" : ""}))).${key}`);
       checks.push(`IF NOT EXISTS (SELECT 1 FROM game_${table} WHERE id=${seedSqlLiteral(row.id)} AND ${predicates.join(" AND ")}) THEN RAISE EXCEPTION 'Seed extension readback mismatch'; END IF`);
     }
-    const body = "BEGIN\nPERFORM pg_advisory_xact_lock(143,2);\n" + statements.concat(checks).join(";\n") + ";\nEND";
+    const body = "BEGIN\nPERFORM pg_advisory_xact_lock(143,2);\n" + statements.concat(checks).concat(["NULL"]).join(";\n") + ";\nEND";
     nk.sqlExec("DO " + seedSqlLiteral(body), []);
     logger.info(`Seeded ${inserted} rows into ${table}`);
-    return JSON.stringify({ success: true, table, inserted });
+    return JSON.stringify(__spreadValues({ success: true, table, inserted }, preservedLevelledStages.length ? { preserved_levelled: preservedLevelledStages.length } : {}));
   } catch (error) {
     logger.error("Seed request failed: %s", String(error));
     return JSON.stringify({ error: "Seed failed; no changes committed", code: 422 });
@@ -2571,6 +2762,22 @@ const eventClaim = (ctx, _logger, nk, payload) => {
   });
 };
 
+var __defProp = Object.defineProperty;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
 function processSeedExtensions(row, table) {
   if (!row) return row;
   const columns = seedExtensionColumns()[table] || {};
@@ -3023,7 +3230,7 @@ function parseRemoteSetting(valueType, raw) {
   throw new Error("Unknown setting type");
 }
 const publishConfigRelease = (ctx, _logger, nk, payload) => {
-  if (!ctx.userId || ctx.userId !== String(ctx.env.CONFIG_ADMIN_USER_ID || "")) {
+  if (!isConfigAdmin(ctx)) {
     return JSON.stringify({ status: "error", code: 403, message: "Forbidden" });
   }
   return publishValidatedConfig(ctx.userId, nk, payload);
@@ -3070,6 +3277,39 @@ function validCampaignWavePressure(value) {
 function validateReleaseSnapshot(nk, snapshot) {
   if (!snapshot || !snapshot.system || typeof snapshot.system !== "object")
     return JSON.stringify({ status: "error", code: 422, message: "Missing system config" });
+  if (snapshot.system.payment_financials !== void 0) {
+    try {
+      financialPolicy(snapshot.system.payment_financials);
+    } catch (_e) {
+      return JSON.stringify({ status: "error", code: 422, message: "Invalid system.payment_financials" });
+    }
+  }
+  if (snapshot.system.account_history !== void 0) {
+    try {
+      accountHistoryPolicy(snapshot.system.account_history);
+    } catch (_e) {
+      return JSON.stringify({ status: "error", code: 422, message: "Invalid system.account_history" });
+    }
+  }
+  if (snapshot.system.payment_reconciliation !== void 0) {
+    const p = snapshot.system.payment_reconciliation;
+    if (!p || p.schema_version !== 1 || !Number.isSafeInteger(p.revision) || p.revision < 1 || !Number.isSafeInteger(p.lookback_days) || p.lookback_days < 1 || p.lookback_days > 365 || !Number.isSafeInteger(p.pending_grace_seconds) || p.pending_grace_seconds < 60 || p.pending_grace_seconds > 604800 || !Number.isSafeInteger(p.delivery_grace_seconds) || p.delivery_grace_seconds < 60 || p.delivery_grace_seconds > 604800)
+      return JSON.stringify({ status: "error", code: 422, message: "Invalid system.payment_reconciliation" });
+  }
+  if (snapshot.system.privacy_consent !== void 0) {
+    try {
+      privacyPolicyValue(snapshot.system.privacy_consent);
+    } catch (_e) {
+      return JSON.stringify({ status: "error", code: 422, message: "Invalid system.privacy_consent" });
+    }
+  }
+  if (snapshot.system.compliance_policy !== void 0) {
+    try {
+      compliancePolicyValue(snapshot.system.compliance_policy);
+    } catch (_e) {
+      return JSON.stringify({ status: "error", code: 422, message: "Invalid system.compliance_policy" });
+    }
+  }
   try {
     featureValidateConfig(snapshot.system.feature_unlocks, snapshot.system.realm_milestones);
   } catch (_error) {
@@ -3107,6 +3347,9 @@ function validateReleaseSnapshot(nk, snapshot) {
     return JSON.stringify({ status: "error", code: 422, message: "Invalid stamina economy settings" });
   if (snapshot.system.leaderboard_rewards !== void 0 && (!validWeeklyLeaderboardConfig(snapshot.system.leaderboard_rewards) || !weeklyConfigItemsExist(nk, snapshot.system.leaderboard_rewards))) return JSON.stringify({ status: "error", code: 422, message: "Invalid system.leaderboard_rewards or unknown reward items" });
   const latestVersion = String(snapshot.system.latest_app_version || "");
+  const gameplayVip = snapshot.system.gameplay_vip;
+  if (gameplayVip !== void 0 && (!gameplayVip || Array.isArray(gameplayVip) || ["speed_3x", "auto_card_pick"].some((key) => !Number.isSafeInteger(gameplayVip[key]) || gameplayVip[key] < 0)))
+    return JSON.stringify({ status: "error", code: 422, message: "Invalid system.gameplay_vip" });
   if (typeof snapshot.system.ads_enabled !== "boolean" || typeof snapshot.system.payment_enabled !== "boolean") {
     return JSON.stringify({ status: "error", code: 422, message: "Missing or invalid monetization flags" });
   }
@@ -3137,6 +3380,160 @@ function operatorConfigRelease(ctx, logger, nk, payload) {
     return JSON.stringify({ status: "ok", config_version: active.version });
   }
   return publishValidatedConfig("operator:deploy", nk, JSON.stringify({ store_url: request.store_url }));
+}
+function rpcAdminConfigGet(ctx, _l, nk, _payload) {
+  if (!isConfigAdmin(ctx)) throw { message: "Forbidden", code: 7 };
+  const settings = nk.sqlQuery("SELECT module, key, value_type, value, description, is_active, EXTRACT(EPOCH FROM updated_at)*1000 AS updated_at_ms, updated_by FROM remote_config_settings ORDER BY module, key", []);
+  const active = getActiveRemoteConfig(nk);
+  const releases = nk.sqlQuery("SELECT config_version, min_app_version, latest_app_version, store_url, EXTRACT(EPOCH FROM published_at)*1000 AS published_at_ms, published_by FROM remote_config_releases ORDER BY config_version DESC LIMIT 20", []);
+  return JSON.stringify({
+    success: true,
+    data: {
+      active_version: active.version,
+      active_config: active.config,
+      settings: settings.map((s) => ({
+        module: String(s.module),
+        key: String(s.key),
+        value_type: String(s.value_type),
+        value: String(s.value),
+        description: String(s.description || ""),
+        is_active: Boolean(s.is_active),
+        updated_at_ms: Number(s.updated_at_ms || 0),
+        updated_by: String(s.updated_by || "")
+      })),
+      releases: releases.map((r) => ({
+        config_version: Number(r.config_version),
+        min_app_version: String(r.min_app_version),
+        latest_app_version: String(r.latest_app_version),
+        store_url: String(r.store_url || ""),
+        published_at_ms: Number(r.published_at_ms || 0),
+        published_by: String(r.published_by || "")
+      }))
+    }
+  });
+}
+function rpcAdminConfigUpdate(ctx, _l, nk, payload) {
+  if (!isConfigAdmin(ctx)) throw { message: "Forbidden", code: 7 };
+  let req;
+  try {
+    req = JSON.parse(payload || "{}");
+  } catch (_e) {
+    return JSON.stringify({ success: false, status: "error", code: 400, message: "Invalid JSON" });
+  }
+  const items = Array.isArray(req.updates) ? req.updates : [req];
+  for (const item of items) {
+    if (!item.module || !item.key || item.value === void 0) {
+      return JSON.stringify({ success: false, status: "error", code: 400, message: "Module, key and value are required" });
+    }
+    const valStr = typeof item.value === "object" ? JSON.stringify(item.value) : String(item.value);
+    let valType = String(item.value_type || "");
+    if (!valType) {
+      if (typeof item.value === "boolean" || valStr === "true" || valStr === "false") valType = "bool";
+      else if (typeof item.value === "number") valType = Number.isInteger(item.value) ? "int" : "float";
+      else if (typeof item.value === "object") valType = "json";
+      else valType = "string";
+    }
+    const isActive = item.is_active !== void 0 ? Boolean(item.is_active) : true;
+    const desc = String(item.description || "");
+    nk.sqlExec(
+      `INSERT INTO remote_config_settings(module, key, value_type, value, description, is_active, updated_at, updated_by)
+             VALUES($1, $2, $3, $4, $5, $6, NOW(), $7)
+             ON CONFLICT (module, key) DO UPDATE SET
+               value_type = EXCLUDED.value_type,
+               value = EXCLUDED.value,
+               description = CASE WHEN EXCLUDED.description <> '' THEN EXCLUDED.description ELSE remote_config_settings.description END,
+               is_active = EXCLUDED.is_active,
+               updated_at = NOW(),
+               updated_by = EXCLUDED.updated_by`,
+      [String(item.module), String(item.key), valType, valStr, desc, isActive, ctx.userId || "admin"]
+    );
+  }
+  return JSON.stringify({ success: true, message: `Updated ${items.length} setting(s) successfully` });
+}
+function rpcAdminConfigToggle(ctx, _l, nk, payload) {
+  if (!isConfigAdmin(ctx)) throw { message: "Forbidden", code: 7 };
+  let req;
+  try {
+    req = JSON.parse(payload || "{}");
+  } catch (_e) {
+    return JSON.stringify({ success: false, status: "error", code: 400, message: "Invalid JSON" });
+  }
+  if (!req.module || !req.key || typeof req.is_active !== "boolean") {
+    return JSON.stringify({ success: false, status: "error", code: 400, message: "module, key and is_active (boolean) are required" });
+  }
+  nk.sqlExec(
+    "UPDATE remote_config_settings SET is_active = $1, updated_at = NOW(), updated_by = $2 WHERE module = $3 AND key = $4",
+    [req.is_active, ctx.userId || "admin", String(req.module), String(req.key)]
+  );
+  return JSON.stringify({ success: true, module: req.module, key: req.key, is_active: req.is_active });
+}
+function rpcAdminConfigValidate(ctx, _l, nk, payload) {
+  if (!isConfigAdmin(ctx)) throw { message: "Forbidden", code: 7 };
+  let req = {};
+  try {
+    req = JSON.parse(payload || "{}");
+  } catch (_e) {
+  }
+  let snapshot = req.snapshot;
+  if (!snapshot || typeof snapshot !== "object") {
+    const rows = nk.sqlQuery("SELECT module, key, value_type, value FROM remote_config_settings WHERE is_active = TRUE ORDER BY module, key", []);
+    snapshot = { system: {}, game_play: {} };
+    try {
+      rows.forEach((row) => {
+        snapshot[String(row.module)][String(row.key)] = parseRemoteSetting(String(row.value_type), String(row.value));
+      });
+    } catch (e) {
+      return JSON.stringify({ success: false, valid: false, code: 422, message: String(e) });
+    }
+  }
+  const invalid = validateReleaseSnapshot(nk, snapshot);
+  if (invalid) {
+    const parsed = JSON.parse(invalid);
+    return JSON.stringify(__spreadValues({ success: false, valid: false }, parsed));
+  }
+  return JSON.stringify({ success: true, valid: true, message: "Configuration snapshot is valid" });
+}
+function rpcAdminConfigRollback(ctx, _l, nk, payload) {
+  if (!isConfigAdmin(ctx)) throw { message: "Forbidden", code: 7 };
+  let req;
+  try {
+    req = JSON.parse(payload || "{}");
+  } catch (_e) {
+    return JSON.stringify({ success: false, status: "error", code: 400, message: "Invalid JSON" });
+  }
+  const targetVersion = Number(req.target_version);
+  if (!Number.isSafeInteger(targetVersion) || targetVersion < 1) {
+    return JSON.stringify({ success: false, status: "error", code: 400, message: "target_version is required" });
+  }
+  const rows = nk.sqlQuery("SELECT snapshot, min_app_version, latest_app_version, store_url FROM remote_config_releases WHERE config_version = $1", [targetVersion]);
+  if (rows.length === 0) {
+    return JSON.stringify({ success: false, status: "error", code: 404, message: `Release version ${targetVersion} not found` });
+  }
+  const target = rows[0];
+  const snapshot = parseJsonb(target.snapshot);
+  if (!snapshot || !snapshot.system) {
+    return JSON.stringify({ success: false, status: "error", code: 500, message: "Target release snapshot corrupted" });
+  }
+  for (const mod of ["system", "game_play"]) {
+    const section = snapshot[mod] || {};
+    for (const [k, v] of Object.entries(section)) {
+      const valStr = typeof v === "object" ? JSON.stringify(v) : String(v);
+      let valType = "string";
+      if (typeof v === "boolean") valType = "bool";
+      else if (typeof v === "number") valType = Number.isInteger(v) ? "int" : "float";
+      else if (typeof v === "object") valType = "json";
+      nk.sqlExec(
+        `INSERT INTO remote_config_settings(module, key, value_type, value, description, is_active, updated_at, updated_by)
+                 VALUES($1, $2, $3, $4, '', TRUE, NOW(), $5)
+                 ON CONFLICT (module, key) DO UPDATE SET value_type = EXCLUDED.value_type, value = EXCLUDED.value, is_active = TRUE, updated_at = NOW(), updated_by = EXCLUDED.updated_by`,
+        [mod, k, valType, valStr, `rollback to v${targetVersion} by ${ctx.userId}`]
+      );
+    }
+  }
+  return publishValidatedConfig(ctx.userId || "admin:rollback", nk, JSON.stringify({
+    store_url: target.store_url || "",
+    reason: `Rollback to version ${targetVersion}: ${String(req.reason || "")}`
+  }));
 }
 
 const HERO_ID_MIGRATIONS = { ice_demoness: "hero_1", flame_archer: "hero_2" };
@@ -3815,7 +4212,13 @@ const getComplianceProfile = (ctx, logger, nk, _payload) => {
 function identityEnabled(ctx) {
   return !!ctx.env && ctx.env.ACCOUNT_IDENTITY_ENABLED === "true";
 }
+function identityRestoreBlocked(nk) {
+  const rows = nk.sqlQuery("SELECT state FROM account_archive_restore_gate WHERE singleton=TRUE", []);
+  return !rows.length || rows[0].state !== "ready";
+}
 function createAccountIdentityTables(nk) {
+  nk.sqlExec(`CREATE TABLE IF NOT EXISTS account_archive_restore_gate(singleton BOOLEAN PRIMARY KEY DEFAULT TRUE CHECK(singleton),state TEXT NOT NULL CHECK(state IN('ready','blocked')),checkpoint_digest TEXT,report JSONB NOT NULL DEFAULT '{}',updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
+      INSERT INTO account_archive_restore_gate(singleton,state) VALUES(TRUE,'ready') ON CONFLICT DO NOTHING;`, []);
   nk.sqlExec(`CREATE TABLE IF NOT EXISTS account_identity_verifications(
       user_id UUID PRIMARY KEY,email TEXT NOT NULL,verified_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),source TEXT NOT NULL,creation_intent UUID UNIQUE);
       ALTER TABLE account_identity_verifications ADD COLUMN IF NOT EXISTS creation_intent UUID UNIQUE;
@@ -3823,15 +4226,23 @@ function createAccountIdentityTables(nk) {
       id UUID PRIMARY KEY,user_id UUID NOT NULL UNIQUE,status TEXT NOT NULL DEFAULT 'queued',receipt_hash TEXT NOT NULL UNIQUE,
       attempts INT NOT NULL DEFAULT 0,confirmation_hash TEXT UNIQUE,updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
       ALTER TABLE account_identity_deletions ADD COLUMN IF NOT EXISTS confirmation_hash TEXT UNIQUE;
+      ALTER TABLE account_identity_deletions ADD COLUMN IF NOT EXISTS flow_version INT NOT NULL DEFAULT 1,
+        ADD COLUMN IF NOT EXISTS soft_deleted_at TIMESTAMPTZ,
+        ADD COLUMN IF NOT EXISTS restore_until TIMESTAMPTZ,
+        ADD COLUMN IF NOT EXISTS policy_snapshot JSONB,
+        ADD COLUMN IF NOT EXISTS hard_authorized_at TIMESTAMPTZ,
+        ADD COLUMN IF NOT EXISTS hold BOOLEAN NOT NULL DEFAULT FALSE;
+      ALTER TABLE account_identity_deletions DROP CONSTRAINT IF EXISTS account_identity_deletions_user_id_key;
+      CREATE UNIQUE INDEX IF NOT EXISTS identity_deletion_active_owner ON account_identity_deletions(user_id) WHERE status<>'cancelled';
       CREATE OR REPLACE FUNCTION account_identity_erasure_pending(uid UUID) RETURNS BOOLEAN LANGUAGE plpgsql AS $erase$
-      BEGIN RETURN EXISTS(SELECT 1 FROM account_identity_deletions WHERE user_id=uid)
-        OR EXISTS(SELECT 1 FROM account_link_state a JOIN account_identity_deletions d ON d.user_id=a.merged_into WHERE a.user_id=uid AND a.status='archived'); END $erase$;`, []);
+      BEGIN RETURN EXISTS(SELECT 1 FROM account_identity_deletions WHERE user_id=uid AND status<>'cancelled')
+        OR EXISTS(SELECT 1 FROM account_link_state a JOIN account_identity_deletions d ON d.user_id=a.merged_into WHERE a.user_id=uid AND a.status='archived' AND d.status<>'cancelled'); END $erase$;`, []);
 }
 function identityAccount(nk, userId) {
   const r = nk.sqlQuery(`SELECT u.id,u.email,u.google_id,u.custom_id,u.disable_time,
       COALESCE(octet_length(u.password),0)>0 AS has_password,
       EXISTS(SELECT 1 FROM account_identity_verifications v WHERE v.user_id=u.id AND v.email=u.email) AS verified,
-      EXISTS(SELECT 1 FROM account_identity_deletions d WHERE d.user_id=u.id) AS deleting,
+      EXISTS(SELECT 1 FROM account_identity_deletions d WHERE d.user_id=u.id AND d.status<>'cancelled') AS deleting,
       COALESCE((SELECT generation FROM player_login_sessions WHERE user_id=u.id),'') AS generation
       FROM users u WHERE u.id=$1::UUID`, [userId]);
   return r.length ? r[0] : null;
@@ -3850,11 +4261,21 @@ function identityBeforeEmail(ctx, _logger, nk, req) {
   if (email) (req.account || {}).email = email;
   return req;
 }
-function identityBlockMutation(ctx, _l, _nk, req) {
+function identityGuardNative(ctx, _l, nk, req) {
+  if (req && (req.collection === "privacy_consent" || [...req.objects || [], ...req.objectIds || []].some((x) => x.collection === "privacy_consent"))) throw Error("\u0110\u1EA1o h\u1EEFu h\xE3y s\u1EED d\u1EE5ng ch\u1EE9c n\u0103ng quy\u1EC1n ri\xEAng t\u01B0 trong h\u1ED3 s\u01A1.");
+  if (identityRestoreBlocked(nk)) throw Error("M\xE1y ch\u1EE7 \u0111ang \u0111\u1ED1i so\xE1t d\u1EEF li\u1EC7u kh\xF4i ph\u1EE5c. \u0110\u1EA1o h\u1EEFu vui l\xF2ng th\u1EED l\u1EA1i sau.");
+  if (ctx.userId && nk.sqlQuery("SELECT account_identity_erasure_pending($1::uuid) AS blocked", [ctx.userId])[0].blocked)
+    throw Error("\u0110\u1EA1o h\u1EEFu kh\xF4ng th\u1EC3 truy c\u1EADp d\u1EEF li\u1EC7u ho\u1EB7c thay \u0111\u1ED5i t\xE0i kho\u1EA3n \u0111ang ch\u1EDD x\xF3a/l\u01B0u tr\u1EEF.");
+  if (ctx.userId && requireCurrentLogin(ctx, nk)) throw Error(LOGIN_REPLACED_MESSAGE);
+  return req;
+}
+function identityBlockMutation(ctx, _l, nk, req) {
+  identityGuardNative(ctx, _l, nk, req);
   if (identityEnabled(ctx)) throw Error("ACCOUNT_IDENTITY_MANAGED: S\u1EED d\u1EE5ng quy tr\xECnh x\xE1c nh\u1EADn t\xE0i kho\u1EA3n.");
   return req;
 }
-function identityBeforeUpdate(ctx, _l, _nk, req) {
+function identityBeforeUpdate(ctx, _l, nk, req) {
+  identityGuardNative(ctx, _l, nk, req);
   if (identityEnabled(ctx) && req.email !== void 0) throw Error("ACCOUNT_IDENTITY_MANAGED");
   return req;
 }
@@ -3894,6 +4315,10 @@ const accountIdentityStatus = (ctx, _l, nk) => {
   if (!a || a.deleting) throw Error("Account unavailable");
   const characters = nk.sqlQuery("SELECT count(*)::INT AS count FROM player_characters WHERE account_id=$1::UUID", [ctx.userId]);
   const entitlement = nk.sqlQuery("SELECT no_ads_expires_at>NOW() AS active FROM player_monetization_entitlements WHERE user_id=$1", [ctx.userId]);
+  const deletionRows = nk.sqlQuery("SELECT snapshot#>'{system,account_deletion}' AS policy FROM remote_config_releases ORDER BY config_version DESC LIMIT 1", []);
+  const deletionPolicy = deletionRows.length ? parseJsonb(deletionRows[0].policy) : null;
+  const gameplay = deletionPolicy && Array.isArray(deletionPolicy.datasets) ? deletionPolicy.datasets.filter((d) => d.id === "gameplay")[0] : null;
+  const deletionPresentation = deletionPolicy && deletionPolicy.schema_version === 2 && gameplay ? { soft_delete_days: deletionPolicy.soft_delete_days, gameplay_purge_calendar_months: gameplay.calendar_months } : null;
   return JSON.stringify({
     success: true,
     user_id: ctx.userId,
@@ -3905,6 +4330,7 @@ const accountIdentityStatus = (ctx, _l, nk) => {
     generation: a.generation,
     character_server_count: Number(characters[0].count),
     no_ads_active: !!entitlement.length && !!entitlement[0].active,
+    deletion_policy: deletionPresentation,
     verification_required: identityEnabled(ctx) && !!a.has_password && !a.google_id && !a.verified
   });
 };
@@ -3925,9 +4351,10 @@ const accountIdentityBridge = (ctx, logger, nk, payload) => {
     if (current.custom_id === custom) nk.unlinkCustom(auth.userId, custom);
     return JSON.stringify({ success: true });
   }
-  if (p.action === "password_proof") {
+  if (p.action === "password_proof" || p.action === "restore_password_proof") {
     const a = identityAccount(nk, String(p.user_id || ""));
-    if (!a || a.deleting || !a.email || a.generation !== p.generation || a.email !== p.email || !a.has_password) throw Error("Identity changed");
+    if (!a || !p.action.startsWith("restore_") && a.deleting || !a.email || a.generation !== p.generation || a.email !== p.email || !a.has_password) throw Error("Identity changed");
+    if (p.action === "restore_password_proof" && !nk.sqlQuery("SELECT id FROM account_identity_deletions WHERE user_id=$1::uuid AND status='soft_deleted' AND flow_version IN(2,3) AND restore_until>NOW()", [p.user_id]).length) throw Error("Restore unavailable");
     const auth = nk.authenticateEmail(a.email, String(p.password || ""), void 0, false);
     if (auth.userId !== p.user_id) throw Error("Identity mismatch");
     return JSON.stringify({ success: true });
@@ -3946,24 +4373,8 @@ const accountIdentityBridge = (ctx, logger, nk, payload) => {
   }
   throw Error("Unknown identity action");
 };
-function identityDeleteTick(nk, logger, jobId) {
-  const jobs = nk.sqlQuery("SELECT * FROM account_identity_deletions WHERE id=$1::UUID", [jobId]);
-  if (!jobs.length) throw Error("Job missing");
-  const job = jobs[0], uid = String(job.user_id);
-  if (job.status === "completed") return JSON.stringify({ success: true, status: "completed" });
-  const locked = nk.sqlQuery(`INSERT INTO account_link_state(user_id,status,active_requests) VALUES($1::UUID,'deleting',0)
-      ON CONFLICT(user_id) DO UPDATE SET status='deleting' WHERE account_link_state.status IN('active','deleting')
-      RETURNING active_requests`, [uid]);
-  if (!locked.length || Number(locked[0].active_requests) > 0) return JSON.stringify({ success: true, status: "retrying" });
-  nk.sqlExec("UPDATE account_identity_deletions SET status='processing',attempts=attempts+1,updated_at=NOW() WHERE id=$1::UUID", [jobId]);
-  const aliases = nk.sqlQuery("SELECT user_id FROM account_link_state WHERE merged_into=$1::UUID AND status='archived'", [uid]);
-  for (const id of aliases.map((a) => String(a.user_id)).concat([uid])) {
-    nk.sqlExec(`SELECT account_identity_cleanup($1::UUID)`, [id]);
-    if (nk.sqlQuery("SELECT id FROM users WHERE id=$1::UUID", [id]).length) nk.accountDeleteId(id, true);
-  }
-  nk.sqlExec("UPDATE account_identity_deletions SET status='completed',updated_at=NOW() WHERE id=$1::UUID", [jobId]);
-  logger.info("C232 deletion job completed");
-  return JSON.stringify({ success: true, status: "completed" });
+function identityDeleteTick(_nk, _logger, _jobId) {
+  return JSON.stringify({ success: false, reason: "LEGACY_DELETE_DISABLED", message: "Y\xEAu c\u1EA7u c\u0169 c\u1EA7n \u0111\u01B0\u1EE3c r\xE0 so\xE1t; kh\xF4ng th\u1EF1c hi\u1EC7n x\xF3a t\xE0i kho\u1EA3n tr\u1EF1c ti\u1EBFp." });
 }
 
 const LOGIN_REPLACED_MESSAGE = "T\xE0i kho\u1EA3n \u0111\xE3 \u0111\u01B0\u1EE3c \u0111\u0103ng nh\u1EADp \u1EDF thi\u1EBFt b\u1ECB kh\xE1c";
@@ -3974,6 +4385,7 @@ function createSingleLoginTable(nk) {
     )`, []);
 }
 function beforeSingleLogin(_ctx, _logger, nk, request) {
+  if (identityRestoreBlocked(nk)) throw Error("M\xE1y ch\u1EE7 \u0111ang \u0111\u1ED1i so\xE1t d\u1EEF li\u1EC7u kh\xF4i ph\u1EE5c. \u0110\u1EA1o h\u1EEFu vui l\xF2ng th\u1EED l\u1EA1i sau.");
   if (request && request.account) {
     request.account.vars = Object.assign({}, request.account.vars || {}, { login_generation: nk.uuidv4() });
   }
@@ -4155,7 +4567,7 @@ function withActiveAccount(nk, userId, action) {
   if (userId === "00000000-0000-0000-0000-000000000000") throw new Error("Account archived or deleted; sign in again");
   const lease = nk.sqlQuery(`INSERT INTO account_link_state(user_id,active_requests)
         SELECT $1::UUID,1 WHERE EXISTS(SELECT 1 FROM users WHERE id=$1::UUID)
-          AND NOT EXISTS(SELECT 1 FROM account_identity_deletions WHERE user_id=$1::UUID)
+          AND NOT EXISTS(SELECT 1 FROM account_identity_deletions WHERE user_id=$1::UUID AND status<>'cancelled')
         ON CONFLICT(user_id) DO UPDATE SET active_requests=account_link_state.active_requests+1
         WHERE account_link_state.status='active' RETURNING user_id`, [userId]);
   if (!lease.length) throw new Error("Account archived after linking; sign in again");
@@ -4168,10 +4580,13 @@ function withActiveAccount(nk, userId, action) {
 function accountGuardedRpc(id, handler) {
   handler = serverAdmissionRpc(id, typeof featureGuardedRpc === "function" ? featureGuardedRpc(id, handler) : handler);
   return (ctx, logger, nk, payload) => {
+    if (identityRestoreBlocked(nk)) return JSON.stringify({ success: false, code: 503, reason: "ARCHIVE_RESTORE_BLOCKED", message: "M\xE1y ch\u1EE7 \u0111ang \u0111\u1ED1i so\xE1t d\u1EEF li\u1EC7u kh\xF4i ph\u1EE5c. \u0110\u1EA1o h\u1EEFu vui l\xF2ng th\u1EED l\u1EA1i sau." });
     const rejected = requireCurrentLogin(ctx, nk);
     if (rejected) return rejected;
     const identityRejected = id === "session_status" ? null : identityGameplayGate(ctx, nk);
     if (identityRejected) return identityRejected;
+    const complianceRejected = typeof complianceCombatGate === "function" ? complianceCombatGate(id, ctx, nk) : null;
+    if (complianceRejected) return complianceRejected;
     if (id === "confirm_google_link") return handler(ctx, logger, nk, payload);
     let owner = ctx.userId;
     if (!owner && (id === "admob_ssv_confirm" || id === "google_play_rtdn_confirm")) {
@@ -4623,6 +5038,7 @@ const useConsumable = (ctx, _logger, nk, payload) => {
   if (!profileObject || !inventoryObject) return fail("Profile is incomplete");
   const profile = talismanJsonObject(profileObject.value), inventory = talismanJsonObject(inventoryObject.value);
   const items = Array.isArray(inventory.items) ? inventory.items : [];
+  const balancesBefore = { gold: Number((profile.resources || {}).gold || 0), gems: Number((profile.resources || {}).gems || 0), stamina: Number(profile.stamina || 0), exp: Number(profile.exp || 0), level: Number(profile.level || 1) };
   if (previous) {
     if (previous.value.fingerprint !== fingerprint) return fail("Request ID conflict");
     return JSON.stringify({ success: true, duplicate: true, inventory: items, profile, effect: previous.value.effect, receipt_id: requestId });
@@ -4711,10 +5127,15 @@ const useConsumable = (ctx, _logger, nk, payload) => {
   }
   if (!talismanRemoveItems(items, itemId, quantity)) return fail("Inventory changed");
   inventory.items = items;
+  const assetChanges = [{ type: "item", id: itemId, delta: -quantity, balance_after: talismanItemQuantity(items, itemId) }];
+  const balancesAfter = { gold: Number((profile.resources || {}).gold || 0), gems: Number((profile.resources || {}).gems || 0), stamina: Number(profile.stamina || 0), exp: Number(profile.exp || 0), level: Number(profile.level || 1) };
+  Object.keys(balancesBefore).forEach((id) => {
+    if (balancesBefore[id] !== balancesAfter[id]) assetChanges.push({ type: id === "level" ? "progression" : "resource", id, delta: balancesAfter[id] - balancesBefore[id], balance_after: balancesAfter[id] });
+  });
   const writes = [
     { collection: "player_profiles", key: "main", userId: ctx.userId, value: profile, version: profileObject.version, permissionRead: 1, permissionWrite: 0 },
     { collection: "player_inventory", key: "items", userId: ctx.userId, value: inventory, version: inventoryObject.version, permissionRead: 1, permissionWrite: 0 },
-    { collection: "player_item_requests", key: requestId, userId: ctx.userId, value: { fingerprint, effect, created_at: now }, version: "*", permissionRead: 1, permissionWrite: 0 }
+    { collection: "player_item_requests", key: requestId, userId: ctx.userId, value: { fingerprint, effect, created_at: now, asset_changes: assetChanges }, version: "*", permissionRead: 0, permissionWrite: 0 }
   ];
   if (combat && !tribulation) writes.push({ collection: "player_stage_runs", key: "active", userId: ctx.userId, value: run, version: runObject.version, permissionRead: 1, permissionWrite: 0 });
   try {
@@ -5115,6 +5536,7 @@ const talismanAction = (ctx, _logger, nk, payload) => {
   const items = Array.isArray(inventoryValue.items) ? inventoryValue.items : [];
   const resources = talismanJsonObject(profile.resources);
   let rerolledTalent = null;
+  const purchaseChanges = [];
   let upgradeAttempted = false;
   let upgradeSucceeded = true;
   let upgradeSuccessRate = 0;
@@ -5192,6 +5614,10 @@ const talismanAction = (ctx, _logger, nk, payload) => {
       return JSON.stringify({ success: false, message: "Kh\xF4ng th\u1EC3 c\u1EA5p v\u1EADt ph\u1EA9m" });
     }
     resources[currency] = balance - totalPrice;
+    purchaseChanges.push(
+      { type: "resource", id: currency, delta: -totalPrice, balance_after: resources[currency] },
+      { type: "item", id: requestedItemId, delta: totalGrantQuantity, balance_after: talismanItemQuantity(items, requestedItemId) }
+    );
     receipts.push({ request_id: requestId, item_id: requestedItemId, currency, quantity: purchaseQuantity });
     inventoryValue._store_receipts = receipts.slice(-100);
     if (requestId) handledRequestIds.push(requestId);
@@ -5361,8 +5787,8 @@ const talismanAction = (ctx, _logger, nk, payload) => {
     collection: "player_item_requests",
     key: requestId,
     userId: ctx.userId,
-    value: { fingerprint, rolled: rerolledTalent, created_at: Date.now() },
-    permissionRead: 1,
+    value: { fingerprint, rolled: rerolledTalent, created_at: Date.now(), asset_changes: action === "reroll_talent" ? [{ type: "item", id: "spirit_root_reset", delta: -1, balance_after: talismanItemQuantity(items, "spirit_root_reset") }] : purchaseChanges },
+    permissionRead: 0,
     permissionWrite: 0,
     version: "*"
   });
@@ -5734,6 +6160,16 @@ const startStage = (ctx, _logger, nk, payload) => {
   const stored = nk.storageRead([{ collection: "player_profiles", key: "main", userId: ctx.userId }]);
   if (stored.length === 0) return JSON.stringify({ success: false, message: "Player profile is incomplete" });
   const profile = parseJsonObject(stored[0].value);
+  const stageRequirement = nk.sqlQuery("SELECT stage_rules FROM game_stages WHERE id=$1", [stageId]);
+  if (stageRequirement.length) {
+    const rules = parseJsonObject(stageRequirement[0].stage_rules);
+    if (rules.required_user_level !== void 0) {
+      const required = Number(rules.required_user_level);
+      if (!Number.isSafeInteger(required) || required < 1 || required > 70) return JSON.stringify({ success: false, code: "STAGE_CONFIG_INVALID", message: "Invalid stage level requirement" });
+      const current = Math.max(1, Number(profile.level || 1));
+      if (current < required) return JSON.stringify({ success: false, code: "STAGE_LEVEL_REQUIRED", required_level: required, current_level: current, message: "Requires player level " + required });
+    }
+  }
   const sweepBlock = sweepCombatError(profile);
   if (sweepBlock) return JSON.stringify(sweepBlock);
   if ((profile.breakthrough || {}).in_tribulation === true) return JSON.stringify({ success: false, code: "COMBAT_ACTIVE", message: "Tribulation is active" });
@@ -6813,6 +7249,12 @@ function progressionMaxStageBaseExp(nk, stageId) {
     if (!Array.isArray(entries)) continue;
     for (let j = 0; j < entries.length; j++) {
       const entry = entries[j] || {};
+      if (entry.species_id !== void 0) {
+        const exp2 = Number(entry.exp), count = Number(entry.count);
+        if (!Number.isInteger(exp2) || exp2 < 0 || !Number.isInteger(count) || count < 0) throw new Error("Invalid levelled stage EXP");
+        total += count * exp2;
+        continue;
+      }
       const enemyId = String(entry.enemy_id || "");
       const enemyRows = nk.sqlQuery("SELECT exp FROM game_enemies WHERE id = $1", [enemyId]);
       if (enemyRows.length === 0) continue;
@@ -7384,6 +7826,77 @@ function progressionReconcileArcModes(nk, profile) {
   return true;
 }
 
+function financialPolicy(p) {
+  if (!p || p.schema_version !== 1 || !Number.isSafeInteger(p.revision) || p.revision < 1 || typeof p.enabled !== "boolean") throw Error("FINANCIAL_POLICY_INVALID");
+  for (const spec of [["batch_size", 1, 100], ["retry_seconds", 30, 86400], ["resync_seconds", 60, 2592e3], ["lookback_days", 1, 3650]])
+    if (!Number.isSafeInteger(p[spec[0]]) || p[spec[0]] < spec[1] || p[spec[0]] > spec[2]) throw Error("FINANCIAL_POLICY_INVALID");
+  return p;
+}
+function financialSnapshot(value) {
+  const amount = (v) => typeof v === "string" && /^\d{1,18}\.\d{9}$/.test(v);
+  if (!value || value.schema_version !== 1 || value.source !== "google_orders_api" || typeof value.google_order_id !== "string" || !value.google_order_id || value.google_order_id.length > 200 || !/^[A-Z]{3}$/.test(value.currency) || !amount(value.paid_amount) || !amount(value.refunded_amount) || value.tax_amount !== null && !amount(value.tax_amount) || !isFinite(Date.parse(value.provider_event_at)) || typeof value.provider_state !== "string" || value.provider_state.length > 64 || !Array.isArray(value.events) || value.events.length > 100) throw Error("FINANCIAL_DATA_INVALID");
+  const events = value.events.map((e) => {
+    if (!e || ["partial_refund", "full_refund"].indexOf(e.type) < 0 || !isFinite(Date.parse(e.time)) || typeof e.state !== "string" || e.state.length > 64 || !amount(e.amount) || e.currency !== value.currency) throw Error("FINANCIAL_EVENT_INVALID");
+    return { type: e.type, time: String(e.time), state: e.state, amount: e.amount, currency: e.currency };
+  });
+  return { schema_version: 1, source: "google_orders_api", google_order_id: value.google_order_id, currency: value.currency, paid_amount: value.paid_amount, tax_amount: value.tax_amount, refunded_amount: value.refunded_amount, provider_state: value.provider_state, provider_event_at: String(value.provider_event_at), events };
+}
+function financialRecordSql() {
+  return `WITH binding AS (SELECT id FROM monetization_purchase_orders WHERE id=$1 AND transaction_id=$2 AND platform='android' AND status='fulfilled' AND COALESCE(vip_environment,'')<>'mock'),
+      record AS (INSERT INTO payment_financial_records(purchase_order_id,google_order_id,currency,original_amount,tax_amount)
+      SELECT id,$2,$3,$4::numeric,$5::numeric FROM binding WHERE $6::numeric<=$4::numeric
+      ON CONFLICT(purchase_order_id) DO UPDATE SET last_synced_at=NOW()
+      WHERE payment_financial_records.google_order_id=EXCLUDED.google_order_id AND payment_financial_records.currency=EXCLUDED.currency AND payment_financial_records.original_amount=EXCLUDED.original_amount
+      RETURNING purchase_order_id),
+      snap AS (INSERT INTO payment_financial_snapshots(purchase_order_id,snapshot_hash,provider_event_at,provider_state,refunded_amount,snapshot)
+      SELECT purchase_order_id,encode(sha256(convert_to(($9::jsonb)::text,'UTF8')),'hex'),$7::timestamptz,$8,$6::numeric,$9::jsonb FROM record
+      ON CONFLICT DO NOTHING RETURNING 1)
+      SELECT EXISTS(SELECT 1 FROM record) AS accepted,(SELECT COUNT(*) FROM snap) AS inserted`;
+}
+function googlePlayFinancialSync(ctx, _logger, nk, payload) {
+  let req;
+  try {
+    req = JSON.parse(payload || "{}");
+  } catch (_e) {
+    return JSON.stringify({ success: false, reason: "INVALID_REQUEST" });
+  }
+  if (ctx.userId || !ctx.env || !ctx.env.MONETIZATION_VERIFIER_SECRET || req.verifier_secret !== ctx.env.MONETIZATION_VERIFIER_SECRET) return JSON.stringify({ success: false, reason: "FORBIDDEN" });
+  let p;
+  try {
+    p = financialPolicy(getRemoteConfigValue(nk, "system", "payment_financials", null));
+  } catch (_e) {
+    return JSON.stringify({ success: false, reason: "POLICY_UNAVAILABLE" });
+  }
+  if (!p.enabled) return JSON.stringify(req.action === "batch" ? { success: true, policy: p, orders: [] } : { success: false, reason: "SYNC_DISABLED" });
+  if (req.action === "batch") {
+    const orders = nk.sqlQuery(`SELECT o.id AS purchase_order_id,o.transaction_id AS google_order_id,COALESCE(NULLIF(o.store_product_id,''),o.product_id) AS store_product_id
+          FROM monetization_purchase_orders o LEFT JOIN payment_financial_records f ON f.purchase_order_id=o.id LEFT JOIN payment_financial_attempts a ON a.purchase_order_id=o.id
+          WHERE o.platform='android' AND o.status='fulfilled' AND o.transaction_id<>'' AND COALESCE(o.vip_environment,'')<>'mock'
+          AND o.created_at>=NOW()-($1*INTERVAL '1 day') AND (f.last_synced_at IS NULL OR f.last_synced_at<NOW()-($2*INTERVAL '1 second'))
+          AND (a.last_attempt_at IS NULL OR a.last_attempt_at<NOW()-($3*INTERVAL '1 second'))
+          ORDER BY COALESCE(a.last_attempt_at,o.created_at),o.id LIMIT $4`, [p.lookback_days, p.resync_seconds, p.retry_seconds, p.batch_size]);
+    return JSON.stringify({ success: true, policy: p, orders });
+  }
+  const orderId = String(req.purchase_order_id || "");
+  if (!orderId || orderId.length > 200) return JSON.stringify({ success: false, reason: "INVALID_ORDER" });
+  if (req.action === "error") {
+    nk.sqlExec(`INSERT INTO payment_financial_attempts(purchase_order_id,failures) SELECT id,1 FROM monetization_purchase_orders WHERE id=$1 AND platform='android' AND status='fulfilled'
+          ON CONFLICT(purchase_order_id) DO UPDATE SET last_attempt_at=NOW(),failures=payment_financial_attempts.failures+1`, [orderId]);
+    return JSON.stringify({ success: true });
+  }
+  if (req.action === "record") {
+    try {
+      const f = financialSnapshot(req.financial);
+      const rows = nk.sqlQuery(financialRecordSql(), [orderId, f.google_order_id, f.currency, f.paid_amount, f.tax_amount, f.refunded_amount, f.provider_event_at, f.provider_state, JSON.stringify(f)]);
+      if (!rows.length || !rows[0].accepted) return JSON.stringify({ success: false, reason: "FINANCIAL_BINDING_OR_AMOUNT_CONFLICT" });
+      nk.sqlExec(`INSERT INTO payment_financial_attempts(purchase_order_id,failures) VALUES($1,0) ON CONFLICT(purchase_order_id) DO UPDATE SET last_attempt_at=NOW(),failures=0`, [orderId]);
+      return JSON.stringify({ success: true, inserted: Number(rows[0].inserted) });
+    } catch (_e) {
+      return JSON.stringify({ success: false, reason: "FINANCIAL_DATA_REJECTED" });
+    }
+  }
+  return JSON.stringify({ success: false, reason: "INVALID_ACTION" });
+}
 const MONETIZATION_PRODUCTS = {
   remove_ads_1d: 24 * 60 * 60,
   remove_ads_3d: 3 * 24 * 60 * 60,
@@ -7865,27 +8378,39 @@ const claimDailyPack = (ctx, _logger, nk, payload) => {
   if (!status.claimable) return JSON.stringify({ status: "success", idempotent: true, data: dailyPackResponse(ctx.userId, profile, now) });
   const pack = profile.daily_packs[id];
   if (!Array.isArray(pack.rewards) || !pack.rewards.length) return monetizationError(409, "Pack rewards missing");
-  const inventory = inventoryRow.value;
-  inventory.items = Array.isArray(inventory.items) ? inventory.items : [];
-  profile.resources = profile.resources || {};
   try {
+    const attachments = [];
     for (const reward of pack.rewards) {
-      if (!Number.isSafeInteger(reward.quantity) || reward.quantity <= 0) throw Error("Invalid reward quantity");
+      const amount = Number(reward.quantity);
+      if (!Number.isSafeInteger(amount) || amount <= 0) throw Error("Invalid reward quantity");
       if (reward.reward_type === "currency" && ["gold", "gems"].indexOf(reward.reward_id) >= 0) {
-        profile.resources[reward.reward_id] = Math.max(0, Number(profile.resources[reward.reward_id] || 0)) + reward.quantity;
-      } else if (reward.reward_type === "stamina" && reward.reward_id === "stamina") {
-        profile.stamina = staminaClamp(nk, Number(profile.stamina || 0) + reward.quantity);
-        profile.last_stamina_update = Math.floor(now / 1e3);
+        attachments.push({ type: "resource", id: reward.reward_id, amount });
       } else if (reward.reward_type === "item") {
-        addStoreInventoryItem(nk, inventory.items, String(reward.reward_id), reward.quantity);
+        attachments.push({ type: "item", id: String(reward.reward_id), amount });
+      } else if (reward.reward_type === "stamina" && reward.reward_id === "stamina") {
+        const normal = Math.floor(amount / 15), low = Math.ceil(amount % 15 / 5);
+        if (normal) attachments.push({ type: "item", id: "energy_elixir", amount: normal });
+        if (low) attachments.push({ type: "item", id: "energy_elixir_low", amount: low });
       } else throw Error("Unsupported pack reward");
     }
+    const source = "daily_pack:" + pack.grant_id + ":" + (status.day - 1);
+    const mail = mailDefinition(nk, {
+      source_id: source,
+      source_type: "daily_pack",
+      title: "Qu? g?i ng?y",
+      body: "??o h?u h?y nh?n ph?n th??ng g?i ng?y t?i ??y.",
+      attachments
+    });
+    const marker = { collection: "player_mail_deliveries", key: mail.id, userId: ctx.userId };
+    if (nk.storageRead([marker]).length) throw Error("Delivery already exists");
     pack.last_claim_day = status.day - 1;
     nk.storageWrite([
       { collection: "player_profiles", key: "main", userId: ctx.userId, value: profile, version: profileRow.version, permissionRead: 1, permissionWrite: 0 },
-      { collection: "player_inventory", key: "items", userId: ctx.userId, value: inventory, version: inventoryRow.version, permissionRead: 1, permissionWrite: 0 }
+      Object.assign(mailWrite(mail, ctx.userId), { version: "*" }),
+      Object.assign({}, marker, { value: { source_id: source, created_at_ms: mail.created_at_ms }, version: "*", permissionRead: 0, permissionWrite: 0 })
     ]);
-    return JSON.stringify({ status: "success", data: Object.assign(dailyPackResponse(ctx.userId, profile, now), { profile, inventory, rewards: pack.rewards }) });
+    mailPush(nk, ctx.userId, mail.id);
+    return JSON.stringify({ status: "success", data: Object.assign(dailyPackResponse(ctx.userId, profile, now), { mail_id: mail.id, rewards: pack.rewards }) });
   } catch (_) {
     return monetizationError(409, "Pack reward claim failed; refresh and retry");
   }
@@ -9643,7 +10168,8 @@ const getLeaderboardRecords = (ctx, logger, nk, payload) => {
 };
 const gatedSyncPlayerLeaderboards = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, syncPlayerLeaderboards);
 const gatedGetLeaderboardRecords = (ctx, logger, nk, payload) => invokeWithVersionGate(ctx, logger, nk, payload, getLeaderboardRecords);
-const rpcSyncAllLeaderboards = (_ctx, logger, nk, _payload) => {
+const rpcSyncAllLeaderboards = (ctx, logger, nk, _payload) => {
+  if (ctx.userId && !isConfigAdmin(ctx)) return JSON.stringify({ success: false, code: 403, message: "Forbidden" });
   const count = syncAllStoredProfilesToLeaderboards(nk, logger);
   return count < 0 ? JSON.stringify({ success: false, code: 503, message: "Leaderboard backfill incomplete; inspect server config/logs" }) : JSON.stringify({ success: true, synced: count, message: "All profiles synced to leaderboards" });
 };
@@ -9926,7 +10452,7 @@ const claimWeeklyLeaderboardReward = (ctx, logger, nk, payload) => {
   }
 };
 const weeklyLeaderboardTickRpc = (ctx, _logger, nk, _payload) => {
-  if (ctx.userId && ctx.userId !== String(ctx.env.CONFIG_ADMIN_USER_ID || "")) return JSON.stringify({ success: false, code: 403, message: "Forbidden" });
+  if (ctx.userId && !isConfigAdmin(ctx)) return JSON.stringify({ success: false, code: 403, message: "Forbidden" });
   if (ctx.env && ctx.env.MULTI_SERVER_ENABLED === "true") {
     const servers = nk.sqlQuery("SELECT server_id,generation FROM game_servers WHERE status='open' ORDER BY server_id", []);
     const results = [];
@@ -10410,7 +10936,7 @@ function sweepCreateWorkerIndex(nk) {
     CREATE INDEX IF NOT EXISTS sweep_worker_claim_expiry_idx ON sweep_worker_claims(lease_until);`, []);
 }
 const rpcSweepTick = (ctx, logger, nk, _payload) => {
-  if (ctx.userId && ctx.userId !== String((ctx.env || {}).CONFIG_ADMIN_USER_ID || ""))
+  if (ctx.userId && !isConfigAdmin(ctx))
     return JSON.stringify({ success: false, code: "FORBIDDEN" });
   const multi = !!ctx.env && ctx.env.MULTI_SERVER_ENABLED === "true";
   const now = Date.now(), deadline = now + 750;
@@ -11066,7 +11592,9 @@ function mailSummary(nk, userId, now) {
 }
 function mailPresent(nk, row, now) {
   const expired = row.expires_at_ms !== null && now >= row.expires_at_ms;
-  return Object.assign({}, row, {
+  const visible = Object.assign({}, row);
+  delete visible.asset_changes;
+  return Object.assign(visible, {
     expired,
     expiring: row.expires_at_ms !== null && !expired && row.expires_at_ms - now <= mailSettings(nk).warning_hours * 36e5,
     read_at_ms: row.read_at_ms || row.claimed_at_ms || null,
@@ -11088,13 +11616,13 @@ function mailClaimOne(nk, userId, id) {
   const stored = mailRead(nk, userId, id);
   if (!stored) return mailError("MAIL_NOT_FOUND", "Th\u01B0 kh\xF4ng c\xF2n t\u1ED3n t\u1EA1i.");
   const mail = stored.value, now = Date.now();
-  const reads = nk.storageRead([{ collection: "player_profiles", key: "main", userId }, { collection: "player_inventory", key: "items", userId }, { collection: "player_heroes", key: "states", userId }].concat(mail.weekly ? [{ collection: "weekly_leaderboard_claims", key: weeklyClaimKey(mail.weekly.period_id, mail.weekly.board_id), userId }] : []));
+  const reads = nk.storageRead([{ collection: "player_profiles", key: "main", userId }, { collection: "player_inventory", key: "items", userId }, { collection: "player_heroes", key: "states", userId }, { collection: "player_mail_deliveries", key: id, userId }].concat(mail.weekly ? [{ collection: "weekly_leaderboard_claims", key: weeklyClaimKey(mail.weekly.period_id, mail.weekly.board_id), userId }] : []));
   const p = reads.find((r) => r.collection === "player_profiles"), i = reads.find((r) => r.collection === "player_inventory"), h = reads.find((r) => r.collection === "player_heroes");
   if (!p || !i || !h || !Array.isArray(i.value.items)) return mailError("CHARACTER_INCOMPLETE", "D\u1EEF li\u1EC7u nh\xE2n v\u1EADt ch\u01B0a s\u1EB5n s\xE0ng.");
   if (mail.claimed_at_ms) return { success: true, already_claimed: true, mail: mailPresent(nk, mail, now), profile: p.value, inventory: i.value.items, heroes: h.value.heroes || [] };
   if (!mailPresent(nk, mail, now).can_claim) return mailError(mail.attachments.length ? "MAIL_EXPIRED" : "NO_REWARD", mail.attachments.length ? "Th\u01B0 \u0111\xE3 h\u1EBFt h\u1EA1n nh\u1EADn th\u01B0\u1EDFng." : "Th\u01B0 kh\xF4ng c\xF3 ph\u1EA7n th\u01B0\u1EDFng.");
   const oldWeekly = reads.find((r) => r.collection === "weekly_leaderboard_claims");
-  const writes = [];
+  const writes = [], assetChanges = [];
   if (!oldWeekly) {
     p.value.resources = p.value.resources || {};
     h.value.heroes = Array.isArray(h.value.heroes) ? h.value.heroes : [];
@@ -11104,17 +11632,25 @@ function mailClaimOne(nk, userId, id) {
         const total = Number(p.value.resources[reward.id] || 0) + reward.amount;
         if (!Number.isSafeInteger(total)) return mailError("RESOURCE_LIMIT", "T\xE0i nguy\xEAn v\u01B0\u1EE3t gi\u1EDBi h\u1EA1n.");
         p.value.resources[reward.id] = total;
+        assetChanges.push({ type: "resource", id: reward.id, delta: reward.amount, balance_after: total });
       } else if (reward.type === "item") {
         addStoreInventoryItem(nk, i.value.items, reward.id, reward.amount);
         if (i.value.items.length > 2e3) return mailError("INVENTORY_FULL", "T\xFAi \u0111\u1ED3 \u0111\u1EA7y. H\xE3y d\u1ECDn t\xFAi r\u1ED3i nh\u1EADn l\u1EA1i.");
+        assetChanges.push({ type: "item", id: reward.id, delta: reward.amount, balance_after: talismanItemQuantity(i.value.items, reward.id) });
       } else if (reward.type === "exp") {
+        const beforeExp = Number(p.value.exp || 0), beforeLevel = Number(p.value.level || 1);
         progressionApplyUser(nk, p.value, reward.amount);
         progressionReconcileLevelUnlocks(nk, p.value);
+        const afterExp = Number(p.value.exp || 0), afterLevel = Number(p.value.level || 1);
+        if (afterExp !== beforeExp) assetChanges.push({ type: "resource", id: "exp", delta: afterExp - beforeExp, balance_after: afterExp });
+        if (afterLevel !== beforeLevel) assetChanges.push({ type: "progression", id: "level", delta: afterLevel - beforeLevel, balance_after: afterLevel });
       } else if (reward.type === "hero") {
         const hero = h.value.heroes.find((entry) => entry && String(entry.hero_id || "") === reward.id);
+        const alreadyOwned = !!hero && hero.owned === true;
         if (hero) hero.owned = true;
         else h.value.heroes.push({ hero_id: reward.id, level: 1, exp: 0, next_level_exp: 1e3, owned: true, current_attribute: {} });
         heroesChanged = true;
+        if (!alreadyOwned) assetChanges.push({ type: "hero", id: reward.id, delta: 1, balance_after: 1 });
       } else throw new Error("INVALID_STORED_REWARD");
     }
     writes.push(
@@ -11137,6 +11673,21 @@ function mailClaimOne(nk, userId, id) {
   mail.claimed_at_ms = claimNow;
   if (!mail.read_at_ms) mail.read_at_ms = claimNow;
   mail.version++;
+  if (!oldWeekly) mail.asset_changes = assetChanges;
+  const delivery = reads.find((r) => r.collection === "player_mail_deliveries");
+  if (!oldWeekly) writes.push({
+    collection: "player_mail_deliveries",
+    key: id,
+    userId,
+    value: Object.assign(
+      {},
+      delivery ? delivery.value : { source_id: mail.source_id, created_at_ms: mail.created_at_ms },
+      { trace_schema_version: 1, source_type: mail.source_type, claimed_at_ms: claimNow, asset_changes: assetChanges }
+    ),
+    version: delivery ? delivery.version : "*",
+    permissionRead: 0,
+    permissionWrite: 0
+  });
   writes.push(Object.assign(mailWrite(mail, userId), { version: stored.version }));
   try {
     mailCombatRuntime(nk, userId).storageWrite(writes);
@@ -11312,7 +11863,7 @@ const rpcMailAdminCampaign = (ctx, _logger, nk, payload) => {
   }
 };
 const rpcMailTick = (ctx, logger, nk, _payload) => {
-  if (ctx.userId && requireServerAdmin(ctx)) return JSON.stringify(mailError("FORBIDDEN", "Forbidden"));
+  if (ctx.userId && !isConfigAdmin(ctx)) return JSON.stringify(mailError("FORBIDDEN", "Forbidden"));
   let purged = 0, delivered = 0;
   const failures = [];
   const deadline = Date.now() + 2e3;
@@ -11678,6 +12229,417 @@ function linkedRpc_gift_code_admin(c, l, n, p) {
   return accountGuardedRpc("gift_code_admin", rpcGiftCodeAdmin)(c, l, n, p);
 }
 
+function compliancePolicy(nk, ctx) {
+  const active = getActiveRemoteConfig(nk);
+  const p = active.config && active.config.system && active.config.system.compliance_policy;
+  const validated = compliancePolicyValue(p), env = ctx.env || {};
+  if (env.APP_ENVIRONMENT === "develop") return Object.assign({}, validated, { provider: "mock" });
+  if (env.APP_ENVIRONMENT === "production") return Object.assign({}, validated, { provider: "speedsms" });
+  throw Error("COMPLIANCE_ENVIRONMENT_INVALID");
+}
+function compliancePolicyValue(p) {
+  if (p) {
+    for (const spec of [["lease_seconds", 10, 60], ["otp_ttl_seconds", 30, 900], ["otp_max_attempts", 1, 10], ["otp_resend_seconds", 10, 86400], ["otp_rate_window_seconds", 60, 86400], ["otp_rate_account_max", 1, 1e3], ["otp_rate_phone_max", 1, 1e3], ["otp_rate_ip_max", 1, 1e4], ["guardian_phone_max_accounts", 1, 100]])
+      if (!Number.isSafeInteger(p[spec[0]]) || p[spec[0]] < spec[1] || p[spec[0]] > spec[2]) throw Error("COMPLIANCE_POLICY_INVALID");
+  }
+  if (p && p.allow_birth_date_change !== void 0 && typeof p.allow_birth_date_change !== "boolean") throw Error("COMPLIANCE_POLICY_INVALID");
+  if (p && p.warning_seconds !== void 0 && (!Array.isArray(p.warning_seconds) || p.warning_seconds.length > 10 || p.warning_seconds.some((v) => !Number.isSafeInteger(v) || v < 1 || v > 86400))) throw Error("COMPLIANCE_POLICY_INVALID");
+  if (!p || !Number.isInteger(p.revision) || p.revision < 1 || ["mock", "zalo_oa", "speedsms"].indexOf(p.provider) < 0 || typeof p.game_id !== "string" || p.game_id.length > 100) throw Error("COMPLIANCE_POLICY_INVALID");
+  if (!p || p.schema_version !== 1 || typeof p.game_id !== "string" || !p.game_id || !Number.isInteger(p.guardian_below_age) || p.guardian_below_age < 1 || p.guardian_below_age > 100 || !Array.isArray(p.age_bands) || !p.age_bands.length || !(p.lease_seconds >= 10 && p.lease_seconds <= 60) || !(p.otp_ttl_seconds >= 30 && p.otp_ttl_seconds <= 900) || !(p.otp_max_attempts >= 1 && p.otp_max_attempts <= 10) || !(p.otp_resend_seconds >= 10)) throw Error("COMPLIANCE_POLICY_INVALID");
+  for (const band of p.age_bands) if (!(band.below_age > 0 && band.per_game_seconds > 0 && band.total_seconds >= band.per_game_seconds)) throw Error("COMPLIANCE_POLICY_INVALID");
+  return p;
+}
+function complianceAge(dob, now) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dob)) return -1;
+  const born = /* @__PURE__ */ new Date(dob + "T00:00:00Z");
+  if (!isFinite(born.getTime()) || born.toISOString().slice(0, 10) !== dob) return -1;
+  const today = new Date((now + 25200) * 1e3).toISOString().slice(0, 10);
+  const age = Number(today.slice(0, 4)) - Number(dob.slice(0, 4)) - (today.slice(5) < dob.slice(5) ? 1 : 0);
+  return dob > today || age > 120 ? -1 : age;
+}
+function complianceFailure(reason, message) {
+  return { success: false, allowed: false, reason, message };
+}
+function speedSmsReady(env) {
+  const type = String(env.SPEEDSMS_SMS_TYPE || "4"), sender = String(env.SPEEDSMS_SENDER || "");
+  return !!env.SPEEDSMS_ACCESS_TOKEN && !/[\r\n:]/.test(env.SPEEDSMS_ACCESS_TOKEN) && /^[a-fA-F0-9]{64,}$/.test(String(env.SPEEDSMS_OTP_HMAC_KEY || "")) && ["2", "3", "4", "5", "6"].indexOf(type) >= 0 && (!["3", "5"].includes(type) || !!sender.trim()) && String(env.SPEEDSMS_CONTENT || "Ma xac thuc cua dao huu la {pin_code}. Khong chia se ma nay.").indexOf("{pin_code}") >= 0;
+}
+function speedSmsPin(nk) {
+  for (let i = 0; i < 16; i++) {
+    const raw = nk.uuidv4();
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(raw)) throw Error("invalid randomness");
+    const n = parseInt(raw.slice(0, 8), 16);
+    if (n < 4294e6) return String(n % 1e6).padStart(6, "0");
+  }
+  throw Error("randomness unavailable");
+}
+function speedSmsDigest(nk, env, id, pin) {
+  return nk.base64Encode(nk.hmacSha256Hash(id + ":" + pin, env.SPEEDSMS_OTP_HMAC_KEY));
+}
+function otpTiming(now, value) {
+  return { server_time: now, expires_at: Number(value && value.expires || 0), resend_at: Number(value && value.resend_at || 0) };
+}
+function otpRateKey(nk, ctx, scope, value) {
+  const secret = String((ctx.env || {}).SPEEDSMS_OTP_HMAC_KEY || "development-only-otp-rate-key");
+  return scope + ":" + nk.base64Encode(nk.hmacSha256Hash(scope + ":" + value, secret)).replace(/[+/=]/g, "_");
+}
+function compliancePhoneLocks(nk, ctx, oldPhone, newPhone) {
+  const owner = "00000000-0000-0000-0000-000000000000";
+  const numbers = [oldPhone, newPhone].filter((v, i, a) => !!v && a.indexOf(v) === i);
+  const refs = numbers.map((phone) => ({ collection: "compliance_phone_locks", key: otpRateKey(nk, ctx, "phone_ownership", phone), userId: owner })).sort((a, b) => a.key.localeCompare(b.key));
+  const rows = nk.storageRead(refs), byKey = {};
+  for (const row of rows) byKey[row.key] = row;
+  return refs.map((ref) => Object.assign({}, ref, { value: { nonce: nk.uuidv4() }, version: byKey[ref.key] ? byKey[ref.key].version : "*", permissionRead: 0, permissionWrite: 0 }));
+}
+function otpAccountRetry(ctx, nk, p, now) {
+  const row = nk.storageRead([{ collection: "otp_rate_limit", key: otpRateKey(nk, ctx, "account", ctx.userId), userId: "00000000-0000-0000-0000-000000000000" }])[0];
+  if (!row) return 0;
+  const v = row.value, start = Number(v.start || 0), end = start + p.otp_rate_window_seconds;
+  return Math.max(Number(v.resend_at || 0), now >= start && now < end && Number(v.count || 0) >= p.otp_rate_account_max ? end : 0);
+}
+function otpRateReserve(ctx, nk, p, phone, now) {
+  const env = ctx.env || {}, key = String(env.SPEEDSMS_OTP_HMAC_KEY || "");
+  if (p.provider === "speedsms" && !/^[a-fA-F0-9]{64,}$/.test(key) || !ctx.clientIp) return { error: true };
+  const owner = "00000000-0000-0000-0000-000000000000";
+  const scopes = [["account", ctx.userId, p.otp_rate_account_max], ["phone", phone, p.otp_rate_phone_max], ["ip", ctx.clientIp, p.otp_rate_ip_max]];
+  const refs = scopes.map((s) => ({ collection: "otp_rate_limit", key: otpRateKey(nk, ctx, String(s[0]), String(s[1])), userId: owner }));
+  for (let attempt = 0; attempt < 4; attempt++) {
+    const existing = nk.storageRead(refs), byKey = {};
+    for (const obj of existing) byKey[obj.key] = obj;
+    const writes = [];
+    let retry = 0;
+    for (let i = 0; i < refs.length; i++) {
+      const old = byKey[refs[i].key], v = old ? old.value : {}, start = Number(v.start || 0), same = now >= start && now < start + p.otp_rate_window_seconds, count = same ? Number(v.count || 0) : 0;
+      if (count >= scopes[i][2]) retry = Math.max(retry, start + p.otp_rate_window_seconds);
+      if (i === 0 && Number(v.resend_at || 0) > now) retry = Math.max(retry, Number(v.resend_at));
+      writes.push(Object.assign({}, refs[i], { value: { start: same ? start : now, count: count + 1, resend_at: i === 0 ? now + p.otp_resend_seconds : 0 }, version: old ? old.version : "*", permissionRead: 0, permissionWrite: 0 }));
+    }
+    if (retry > now) return { retry_at: retry };
+    try {
+      nk.storageWrite(writes);
+      return { ok: true };
+    } catch (_e) {
+    }
+  }
+  return { error: true };
+}
+function compliancePublicProfile(value) {
+  if (!value) return {};
+  const phone = String(value.phone_number || "");
+  return { full_name: String(value.full_name || ""), birth_date: String(value.birth_date || ""), phone_number: phone, phone_mask: phone.length > 4 ? "*".repeat(phone.length - 4) + phone.slice(-4) : "", guardian_name: String(value.guardian_name || ""), phone_owner: String(value.phone_owner || "self"), revision: Number(value.revision || 0), verification_method: String(value.verification_method || ""), is_phone_verified: value.is_phone_verified === true, verified_at: Number(value.verified_at || 0) };
+}
+function complianceStatus(ctx, nk, p, playing) {
+  const now = Date.now() / 1e3;
+  const profile = nk.storageRead([{ collection: "compliance_activation", key: "profile", userId: ctx.userId }])[0];
+  const v = profile ? profile.value : {};
+  if (v.verification_method === "mock" && (p.provider !== "mock" || String((ctx.env || {}).COMPLIANCE_ALLOW_MOCK) !== "true")) return Object.assign(complianceFailure("PHONE_VERIFICATION_REQUIRED", "H\u1ED3 s\u01A1 th\u1EED nghi\u1EC7m ch\u01B0a x\xE1c th\u1EF1c s\u1ED1 \u0111i\u1EC7n tho\u1EA1i th\u1EADt. \u0110\u1EA1o h\u1EEFu h\xE3y x\xE1c th\u1EF1c l\u1EA1i."), { policy: p, is_phone_verified: false });
+  const age = complianceAge(String(v.birth_date || ""), now);
+  if (!v.is_phone_verified || age < 0 || age < p.guardian_below_age && (!v.guardian_name || v.phone_owner !== "guardian")) return Object.assign(complianceFailure("PHONE_VERIFICATION_REQUIRED", String(p.notice || "\u0110\u1EA1o h\u1EEFu h\xE3y x\xE1c th\u1EF1c h\u1ED3 s\u01A1 v\xE0 s\u1ED1 \u0111i\u1EC7n tho\u1EA1i tr\u01B0\u1EDBc khi tham gia chi\u1EBFn \u0111\u1EA5u.")), { policy: p, is_phone_verified: false });
+  const day = new Date((now + 25200) * 1e3).toISOString().slice(0, 10);
+  const midnight = Math.floor((now + 25200) / 86400) * 86400 - 25200;
+  const bands = p.age_bands.filter((b) => age < Number(b.below_age));
+  let gameLimit = 86400, totalLimit = 86400;
+  for (const band of bands) {
+    gameLimit = Math.min(gameLimit, Number(band.per_game_seconds));
+    totalLimit = Math.min(totalLimit, Number(band.total_seconds));
+  }
+  const row = nk.sqlQuery(`SELECT * FROM compliance_budget($1::uuid,$2,$3,$4,$5,$6,$7,$8,$9)`, [ctx.userId, p.game_id, day, now, midnight, p.lease_seconds, gameLimit, totalLimit, playing])[0];
+  const used = Number(row.used), total = Number(row.total), remaining = Number(row.remaining);
+  const allowed = remaining > 0;
+  return { success: true, allowed, is_phone_verified: true, verification_method: v.verification_method, age, policy: p, server_time: now, day, seconds: used, total_seconds: total, remaining_seconds: Math.max(0, remaining), lease_until: Number(row.until_at), reason: allowed ? "" : "PLAYTIME_LIMIT", message: allowed ? "" : "\u0110\u1EA1o h\u1EEFu \u0111\xE3 h\u1EBFt th\u1EDDi gian ch\u01A1i h\xF4m nay. Xin ngh\u1EC9 ng\u01A1i v\xE0 tr\u1EDF l\u1EA1i v\xE0o ng\xE0y mai." };
+}
+function linkedRpc_compliance_access(ctx, logger, nk, payload) {
+  return accountGuardedRpc("compliance_access", complianceAccess)(ctx, logger, nk, payload);
+}
+function privacyPolicyValue(p) {
+  if (!p || p.schema_version !== 1 || !Number.isSafeInteger(p.revision) || p.revision < 1 || !p.notice || typeof p.notice.text !== "string" || p.notice.text.length < 20 || p.notice.text.length > 1e4 || !p.notice.id || !Number.isSafeInteger(p.notice.revision) || !Array.isArray(p.purposes) || p.purposes.length > 8) throw Error("PRIVACY_POLICY_INVALID");
+  const ids = {};
+  for (const x of p.purposes) {
+    if (!/^[a-z][a-z0-9_]{1,48}$/.test(x.id) || ids[x.id] || typeof x.label !== "string" || !x.label || !Number.isSafeInteger(x.revision) || x.revision < 1 || typeof x.enabled !== "boolean" || x.processing_enabled !== false) throw Error("PRIVACY_POLICY_INVALID");
+    ids[x.id] = true;
+  }
+  return p;
+}
+function privacyView(ctx, nk) {
+  const p = getActiveRemoteConfig(nk).config.system.privacy_consent;
+  if (!p) return null;
+  privacyPolicyValue(p);
+  const hash = nk.sqlQuery("SELECT encode(sha256(convert_to($1,'UTF8')),'hex') AS hash", [JSON.stringify(p)])[0].hash;
+  const old = nk.storageRead([{ collection: "privacy_consent", key: "state", userId: ctx.userId }])[0];
+  return { policy: p, notice_hash: String(hash), state: old ? old.value : { revision: 0, choices: {} }, state_version: old ? old.version : "*" };
+}
+function privacyCapture(ctx, nk, req) {
+  const view = privacyView(ctx, nk);
+  if (!req.privacy) return null;
+  if (!view || req.kyc_confirmation !== true || req.privacy.notice_hash !== view.notice_hash || req.privacy.expected_revision !== view.state.revision) throw Error("PRIVACY_CHANGED");
+  const choices = req.privacy.choices;
+  if (!choices || typeof choices !== "object" || Array.isArray(choices)) throw Error("PRIVACY_INVALID");
+  const normalized = {};
+  for (const purpose of view.policy.purposes) {
+    const v = choices[purpose.id];
+    if (v !== true && v !== false) throw Error("PRIVACY_INVALID");
+    if (v && !purpose.enabled) throw Error("PRIVACY_INVALID");
+    normalized[purpose.id] = v;
+  }
+  if (Object.keys(choices).length !== view.policy.purposes.length) throw Error("PRIVACY_INVALID");
+  return { notice_hash: view.notice_hash, policy: view.policy, choices: normalized, base_revision: view.state.revision, base_version: view.state_version };
+}
+function privacyWrites(ctx, nk, snapshot, id, method, actor) {
+  if (!snapshot) return [];
+  const view = privacyView(ctx, nk);
+  if (!view || view.notice_hash !== snapshot.notice_hash || view.state_version !== snapshot.base_version) throw Error("PRIVACY_CHANGED");
+  const state = { revision: Number(snapshot.base_revision) + 1, choices: snapshot.choices, notice_hash: snapshot.notice_hash, at: Date.now() / 1e3, verification_method: method, actor_role: actor };
+  const event = Object.assign({}, state, { event_id: id, notice: snapshot.policy.notice, policy_snapshot: snapshot.policy, purpose_versions: snapshot.policy.purposes.map((x) => ({ id: x.id, revision: x.revision })), action: method === "session_withdrawal" ? "withdraw" : "kyc_confirmation" });
+  return [{ collection: "privacy_consent", key: "state", userId: ctx.userId, value: state, version: snapshot.base_version, permissionRead: 0, permissionWrite: 0 }, { collection: "privacy_consent", key: "event:" + id, userId: ctx.userId, value: event, version: "*", permissionRead: 0, permissionWrite: 0 }];
+}
+function privacyWithdraw(ctx, nk, req) {
+  try {
+    const view = privacyView(ctx, nk);
+    if (!view || req.expected_revision !== view.state.revision) throw Error("PRIVACY_CHANGED");
+    const choices = {};
+    if (req.choices !== void 0 && (!req.choices || typeof req.choices !== "object" || Array.isArray(req.choices) || Object.keys(req.choices).length !== view.policy.purposes.length)) throw Error("PRIVACY_INVALID");
+    for (const purpose of view.policy.purposes) {
+      const next = req.choices === void 0 ? false : req.choices[purpose.id];
+      if (typeof next !== "boolean" || next && view.state.choices[purpose.id] !== true) throw Error("PRIVACY_INVALID");
+      choices[purpose.id] = next;
+    }
+    const snapshot = { notice_hash: view.notice_hash, policy: view.policy, choices, base_revision: view.state.revision, base_version: view.state_version };
+    nk.storageWrite(privacyWrites(ctx, nk, snapshot, nk.uuidv4(), "session_withdrawal", "account_holder"));
+    return { success: true, privacy: privacyView(ctx, nk), message: "\u0110\u1EA1o h\u1EEFu \u0111\xE3 l\u01B0u l\u1EF1a ch\u1ECDn s\u1EED d\u1EE5ng d\u1EEF li\u1EC7u." };
+  } catch (_e) {
+    return complianceFailure("PRIVACY_CHANGED", "L\u1EF1a ch\u1ECDn \u0111\xE3 thay \u0111\u1ED5i ho\u1EB7c ch\u01B0a s\u1EB5n s\xE0ng. \u0110\u1EA1o h\u1EEFu h\xE3y t\u1EA3i l\u1EA1i h\u1ED3 s\u01A1.");
+  }
+}
+function complianceAccess(ctx, _logger, nk, payload) {
+  if (!ctx.userId) return JSON.stringify(complianceFailure("AUTH_REQUIRED", "\u0110\u1EA1o h\u1EEFu h\xE3y \u0111\u0103ng nh\u1EADp l\u1EA1i."));
+  let req, p;
+  try {
+    req = JSON.parse(payload || "{}");
+    if (!req || typeof req !== "object" || Array.isArray(req)) throw Error();
+    p = compliancePolicy(nk, ctx);
+  } catch (_e) {
+    return JSON.stringify(complianceFailure("POLICY_UNAVAILABLE", "Thi\u1EBFt l\u1EADp x\xE1c th\u1EF1c ch\u01B0a s\u1EB5n s\xE0ng. \u0110\u1EA1o h\u1EEFu h\xE3y th\u1EED l\u1EA1i sau."));
+  }
+  const action = String(req.action || "status");
+  if (action === "privacy_withdraw") return JSON.stringify(privacyWithdraw(ctx, nk, req));
+  if (action === "profile") {
+    const saved = nk.storageRead([{ collection: "compliance_activation", key: "profile", userId: ctx.userId }])[0];
+    const pending = nk.storageRead([{ collection: "compliance_activation", key: "challenge", userId: ctx.userId }])[0];
+    const now2 = Date.now() / 1e3;
+    let privacy = null;
+    try {
+      privacy = privacyView(ctx, nk);
+    } catch (_e) {
+    }
+    const publicProfile = compliancePublicProfile(saved ? saved.value : null);
+    if (privacy) publicProfile.consent = privacy.state;
+    return JSON.stringify(Object.assign({ success: true, profile: publicProfile, privacy, policy: p, retry_at: otpAccountRetry(ctx, nk, p, now2) }, otpTiming(now2, pending ? pending.value : null)));
+  }
+  if (action === "status" || action === "heartbeat") return JSON.stringify(complianceStatus(ctx, nk, p, action === "heartbeat" && req.playing === true));
+  const env = ctx.env || {};
+  if (!(p.provider === "mock" && String(env.COMPLIANCE_ALLOW_MOCK) === "true" || p.provider === "speedsms" && speedSmsReady(env))) return JSON.stringify(complianceFailure("PROVIDER_UNAVAILABLE", "X\xE1c th\u1EF1c s\u1ED1 \u0111i\u1EC7n tho\u1EA1i ch\u01B0a s\u1EB5n s\xE0ng. \u0110\u1EA1o h\u1EEFu h\xE3y th\u1EED l\u1EA1i sau."));
+  const now = Date.now() / 1e3;
+  const stored = nk.storageRead([{ collection: "compliance_activation", key: "challenge", userId: ctx.userId }])[0];
+  if (action === "request") {
+    if (stored && Number(stored.value.resend_at) > now) return JSON.stringify(Object.assign(complianceFailure("OTP_COOLDOWN", "\u0110\u1EA1o h\u1EEFu h\xE3y ch\u1EDD tr\u01B0\u1EDBc khi y\xEAu c\u1EA7u m\xE3 m\u1EDBi."), otpTiming(now, stored.value), { retry_at: Number(stored.value.resend_at) }));
+    const current = nk.storageRead([{ collection: "compliance_activation", key: "profile", userId: ctx.userId }])[0];
+    if (current && String(current.value.birth_date) !== String(req.birth_date) && p.allow_birth_date_change !== true) return JSON.stringify(complianceFailure("DOB_REVIEW_REQUIRED", "\u0110\u1EA1o h\u1EEFu h\xE3y li\xEAn h\u1EC7 h\u1ED7 tr\u1EE3 \u0111\u1EC3 \u0111i\u1EC1u ch\u1EC9nh ng\xE0y sinh \u0111\xE3 x\xE1c th\u1EF1c."));
+    const age = complianceAge(String(req.birth_date || ""), now), guardian = age >= 0 && age < p.guardian_below_age;
+    const phone = String(guardian ? req.guardian_phone : req.phone_number).replace(/[\s.-]/g, "").replace(/^\+84/, "0");
+    if (age < 0 || String(req.full_name || "").trim().length < 2 || String(req.full_name).length > 100 || !/^0[35789]\d{8}$/.test(phone) || guardian && (String(req.guardian_name || "").trim().length < 2 || String(req.guardian_name).length > 100 || req.guardian_consent !== true)) return JSON.stringify(complianceFailure("PROFILE_INVALID", "\u0110\u1EA1o h\u1EEFu h\xE3y nh\u1EADp \u0111\xFAng h\u1ECD t\xEAn, ng\xE0y sinh, s\u1ED1 di \u0111\u1ED9ng Vi\u1EC7t Nam v\xE0 th\xF4ng tin ng\u01B0\u1EDDi gi\xE1m h\u1ED9 n\u1EBFu c\u1EA7n."));
+    let privacy = null;
+    try {
+      privacy = privacyCapture(ctx, nk, req);
+    } catch (_e) {
+      return JSON.stringify(complianceFailure("PRIVACY_CHANGED", "\u0110\u1EA1o h\u1EEFu h\xE3y xem l\u1EA1i l\u1EF1a ch\u1ECDn d\u1EEF li\u1EC7u v\xE0 x\xE1c nh\u1EADn th\xF4ng tin KYC. Ch\u1EC9 ng\u01B0\u1EDDi \u0111\u1EE7 tu\u1ED5i theo ch\xEDnh s\xE1ch m\u1EDBi \u0111\u01B0\u1EE3c b\u1EADt m\u1EE5c t\xF9y ch\u1ECDn."));
+    }
+    const limit = otpRateReserve(ctx, nk, p, phone, now);
+    if (limit.retry_at) return JSON.stringify({ success: false, allowed: false, reason: "OTP_COOLDOWN", message: "\u0110\u1EA1o h\u1EEFu \u0111\xE3 y\xEAu c\u1EA7u m\xE3 g\u1EA7n \u0111\xE2y. H\xE3y ch\u1EDD tr\u01B0\u1EDBc khi th\u1EED l\u1EA1i.", server_time: now, retry_at: limit.retry_at, resend_at: limit.retry_at });
+    if (!limit.ok) return JSON.stringify(complianceFailure("OTP_RATE_UNAVAILABLE", "Ch\u01B0a th\u1EC3 ki\u1EC3m tra gi\u1EDBi h\u1EA1n g\u1EEDi m\xE3. \u0110\u1EA1o h\u1EEFu h\xE3y th\u1EED l\u1EA1i sau."));
+    const value = { full_name: String(req.full_name).trim(), birth_date: String(req.birth_date), phone_number: phone, guardian_name: guardian ? String(req.guardian_name).trim() : "", phone_owner: guardian ? "guardian" : "self", guardian_consent: guardian && req.guardian_consent === true, guardian_consent_at: guardian ? now : null, challenge_id: nk.uuidv4(), base_profile_version: current ? current.version : "*", base_profile_revision: current ? Number(current.value.revision || 0) : 0, expires: now + p.otp_ttl_seconds, resend_at: now + p.otp_resend_seconds, attempts: 0, policy_revision: p.revision, provider: p.provider };
+    if (privacy) value.privacy = privacy;
+    try {
+      nk.storageWrite([{ collection: "compliance_activation", key: "challenge", userId: ctx.userId, value, version: stored ? stored.version : "*", permissionRead: 0, permissionWrite: 0 }]);
+    } catch (_e) {
+      return JSON.stringify(complianceFailure("OTP_REQUEST_BUSY", "\u0110\u1EA1o h\u1EEFu v\u1EEBa y\xEAu c\u1EA7u m\u1ED9t m\xE3 kh\xE1c. H\xE3y d\xF9ng m\xE3 m\u1EDBi nh\u1EA5t ho\u1EB7c th\u1EED l\u1EA1i sau."));
+    }
+    if (p.provider === "speedsms") {
+      try {
+        const pin = speedSmsPin(nk), template = String(env.SPEEDSMS_CONTENT || "Ma xac thuc cua dao huu la {pin_code}. Khong chia se ma nay.");
+        const smsType = Number(env.SPEEDSMS_SMS_TYPE || "4"), sender = String(env.SPEEDSMS_SENDER || "");
+        const smsBody = { to: [phone], sms_type: smsType, content: template.split("{pin_code}").join(pin) };
+        if (smsType !== 4 || sender.trim()) smsBody.sender = sender;
+        const response = nk.httpRequest("https://api.speedsms.vn/index.php/sms/send", "POST", { "Content-Type": "application/json", "Authorization": "Basic " + nk.base64Encode(env.SPEEDSMS_ACCESS_TOKEN + ":x") }, JSON.stringify(smsBody), 1e4);
+        const body = JSON.parse(response.body);
+        if (response.code !== 200 || body.status !== "success" || String(body.code) !== "00" || !body.data || !(Number(body.data.totalSMS) > 0) || !Array.isArray(body.data.invalidPhone) || body.data.invalidPhone.length !== 0) throw Error("provider rejected");
+        const pending = nk.storageRead([{ collection: "compliance_activation", key: "challenge", userId: ctx.userId }])[0];
+        if (!pending || pending.value.challenge_id !== value.challenge_id || Date.now() / 1e3 >= value.expires) throw Error("challenge changed");
+        value.otp_digest = speedSmsDigest(nk, env, value.challenge_id, pin);
+        nk.storageWrite([{ collection: "compliance_activation", key: "challenge", userId: ctx.userId, value, version: pending.version, permissionRead: 0, permissionWrite: 0 }]);
+      } catch (_e) {
+        return JSON.stringify(Object.assign(complianceFailure("PROVIDER_UNAVAILABLE", "Ch\u01B0a th\u1EC3 g\u1EEDi m\xE3 x\xE1c th\u1EF1c. \u0110\u1EA1o h\u1EEFu h\xE3y ch\u1EDD r\u1ED3i th\u1EED l\u1EA1i."), otpTiming(Date.now() / 1e3, value)));
+      }
+      return JSON.stringify(Object.assign({ success: true, mock: false, message: "M\xE3 x\xE1c th\u1EF1c \u0111\xE3 \u0111\u01B0\u1EE3c y\xEAu c\u1EA7u g\u1EEDi. \u0110\u1EA1o h\u1EEFu h\xE3y ki\u1EC3m tra tin nh\u1EAFn.", phone_owner: value.phone_owner }, otpTiming(Date.now() / 1e3, value)));
+    }
+    return JSON.stringify(Object.assign({ success: true, mock: true, message: "Ch\u1EBF \u0111\u1ED9 th\u1EED nghi\u1EC7m: nh\u1EADp m\xE3 12345. Ch\u01B0a g\u1EEDi SMS th\u1EADt.", phone_owner: value.phone_owner }, otpTiming(Date.now() / 1e3, value)));
+  }
+  if (action === "verify") {
+    if (!stored || !stored.value.challenge_id || !stored.value.base_profile_version || stored.value.expires <= now || stored.value.attempts >= p.otp_max_attempts || stored.value.policy_revision !== p.revision || String(stored.value.provider || "mock") !== p.provider || p.provider === "speedsms" && !stored.value.otp_digest) return JSON.stringify(complianceFailure("OTP_EXPIRED", "M\xE3 \u0111\xE3 h\u1EBFt hi\u1EC7u l\u1EF1c. \u0110\u1EA1o h\u1EEFu h\xE3y y\xEAu c\u1EA7u m\xE3 m\u1EDBi."));
+    const value = stored.value;
+    value.attempts += 1;
+    try {
+      nk.storageWrite([{ collection: "compliance_activation", key: "challenge", userId: ctx.userId, value, version: stored.version, permissionRead: 0, permissionWrite: 0 }]);
+    } catch (_e) {
+      return JSON.stringify(complianceFailure("OTP_BUSY", "M\xE3 \u0111ang \u0111\u01B0\u1EE3c ki\u1EC3m tra. \u0110\u1EA1o h\u1EEFu h\xE3y ch\u1EDD gi\xE2y l\xE1t."));
+    }
+    if (p.provider === "mock" ? String(req.otp) !== "12345" : speedSmsDigest(nk, env, value.challenge_id, String(req.otp || "")) !== value.otp_digest) return JSON.stringify(complianceFailure("OTP_INVALID", "M\xE3 x\xE1c th\u1EF1c ch\u01B0a \u0111\xFAng. \u0110\u1EA1o h\u1EEFu h\xE3y ki\u1EC3m tra l\u1EA1i."));
+    let locks;
+    try {
+      const old = nk.storageRead([{ collection: "compliance_activation", key: "profile", userId: ctx.userId }])[0];
+      if ((old ? old.version : "*") !== value.base_profile_version) throw Error("profile changed");
+      locks = compliancePhoneLocks(nk, ctx, String(old && old.value.phone_number || ""), String(value.phone_number));
+      const counts = nk.sqlQuery(`SELECT COUNT(*) FILTER (WHERE COALESCE(value->>'phone_owner','self')='self') AS personal_count, COUNT(*) FILTER (WHERE value->>'phone_owner'='guardian') AS guardian_count FROM storage WHERE collection='compliance_activation' AND key='profile' AND user_id<>$1::uuid AND value->>'phone_number'=$2 AND value->>'is_phone_verified'='true' AND ($3::boolean OR COALESCE(value->>'verification_method','')<>'mock')`, [ctx.userId, value.phone_number, p.provider === "mock"])[0];
+      if (!counts || !Number.isSafeInteger(Number(counts.personal_count)) || !Number.isSafeInteger(Number(counts.guardian_count))) throw Error("phone check unavailable");
+      if (value.phone_owner === "self" && Number(counts.personal_count) > 0) return JSON.stringify(complianceFailure("PHONE_ALREADY_USED", "S\u1ED1 \u0111i\u1EC7n tho\u1EA1i n\xE0y \u0111\xE3 \u0111\u01B0\u1EE3c d\xF9ng cho m\u1ED9t t\xE0i kho\u1EA3n kh\xE1c. \u0110\u1EA1o h\u1EEFu h\xE3y ch\u1ECDn s\u1ED1 kh\xE1c ho\u1EB7c li\xEAn h\u1EC7 h\u1ED7 tr\u1EE3."));
+      if (value.phone_owner === "guardian" && Number(counts.guardian_count) >= p.guardian_phone_max_accounts) return JSON.stringify(complianceFailure("GUARDIAN_PHONE_LIMIT", "S\u1ED1 \u0111i\u1EC7n tho\u1EA1i ng\u01B0\u1EDDi gi\xE1m h\u1ED9 \u0111\xE3 \u0111\u1EA1t gi\u1EDBi h\u1EA1n h\u1ED3 s\u01A1. \u0110\u1EA1o h\u1EEFu h\xE3y d\xF9ng s\u1ED1 kh\xE1c ho\u1EB7c li\xEAn h\u1EC7 h\u1ED7 tr\u1EE3."));
+    } catch (_e) {
+      return JSON.stringify(complianceFailure("PROFILE_CHANGED", "Kh\xF4ng th\u1EC3 ki\u1EC3m tra h\u1ED3 s\u01A1 hi\u1EC7n t\u1EA1i. \u0110\u1EA1o h\u1EEFu h\xE3y t\u1EA3i l\u1EA1i v\xE0 y\xEAu c\u1EA7u m\xE3 m\u1EDBi."));
+    }
+    const profile = { full_name: value.full_name, birth_date: value.birth_date, phone_number: value.phone_number, guardian_name: value.guardian_name, phone_owner: value.phone_owner, guardian_consent: value.guardian_consent, guardian_consent_at: value.guardian_consent_at, policy_revision: p.revision, activation_challenge_id: value.challenge_id, revision: Number(value.base_profile_revision) + 1, is_phone_verified: true, verification_method: p.provider, verified_at: now };
+    let consentWrites = [];
+    try {
+      consentWrites = privacyWrites(ctx, nk, value.privacy, value.challenge_id, p.provider, value.phone_owner === "guardian" ? "guardian" : "account_holder");
+    } catch (_e) {
+      return JSON.stringify(complianceFailure("PRIVACY_CHANGED", "L\u1EF1a ch\u1ECDn d\u1EEF li\u1EC7u \u0111\xE3 thay \u0111\u1ED5i. \u0110\u1EA1o h\u1EEFu h\xE3y xem l\u1EA1i h\u1ED3 s\u01A1 v\xE0 y\xEAu c\u1EA7u m\xE3 m\u1EDBi."));
+    }
+    const audit = { schema_version: 1, action: "verified_profile_update", revision: profile.revision, at: now, method: p.provider, phone_owner: profile.phone_owner, guardian_consent: profile.guardian_consent, policy_revision: p.revision };
+    try {
+      nk.storageWrite([
+        { collection: "compliance_activation", key: "profile", userId: ctx.userId, value: profile, version: value.base_profile_version, permissionRead: 0, permissionWrite: 0 },
+        { collection: "compliance_activation", key: "audit:" + value.challenge_id, userId: ctx.userId, value: audit, version: "*", permissionRead: 0, permissionWrite: 0 },
+        ...locks,
+        ...consentWrites
+      ]);
+    } catch (_e) {
+      return JSON.stringify(complianceFailure("PROFILE_CHANGED", "H\u1ED3 s\u01A1 \u0111\xE3 thay \u0111\u1ED5i. \u0110\u1EA1o h\u1EEFu h\xE3y t\u1EA3i l\u1EA1i v\xE0 y\xEAu c\u1EA7u m\xE3 m\u1EDBi."));
+    }
+    try {
+      nk.storageDelete([{ collection: "compliance_activation", key: "challenge", userId: ctx.userId }]);
+    } catch (_e) {
+    }
+    const publicProfile = compliancePublicProfile(profile);
+    let privacy = null;
+    try {
+      privacy = privacyView(ctx, nk);
+    } catch (_e) {
+    }
+    if (privacy) publicProfile.consent = privacy.state;
+    return JSON.stringify(Object.assign(complianceStatus(ctx, nk, p, false), { profile: publicProfile, privacy }));
+  }
+  return JSON.stringify(complianceFailure("INVALID_ACTION", "Thao t\xE1c ch\u01B0a h\u1EE3p l\u1EC7."));
+}
+function complianceCombatGate(id, ctx, nk) {
+  const combat = ["start_stage", "start_trial_tower", "prepare_trial_tower", "tribulation_action", "start_sweep", "award_stage_progression", "finish_trial_tower"];
+  if (combat.indexOf(id) < 0 || !ctx.userId) return null;
+  try {
+    const result = complianceStatus(ctx, nk, compliancePolicy(nk, ctx), true);
+    return result.allowed ? null : JSON.stringify(result);
+  } catch (_e) {
+    return JSON.stringify(complianceFailure("POLICY_UNAVAILABLE", "Thi\u1EBFt l\u1EADp quy\u1EC1n ch\u01A1i ch\u01B0a s\u1EB5n s\xE0ng. \u0110\u1EA1o h\u1EEFu h\xE3y th\u1EED l\u1EA1i sau."));
+  }
+}
+function linkedRpc_health_heartbeat(ctx, logger, nk, payload) {
+  return accountGuardedRpc("health_heartbeat", healthHeartbeat)(ctx, logger, nk, payload);
+}
+function accountHistoryPolicy(p) {
+  const statuses = ["pending", "validated", "fulfilled", "failed", "cancelled", "expired", "voided", "granted", "verified", "consumed"];
+  if (!p || p.schema_version !== 1 || !Number.isSafeInteger(p.revision) || p.revision < 1 || !Number.isSafeInteger(p.page_size) || !Number.isSafeInteger(p.max_page_size) || p.page_size < 1 || p.max_page_size < p.page_size || p.max_page_size > 50 || !Array.isArray(p.allowed_statuses) || p.allowed_statuses.some((s) => statuses.indexOf(s) < 0) || !Number.isSafeInteger(p.display_utc_offset_seconds) || Math.abs(p.display_utc_offset_seconds) > 50400) throw Error("HISTORY_POLICY_INVALID");
+  return p;
+}
+function accountHistoryQuery() {
+  return `WITH history AS (
+      SELECT 'order:'||o.id AS reference,o.product_id,o.platform,
+      CASE WHEN EXISTS(SELECT 1 FROM monetization_purchases p WHERE p.user_id=o.user_id AND COALESCE(NULLIF(p.purchase_order_id,''),p.request_id)=o.id AND p.status='voided') THEN 'voided' ELSE o.status END AS status,
+      o.created_at,o.target_server_id,o.target_generation,o.id AS financial_order_ref FROM monetization_purchase_orders o WHERE o.user_id=$1
+      UNION ALL
+      SELECT 'legacy:'||p.id::text,p.product_id,p.platform,p.status,p.created_at,p.target_server_id,p.target_generation,NULL::text
+      FROM monetization_purchases p WHERE p.user_id=$1 AND NOT EXISTS(SELECT 1 FROM monetization_purchase_orders o WHERE o.user_id=p.user_id AND o.id=COALESCE(NULLIF(p.purchase_order_id,''),p.request_id)))
+      SELECT reference,product_id,COALESCE((SELECT display_name FROM game_store_products s WHERE s.product_id=history.product_id),product_id) AS product_name,platform,status,to_char(created_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS created_at,target_server_id,target_generation,
+      f.original_amount::text AS paid_amount,f.currency,f.source AS price_source,to_char(f.last_synced_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS financial_synced_at,snap.refunded_amount::text AS refunded_amount
+      FROM history LEFT JOIN payment_financial_records f ON f.purchase_order_id=history.financial_order_ref
+      LEFT JOIN LATERAL (SELECT refunded_amount FROM payment_financial_snapshots WHERE purchase_order_id=f.purchase_order_id ORDER BY provider_event_at DESC,synced_at DESC LIMIT 1) snap ON TRUE
+      WHERE ($2='' OR status=$2) AND ($3='' OR (created_at,reference)<(NULLIF($3,'')::timestamptz,$4))
+      ORDER BY created_at DESC,reference DESC LIMIT $5`;
+}
+function linkedRpc_account_history(ctx, logger, nk, payload) {
+  return accountGuardedRpc("account_history", accountHistory)(ctx, logger, nk, payload);
+}
+function accountHistory(ctx, _logger, nk, payload) {
+  if (!ctx.userId) return JSON.stringify({ success: false, reason: "AUTH_REQUIRED", message: "\u0110\u1EA1o h\u1EEFu h\xE3y \u0111\u0103ng nh\u1EADp \u0111\u1EC3 tra c\u1EE9u." });
+  let req, policy, active;
+  try {
+    req = JSON.parse(payload || "{}");
+    active = getActiveRemoteConfig(nk);
+    policy = accountHistoryPolicy(active.config.system.account_history);
+  } catch (_e) {
+    return JSON.stringify({ success: false, reason: "HISTORY_UNAVAILABLE", message: "S\u1ED5 giao d\u1ECBch ch\u01B0a s\u1EB5n s\xE0ng. \u0110\u1EA1o h\u1EEFu h\xE3y th\u1EED l\u1EA1i sau." });
+  }
+  const status = String(req.status || "");
+  if (status && policy.allowed_statuses.indexOf(status) < 0) return JSON.stringify({ success: false, reason: "INVALID_FILTER", message: "B\u1ED9 l\u1ECDc giao d\u1ECBch ch\u01B0a h\u1EE3p l\u1EC7." });
+  if (req.limit !== void 0 && (!Number.isSafeInteger(req.limit) || req.limit < 1)) return JSON.stringify({ success: false, reason: "INVALID_PAGE", message: "S\u1ED1 d\xF2ng tra c\u1EE9u ch\u01B0a h\u1EE3p l\u1EC7." });
+  const limit = Math.min(req.limit || policy.page_size, policy.max_page_size);
+  let cursor = { created_at: "", reference: "" };
+  if (req.cursor) {
+    try {
+      if (typeof req.cursor !== "string" || req.cursor.length > 1e3) throw Error();
+      cursor = JSON.parse(req.cursor);
+      if (typeof cursor.reference !== "string" || cursor.reference.length > 300 || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{1,6}Z$/.test(cursor.created_at) || !isFinite(Date.parse(cursor.created_at))) throw Error();
+    } catch (_e) {
+      return JSON.stringify({ success: false, reason: "INVALID_CURSOR", message: "Trang tra c\u1EE9u \u0111\xE3 thay \u0111\u1ED5i. \u0110\u1EA1o h\u1EEFu h\xE3y t\u1EA3i l\u1EA1i." });
+    }
+  }
+  const rows = nk.sqlQuery(accountHistoryQuery(), [ctx.userId, status, cursor.created_at, cursor.reference, limit + 1]);
+  const hasMore = rows.length > limit, transactions = rows.slice(0, limit).map((r) => ({ reference: r.reference, product_id: r.product_id, product_name: r.product_name, platform: r.platform, status: r.status, created_at: r.created_at, target_server_id: r.target_server_id, target_generation: Number(r.target_generation), paid_amount: r.paid_amount == null ? null : String(r.paid_amount), currency: r.currency || null, price_recorded: r.paid_amount != null, price_source: r.price_source || null, refunded_amount: r.refunded_amount == null ? null : String(r.refunded_amount), financial_synced_at: r.financial_synced_at || null }));
+  const last = transactions[transactions.length - 1];
+  const stored = nk.storageRead([{ collection: "player_profiles", key: "main", userId: ctx.userId }, { collection: "player_inventory", key: "items", userId: ctx.userId }]);
+  const profile = stored.find((r) => r.collection === "player_profiles"), inventory = stored.find((r) => r.collection === "player_inventory");
+  const resources = {};
+  for (const key of ["gold", "gems"]) resources[key] = Math.max(0, Number(profile && profile.value.resources && profile.value.resources[key] || 0));
+  const now = Date.now() / 1e3, day = new Date((now + 25200) * 1e3).toISOString().slice(0, 10);
+  const activity = nk.sqlQuery("SELECT seconds FROM player_health_activity WHERE user_id=$1::uuid AND day=$2", [ctx.userId, day]);
+  const combat = nk.sqlQuery("SELECT COALESCE(SUM(seconds+GREATEST(0,LEAST($3,lease_until)-last_at)),0) AS seconds FROM compliance_playtime WHERE user_id=$1::uuid AND day=$2", [ctx.userId, day, now]);
+  return JSON.stringify({ success: true, config_version: active.version, server_time: now, policy, summary: { resources, inventory_entry_count: inventory && Array.isArray(inventory.value.items) ? inventory.value.items.length : 0, activity_seconds: activity.length ? Number(activity[0].seconds) : 0, combat_seconds: combat.length ? Number(combat[0].seconds) : 0 }, transactions, next_cursor: hasMore ? JSON.stringify({ created_at: last.created_at, reference: last.reference }) : "" });
+}
+function healthHeartbeat(ctx, logger, nk, payload) {
+  if (!ctx.userId) return JSON.stringify({ success: false });
+  const request = JSON.parse(payload || "{}");
+  if (typeof request.active !== "boolean") return JSON.stringify({ success: false });
+  const now = Date.now() / 1e3;
+  const day = new Date((now + 25200) * 1e3).toISOString().slice(0, 10);
+  const midnight = Math.floor((now + 25200) / 86400) * 86400 - 25200;
+  const credit = `CASE WHEN player_health_activity.active AND $4::boolean AND $3::double precision-player_health_activity.last_at BETWEEN 0 AND 90 THEN LEAST(45,$3::double precision-player_health_activity.last_at) ELSE 0 END`;
+  const daily = `CASE WHEN player_health_activity.day=$2 THEN player_health_activity.seconds + (${credit}) ELSE LEAST((${credit}),$3::double precision-$5::double precision) END`;
+  const rows = nk.sqlQuery(`INSERT INTO player_health_activity(user_id,day,last_at,active) VALUES($1::uuid,$2,$3,$4)
+      ON CONFLICT(user_id) DO UPDATE SET day=$2, seconds=${daily},
+      continuous_seconds=CASE WHEN (${credit})>0 THEN player_health_activity.continuous_seconds+(${credit}) ELSE 0 END,
+      milestone=CASE WHEN player_health_activity.day=$2 THEN player_health_activity.milestone ELSE 0 END,
+      last_at=GREATEST(player_health_activity.last_at,$3), active=$4
+      RETURNING day,seconds,continuous_seconds,milestone`, [ctx.userId, day, now, request.active, midnight]);
+  const row = rows[0];
+  const milestone = Math.floor(Number(row.seconds) / 1800);
+  const result = { success: true, day: row.day, seconds: Number(row.seconds), continuous_seconds: Number(row.continuous_seconds), milestone };
+  if (milestone > Number(row.milestone)) {
+    const claimed = nk.sqlQuery(`UPDATE player_health_activity SET milestone=$3 WHERE user_id=$1::uuid AND day=$2 AND milestone<$3 RETURNING user_id`, [ctx.userId, day, milestone]);
+    if (claimed.length) {
+      try {
+        nk.notificationSend(ctx.userId, "Health reminder", result, 148, void 0, false);
+      } catch (error) {
+        logger.warn("Health reminder push failed; heartbeat snapshot recovers");
+      }
+    }
+  }
+  return JSON.stringify(result);
+}
 function linkedRpc_rename_player(ctx, logger, nk, payload) {
   return accountGuardedRpc("rename_player", renamePlayer)(ctx, logger, nk, payload);
 }
@@ -11709,7 +12671,7 @@ function linkedRpc_get_config_bootstrap(ctx, logger, nk, payload) {
   return accountGuardedRpc("get_config_bootstrap", getConfigBootstrap)(ctx, logger, nk, payload);
 }
 function linkedRpc_publish_config_release(ctx, logger, nk, payload) {
-  return accountGuardedRpc("publish_config_release", gatedPublishConfigRelease)(ctx, logger, nk, payload);
+  return accountGuardedRpc("publish_config_release", publishConfigRelease)(ctx, logger, nk, payload);
 }
 function linkedRpc_save_player_profile(ctx, logger, nk, payload) {
   return accountGuardedRpc("save_player_profile", gatedSavePlayerProfile)(ctx, logger, nk, payload);
@@ -11875,6 +12837,35 @@ function linkedRpc_resolve_purchase_order(c, l, n, p) {
   return accountGuardedRpc("resolve_purchase_order", (cc, ll, nn, pp) => invokeWithVersionGate(cc, ll, nn, pp, resolvePurchaseOrder))(c, l, n, p);
 }
 function InitModule(ctx, logger, nk, initializer) {
+  initializer.registerRpc("health_heartbeat", linkedRpc_health_heartbeat);
+  initializer.registerRpc("admin_asset_trace", accountGuardedRpc("admin_asset_trace", adminAssetTrace));
+  initializer.registerRpc("compliance_access", linkedRpc_compliance_access);
+  initializer.registerRpc("account_history", linkedRpc_account_history);
+  initializer.registerRpc("google_play_financial_sync", googlePlayFinancialSync);
+  nk.sqlExec(`CREATE TABLE IF NOT EXISTS compliance_playtime (
+      user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE, game_id TEXT NOT NULL, day TEXT NOT NULL,
+      seconds DOUBLE PRECISION NOT NULL DEFAULT 0,last_at DOUBLE PRECISION NOT NULL, lease_until DOUBLE PRECISION NOT NULL DEFAULT 0,
+      PRIMARY KEY(user_id,game_id,day))`, []);
+  nk.sqlExec(`CREATE OR REPLACE FUNCTION compliance_budget(uid UUID,gid TEXT,service_day TEXT,t DOUBLE PRECISION,midnight DOUBLE PRECISION,lease DOUBLE PRECISION,game_limit DOUBLE PRECISION,total_limit DOUBLE PRECISION,playing BOOLEAN)
+      RETURNS TABLE(used DOUBLE PRECISION,total DOUBLE PRECISION,remaining DOUBLE PRECISION,until_at DOUBLE PRECISION) LANGUAGE plpgsql AS $budget$
+      DECLARE reserved DOUBLE PRECISION;
+      BEGIN
+        PERFORM pg_advisory_xact_lock(hashtext(uid::text));
+        UPDATE compliance_playtime SET seconds=seconds+GREATEST(0,LEAST(lease_until,CASE WHEN day=service_day THEN t ELSE midnight END)-last_at),last_at=GREATEST(last_at,LEAST(t,CASE WHEN day=service_day THEN t ELSE midnight END)),lease_until=CASE WHEN day=service_day THEN lease_until ELSE 0 END WHERE user_id=uid;
+        INSERT INTO compliance_playtime(user_id,game_id,day,last_at) VALUES(uid,gid,service_day,t) ON CONFLICT DO NOTHING;
+        SELECT seconds INTO used FROM compliance_playtime WHERE user_id=uid AND game_id=gid AND day=service_day;
+        SELECT COALESCE(SUM(seconds),0),COALESCE(SUM(CASE WHEN game_id<>gid THEN GREATEST(0,lease_until-t) ELSE 0 END),0) INTO total,reserved FROM compliance_playtime WHERE user_id=uid AND day=service_day;
+        remaining:=GREATEST(0,LEAST(game_limit-used,total_limit-total-reserved));
+        until_at:=CASE WHEN playing AND remaining>0 THEN LEAST(t+lease,t+remaining,midnight+86400) ELSE 0 END;
+        UPDATE compliance_playtime SET lease_until=until_at WHERE user_id=uid AND game_id=gid AND day=service_day;
+        RETURN NEXT;
+      END $budget$`, []);
+  nk.sqlExec(`CREATE TABLE IF NOT EXISTS player_health_activity (
+      user_id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+      day TEXT NOT NULL, seconds DOUBLE PRECISION NOT NULL DEFAULT 0,
+      continuous_seconds DOUBLE PRECISION NOT NULL DEFAULT 0,
+      last_at DOUBLE PRECISION NOT NULL, active BOOLEAN NOT NULL,
+      milestone INTEGER NOT NULL DEFAULT 0)`, []);
   createServerRegistryTables(nk);
   initializer.registerRpc("gift_code_redeem", linkedRpc_gift_code_redeem);
   initializer.registerRpc("gift_code_admin", linkedRpc_gift_code_admin);
@@ -11898,6 +12889,12 @@ function InitModule(ctx, logger, nk, initializer) {
   initializer.registerRpc("cancel_sweep", linkedRpc_cancel_sweep);
   initializer.registerRpc("finish_sweep", linkedRpc_finish_sweep);
   initializer.registerRpc("sweep_tick", rpcSweepTick);
+  initializer.registerRpc("admin_whoami", rpcAdminWhoami);
+  initializer.registerRpc("admin_config_get", rpcAdminConfigGet);
+  initializer.registerRpc("admin_config_update", rpcAdminConfigUpdate);
+  initializer.registerRpc("admin_config_toggle", rpcAdminConfigToggle);
+  initializer.registerRpc("admin_config_validate", rpcAdminConfigValidate);
+  initializer.registerRpc("admin_config_rollback", rpcAdminConfigRollback);
   initializer.registerRpc("admin_server_list", rpcAdminServerList);
   initializer.registerRpc("admin_server_inspect", rpcAdminServerInspect);
   initializer.registerRpc("admin_server_create", rpcAdminServerCreate);
@@ -11931,6 +12928,25 @@ function InitModule(ctx, logger, nk, initializer) {
   initializer.registerBeforeUnlinkGoogle(identityBlockMutation);
   initializer.registerBeforeDeleteAccount(identityBlockMutation);
   initializer.registerBeforeUpdateAccount(identityBeforeUpdate);
+  initializer.registerBeforeReadStorageObjects(identityGuardNative);
+  initializer.registerBeforeListStorageObjects(identityGuardNative);
+  initializer.registerBeforeWriteStorageObjects(identityGuardNative);
+  initializer.registerBeforeDeleteStorageObjects(identityGuardNative);
+  initializer.registerBeforeGetAccount(identityGuardNative);
+  initializer.registerBeforeLinkCustom(identityGuardNative);
+  initializer.registerBeforeUnlinkCustom(identityGuardNative);
+  initializer.registerBeforeLinkDevice(identityGuardNative);
+  initializer.registerBeforeUnlinkDevice(identityGuardNative);
+  initializer.registerBeforeLinkApple(identityGuardNative);
+  initializer.registerBeforeUnlinkApple(identityGuardNative);
+  initializer.registerBeforeLinkFacebook(identityGuardNative);
+  initializer.registerBeforeUnlinkFacebook(identityGuardNative);
+  initializer.registerBeforeLinkFacebookInstantGame(identityGuardNative);
+  initializer.registerBeforeUnlinkFacebookInstantGame(identityGuardNative);
+  initializer.registerBeforeLinkGameCenter(identityGuardNative);
+  initializer.registerBeforeUnlinkGameCenter(identityGuardNative);
+  initializer.registerBeforeLinkSteam(identityGuardNative);
+  initializer.registerBeforeUnlinkSteam(identityGuardNative);
   initializer.registerBeforeAuthenticateEmail(beforeSingleLoginEmail);
   initializer.registerAfterAuthenticateEmail(afterSingleLogin);
   initializer.registerBeforeAuthenticateGoogle(identityBeforeGoogle);

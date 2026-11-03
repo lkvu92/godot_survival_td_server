@@ -9,6 +9,7 @@ function createSingleLoginTable(nk: nkruntime.Nakama): void {
 }
 
 function beforeSingleLogin(_ctx: nkruntime.Context, _logger: nkruntime.Logger, nk: nkruntime.Nakama, request: any): any {
+    if(identityRestoreBlocked(nk))throw Error('Máy chủ đang đối soát dữ liệu khôi phục. Đạo hữu vui lòng thử lại sau.');
     if (request && request.account) {
         request.account.vars = Object.assign({}, request.account.vars || {}, {login_generation:nk.uuidv4()});
     }
@@ -199,7 +200,7 @@ function withActiveAccount<T>(nk: nkruntime.Nakama, userId: string, action: () =
     if(userId==='00000000-0000-0000-0000-000000000000')throw new Error('Account archived or deleted; sign in again');
     const lease = nk.sqlQuery(`INSERT INTO account_link_state(user_id,active_requests)
         SELECT $1::UUID,1 WHERE EXISTS(SELECT 1 FROM users WHERE id=$1::UUID)
-          AND NOT EXISTS(SELECT 1 FROM account_identity_deletions WHERE user_id=$1::UUID)
+          AND NOT EXISTS(SELECT 1 FROM account_identity_deletions WHERE user_id=$1::UUID AND status<>'cancelled')
         ON CONFLICT(user_id) DO UPDATE SET active_requests=account_link_state.active_requests+1
         WHERE account_link_state.status='active' RETURNING user_id`, [userId]);
     if (!lease.length) throw new Error("Account archived after linking; sign in again");
@@ -210,10 +211,13 @@ function withActiveAccount<T>(nk: nkruntime.Nakama, userId: string, action: () =
 function accountGuardedRpc(id: string, handler: nkruntime.RpcFunction): nkruntime.RpcFunction {
     handler = serverAdmissionRpc(id, typeof featureGuardedRpc === "function" ? featureGuardedRpc(id, handler) : handler);
     return (ctx, logger, nk, payload) => {
+        if(identityRestoreBlocked(nk))return JSON.stringify({success:false,code:503,reason:'ARCHIVE_RESTORE_BLOCKED',message:'Máy chủ đang đối soát dữ liệu khôi phục. Đạo hữu vui lòng thử lại sau.'});
         const rejected = requireCurrentLogin(ctx, nk);
         if (rejected) return rejected;
         const identityRejected=id==='session_status'?null:identityGameplayGate(ctx,nk);
         if(identityRejected)return identityRejected;
+        const complianceRejected = typeof complianceCombatGate === 'function' ? complianceCombatGate(id, ctx, nk) : null;
+        if (complianceRejected) return complianceRejected;
         if (id === "confirm_google_link") return handler(ctx, logger, nk, payload);
         let owner = ctx.userId;
         if (!owner && (id === "admob_ssv_confirm" || id === "google_play_rtdn_confirm")) {

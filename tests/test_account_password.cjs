@@ -19,6 +19,7 @@ const nk = {
   },
   bcryptHash(password) { hashed++; assert.equal(typeof password, 'string'); return '$2a$hash'; },
   sqlQuery(sql, args) {
+    if(sql.includes('FROM account_archive_restore_gate'))return [{state:'ready'}];
 	if (sql.includes('FROM player_login_sessions')) return [{generation:'test'}];
     if (sql.includes('INSERT INTO account_link_state')) { leases++; return [{user_id: userId}]; }
     if (sql.startsWith('SELECT')) return account ? [account] : [];

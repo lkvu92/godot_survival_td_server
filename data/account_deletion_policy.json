@@ -1,0 +1,47 @@
+{
+  "schema_version": 2,
+  "revision": "archive-v3-initial",
+  "enabled": false,
+  "timezone": "Asia/Ho_Chi_Minh",
+  "soft_delete_days": 14,
+  "restore_before_deadline_only": true,
+  "identity_release_event": "archive_committed",
+  "minimal_user_mode": "retained_tombstone",
+  "archive_transition_enabled": false,
+  "gameplay_purge_enabled": false,
+  "retention_key_id": "configure-before-enabling",
+  "notice_template_revision": "archive-1",
+  "worker": {
+    "scan_interval_seconds": 86400,
+    "batch_size": 50,
+    "lease_seconds": 120,
+    "retry_backoff_seconds": 60,
+    "max_attempts": 12
+  },
+  "reauth": {
+    "google_max_age_seconds": 300,
+    "email_link_ttl_seconds": 900
+  },
+  "datasets": [
+    {
+      "id": "gameplay",
+      "processor": "account_gameplay_cleanup_v1",
+      "trigger": "archive_committed",
+      "calendar_months": 3
+    },
+    {
+      "id": "player_identity",
+      "processor": "protected_identity_archive_v1",
+      "trigger": "confirmed_deletion",
+      "calendar_months": 6
+    },
+    {
+      "id": "billing_transaction",
+      "mode": "retain_review_required"
+    },
+    {
+      "id": "minimal_user",
+      "mode": "retain_review_required"
+    }
+  ]
+}

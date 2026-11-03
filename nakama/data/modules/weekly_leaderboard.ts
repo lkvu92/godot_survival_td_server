@@ -230,7 +230,7 @@ const claimWeeklyLeaderboardReward: nkruntime.RpcFunction = (ctx, logger, nk, pa
 
 const weeklyLeaderboardTickRpc: nkruntime.RpcFunction = (ctx, _logger, nk, _payload) => {
     // Userless RPCs require Nakama's existing runtime HTTP key at the gateway.
-    if (ctx.userId && ctx.userId!==String(ctx.env.CONFIG_ADMIN_USER_ID||"")) return JSON.stringify({success:false,code:403,message:"Forbidden"});
+    if (ctx.userId && !isConfigAdmin(ctx)) return JSON.stringify({success:false,code:403,message:"Forbidden"});
     if(ctx.env && ctx.env.MULTI_SERVER_ENABLED==='true') {
         const servers=nk.sqlQuery("SELECT server_id,generation FROM game_servers WHERE status='open' ORDER BY server_id",[]);
         const results=[];

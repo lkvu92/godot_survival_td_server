@@ -76,11 +76,14 @@ c.parseJsonb = x => typeof x === 'string' ? JSON.parse(x) : x;
 c.progressionReconcileLevelUnlocks = () => {};
 c.eventRecord = () => {};
 c.talismanCreateStageRun = () => ({run:{run_id:'new-run',status:'active'},version:db['player_stage_runs:active'].version});
-const stageNk={...nk,sqlQuery(sql,args){return sql.includes('stamina_cost')?[{stamina_cost:5}]:nk.sqlQuery(sql,args);}};
+const stageNk={...nk,sqlQuery(sql,args){if(sql.includes('FROM game_stages WHERE id'))return[{id:'stage_0_1',arc_id:'arc_0',sort_order:1}];return sql.includes('stamina_cost')?[{stamina_cost:5}]:nk.sqlQuery(sql,args);}};
 stage().status='settled'; // Previous regression fixture left an active run; a new start now correctly excludes it.
 const missingRules=JSON.parse(fn('startStage')({userId:'u'},{},stageNk,JSON.stringify({stage_id:'stage_0_1',level_id:'normal'})));
 assert.equal(missingRules.code,'SWEEP_CONFIG_INVALID');assert.equal(profile().stamina,80,'Missing grading rules must block before charging stamina');
 c.getRemoteConfigValue=(_nk,_section,key,fallback)=>key==='stage_sweep'?clone(fn('SWEEP_DEFAULTS')):fallback;
+const gatedNk={...stageNk,sqlQuery(sql,args){if(sql.startsWith('SELECT stage_rules FROM game_stages'))return [{stage_rules:{required_user_level:70}}];return stageNk.sqlQuery(sql,args);}};
+const gated=JSON.parse(fn('startStage')({userId:'u'},{},gatedNk,JSON.stringify({stage_id:'stage_0_1',level_id:'normal'})));
+assert.equal(gated.code,'STAGE_LEVEL_REQUIRED');assert.equal(gated.required_level,70);assert.equal(profile().stamina,80,'level requirement blocks before stamina charge');
 const started=JSON.parse(fn('startStage')({userId:'u'},{},stageNk,JSON.stringify({stage_id:'stage_0_1',level_id:'normal'})));
 assert(started.success); assert.equal(profile().stamina,75,'Starting a stage must debit from the full paid stamina balance');
 console.log('PASS run lifecycle: exit/retry/stale/terminal/expired/CAS, tribulation penalty once, fresh login vs refresh, paid stamina and daily-pack preservation');

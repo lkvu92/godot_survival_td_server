@@ -1,19 +1,195 @@
 {
   "contracts": [
-    {"id":"C238_HERO_GROWTH_BALANCE","version":"1.0.0","status":"ACTIVE","updated_at":"2026-10-29","contract_file":"docs/contracts/C238_HERO_GROWTH_BALANCE.md"},
-    {"id": "C237_ARC7_VAN_YEU_CO_LINH", "version": "1.8.1", "status": "ACTIVE", "updated_at": "2026-10-29", "contract_file": "docs/contracts/C237_ARC7_VAN_YEU_CO_LINH.md"},
-    {"id": "C234_GIFT_CODES", "version": "1.1.0", "status": "ACTIVE", "updated_at": "2026-10-28", "contract_file": "docs/contracts/C234_GIFT_CODES.md"},
-    {"id":"C232_ACCOUNT_IDENTITY","version":"1.2.3","status":"IN_PROGRESS","updated_at":"2026-10-28","contract_file":"docs/contracts/C232_ACCOUNT_IDENTITY.md"},
-    {"id":"C230_MID_TIER_TALISMAN_SKILLS","version":"1.0.0","status":"IN_PROGRESS","updated_at":"2026-10-27","contract_file":"docs/contracts/C230_MID_TIER_TALISMAN_SKILLS.md"},
-    {"id":"C015_TALISMAN_EQUIPMENT_SYSTEM","version":"1.18.0","status":"IN_PROGRESS","updated_at":"2026-10-27","contract_file":"docs/contracts/C015_TALISMAN_EQUIPMENT_SYSTEM.md"},
-    {"id":"C227_ORDERED_WAVE_SPAWNING","version":"1.0.0","status":"IN_PROGRESS","updated_at":"2026-10-27","contract_file":"docs/contracts/C227_ORDERED_WAVE_SPAWNING.md"},
-    {"id":"C225_LEVEL_70","version":"1.0.0","status":"IN_PROGRESS","updated_at":"2026-10-27","contract_file":"docs/contracts/C225_LEVEL_70.md"},
-    {"id":"C224_VIP_BENEFITS_MILESTONES","version":"1.3.0","status":"IN_PROGRESS","updated_at":"2026-10-30","contract_file":"docs/contracts/C224_VIP_BENEFITS_MILESTONES.md"},
-    {"id":"C223_AUTO_CARD_PICK","version":"1.1.2","status":"IN_PROGRESS","updated_at":"2026-10-27","contract_file":"docs/contracts/C223_AUTO_CARD_PICK.md"},
-    {"id":"C222_BOSS_SKILL_RANGE","version":"1.0.0","status":"IN_PROGRESS","updated_at":"2026-10-26","contract_file":"docs/contracts/C222_BOSS_SKILL_RANGE.md"},
-    {"id":"C221_ARC6_NGU_TO_QUY_KHU","version":"1.1.1","status":"IN_PROGRESS","updated_at":"2026-10-27","contract_file":"docs/contracts/C221_ARC6_NGU_TO_QUY_KHU.md"},
-    {"id":"C220_TACTICAL_SUPPORT_CARDS","version":"1.0.1","status":"ACTIVE","updated_at":"2026-10-26","contract_file":"docs/contracts/C220_TACTICAL_SUPPORT_CARDS.md"},
-    {"id":"C218_CAMPAIGN_WAVE_PRESSURE","version":"2.4.2","status":"IN_PROGRESS","updated_at":"2026-10-27","contract_file":"docs/contracts/C218_CAMPAIGN_WAVE_PRESSURE.md"},
+    {
+      "id": "C256_INVENTORY_TAGS",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "contract_file": "docs/contracts/C256_INVENTORY_TAGS.md"
+    },
+    {
+      "id": "C255_GAMEPLAY_VIP",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "contract_file": "docs/contracts/C255_GAMEPLAY_VIP.md"
+    },
+    {
+      "id": "C252_RESPONSIVE_BOOTSTRAP",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "contract_file": "docs/contracts/C252_RESPONSIVE_BOOTSTRAP.md"
+    },
+    {
+      "id": "C251_PROFILE_CONSENT",
+      "version": "1.1.0",
+      "status": "IN_PROGRESS",
+      "contract_file": "docs/contracts/C251_PROFILE_CONSENT.md"
+    },
+    {
+      "id": "C250_ARCHIVE_RECOVERY",
+      "version": "2.0.0",
+      "status": "TESTED_SCOPED",
+      "contract_file": "docs/contracts/C250_ARCHIVE_RECOVERY.md"
+    },
+    {
+      "id": "C249_RETENTION_ASSESSMENT",
+      "version": "1.2.0",
+      "status": "IN_PROGRESS",
+      "contract_file": "docs/contracts/C249_RETENTION_ASSESSMENT.md"
+    },
+    {
+      "id": "C248_SPEEDSMS_OTP",
+      "version": "1.4.0",
+      "status": "IN_PROGRESS",
+      "contract_file": "docs/contracts/C248_SPEEDSMS_OTP.md"
+    },
+    {
+      "id": "C247_PROFILE_LIFECYCLE",
+      "version": "1.3.0",
+      "status": "IN_PROGRESS",
+      "contract_file": "docs/contracts/C247_PROFILE_LIFECYCLE.md"
+    },
+    {
+      "id": "C246_GOOGLE_FINANCIALS",
+      "version": "1.0.0",
+      "status": "IN_PROGRESS",
+      "contract_file": "docs/contracts/C246_GOOGLE_FINANCIALS.md"
+    },
+    {
+      "id": "C245_ACCOUNT_HISTORY",
+      "version": "1.3.1",
+      "status": "IN_PROGRESS",
+      "contract_file": "docs/contracts/C245_ACCOUNT_HISTORY.md"
+    },
+    {
+      "id": "C244_PAYMENT_RECONCILIATION",
+      "version": "1.1.0",
+      "status": "IN_PROGRESS",
+      "contract_file": "docs/contracts/C244_PAYMENT_RECONCILIATION.md"
+    },
+    {
+      "id": "C243_SOFT_GATE",
+      "version": "1.1.0",
+      "status": "IN_PROGRESS",
+      "contract_file": "docs/contracts/C243_SOFT_GATE.md"
+    },
+    {
+      "id": "C242_HEALTH_REMINDERS",
+      "version": "1.0.0",
+      "status": "IN_PROGRESS",
+      "contract_file": "docs/contracts/C242_HEALTH_REMINDERS.md"
+    },
+    {
+      "id": "C240_SHARED_COMBAT_DAMAGE",
+      "version": "1.0.1",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-30",
+      "contract_file": "docs/contracts/C240_SHARED_COMBAT_DAMAGE.md"
+    },
+    {
+      "id": "C239_LEVELLED_ENEMY_FRAMEWORK",
+      "version": "1.6.2",
+      "status": "IN_PROGRESS",
+      "updated_at": "2026-10-30",
+      "contract_file": "docs/contracts/C239_LEVELLED_ENEMY_FRAMEWORK.md"
+    },
+    {
+      "id": "C238_HERO_GROWTH_BALANCE",
+      "version": "1.1.1",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-30",
+      "contract_file": "docs/contracts/C238_HERO_GROWTH_BALANCE.md"
+    },
+    {
+      "id": "C237_ARC7_VAN_YEU_CO_LINH",
+      "version": "1.8.1",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-30",
+      "contract_file": "docs/contracts/C237_ARC7_VAN_YEU_CO_LINH.md"
+    },
+    {
+      "id": "C234_GIFT_CODES",
+      "version": "1.1.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-28",
+      "contract_file": "docs/contracts/C234_GIFT_CODES.md"
+    },
+    {
+      "id": "C232_ACCOUNT_IDENTITY",
+      "version": "3.1.0",
+      "status": "IN_PROGRESS",
+      "updated_at": "2026-11-03",
+      "contract_file": "docs/contracts/C232_ACCOUNT_IDENTITY.md"
+    },
+    {
+      "id": "C230_MID_TIER_TALISMAN_SKILLS",
+      "version": "1.0.0",
+      "status": "IN_PROGRESS",
+      "updated_at": "2026-10-27",
+      "contract_file": "docs/contracts/C230_MID_TIER_TALISMAN_SKILLS.md"
+    },
+    {
+      "id": "C015_TALISMAN_EQUIPMENT_SYSTEM",
+      "version": "1.18.0",
+      "status": "IN_PROGRESS",
+      "updated_at": "2026-10-27",
+      "contract_file": "docs/contracts/C015_TALISMAN_EQUIPMENT_SYSTEM.md"
+    },
+    {
+      "id": "C227_ORDERED_WAVE_SPAWNING",
+      "version": "1.0.0",
+      "status": "IN_PROGRESS",
+      "updated_at": "2026-10-27",
+      "contract_file": "docs/contracts/C227_ORDERED_WAVE_SPAWNING.md"
+    },
+    {
+      "id": "C225_LEVEL_70",
+      "version": "1.0.0",
+      "status": "IN_PROGRESS",
+      "updated_at": "2026-10-27",
+      "contract_file": "docs/contracts/C225_LEVEL_70.md"
+    },
+    {
+      "id": "C224_VIP_BENEFITS_MILESTONES",
+      "version": "1.3.0",
+      "status": "IN_PROGRESS",
+      "updated_at": "2026-10-30",
+      "contract_file": "docs/contracts/C224_VIP_BENEFITS_MILESTONES.md"
+    },
+    {
+      "id": "C223_AUTO_CARD_PICK",
+      "version": "1.1.2",
+      "status": "IN_PROGRESS",
+      "updated_at": "2026-10-27",
+      "contract_file": "docs/contracts/C223_AUTO_CARD_PICK.md"
+    },
+    {
+      "id": "C222_BOSS_SKILL_RANGE",
+      "version": "1.0.0",
+      "status": "IN_PROGRESS",
+      "updated_at": "2026-10-26",
+      "contract_file": "docs/contracts/C222_BOSS_SKILL_RANGE.md"
+    },
+    {
+      "id": "C221_ARC6_NGU_TO_QUY_KHU",
+      "version": "1.1.1",
+      "status": "IN_PROGRESS",
+      "updated_at": "2026-10-27",
+      "contract_file": "docs/contracts/C221_ARC6_NGU_TO_QUY_KHU.md"
+    },
+    {
+      "id": "C220_TACTICAL_SUPPORT_CARDS",
+      "version": "1.0.1",
+      "status": "ACTIVE",
+      "updated_at": "2026-10-26",
+      "contract_file": "docs/contracts/C220_TACTICAL_SUPPORT_CARDS.md"
+    },
+    {
+      "id": "C218_CAMPAIGN_WAVE_PRESSURE",
+      "version": "2.4.2",
+      "status": "IN_PROGRESS",
+      "updated_at": "2026-10-27",
+      "contract_file": "docs/contracts/C218_CAMPAIGN_WAVE_PRESSURE.md"
+    },
     {
       "id": "C204_LAW_BATTLE_ENTRY",
       "version": "1.3.0",
@@ -536,7 +712,7 @@
     },
     {
       "id": "C121_ONLINE_ONLY_CONFIG",
-      "version": "1.1.0",
+      "version": "1.3.0",
       "status": "ACTIVE",
       "contract_file": "docs/contracts/C121_ONLINE_ONLY_CONFIG.md",
       "updated_at": "2026-10-20"

@@ -1,6 +1,7 @@
 import { createHash, verify as verifySignature } from "node:crypto";
 import { createServer } from "node:http";
 import { google } from "googleapis";
+import { syncFinancialBatch } from "./play_financials.js";
 
 const port = Number(process.env.PORT || 8080);
 const appEnvironment = String(process.env.APP_ENVIRONMENT || "develop").toLowerCase() === "production"
@@ -202,4 +203,21 @@ const server = createServer(async (request, response) => {
   }
 });
 
-server.listen(port, () => console.log(`Monetization verifier listening on :${port}`));
+async function runFinancialSync() {
+  let retry = 300;
+  try {
+    const auth = new google.auth.GoogleAuth({ scopes: ["https://www.googleapis.com/auth/androidpublisher"] });
+    const result = await syncFinancialBatch({
+      publisher: google.androidpublisher({version:"v3",auth}),
+      packageName: String(process.env.GOOGLE_PLAY_PACKAGE_NAME || ""),
+      bridge: payload => callNakamaVerifierRpc("google_play_financial_sync", payload),
+    });
+    retry = Math.max(30, Math.min(86400, Number(result.retry_seconds) || 300));
+    if (result.failed) console.warn("Financial sync has pending retries; no entitlement changed.");
+  } catch (_error) { console.warn("Financial sync unavailable; retry scheduled."); }
+  setTimeout(runFinancialSync, retry * 1000).unref();
+}
+server.listen(port, () => {
+  console.log(`Monetization verifier listening on :${port}`);
+  setTimeout(runFinancialSync, 5000).unref();
+});

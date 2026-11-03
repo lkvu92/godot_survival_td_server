@@ -1,0 +1,22 @@
+/* Explicitly local-only Arc 1 rollout, field-scoped and guarded against concurrent edits. */
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),{execFileSync}=require('node:child_process');
+const root=path.resolve(__dirname,'..'),migration=require('./arc1_levelled_catalog.cjs').load(),catalog=require('./enemy_framework_catalog.cjs').buildFramework();
+const docker=(args,input)=>execFileSync('docker',args,{input,encoding:'utf8',maxBuffer:32*1024*1024,stdio:['pipe','pipe','pipe']}).trim(),pg='survival_td_local-postgres-1',nk='survival_td_local-nakama-1';
+for(const name of [pg,nk]){const c=JSON.parse(docker(['inspect',name]))[0];assert.equal(c.Config.Labels['com.docker.compose.project'],'survival_td_local');assert(c.State.Running);if(name===nk)assert.equal(c.NetworkSettings.Ports['7350/tcp'][0].HostIp,'127.0.0.1');}
+const env=Object.fromEntries(JSON.parse(docker(['inspect',pg]))[0].Config.Env.map(x=>{const i=x.indexOf('=');return[x.slice(0,i),x.slice(i+1)];}));
+const sql=q=>docker(['exec','-i',pg,'psql','-X','-U',env.POSTGRES_USER,'-d',env.POSTGRES_DB,'-v','ON_ERROR_STOP=1','-q','-t','-A'],q),read=q=>JSON.parse(sql(q));
+const snapshot=()=>({stages:read("SELECT jsonb_agg(to_jsonb(s) ORDER BY id) FROM game_stages s WHERE arc_id='arc_2'"),waves:read("SELECT jsonb_agg(to_jsonb(w) ORDER BY stage_id,wave_index) FROM game_stage_waves w WHERE stage_id IN(SELECT id FROM game_stages WHERE arc_id='arc_2')"),progression:read("SELECT value FROM game_config WHERE key='progression'")});
+const before=snapshot();assert.equal(before.stages.length,10);assert.deepEqual(before.stages.map(s=>s.id).sort(),migration.stages.map(s=>s.id).sort());
+const desired=structuredClone(before);desired.progression.enemy_framework=catalog;
+for(const stage of migration.stages){const row=desired.stages.find(s=>s.id===stage.id);row.level=stage.level;row.stage_rules=stage.stage_rules;row.boss_skill_ids=[];row.boss_skill_entry_indexes=[];const waves=desired.waves.filter(w=>w.stage_id===stage.id);assert.equal(waves.length,stage.waves.length);waves.forEach((w,i)=>w.entries=stage.waves[i].entries);}
+if(process.argv.includes('--verify')){assert.deepEqual(before,desired);console.log('PASS local Arc 1 readback: all 10 stages and growth/atlas match canonical migration');process.exit(0);}
+const backup=path.resolve(root,'../tmp/c239-arc1-local',String(Date.now()));fs.mkdirSync(backup,{recursive:true});fs.writeFileSync(path.join(backup,'before.json'),JSON.stringify(before,null,2)+'\n');
+const quote=x=>"'"+String(x).replace(/'/g,"''")+"'",json=x=>quote(JSON.stringify(x))+'::jsonb';
+let q="BEGIN; SET LOCAL lock_timeout='5s'; LOCK TABLE game_stages,game_stage_waves,game_config IN SHARE ROW EXCLUSIVE MODE;\n";
+q+=`DO $$ BEGIN IF (SELECT jsonb_agg(to_jsonb(s) ORDER BY id) FROM game_stages s WHERE arc_id='arc_2') IS DISTINCT FROM ${json(before.stages)} OR (SELECT jsonb_agg(to_jsonb(w) ORDER BY stage_id,wave_index) FROM game_stage_waves w WHERE stage_id IN(SELECT id FROM game_stages WHERE arc_id='arc_2')) IS DISTINCT FROM ${json(before.waves)} OR (SELECT value FROM game_config WHERE key='progression') IS DISTINCT FROM ${json(before.progression)} THEN RAISE EXCEPTION 'C239_LOCAL_ARC1_CONCURRENT_CHANGE'; END IF; END $$;\n`;
+q+=`UPDATE game_config SET value=${json(desired.progression)} WHERE key='progression';\n`;
+for(const stage of desired.stages)q+=`UPDATE game_stages SET level=${Number(stage.level)},stage_rules=${json(stage.stage_rules)},boss_skill_ids='[]'::jsonb,boss_skill_entry_indexes='[]'::jsonb WHERE id=${quote(stage.id)};\n`;
+for(const wave of desired.waves)q+=`UPDATE game_stage_waves SET entries=${json(wave.entries)} WHERE id=${Number(wave.id)};\n`;
+q+=`DO $$ BEGIN IF (SELECT jsonb_agg(to_jsonb(s) ORDER BY id) FROM game_stages s WHERE arc_id='arc_2') IS DISTINCT FROM ${json(desired.stages)} OR (SELECT jsonb_agg(to_jsonb(w) ORDER BY stage_id,wave_index) FROM game_stage_waves w WHERE stage_id IN(SELECT id FROM game_stages WHERE arc_id='arc_2')) IS DISTINCT FROM ${json(desired.waves)} THEN RAISE EXCEPTION 'C239_LOCAL_ARC1_POSTCHECK'; END IF; END $$;\nCOMMIT;`;
+sql(q);const after=snapshot();assert.deepEqual(after,desired);fs.writeFileSync(path.join(backup,'after.json'),JSON.stringify(after,null,2)+'\n');
+console.log(JSON.stringify({status:'PASS',target:'local',arc:'arc_2',stages:10,waves:after.waves.length,backup,scope:'only Arc 1 wave entries/stage rules and enemy framework catalog; player data/loot/unlocks/other stages preserved'}));

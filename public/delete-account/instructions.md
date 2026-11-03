@@ -14,6 +14,10 @@ Nếu còn đăng nhập được, mở **Hồ sơ → Email và xóa tài kho�
 
 **Không gửi mật khẩu, mã OTP, thông tin thẻ thanh toán hoặc purchase token.** Chúng tôi chỉ yêu cầu thông tin cần thiết để xác minh và bảo vệ tài khoản. Sau khi tiếp nhận, chúng tôi sẽ hướng dẫn xác minh, thông báo thời gian xử lý và giải thích các ngoại lệ lưu giữ nếu có, theo yêu cầu áp dụng.
 
+## Thời gian chờ và khôi phục
+
+Sau xác nhận, tài khoản tạm ngừng hoạt động và giữ chỗ email, số điện thoại trong thời gian chờ; cấu hình hiện tại là 14 ngày, hạn chính xác được ghi trên biên nhận. Trước hạn, đạo hữu có thể [yêu cầu link khôi phục qua email](/account/confirm#restore=1) và xác nhận mật khẩu hiện tại; tài khoản Google dùng nút khôi phục Google trên Android. Biên nhận đơn thuần không đủ quyền khôi phục. Hết hạn không thể khôi phục. Sau khi lưu trữ tài khoản hoàn tất, thông tin đăng ký được giải phóng và dữ liệu trò chơi bị cô lập; dữ liệu trò chơi được dọn sau 3 tháng lịch kể từ thời điểm lưu trữ, theo lịch chính xác trên biên nhận. Một số hồ sơ tài khoản và giao dịch được giữ theo chính sách riêng; giữ xử lý có phạm vi có thể trì hoãn việc dọn dữ liệu.
+
 ## Dữ liệu và quyền lợi bị ảnh hưởng
 
 Sau khi yêu cầu được xác minh, tài khoản và dữ liệu cá nhân liên quan không còn cần thiết sẽ được xóa hoặc khử nhận dạng. Việc này có thể làm mất tiến trình, nhân vật, vật phẩm và quyền truy cập nội dung gắn với tài khoản.
@@ -41,6 +45,10 @@ If you can sign in, open **Profile → Email and account deletion**. The email f
 3. If you use device sign-in or have lost access to your linked email, explain the situation so we can provide a suitable verification route. You do not need to reinstall the game to email a request.
 
 **Do not send passwords, one-time codes, payment-card details or purchase tokens.** We request only information needed to verify and protect the account. After receiving your request, we will explain verification, processing timelines and any retention exceptions in accordance with applicable requirements.
+
+## Waiting period and restoration
+
+After confirmation the account is suspended and its email and phone reservations remain in place during the waiting period, currently configured as 14 days. The receipt states the exact deadline. Before then, [request a new restoration email link](/account/confirm#restore=1) and confirm your current password, or use Google restoration on Android. A status receipt alone cannot restore an account. Restoration is unavailable after the deadline. Identity reservations are released only when archival commits. Isolated gameplay is retained for 3 calendar months after archival and is then cleaned by a daily worker, subject to applicable holds. Minimal account and financial records follow separate retention policies. The receipt gives the applicable dates.
 
 ## Data and entitlements affected
 

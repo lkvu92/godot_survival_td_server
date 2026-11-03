@@ -337,6 +337,16 @@ const startStage: nkruntime.RpcFunction = (ctx, _logger, nk, payload): string =>
     const stored = nk.storageRead([{ collection: "player_profiles", key: "main", userId: ctx.userId }]);
     if (stored.length === 0) return JSON.stringify({ success: false, message: "Player profile is incomplete" });
     const profile = parseJsonObject(stored[0].value);
+    const stageRequirement = nk.sqlQuery("SELECT stage_rules FROM game_stages WHERE id=$1", [stageId]);
+    if (stageRequirement.length) {
+        const rules = parseJsonObject(stageRequirement[0].stage_rules);
+        if (rules.required_user_level !== undefined) {
+            const required = Number(rules.required_user_level);
+            if (!Number.isSafeInteger(required) || required < 1 || required > 70) return JSON.stringify({success:false,code:"STAGE_CONFIG_INVALID",message:"Invalid stage level requirement"});
+            const current = Math.max(1,Number(profile.level || 1));
+            if (current < required) return JSON.stringify({success:false,code:"STAGE_LEVEL_REQUIRED",required_level:required,current_level:current,message:"Requires player level " + required});
+        }
+    }
     const sweepBlock = sweepCombatError(profile);
     if (sweepBlock) return JSON.stringify(sweepBlock);
     if ((profile.breakthrough || {}).in_tribulation === true) return JSON.stringify({success:false,code:'COMBAT_ACTIVE',message:'Tribulation is active'});
