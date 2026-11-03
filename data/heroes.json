@@ -75,13 +75,13 @@
       "regen_percent_per_10s": 0.01
     },
     "level_up_stats": {
-      "hp": 1.055,
-      "atk": 1.08,
+      "hp": 1.057139,
+      "atk": 1.07806,
       "def": 1.04,
       "move_speed": 1.002,
       "attack_speed": 1.012,
       "attack_range": 1,
-      "crit_rate": 0.005,
+      "crit_rate": 0.0033,
       "crit_damage": 0.02,
       "regen_percent_per_10s": 0.0008
     },
@@ -174,14 +174,14 @@
       "regen_percent_per_10s": 0.012
     },
     "level_up_stats": {
-      "hp": 1.055,
+      "hp": 1.056458,
       "atk": 1.065,
       "def": 1.04,
       "move_speed": 1.003,
-      "attack_speed": 1.02,
+      "attack_speed": 1.016488,
       "attack_range": 1,
       "crit_rate": 0.005,
-      "crit_damage": 0.02,
+      "crit_damage": 0.012,
       "regen_percent_per_10s": 0.0008
     },
     "starting_skills": [
