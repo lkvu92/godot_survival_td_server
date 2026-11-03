@@ -11,7 +11,7 @@
       "atk": 20,
       "def": 5,
       "move_speed": 62,
-      "attack_speed": 0.8,
+      "attack_speed": 0.56,
       "attack_range": 38,
       "crit_rate": 0.03,
       "crit_damage": 1.35,
@@ -31,7 +31,8 @@
       "display_name": "Băng Vuốt",
       "type": "ice_claw",
       "damage_multiplier": 1,
-      "radius": 64
+      "radius": 64,
+      "element": "water"
     }
   },
   {
@@ -46,7 +47,7 @@
       "atk": 44,
       "def": 20,
       "move_speed": 36,
-      "attack_speed": 0.45,
+      "attack_speed": 0.315,
       "attack_range": 54,
       "crit_rate": 0.03,
       "crit_damage": 1.5,
@@ -66,7 +67,8 @@
       "display_name": "Băng Vuốt",
       "type": "ice_claw",
       "damage_multiplier": 1,
-      "radius": 64
+      "radius": 64,
+      "element": "water"
     }
   },
   {
@@ -81,7 +83,7 @@
       "atk": 30,
       "def": 3,
       "move_speed": 46,
-      "attack_speed": 0.65,
+      "attack_speed": 0.455,
       "attack_range": 290,
       "projectile_speed": 320,
       "crit_rate": 0.04,
@@ -115,7 +117,8 @@
       "display_name": "Băng Đạn",
       "type": "ice_bolt",
       "damage_multiplier": 1,
-      "radius": 0
+      "radius": 0,
+      "element": "water"
     }
   },
   {
@@ -130,7 +133,7 @@
       "atk": 14,
       "def": 2,
       "move_speed": 95,
-      "attack_speed": 1.15,
+      "attack_speed": 0.805,
       "attack_range": 34,
       "crit_rate": 0.05,
       "crit_damage": 1.35,
@@ -150,7 +153,8 @@
       "display_name": "Băng Vuốt",
       "type": "ice_claw",
       "damage_multiplier": 1,
-      "radius": 64
+      "radius": 64,
+      "element": "water"
     }
   },
   {
@@ -165,7 +169,7 @@
       "atk": 10,
       "def": 1,
       "move_speed": 80,
-      "attack_speed": 1.05,
+      "attack_speed": 0.735,
       "attack_range": 30,
       "crit_rate": 0.05,
       "crit_damage": 1.35,
@@ -185,7 +189,8 @@
       "display_name": "Băng Vuốt",
       "type": "ice_claw",
       "damage_multiplier": 1,
-      "radius": 64
+      "radius": 64,
+      "element": "water"
     }
   },
   {
@@ -200,7 +205,7 @@
       "atk": 26,
       "def": 12,
       "move_speed": 40,
-      "attack_speed": 0.5,
+      "attack_speed": 0.35,
       "attack_range": 52,
       "crit_rate": 0.04,
       "crit_damage": 1.55,
@@ -229,7 +234,7 @@
       "atk": 75,
       "def": 22,
       "move_speed": 18,
-      "attack_speed": 0.55,
+      "attack_speed": 0.385,
       "attack_range": 70,
       "crit_rate": 0.03,
       "crit_damage": 1.6,
@@ -245,9 +250,12 @@
         "display_name": "Permafrost Core",
         "params": {
           "shield_percent_max_hp": 0.2,
+          "shield_flat_hp": 0,
+          "duration_seconds": 6,
           "cooldown_seconds": 20,
           "initial_delay_seconds": 6
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "debuff_resistance",
@@ -260,8 +268,10 @@
             "stun",
             "holy_stun",
             "knockback"
-          ]
-        }
+          ],
+          "duration_seconds": null
+        },
+        "element": "neutral"
       }
     ],
     "boss_skills": [
@@ -280,7 +290,8 @@
         "charge_duration": 2,
         "warning_time": 0,
         "cooldown": 12,
-        "initial_cooldown": 2
+        "initial_cooldown": 2,
+        "element": "water"
       }
     ],
     "reward": {
@@ -303,7 +314,7 @@
       "atk": 110,
       "def": 22,
       "move_speed": 50,
-      "attack_speed": 0.7,
+      "attack_speed": 0.49,
       "attack_range": 100,
       "crit_rate": 0.05,
       "crit_damage": 1.65,
@@ -328,7 +339,8 @@
         "charge_duration": 2,
         "warning_time": 0,
         "cooldown": 12,
-        "initial_cooldown": 1.8
+        "initial_cooldown": 1.8,
+        "element": "water"
       },
       {
         "id": "bang_linh_long",
@@ -342,7 +354,8 @@
         "charge_duration": 2,
         "warning_time": 0,
         "cooldown": 16,
-        "initial_cooldown": 1.5
+        "initial_cooldown": 1.5,
+        "element": "water"
       }
     ],
     "reward": {
@@ -365,7 +378,7 @@
       "atk": 100,
       "def": 28,
       "move_speed": 34,
-      "attack_speed": 0.55,
+      "attack_speed": 0.385,
       "attack_range": 150,
       "crit_rate": 0.06,
       "crit_damage": 1.8,
@@ -391,7 +404,8 @@
         "charge_duration": 2,
         "warning_time": 0,
         "cooldown": 12,
-        "initial_cooldown": 1.8
+        "initial_cooldown": 1.8,
+        "element": "water"
       },
       {
         "id": "bang_linh_long",
@@ -405,7 +419,8 @@
         "charge_duration": 2,
         "warning_time": 0,
         "cooldown": 16,
-        "initial_cooldown": 1.5
+        "initial_cooldown": 1.5,
+        "element": "water"
       }
     ],
     "reward": {
@@ -427,7 +442,7 @@
       "atk": 38,
       "def": 16,
       "move_speed": 32,
-      "attack_speed": 0.4,
+      "attack_speed": 0.28,
       "attack_range": 65,
       "crit_rate": 0.03,
       "crit_damage": 1.5,
@@ -460,7 +475,8 @@
           "attack_speed_percent": 0.2,
           "chance": 0.2
         }
-      ]
+      ],
+      "element": "water"
     }
   },
   {
@@ -475,7 +491,7 @@
       "atk": 24,
       "def": 8,
       "move_speed": 65,
-      "attack_speed": 0.8,
+      "attack_speed": 0.56,
       "attack_range": 85,
       "crit_rate": 0.05,
       "crit_damage": 1.45,
@@ -508,7 +524,8 @@
           "attack_speed_percent": 0.2,
           "chance": 0.2
         }
-      ]
+      ],
+      "element": "water"
     }
   },
   {
@@ -523,7 +540,7 @@
       "atk": 18,
       "def": 4,
       "move_speed": 74,
-      "attack_speed": 1,
+      "attack_speed": 0.7,
       "attack_range": 36,
       "crit_rate": 0.04,
       "crit_damage": 1.35,
@@ -539,7 +556,8 @@
         "params": {
           "hp_below_pct": 0.5,
           "move_speed_multiplier": 1.45
-        }
+        },
+        "element": "neutral"
       }
     ],
     "reward": {
@@ -552,7 +570,8 @@
       "display_name": "Liệt Hỏa Tam Trảm",
       "type": "fire_claw",
       "damage_multiplier": 1,
-      "radius": 64
+      "radius": 64,
+      "element": "fire"
     }
   },
   {
@@ -567,7 +586,7 @@
       "atk": 11,
       "def": 1,
       "move_speed": 100,
-      "attack_speed": 1.15,
+      "attack_speed": 0.805,
       "attack_range": 32,
       "crit_rate": 0.05,
       "crit_damage": 1.35,
@@ -581,9 +600,10 @@
         "id": "haste",
         "display_name": "Săn Đuổi Dung Nham",
         "params": {
-          "hp_below_pct": 1.01,
+          "hp_below_pct": 0.35,
           "move_speed_multiplier": 1.25
-        }
+        },
+        "element": "neutral"
       }
     ],
     "reward": {
@@ -596,7 +616,8 @@
       "display_name": "Liệt Hỏa Tam Trảm",
       "type": "fire_claw",
       "damage_multiplier": 1,
-      "radius": 64
+      "radius": 64,
+      "element": "fire"
     }
   },
   {
@@ -611,7 +632,7 @@
       "atk": 26,
       "def": 3,
       "move_speed": 46,
-      "attack_speed": 0.65,
+      "attack_speed": 0.455,
       "attack_range": 320,
       "projectile_speed": 340,
       "crit_rate": 0.05,
@@ -635,10 +656,12 @@
         "display_name": "Hỏa Thuẫn",
         "params": {
           "shield_percent_max_hp": 0.2,
+          "shield_flat_hp": 0,
           "duration_seconds": 6,
           "cooldown_seconds": 10,
           "initial_delay_seconds": 1.5
-        }
+        },
+        "element": "neutral"
       }
     ],
     "reward": {
@@ -651,7 +674,8 @@
       "display_name": "Xích Viêm Châu",
       "type": "fire_ball",
       "damage_multiplier": 1,
-      "radius": 0
+      "radius": 0,
+      "element": "fire"
     }
   },
   {
@@ -666,7 +690,7 @@
       "atk": 38,
       "def": 18,
       "move_speed": 34,
-      "attack_speed": 0.45,
+      "attack_speed": 0.315,
       "attack_range": 68,
       "crit_rate": 0.03,
       "crit_damage": 1.55,
@@ -680,9 +704,11 @@
         "id": "defense_buff",
         "display_name": "Giáp Nham Thạch",
         "params": {
+          "def_flat": 0,
           "def_multiplier": 1.3,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       }
     ],
     "reward": {
@@ -701,7 +727,8 @@
       "pulse_multiplier": 0.2,
       "pulse_radius_multiplier": 1.5,
       "stun_chance": 0.2,
-      "stun_duration": 0.3
+      "stun_duration": 0.3,
+      "element": "fire"
     }
   },
   {
@@ -716,7 +743,7 @@
       "atk": 24,
       "def": 7,
       "move_speed": 62,
-      "attack_speed": 0.8,
+      "attack_speed": 0.56,
       "attack_range": 38,
       "crit_rate": 0.03,
       "crit_damage": 1.35,
@@ -730,11 +757,13 @@
         "id": "damage_reflect",
         "display_name": "Giáp Bào Tử",
         "params": {
+          "reflect_flat_damage": 0,
           "reflect_percent_received": 0.04,
           "duration_seconds": 4,
           "cooldown_seconds": 10,
           "initial_delay_seconds": 3
-        }
+        },
+        "element": "neutral"
       }
     ],
     "reward": {
@@ -755,7 +784,8 @@
       "display_name": "Tia Độc",
       "type": "wood_bolt",
       "damage_multiplier": 1,
-      "range": 250
+      "range": 250,
+      "element": "wood"
     }
   },
   {
@@ -770,7 +800,7 @@
       "atk": 36,
       "def": 4,
       "move_speed": 46,
-      "attack_speed": 0.65,
+      "attack_speed": 0.455,
       "attack_range": 310,
       "projectile_speed": 320,
       "crit_rate": 0.04,
@@ -794,10 +824,12 @@
         "display_name": "Vỏ Gai",
         "params": {
           "shield_percent_max_hp": 0.18,
+          "shield_flat_hp": 0,
           "duration_seconds": 6,
           "cooldown_seconds": 10,
           "initial_delay_seconds": 2
-        }
+        },
+        "element": "neutral"
       }
     ],
     "reward": {
@@ -810,7 +842,8 @@
       "display_name": "Tia Độc",
       "type": "wood_bolt",
       "damage_multiplier": 1,
-      "range": 310
+      "range": 310,
+      "element": "wood"
     }
   },
   {
@@ -825,7 +858,7 @@
       "atk": 18,
       "def": 3,
       "move_speed": 95,
-      "attack_speed": 1.15,
+      "attack_speed": 0.805,
       "attack_range": 34,
       "crit_rate": 0.05,
       "crit_damage": 1.35,
@@ -841,7 +874,8 @@
         "params": {
           "hp_below_pct": 0.6,
           "move_speed_multiplier": 1.35
-        }
+        },
+        "element": "neutral"
       }
     ],
     "reward": {
@@ -862,7 +896,8 @@
       "display_name": "Tia Độc",
       "type": "wood_bolt",
       "damage_multiplier": 1,
-      "range": 250
+      "range": 250,
+      "element": "wood"
     }
   },
   {
@@ -877,7 +912,7 @@
       "atk": 52,
       "def": 25,
       "move_speed": 34,
-      "attack_speed": 0.45,
+      "attack_speed": 0.315,
       "attack_range": 64,
       "crit_rate": 0.03,
       "crit_damage": 1.55,
@@ -893,14 +928,16 @@
         "params": {
           "radius": 180,
           "def_multiplier": 1.3
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "regeneration",
         "display_name": "Nhựa Cổ Thụ",
         "params": {
           "percent_max_hp_per_sec": 0.015
-        }
+        },
+        "element": "neutral"
       }
     ],
     "reward": {
@@ -927,7 +964,8 @@
           "dps_multiplier": 0.1,
           "tick_interval": 0.5
         }
-      ]
+      ],
+      "element": "wood"
     }
   },
   {
@@ -942,7 +980,7 @@
       "atk": 22,
       "def": 5,
       "move_speed": 95,
-      "attack_speed": 1.15,
+      "attack_speed": 0.805,
       "attack_range": 34,
       "crit_rate": 0.05,
       "crit_damage": 1.35,
@@ -956,9 +994,11 @@
         "id": "defense_buff",
         "display_name": "Giáp Bánh Răng",
         "params": {
+          "def_flat": 0,
           "def_multiplier": 1.2,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       }
     ],
     "reward": {
@@ -971,7 +1011,8 @@
       "display_name": "Canh Kim Song Trảm",
       "radius": 65,
       "damage_multiplier": 0.5,
-      "hit_interval": 0.2
+      "hit_interval": 0.2,
+      "element": "metal"
     }
   },
   {
@@ -986,7 +1027,7 @@
       "atk": 44,
       "def": 8,
       "move_speed": 46,
-      "attack_speed": 0.65,
+      "attack_speed": 0.455,
       "attack_range": 320,
       "projectile_speed": 400,
       "crit_rate": 0.06,
@@ -1009,7 +1050,8 @@
         "display_name": "Giáp Tấm Đan Xen",
         "params": {
           "damage_multiplier": 0.75
-        }
+        },
+        "element": "neutral"
       }
     ],
     "reward": {
@@ -1020,7 +1062,8 @@
     "attack_skill": {
       "type": "metal_bolt",
       "display_name": "Kim Mang Liên Nỗ",
-      "damage_multiplier": 1
+      "damage_multiplier": 1,
+      "element": "metal"
     }
   },
   {
@@ -1035,7 +1078,7 @@
       "atk": 30,
       "def": 12,
       "move_speed": 60,
-      "attack_speed": 0.8,
+      "attack_speed": 0.56,
       "attack_range": 40,
       "crit_rate": 0.03,
       "crit_damage": 1.45,
@@ -1059,7 +1102,8 @@
             "knockback_light"
           ],
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       }
     ],
     "reward": {
@@ -1078,7 +1122,8 @@
           "duration": 0.3,
           "chance": 0.2
         }
-      ]
+      ],
+      "element": "metal"
     }
   },
   {
@@ -1093,7 +1138,7 @@
       "atk": 64,
       "def": 38,
       "move_speed": 32,
-      "attack_speed": 0.45,
+      "attack_speed": 0.315,
       "attack_range": 64,
       "crit_rate": 0.02,
       "crit_damage": 1.55,
@@ -1107,11 +1152,13 @@
         "id": "damage_reflect",
         "display_name": "Phản Kích Khiên Tháp",
         "params": {
+          "reflect_flat_damage": 0,
           "reflect_percent_received": 0.05,
           "duration_seconds": 4,
           "cooldown_seconds": 10,
           "initial_delay_seconds": 3
-        }
+        },
+        "element": "neutral"
       }
     ],
     "reward": {
@@ -1130,7 +1177,8 @@
           "duration": 0.3,
           "chance": 0.2
         }
-      ]
+      ],
+      "element": "metal"
     }
   },
   {
@@ -1145,7 +1193,7 @@
       "atk": 85,
       "def": 58,
       "move_speed": 30,
-      "attack_speed": 0.42,
+      "attack_speed": 0.294,
       "attack_range": 68,
       "crit_rate": 0.02,
       "crit_damage": 1.65,
@@ -1160,14 +1208,16 @@
         "display_name": "Lõi Hoa Cương",
         "params": {
           "max_hp_multiplier": 1.15
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "regeneration",
         "display_name": "Tái Tạo Địa Mạch",
         "params": {
           "percent_max_hp_per_sec": 0.005
-        }
+        },
+        "element": "neutral"
       }
     ],
     "reward": {
@@ -1186,7 +1236,8 @@
           "duration": 0.5,
           "chance": 0.15
         }
-      ]
+      ],
+      "element": "earth"
     }
   },
   {
@@ -1201,7 +1252,7 @@
       "atk": 30,
       "def": 8,
       "move_speed": 96,
-      "attack_speed": 1.15,
+      "attack_speed": 0.805,
       "attack_range": 36,
       "crit_rate": 0.07,
       "crit_damage": 1.65,
@@ -1217,7 +1268,8 @@
         "params": {
           "hp_below_pct": 0.65,
           "move_speed_multiplier": 1.25
-        }
+        },
+        "element": "neutral"
       }
     ],
     "reward": {
@@ -1236,7 +1288,8 @@
           "duration": 0.5,
           "chance": 0.15
         }
-      ]
+      ],
+      "element": "earth"
     }
   },
   {
@@ -1251,7 +1304,7 @@
       "atk": 60,
       "def": 12,
       "move_speed": 44,
-      "attack_speed": 0.6,
+      "attack_speed": 0.42,
       "attack_range": 340,
       "projectile_speed": 360,
       "crit_rate": 0.04,
@@ -1268,10 +1321,12 @@
         "display_name": "Trụ Đá Hộ Thân",
         "params": {
           "shield_percent_max_hp": 0.12,
+          "shield_flat_hp": 0,
           "duration_seconds": 6,
           "cooldown_seconds": 11,
           "initial_delay_seconds": 2
-        }
+        },
+        "element": "neutral"
       }
     ],
     "reward": {
@@ -1292,7 +1347,8 @@
           "duration": 0.2,
           "chance": 0.2
         }
-      ]
+      ],
+      "element": "earth"
     }
   },
   {
@@ -1307,7 +1363,7 @@
       "atk": 42,
       "def": 18,
       "move_speed": 58,
-      "attack_speed": 0.8,
+      "attack_speed": 0.56,
       "attack_range": 340,
       "crit_rate": 0.08,
       "crit_damage": 1.8,
@@ -1332,7 +1388,8 @@
             "knockback_light"
           ],
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       }
     ],
     "reward": {
@@ -1353,7 +1410,8 @@
           "duration": 0.2,
           "chance": 0.2
         }
-      ]
+      ],
+      "element": "earth"
     }
   },
   {
@@ -1370,7 +1428,7 @@
       "atk": 42,
       "def": 18,
       "move_speed": 58,
-      "attack_speed": 0.8,
+      "attack_speed": 0.56,
       "attack_range": 48,
       "crit_rate": 0.08,
       "crit_damage": 1.8,
@@ -1394,7 +1452,8 @@
             "knockback_light"
           ],
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       }
     ],
     "reward": {
@@ -1428,7 +1487,8 @@
           "wood",
           "fire",
           "earth"
-        ]
+        ],
+        "element": "earth"
       },
       {
         "range": 550,
@@ -1453,7 +1513,8 @@
             "id": "silence",
             "duration": 2
           }
-        ]
+        ],
+        "element": "earth"
       },
       {
         "range": 650,
@@ -1486,7 +1547,8 @@
             "duration": 4,
             "defense_percent": 0.2
           }
-        ]
+        ],
+        "element": "earth"
       },
       {
         "range": 650,
@@ -1511,7 +1573,8 @@
             "id": "stun",
             "duration": 0.5
           }
-        ]
+        ],
+        "element": "earth"
       }
     ]
   },
@@ -1529,7 +1592,7 @@
       "atk": 75,
       "def": 22,
       "move_speed": 24,
-      "attack_speed": 0.55,
+      "attack_speed": 0.385,
       "attack_range": 75,
       "crit_rate": 0.04,
       "crit_damage": 1.65,
@@ -1543,9 +1606,11 @@
         "id": "defense_buff",
         "display_name": "Giáp Dung Nham",
         "params": {
+          "def_flat": 0,
           "def_multiplier": 1.2,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       }
     ],
     "boss_skills": [
@@ -1569,7 +1634,8 @@
         "pulse_count": 3,
         "pulse_interval": 0.5,
         "pulse_multiplier": 0.1,
-        "pulse_radius_multiplier": 1.5
+        "pulse_radius_multiplier": 1.5,
+        "element": "fire"
       }
     ],
     "reward": {
@@ -1593,7 +1659,7 @@
       "atk": 120,
       "def": 26,
       "move_speed": 36,
-      "attack_speed": 0.62,
+      "attack_speed": 0.434,
       "attack_range": 360,
       "projectile_speed": 360,
       "crit_rate": 0.07,
@@ -1618,10 +1684,12 @@
         "display_name": "Long Lân Hỏa Ngục",
         "params": {
           "shield_percent_max_hp": 0.18,
+          "shield_flat_hp": 0,
           "duration_seconds": 6,
           "cooldown_seconds": 14,
           "initial_delay_seconds": 4
-        }
+        },
+        "element": "neutral"
       }
     ],
     "boss_skills": [
@@ -1645,7 +1713,8 @@
         "pulse_count": 3,
         "pulse_interval": 0.5,
         "pulse_multiplier": 0.1,
-        "pulse_radius_multiplier": 1.5
+        "pulse_radius_multiplier": 1.5,
+        "element": "fire"
       },
       {
         "id": "phan_thien_linh_tran",
@@ -1662,7 +1731,8 @@
         "dot_interval": 1,
         "side_multiplier": 0.5,
         "side_delay": 0.8,
-        "side_offset": 120
+        "side_offset": 120,
+        "element": "fire"
       }
     ],
     "reward": {
@@ -1686,7 +1756,7 @@
       "atk": 90,
       "def": 28,
       "move_speed": 20,
-      "attack_speed": 0.45,
+      "attack_speed": 0.315,
       "attack_range": 400,
       "crit_rate": 0.03,
       "crit_damage": 1.7,
@@ -1702,7 +1772,8 @@
         "params": {
           "radius": 240,
           "def_multiplier": 1.25
-        }
+        },
+        "element": "neutral"
       }
     ],
     "boss_skills": [
@@ -1730,7 +1801,8 @@
         ],
         "thorn_diameter": 120,
         "thorn_vertical_ratio": 0.55,
-        "initial_cooldown": 3
+        "initial_cooldown": 3,
+        "element": "wood"
       }
     ],
     "reward": {
@@ -1754,7 +1826,7 @@
       "atk": 135,
       "def": 36,
       "move_speed": 28,
-      "attack_speed": 0.58,
+      "attack_speed": 0.406,
       "attack_range": 380,
       "projectile_speed": 320,
       "crit_rate": 0.06,
@@ -1779,7 +1851,8 @@
         "display_name": "Tam Thủ Tái Sinh",
         "params": {
           "percent_max_hp_per_sec": 0.005
-        }
+        },
+        "element": "neutral"
       }
     ],
     "boss_skills": [
@@ -1807,7 +1880,8 @@
         ],
         "thorn_diameter": 135,
         "thorn_vertical_ratio": 0.55,
-        "initial_cooldown": 3
+        "initial_cooldown": 3,
+        "element": "wood"
       },
       {
         "id": "u_hon_phe_cot",
@@ -1824,7 +1898,8 @@
         "range": 550,
         "warning_time": 0,
         "cooldown": 18,
-        "initial_cooldown": 3
+        "initial_cooldown": 3,
+        "element": "wood"
       }
     ],
     "reward": {
@@ -1848,7 +1923,7 @@
       "atk": 105,
       "def": 45,
       "move_speed": 30,
-      "attack_speed": 0.48,
+      "attack_speed": 0.336,
       "attack_range": 90,
       "crit_rate": 0.04,
       "crit_damage": 1.75,
@@ -1863,16 +1938,20 @@
         "display_name": "Giáp Thiết Hạm",
         "params": {
           "damage_multiplier": 0.7
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "damage_reflect",
         "display_name": "Phản Chấn Thép",
         "params": {
+          "reflect_flat_damage": 0,
           "reflect_percent_received": 0.05,
           "duration_seconds": 4,
-          "cooldown_seconds": 11
-        }
+          "cooldown_seconds": 11,
+          "initial_delay_seconds": 0
+        },
+        "element": "neutral"
       }
     ],
     "boss_skills": [
@@ -1908,7 +1987,8 @@
             "duration": 0.2,
             "chance": 0.5
           }
-        ]
+        ],
+        "element": "metal"
       }
     ],
     "reward": {
@@ -1932,7 +2012,7 @@
       "atk": 160,
       "def": 55,
       "move_speed": 26,
-      "attack_speed": 0.55,
+      "attack_speed": 0.385,
       "attack_range": 390,
       "projectile_speed": 420,
       "crit_rate": 0.08,
@@ -1947,12 +2027,15 @@
         "id": "damage_shield",
         "display_name": "Khiên Năng Lượng",
         "params": {
-          "hp_below_pct": 0.2,
           "shield_percent_max_hp": 0.2,
+          "shield_flat_hp": 0,
           "duration_seconds": 6,
           "cooldown_seconds": 0,
+          "initial_delay_seconds": 1.5,
+          "hp_below_pct": 0.2,
           "max_triggers": 1
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "debuff_resistance",
@@ -1968,7 +2051,8 @@
             "knockback_light"
           ],
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       }
     ],
     "boss_skills": [
@@ -2004,7 +2088,8 @@
             "duration": 0.2,
             "chance": 0.5
           }
-        ]
+        ],
+        "element": "metal"
       },
       {
         "id": "bach_ho_pha_son_quyen",
@@ -2031,7 +2116,8 @@
         ],
         "impact_duration": 0.5,
         "palm_multiplier": 1.5,
-        "knockback_distance": 95
+        "knockback_distance": 95,
+        "element": "metal"
       }
     ],
     "reward": {
@@ -2055,7 +2141,7 @@
       "atk": 140,
       "def": 65,
       "move_speed": 28,
-      "attack_speed": 0.45,
+      "attack_speed": 0.315,
       "attack_range": 95,
       "crit_rate": 0.03,
       "crit_damage": 1.9,
@@ -2069,16 +2155,19 @@
         "id": "defense_buff",
         "display_name": "Da Đá Titan",
         "params": {
+          "def_flat": 0,
           "def_multiplier": 1.2,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "regeneration",
         "display_name": "Tái Sinh Địa Mạch",
         "params": {
           "percent_max_hp_per_sec": 0.005
-        }
+        },
+        "element": "neutral"
       }
     ],
     "boss_skills": [
@@ -2112,7 +2201,8 @@
             "duration": 0.2,
             "chance": 0.25
           }
-        ]
+        ],
+        "element": "earth"
       }
     ],
     "reward": {
@@ -2136,7 +2226,7 @@
       "atk": 200,
       "def": 80,
       "move_speed": 28,
-      "attack_speed": 0.55,
+      "attack_speed": 0.385,
       "attack_range": 400,
       "projectile_speed": 380,
       "crit_rate": 0.1,
@@ -2169,35 +2259,43 @@
             "knockback_light"
           ],
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "regeneration",
         "display_name": "Hỗn Nguyên Tái Sinh",
         "params": {
           "percent_max_hp_per_sec": 0.005
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "damage_shield",
         "display_name": "Thần Giáp Hồi Mệnh",
         "params": {
-          "hp_below_pct": 0.2,
           "shield_percent_max_hp": 0.15,
-          "heal_percent_max_hp": 0.15,
+          "shield_flat_hp": 0,
           "duration_seconds": 6,
           "cooldown_seconds": 0,
+          "initial_delay_seconds": 1.5,
+          "hp_below_pct": 0.2,
+          "heal_percent_max_hp": 0.15,
           "max_triggers": 1
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "damage_reflect",
         "display_name": "Kim Cương Phản Chấn",
         "params": {
+          "reflect_flat_damage": 0,
           "reflect_percent_received": 0.02,
           "duration_seconds": 3,
-          "cooldown_seconds": 15
-        }
+          "cooldown_seconds": 15,
+          "initial_delay_seconds": 0
+        },
+        "element": "neutral"
       }
     ],
     "boss_skills": [
@@ -2231,7 +2329,8 @@
             "duration": 0.2,
             "chance": 0.25
           }
-        ]
+        ],
+        "element": "earth"
       },
       {
         "range": 550,
@@ -2259,7 +2358,8 @@
             "id": "stun",
             "duration": 1
           }
-        ]
+        ],
+        "element": "earth"
       }
     ],
     "reward": {
@@ -2282,7 +2382,7 @@
       "atk": 1,
       "def": 10,
       "move_speed": 15,
-      "attack_speed": 0.5,
+      "attack_speed": 0.35,
       "attack_range": 420,
       "crit_rate": 0,
       "crit_damage": 1,
@@ -2296,10 +2396,11 @@
         "id": "dummy_strike",
         "display_name": "Cú Đập Hình Nộm",
         "type": "slam_aoe",
-        "damage": 1,
         "radius": 40,
         "cooldown": 15,
-        "range": 700
+        "range": 700,
+        "element": "water",
+        "damage_multiplier": 1
       }
     ],
     "reward": {
@@ -2321,7 +2422,7 @@
       "atk": 30,
       "def": 12,
       "move_speed": 60,
-      "attack_speed": 0.8,
+      "attack_speed": 0.56,
       "attack_range": 40,
       "crit_rate": 0.03,
       "crit_damage": 1.45,
@@ -2345,7 +2446,8 @@
             "knockback_light"
           ],
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "defense_buff",
@@ -2354,7 +2456,8 @@
           "def_flat": 0,
           "def_multiplier": 1.12,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       }
     ],
     "reward": {
@@ -2373,7 +2476,8 @@
           "duration": 0.3,
           "chance": 0.2
         }
-      ]
+      ],
+      "element": "metal"
     },
     "source_enemy_id": "steam_automaton",
     "arc6_role": "normal",
@@ -2391,7 +2495,7 @@
       "atk": 44,
       "def": 8,
       "move_speed": 46,
-      "attack_speed": 0.65,
+      "attack_speed": 0.455,
       "attack_range": 320,
       "projectile_speed": 400,
       "crit_rate": 0.06,
@@ -2414,7 +2518,8 @@
         "display_name": "Giáp Tấm Đan Xen",
         "params": {
           "damage_multiplier": 0.75
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "defense_buff",
@@ -2423,7 +2528,8 @@
           "def_flat": 0,
           "def_multiplier": 1.12,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       }
     ],
     "reward": {
@@ -2434,7 +2540,8 @@
     "attack_skill": {
       "type": "metal_bolt",
       "display_name": "Kim Mang Liên Nỗ",
-      "damage_multiplier": 1
+      "damage_multiplier": 1,
+      "element": "metal"
     },
     "source_enemy_id": "iron_crossbowman",
     "arc6_role": "ranger",
@@ -2452,7 +2559,7 @@
       "atk": 64,
       "def": 38,
       "move_speed": 32,
-      "attack_speed": 0.45,
+      "attack_speed": 0.315,
       "attack_range": 64,
       "crit_rate": 0.02,
       "crit_damage": 1.55,
@@ -2466,11 +2573,13 @@
         "id": "damage_reflect",
         "display_name": "Phản Kích Khiên Tháp",
         "params": {
+          "reflect_flat_damage": 0,
           "reflect_percent_received": 0.05,
           "duration_seconds": 4,
           "cooldown_seconds": 10,
           "initial_delay_seconds": 3
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "defense_buff",
@@ -2479,7 +2588,8 @@
           "def_flat": 0,
           "def_multiplier": 1.12,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       }
     ],
     "reward": {
@@ -2498,7 +2608,8 @@
           "duration": 0.3,
           "chance": 0.2
         }
-      ]
+      ],
+      "element": "metal"
     },
     "source_enemy_id": "shield_sentinel",
     "arc6_role": "tank",
@@ -2516,7 +2627,7 @@
       "atk": 24,
       "def": 8,
       "move_speed": 65,
-      "attack_speed": 0.8,
+      "attack_speed": 0.56,
       "attack_range": 85,
       "crit_rate": 0.05,
       "crit_damage": 1.45,
@@ -2541,7 +2652,8 @@
             "knockback_light"
           ],
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       }
     ],
     "reward": {
@@ -2567,7 +2679,8 @@
           "attack_speed_percent": 0.2,
           "chance": 0.2
         }
-      ]
+      ],
+      "element": "water"
     },
     "source_enemy_id": "frost_lancer",
     "arc6_role": "normal",
@@ -2585,7 +2698,7 @@
       "atk": 30,
       "def": 3,
       "move_speed": 46,
-      "attack_speed": 0.65,
+      "attack_speed": 0.455,
       "attack_range": 290,
       "projectile_speed": 320,
       "crit_rate": 0.04,
@@ -2611,7 +2724,8 @@
             "knockback_light"
           ],
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       }
     ],
     "reward": {
@@ -2637,7 +2751,8 @@
       "display_name": "Băng Đạn",
       "type": "ice_bolt",
       "damage_multiplier": 1,
-      "radius": 0
+      "radius": 0,
+      "element": "water"
     },
     "source_enemy_id": "snow_mage",
     "arc6_role": "ranger",
@@ -2655,7 +2770,7 @@
       "atk": 26,
       "def": 12,
       "move_speed": 40,
-      "attack_speed": 0.5,
+      "attack_speed": 0.35,
       "attack_range": 52,
       "crit_rate": 0.04,
       "crit_damage": 1.55,
@@ -2680,7 +2795,8 @@
             "knockback_light"
           ],
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       }
     ],
     "reward": {
@@ -2704,7 +2820,7 @@
       "atk": 24,
       "def": 7,
       "move_speed": 62,
-      "attack_speed": 0.8,
+      "attack_speed": 0.56,
       "attack_range": 38,
       "crit_rate": 0.03,
       "crit_damage": 1.35,
@@ -2718,11 +2834,13 @@
         "id": "damage_reflect",
         "display_name": "Giáp Bào Tử",
         "params": {
+          "reflect_flat_damage": 0,
           "reflect_percent_received": 0.04,
           "duration_seconds": 4,
           "cooldown_seconds": 10,
           "initial_delay_seconds": 3
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "regeneration",
@@ -2730,7 +2848,8 @@
         "params": {
           "percent_max_hp_per_sec": 0.004,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       }
     ],
     "reward": {
@@ -2751,7 +2870,8 @@
       "display_name": "Tia Độc",
       "type": "wood_bolt",
       "damage_multiplier": 1,
-      "range": 250
+      "range": 250,
+      "element": "wood"
     },
     "source_enemy_id": "spore_crawler",
     "arc6_role": "normal",
@@ -2769,7 +2889,7 @@
       "atk": 36,
       "def": 4,
       "move_speed": 46,
-      "attack_speed": 0.65,
+      "attack_speed": 0.455,
       "attack_range": 310,
       "projectile_speed": 320,
       "crit_rate": 0.04,
@@ -2793,10 +2913,12 @@
         "display_name": "Vỏ Gai",
         "params": {
           "shield_percent_max_hp": 0.18,
+          "shield_flat_hp": 0,
           "duration_seconds": 6,
           "cooldown_seconds": 10,
           "initial_delay_seconds": 2
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "regeneration",
@@ -2804,7 +2926,8 @@
         "params": {
           "percent_max_hp_per_sec": 0.004,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       }
     ],
     "reward": {
@@ -2817,7 +2940,8 @@
       "display_name": "Tia Độc",
       "type": "wood_bolt",
       "damage_multiplier": 1,
-      "range": 310
+      "range": 310,
+      "element": "wood"
     },
     "source_enemy_id": "thorn_spitter",
     "arc6_role": "ranger",
@@ -2835,7 +2959,7 @@
       "atk": 52,
       "def": 25,
       "move_speed": 34,
-      "attack_speed": 0.45,
+      "attack_speed": 0.315,
       "attack_range": 64,
       "crit_rate": 0.03,
       "crit_damage": 1.55,
@@ -2851,14 +2975,16 @@
         "params": {
           "radius": 180,
           "def_multiplier": 1.3
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "regeneration",
         "display_name": "Nhựa Cổ Thụ",
         "params": {
           "percent_max_hp_per_sec": 0.015
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "defense_buff",
@@ -2867,7 +2993,8 @@
           "def_flat": 0,
           "def_multiplier": 1.1,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       }
     ],
     "reward": {
@@ -2894,7 +3021,8 @@
           "dps_multiplier": 0.1,
           "tick_interval": 0.5
         }
-      ]
+      ],
+      "element": "wood"
     },
     "source_enemy_id": "ent_protector",
     "arc6_role": "tank",
@@ -2912,7 +3040,7 @@
       "atk": 18,
       "def": 4,
       "move_speed": 74,
-      "attack_speed": 1,
+      "attack_speed": 0.7,
       "attack_range": 36,
       "crit_rate": 0.04,
       "crit_damage": 1.35,
@@ -2928,7 +3056,8 @@
         "params": {
           "hp_below_pct": 0.5,
           "move_speed_multiplier": 1.45
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "defense_buff",
@@ -2937,7 +3066,8 @@
           "def_flat": 0,
           "def_multiplier": 1.1,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       }
     ],
     "reward": {
@@ -2950,7 +3080,8 @@
       "display_name": "Liệt Hỏa Tam Trảm",
       "type": "fire_claw",
       "damage_multiplier": 1,
-      "radius": 64
+      "radius": 64,
+      "element": "fire"
     },
     "source_enemy_id": "flame_imp",
     "arc6_role": "normal",
@@ -2968,7 +3099,7 @@
       "atk": 26,
       "def": 3,
       "move_speed": 46,
-      "attack_speed": 0.65,
+      "attack_speed": 0.455,
       "attack_range": 320,
       "projectile_speed": 340,
       "crit_rate": 0.05,
@@ -2992,10 +3123,12 @@
         "display_name": "Hỏa Thuẫn",
         "params": {
           "shield_percent_max_hp": 0.2,
+          "shield_flat_hp": 0,
           "duration_seconds": 6,
           "cooldown_seconds": 10,
           "initial_delay_seconds": 1.5
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "haste",
@@ -3004,7 +3137,8 @@
           "hp_below_pct": 0.35,
           "move_speed_multiplier": 1.15,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       }
     ],
     "reward": {
@@ -3017,7 +3151,8 @@
       "display_name": "Xích Viêm Châu",
       "type": "fire_ball",
       "damage_multiplier": 1,
-      "radius": 0
+      "radius": 0,
+      "element": "fire"
     },
     "source_enemy_id": "pyromancer",
     "arc6_role": "ranger",
@@ -3035,7 +3170,7 @@
       "atk": 38,
       "def": 18,
       "move_speed": 34,
-      "attack_speed": 0.45,
+      "attack_speed": 0.315,
       "attack_range": 68,
       "crit_rate": 0.03,
       "crit_damage": 1.55,
@@ -3049,9 +3184,11 @@
         "id": "defense_buff",
         "display_name": "Giáp Nham Thạch",
         "params": {
+          "def_flat": 0,
           "def_multiplier": 1.3,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "haste",
@@ -3060,7 +3197,8 @@
           "hp_below_pct": 0.35,
           "move_speed_multiplier": 1.15,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       }
     ],
     "reward": {
@@ -3079,7 +3217,8 @@
       "pulse_multiplier": 0.2,
       "pulse_radius_multiplier": 1.5,
       "stun_chance": 0.2,
-      "stun_duration": 0.3
+      "stun_duration": 0.3,
+      "element": "fire"
     },
     "source_enemy_id": "lava_brute",
     "arc6_role": "tank",
@@ -3097,7 +3236,7 @@
       "atk": 20,
       "def": 5,
       "move_speed": 62,
-      "attack_speed": 0.8,
+      "attack_speed": 0.56,
       "attack_range": 38,
       "crit_rate": 0.03,
       "crit_damage": 1.35,
@@ -3116,7 +3255,8 @@
           "duration_seconds": null,
           "cooldown_seconds": 0,
           "initial_delay_seconds": 0
-        }
+        },
+        "element": "neutral"
       }
     ],
     "reward": {
@@ -3129,7 +3269,8 @@
       "display_name": "Băng Vuốt",
       "type": "ice_claw",
       "damage_multiplier": 1,
-      "radius": 64
+      "radius": 64,
+      "element": "water"
     },
     "source_enemy_id": "snow_skeleton",
     "arc6_role": "normal",
@@ -3147,7 +3288,7 @@
       "atk": 60,
       "def": 12,
       "move_speed": 44,
-      "attack_speed": 0.6,
+      "attack_speed": 0.42,
       "attack_range": 340,
       "projectile_speed": 360,
       "crit_rate": 0.04,
@@ -3164,10 +3305,12 @@
         "display_name": "Trụ Đá Hộ Thân",
         "params": {
           "shield_percent_max_hp": 0.12,
+          "shield_flat_hp": 0,
           "duration_seconds": 6,
           "cooldown_seconds": 11,
           "initial_delay_seconds": 2
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "defense_buff",
@@ -3176,7 +3319,8 @@
           "def_flat": 0,
           "def_multiplier": 1.12,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       }
     ],
     "reward": {
@@ -3197,7 +3341,8 @@
           "duration": 0.2,
           "chance": 0.2
         }
-      ]
+      ],
+      "element": "earth"
     },
     "source_enemy_id": "seismic_shaman",
     "arc6_role": "ranger",
@@ -3215,7 +3360,7 @@
       "atk": 85,
       "def": 58,
       "move_speed": 30,
-      "attack_speed": 0.42,
+      "attack_speed": 0.294,
       "attack_range": 68,
       "crit_rate": 0.02,
       "crit_damage": 1.65,
@@ -3230,14 +3375,16 @@
         "display_name": "Lõi Hoa Cương",
         "params": {
           "max_hp_multiplier": 1.15
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "regeneration",
         "display_name": "Tái Tạo Địa Mạch",
         "params": {
           "percent_max_hp_per_sec": 0.005
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "damage_shield",
@@ -3248,7 +3395,8 @@
           "duration_seconds": null,
           "cooldown_seconds": 0,
           "initial_delay_seconds": 0
-        }
+        },
+        "element": "neutral"
       }
     ],
     "reward": {
@@ -3267,7 +3415,8 @@
           "duration": 0.5,
           "chance": 0.15
         }
-      ]
+      ],
+      "element": "earth"
     },
     "source_enemy_id": "granite_colossus",
     "arc6_role": "tank",
@@ -3287,7 +3436,7 @@
       "atk": 105,
       "def": 45,
       "move_speed": 28,
-      "attack_speed": 0.8,
+      "attack_speed": 0.56,
       "attack_range": 85,
       "crit_rate": 0.08,
       "crit_damage": 1.8,
@@ -3311,7 +3460,8 @@
             "knockback_light"
           ],
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       }
     ],
     "reward": {
@@ -3345,7 +3495,8 @@
           "wood",
           "fire",
           "earth"
-        ]
+        ],
+        "element": "earth"
       },
       {
         "range": 550,
@@ -3370,7 +3521,8 @@
             "id": "silence",
             "duration": 2
           }
-        ]
+        ],
+        "element": "earth"
       }
     ],
     "source_enemy_id": "primordial_wraith",
@@ -3390,7 +3542,7 @@
       "atk": 105,
       "def": 45,
       "move_speed": 28,
-      "attack_speed": 0.8,
+      "attack_speed": 0.56,
       "attack_range": 85,
       "crit_rate": 0.08,
       "crit_damage": 1.8,
@@ -3414,7 +3566,8 @@
             "knockback_light"
           ],
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       }
     ],
     "reward": {
@@ -3448,7 +3601,8 @@
           "wood",
           "fire",
           "earth"
-        ]
+        ],
+        "element": "earth"
       },
       {
         "range": 550,
@@ -3473,7 +3627,8 @@
             "id": "silence",
             "duration": 2
           }
-        ]
+        ],
+        "element": "earth"
       },
       {
         "range": 650,
@@ -3506,7 +3661,8 @@
             "duration": 4,
             "defense_percent": 0.2
           }
-        ]
+        ],
+        "element": "earth"
       },
       {
         "range": 650,
@@ -3531,7 +3687,8 @@
             "id": "stun",
             "duration": 0.5
           }
-        ]
+        ],
+        "element": "earth"
       }
     ],
     "source_enemy_id": "primordial_wraith",
@@ -3550,7 +3707,7 @@
       "def": 10.143341,
       "move_speed": 78,
       "attack_range": 70,
-      "attack_speed": 0.58,
+      "attack_speed": 0.406,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -3562,12 +3719,13 @@
         "id": "debuff_resistance",
         "display_name": "Yêu Thể Bất Phược",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -3579,7 +3737,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -3589,7 +3748,8 @@
       "radius": 65,
       "damage_multiplier": 1,
       "warning_time": 0.35,
-      "recovery": 0.3
+      "recovery": 0.3,
+      "element": "metal"
     },
     "reward": {
       "exp": 1,
@@ -3609,7 +3769,7 @@
       "def": 7.303206,
       "move_speed": 95,
       "attack_range": 65,
-      "attack_speed": 0.72,
+      "attack_speed": 0.504,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -3621,12 +3781,13 @@
         "id": "debuff_resistance",
         "display_name": "Yêu Thể Bất Phược",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -3638,7 +3799,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -3648,7 +3810,8 @@
       "radius": 65,
       "damage_multiplier": 1,
       "warning_time": 0.35,
-      "recovery": 0.3
+      "recovery": 0.3,
+      "element": "metal"
     },
     "reward": {
       "exp": 1,
@@ -3668,7 +3831,7 @@
       "def": 31.154548,
       "move_speed": 65,
       "attack_range": 170,
-      "attack_speed": 0.42,
+      "attack_speed": 0.294,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -3680,12 +3843,13 @@
         "id": "debuff_resistance",
         "display_name": "Yêu Thể Bất Phược",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -3697,7 +3861,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -3709,7 +3874,8 @@
       "warning_time": 0.65,
       "recovery": 0.3,
       "dash_distance": 160,
-      "dash_duration": 0.5
+      "dash_duration": 0.5,
+      "element": "metal"
     },
     "reward": {
       "exp": 1,
@@ -3729,7 +3895,7 @@
       "def": 3.418099,
       "move_speed": 65,
       "attack_range": 330,
-      "attack_speed": 0.48,
+      "attack_speed": 0.336,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -3741,12 +3907,13 @@
         "id": "debuff_resistance",
         "display_name": "Yêu Thể Bất Phược",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -3758,7 +3925,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -3779,7 +3947,8 @@
           "dps": 20,
           "tick_interval": 0.75
         }
-      ]
+      ],
+      "element": "metal"
     },
     "reward": {
       "exp": 1,
@@ -3799,7 +3968,7 @@
       "def": 12.983477,
       "move_speed": 72,
       "attack_range": 80,
-      "attack_speed": 0.48,
+      "attack_speed": 0.336,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -3811,12 +3980,13 @@
         "id": "debuff_resistance",
         "display_name": "Yêu Thể Bất Phược",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -3828,7 +3998,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -3838,7 +4009,8 @@
       "radius": 85,
       "damage_multiplier": 1,
       "warning_time": 0.35,
-      "recovery": 0.3
+      "recovery": 0.3,
+      "element": "metal"
     },
     "reward": {
       "exp": 1,
@@ -3858,7 +4030,7 @@
       "def": 6.086005,
       "move_speed": 110,
       "attack_range": 195,
-      "attack_speed": 0.65,
+      "attack_speed": 0.455,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -3870,12 +4042,13 @@
         "id": "debuff_resistance",
         "display_name": "Yêu Thể Bất Phược",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -3887,7 +4060,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -3899,7 +4073,8 @@
       "warning_time": 0.65,
       "recovery": 0.3,
       "dash_distance": 200,
-      "dash_duration": 0.32
+      "dash_duration": 0.32,
+      "element": "metal"
     },
     "reward": {
       "exp": 1,
@@ -3919,7 +4094,7 @@
       "def": 6.551356,
       "move_speed": 70,
       "attack_range": 350,
-      "attack_speed": 0.42,
+      "attack_speed": 0.294,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -3931,12 +4106,13 @@
         "id": "debuff_resistance",
         "display_name": "Yêu Thể Bất Phược",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -3948,7 +4124,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -3961,7 +4138,8 @@
       "recovery": 0.3,
       "projectile_speed": 320,
       "projectile_lifetime": 3.5,
-      "hit_radius": 16
+      "hit_radius": 16,
+      "element": "metal"
     },
     "reward": {
       "exp": 1,
@@ -3985,7 +4163,7 @@
       "def": 59.816733,
       "move_speed": 80,
       "attack_range": 110,
-      "attack_speed": 0.5,
+      "attack_speed": 0.35,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -3995,12 +4173,13 @@
       {
         "id": "debuff_resistance",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -4012,7 +4191,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": true
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -4032,7 +4212,8 @@
       "paralysis_duration": 0.5,
       "cooldown": 2,
       "initial_cooldown": 0,
-      "range": 180
+      "range": 180,
+      "element": "metal"
     },
     "boss_skills": [
       {
@@ -4052,7 +4233,8 @@
         "paralysis_duration": 0.5,
         "cooldown": 2,
         "initial_cooldown": 0,
-        "range": 180
+        "range": 180,
+        "element": "metal"
       },
       {
         "id": "B02",
@@ -4075,7 +4257,8 @@
         "bleed_duration": 4,
         "cooldown": 7,
         "initial_cooldown": 2,
-        "range": 470
+        "range": 470,
+        "element": "metal"
       },
       {
         "id": "B03",
@@ -4101,7 +4284,8 @@
         "knockback_distance": 50,
         "cooldown": 11,
         "initial_cooldown": 5,
-        "range": 600
+        "range": 600,
+        "element": "metal"
       },
       {
         "id": "B04",
@@ -4127,7 +4311,8 @@
         "cleanse_on_activate": true,
         "cooldown": 300,
         "initial_cooldown": 0,
-        "range": 1200
+        "range": 1200,
+        "element": "metal"
       }
     ],
     "reward": {
@@ -4152,7 +4337,7 @@
       "def": 52.339641,
       "move_speed": 60,
       "attack_range": 500,
-      "attack_speed": 0.35,
+      "attack_speed": 0.245,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -4162,12 +4347,13 @@
       {
         "id": "debuff_resistance",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -4179,7 +4365,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -4200,7 +4387,8 @@
       "burn_duration": 4,
       "cooldown": 2.8,
       "initial_cooldown": 0,
-      "range": 600
+      "range": 600,
+      "element": "fire"
     },
     "boss_skills": [
       {
@@ -4221,7 +4409,8 @@
         "burn_duration": 4,
         "cooldown": 2.8,
         "initial_cooldown": 0,
-        "range": 600
+        "range": 600,
+        "element": "fire"
       },
       {
         "id": "Z02",
@@ -4246,7 +4435,8 @@
         "tick_interval": 1,
         "cooldown": 7,
         "initial_cooldown": 3,
-        "range": 600
+        "range": 600,
+        "element": "fire"
       },
       {
         "id": "Z03",
@@ -4266,7 +4456,8 @@
         "burn_duration": 4,
         "cooldown": 10,
         "initial_cooldown": 6,
-        "range": 750
+        "range": 750,
+        "element": "fire"
       },
       {
         "id": "Z04",
@@ -4289,7 +4480,8 @@
         "revive_hp_ratio": 0.5,
         "cooldown": 300,
         "initial_cooldown": 0,
-        "range": 650
+        "range": 650,
+        "element": "fire"
       }
     ],
     "reward": {
@@ -4310,7 +4502,7 @@
       "def": 10.143341,
       "move_speed": 78,
       "attack_range": 70,
-      "attack_speed": 0.58,
+      "attack_speed": 0.406,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -4322,12 +4514,13 @@
         "id": "debuff_resistance",
         "display_name": "Yêu Thể Bất Phược",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -4339,7 +4532,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -4349,7 +4543,8 @@
       "radius": 65,
       "damage_multiplier": 1,
       "warning_time": 0.35,
-      "recovery": 0.3
+      "recovery": 0.3,
+      "element": "water"
     },
     "reward": {
       "exp": 1,
@@ -4369,7 +4564,7 @@
       "def": 7.303206,
       "move_speed": 95,
       "attack_range": 65,
-      "attack_speed": 0.72,
+      "attack_speed": 0.504,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -4381,12 +4576,13 @@
         "id": "debuff_resistance",
         "display_name": "Yêu Thể Bất Phược",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -4398,7 +4594,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -4408,7 +4605,8 @@
       "radius": 65,
       "damage_multiplier": 1,
       "warning_time": 0.35,
-      "recovery": 0.3
+      "recovery": 0.3,
+      "element": "water"
     },
     "reward": {
       "exp": 1,
@@ -4428,7 +4626,7 @@
       "def": 31.154548,
       "move_speed": 65,
       "attack_range": 170,
-      "attack_speed": 0.42,
+      "attack_speed": 0.294,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -4440,12 +4638,13 @@
         "id": "debuff_resistance",
         "display_name": "Yêu Thể Bất Phược",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -4457,7 +4656,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -4469,7 +4669,8 @@
       "warning_time": 0.65,
       "recovery": 0.3,
       "dash_distance": 160,
-      "dash_duration": 0.5
+      "dash_duration": 0.5,
+      "element": "water"
     },
     "reward": {
       "exp": 1,
@@ -4489,7 +4690,7 @@
       "def": 3.418099,
       "move_speed": 65,
       "attack_range": 330,
-      "attack_speed": 0.48,
+      "attack_speed": 0.336,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -4501,12 +4702,13 @@
         "id": "debuff_resistance",
         "display_name": "Yêu Thể Bất Phược",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -4518,7 +4720,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -4539,7 +4742,8 @@
           "dps": 20,
           "tick_interval": 0.75
         }
-      ]
+      ],
+      "element": "water"
     },
     "reward": {
       "exp": 1,
@@ -4559,7 +4763,7 @@
       "def": 12.983477,
       "move_speed": 72,
       "attack_range": 80,
-      "attack_speed": 0.48,
+      "attack_speed": 0.336,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -4571,12 +4775,13 @@
         "id": "debuff_resistance",
         "display_name": "Yêu Thể Bất Phược",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -4588,7 +4793,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -4598,7 +4804,8 @@
       "radius": 85,
       "damage_multiplier": 1,
       "warning_time": 0.35,
-      "recovery": 0.3
+      "recovery": 0.3,
+      "element": "water"
     },
     "reward": {
       "exp": 1,
@@ -4618,7 +4825,7 @@
       "def": 6.086005,
       "move_speed": 110,
       "attack_range": 195,
-      "attack_speed": 0.65,
+      "attack_speed": 0.455,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -4630,12 +4837,13 @@
         "id": "debuff_resistance",
         "display_name": "Yêu Thể Bất Phược",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -4647,7 +4855,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -4659,7 +4868,8 @@
       "warning_time": 0.65,
       "recovery": 0.3,
       "dash_distance": 200,
-      "dash_duration": 0.32
+      "dash_duration": 0.32,
+      "element": "water"
     },
     "reward": {
       "exp": 1,
@@ -4679,7 +4889,7 @@
       "def": 6.551356,
       "move_speed": 70,
       "attack_range": 350,
-      "attack_speed": 0.42,
+      "attack_speed": 0.294,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -4691,12 +4901,13 @@
         "id": "debuff_resistance",
         "display_name": "Yêu Thể Bất Phược",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -4708,7 +4919,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -4721,7 +4933,8 @@
       "recovery": 0.3,
       "projectile_speed": 320,
       "projectile_lifetime": 3.5,
-      "hit_radius": 16
+      "hit_radius": 16,
+      "element": "water"
     },
     "reward": {
       "exp": 1,
@@ -4745,7 +4958,7 @@
       "def": 59.816733,
       "move_speed": 80,
       "attack_range": 110,
-      "attack_speed": 0.5,
+      "attack_speed": 0.35,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -4755,12 +4968,13 @@
       {
         "id": "debuff_resistance",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -4772,7 +4986,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": true
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -4792,7 +5007,8 @@
       "paralysis_duration": 0.5,
       "cooldown": 2,
       "initial_cooldown": 0,
-      "range": 180
+      "range": 180,
+      "element": "metal"
     },
     "boss_skills": [
       {
@@ -4812,7 +5028,8 @@
         "paralysis_duration": 0.5,
         "cooldown": 2,
         "initial_cooldown": 0,
-        "range": 180
+        "range": 180,
+        "element": "metal"
       },
       {
         "id": "B02",
@@ -4835,7 +5052,8 @@
         "bleed_duration": 4,
         "cooldown": 7,
         "initial_cooldown": 2,
-        "range": 470
+        "range": 470,
+        "element": "metal"
       },
       {
         "id": "B03",
@@ -4861,7 +5079,8 @@
         "knockback_distance": 50,
         "cooldown": 11,
         "initial_cooldown": 5,
-        "range": 600
+        "range": 600,
+        "element": "metal"
       },
       {
         "id": "B04",
@@ -4887,7 +5106,8 @@
         "cleanse_on_activate": true,
         "cooldown": 300,
         "initial_cooldown": 0,
-        "range": 1200
+        "range": 1200,
+        "element": "metal"
       }
     ],
     "reward": {
@@ -4912,7 +5132,7 @@
       "def": 52.339641,
       "move_speed": 60,
       "attack_range": 500,
-      "attack_speed": 0.35,
+      "attack_speed": 0.245,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -4922,12 +5142,13 @@
       {
         "id": "debuff_resistance",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -4939,7 +5160,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -4960,7 +5182,8 @@
       "burn_duration": 4,
       "cooldown": 2.8,
       "initial_cooldown": 0,
-      "range": 600
+      "range": 600,
+      "element": "fire"
     },
     "boss_skills": [
       {
@@ -4981,7 +5204,8 @@
         "burn_duration": 4,
         "cooldown": 2.8,
         "initial_cooldown": 0,
-        "range": 600
+        "range": 600,
+        "element": "fire"
       },
       {
         "id": "Z02",
@@ -5006,7 +5230,8 @@
         "tick_interval": 1,
         "cooldown": 7,
         "initial_cooldown": 3,
-        "range": 600
+        "range": 600,
+        "element": "fire"
       },
       {
         "id": "Z03",
@@ -5026,7 +5251,8 @@
         "burn_duration": 4,
         "cooldown": 10,
         "initial_cooldown": 6,
-        "range": 750
+        "range": 750,
+        "element": "fire"
       },
       {
         "id": "Z04",
@@ -5049,7 +5275,8 @@
         "revive_hp_ratio": 0.5,
         "cooldown": 300,
         "initial_cooldown": 0,
-        "range": 650
+        "range": 650,
+        "element": "fire"
       }
     ],
     "reward": {
@@ -5070,7 +5297,7 @@
       "def": 10.143341,
       "move_speed": 78,
       "attack_range": 70,
-      "attack_speed": 0.58,
+      "attack_speed": 0.406,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -5082,12 +5309,13 @@
         "id": "debuff_resistance",
         "display_name": "Yêu Thể Bất Phược",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -5099,7 +5327,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -5109,7 +5338,8 @@
       "radius": 65,
       "damage_multiplier": 1,
       "warning_time": 0.35,
-      "recovery": 0.3
+      "recovery": 0.3,
+      "element": "wood"
     },
     "reward": {
       "exp": 1,
@@ -5129,7 +5359,7 @@
       "def": 7.303206,
       "move_speed": 95,
       "attack_range": 65,
-      "attack_speed": 0.72,
+      "attack_speed": 0.504,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -5141,12 +5371,13 @@
         "id": "debuff_resistance",
         "display_name": "Yêu Thể Bất Phược",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -5158,7 +5389,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -5168,7 +5400,8 @@
       "radius": 65,
       "damage_multiplier": 1,
       "warning_time": 0.35,
-      "recovery": 0.3
+      "recovery": 0.3,
+      "element": "wood"
     },
     "reward": {
       "exp": 1,
@@ -5188,7 +5421,7 @@
       "def": 31.154548,
       "move_speed": 65,
       "attack_range": 170,
-      "attack_speed": 0.42,
+      "attack_speed": 0.294,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -5200,12 +5433,13 @@
         "id": "debuff_resistance",
         "display_name": "Yêu Thể Bất Phược",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -5217,7 +5451,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -5229,7 +5464,8 @@
       "warning_time": 0.65,
       "recovery": 0.3,
       "dash_distance": 160,
-      "dash_duration": 0.5
+      "dash_duration": 0.5,
+      "element": "wood"
     },
     "reward": {
       "exp": 1,
@@ -5249,7 +5485,7 @@
       "def": 3.418099,
       "move_speed": 65,
       "attack_range": 330,
-      "attack_speed": 0.48,
+      "attack_speed": 0.336,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -5261,12 +5497,13 @@
         "id": "debuff_resistance",
         "display_name": "Yêu Thể Bất Phược",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -5278,7 +5515,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -5299,7 +5537,8 @@
           "dps": 20,
           "tick_interval": 0.75
         }
-      ]
+      ],
+      "element": "wood"
     },
     "reward": {
       "exp": 1,
@@ -5319,7 +5558,7 @@
       "def": 12.983477,
       "move_speed": 72,
       "attack_range": 80,
-      "attack_speed": 0.48,
+      "attack_speed": 0.336,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -5331,12 +5570,13 @@
         "id": "debuff_resistance",
         "display_name": "Yêu Thể Bất Phược",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -5348,7 +5588,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -5358,7 +5599,8 @@
       "radius": 85,
       "damage_multiplier": 1,
       "warning_time": 0.35,
-      "recovery": 0.3
+      "recovery": 0.3,
+      "element": "wood"
     },
     "reward": {
       "exp": 1,
@@ -5378,7 +5620,7 @@
       "def": 6.086005,
       "move_speed": 110,
       "attack_range": 195,
-      "attack_speed": 0.65,
+      "attack_speed": 0.455,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -5390,12 +5632,13 @@
         "id": "debuff_resistance",
         "display_name": "Yêu Thể Bất Phược",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -5407,7 +5650,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -5419,7 +5663,8 @@
       "warning_time": 0.65,
       "recovery": 0.3,
       "dash_distance": 200,
-      "dash_duration": 0.32
+      "dash_duration": 0.32,
+      "element": "wood"
     },
     "reward": {
       "exp": 1,
@@ -5439,7 +5684,7 @@
       "def": 6.551356,
       "move_speed": 70,
       "attack_range": 350,
-      "attack_speed": 0.42,
+      "attack_speed": 0.294,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -5451,12 +5696,13 @@
         "id": "debuff_resistance",
         "display_name": "Yêu Thể Bất Phược",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -5468,7 +5714,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -5481,7 +5728,8 @@
       "recovery": 0.3,
       "projectile_speed": 320,
       "projectile_lifetime": 3.5,
-      "hit_radius": 16
+      "hit_radius": 16,
+      "element": "wood"
     },
     "reward": {
       "exp": 1,
@@ -5505,7 +5753,7 @@
       "def": 59.816733,
       "move_speed": 80,
       "attack_range": 110,
-      "attack_speed": 0.5,
+      "attack_speed": 0.35,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -5515,12 +5763,13 @@
       {
         "id": "debuff_resistance",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -5532,7 +5781,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": true
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -5552,7 +5802,8 @@
       "paralysis_duration": 0.5,
       "cooldown": 2,
       "initial_cooldown": 0,
-      "range": 180
+      "range": 180,
+      "element": "metal"
     },
     "boss_skills": [
       {
@@ -5572,7 +5823,8 @@
         "paralysis_duration": 0.5,
         "cooldown": 2,
         "initial_cooldown": 0,
-        "range": 180
+        "range": 180,
+        "element": "metal"
       },
       {
         "id": "B02",
@@ -5595,7 +5847,8 @@
         "bleed_duration": 4,
         "cooldown": 7,
         "initial_cooldown": 2,
-        "range": 470
+        "range": 470,
+        "element": "metal"
       },
       {
         "id": "B03",
@@ -5621,7 +5874,8 @@
         "knockback_distance": 50,
         "cooldown": 11,
         "initial_cooldown": 5,
-        "range": 600
+        "range": 600,
+        "element": "metal"
       },
       {
         "id": "B04",
@@ -5647,7 +5901,8 @@
         "cleanse_on_activate": true,
         "cooldown": 300,
         "initial_cooldown": 0,
-        "range": 1200
+        "range": 1200,
+        "element": "metal"
       }
     ],
     "reward": {
@@ -5672,7 +5927,7 @@
       "def": 52.339641,
       "move_speed": 60,
       "attack_range": 500,
-      "attack_speed": 0.35,
+      "attack_speed": 0.245,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -5682,12 +5937,13 @@
       {
         "id": "debuff_resistance",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -5699,7 +5955,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -5720,7 +5977,8 @@
       "burn_duration": 4,
       "cooldown": 2.8,
       "initial_cooldown": 0,
-      "range": 600
+      "range": 600,
+      "element": "fire"
     },
     "boss_skills": [
       {
@@ -5741,7 +5999,8 @@
         "burn_duration": 4,
         "cooldown": 2.8,
         "initial_cooldown": 0,
-        "range": 600
+        "range": 600,
+        "element": "fire"
       },
       {
         "id": "Z02",
@@ -5766,7 +6025,8 @@
         "tick_interval": 1,
         "cooldown": 7,
         "initial_cooldown": 3,
-        "range": 600
+        "range": 600,
+        "element": "fire"
       },
       {
         "id": "Z03",
@@ -5786,7 +6046,8 @@
         "burn_duration": 4,
         "cooldown": 10,
         "initial_cooldown": 6,
-        "range": 750
+        "range": 750,
+        "element": "fire"
       },
       {
         "id": "Z04",
@@ -5809,7 +6070,8 @@
         "revive_hp_ratio": 0.5,
         "cooldown": 300,
         "initial_cooldown": 0,
-        "range": 650
+        "range": 650,
+        "element": "fire"
       }
     ],
     "reward": {
@@ -5830,7 +6092,7 @@
       "def": 10.143341,
       "move_speed": 78,
       "attack_range": 70,
-      "attack_speed": 0.58,
+      "attack_speed": 0.406,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -5842,12 +6104,13 @@
         "id": "debuff_resistance",
         "display_name": "Yêu Thể Bất Phược",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -5859,7 +6122,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -5869,7 +6133,8 @@
       "radius": 65,
       "damage_multiplier": 1,
       "warning_time": 0.35,
-      "recovery": 0.3
+      "recovery": 0.3,
+      "element": "fire"
     },
     "reward": {
       "exp": 1,
@@ -5889,7 +6154,7 @@
       "def": 7.303206,
       "move_speed": 95,
       "attack_range": 65,
-      "attack_speed": 0.72,
+      "attack_speed": 0.504,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -5901,12 +6166,13 @@
         "id": "debuff_resistance",
         "display_name": "Yêu Thể Bất Phược",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -5918,7 +6184,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -5928,7 +6195,8 @@
       "radius": 65,
       "damage_multiplier": 1,
       "warning_time": 0.35,
-      "recovery": 0.3
+      "recovery": 0.3,
+      "element": "fire"
     },
     "reward": {
       "exp": 1,
@@ -5948,7 +6216,7 @@
       "def": 31.154548,
       "move_speed": 65,
       "attack_range": 170,
-      "attack_speed": 0.42,
+      "attack_speed": 0.294,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -5960,12 +6228,13 @@
         "id": "debuff_resistance",
         "display_name": "Yêu Thể Bất Phược",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -5977,7 +6246,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -5989,7 +6259,8 @@
       "warning_time": 0.65,
       "recovery": 0.3,
       "dash_distance": 160,
-      "dash_duration": 0.5
+      "dash_duration": 0.5,
+      "element": "fire"
     },
     "reward": {
       "exp": 1,
@@ -6009,7 +6280,7 @@
       "def": 3.418099,
       "move_speed": 65,
       "attack_range": 330,
-      "attack_speed": 0.48,
+      "attack_speed": 0.336,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -6021,12 +6292,13 @@
         "id": "debuff_resistance",
         "display_name": "Yêu Thể Bất Phược",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -6038,7 +6310,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -6059,7 +6332,8 @@
           "dps": 20,
           "tick_interval": 0.75
         }
-      ]
+      ],
+      "element": "fire"
     },
     "reward": {
       "exp": 1,
@@ -6079,7 +6353,7 @@
       "def": 12.983477,
       "move_speed": 72,
       "attack_range": 80,
-      "attack_speed": 0.48,
+      "attack_speed": 0.336,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -6091,12 +6365,13 @@
         "id": "debuff_resistance",
         "display_name": "Yêu Thể Bất Phược",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -6108,7 +6383,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -6118,7 +6394,8 @@
       "radius": 85,
       "damage_multiplier": 1,
       "warning_time": 0.35,
-      "recovery": 0.3
+      "recovery": 0.3,
+      "element": "fire"
     },
     "reward": {
       "exp": 1,
@@ -6138,7 +6415,7 @@
       "def": 6.086005,
       "move_speed": 110,
       "attack_range": 195,
-      "attack_speed": 0.65,
+      "attack_speed": 0.455,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -6150,12 +6427,13 @@
         "id": "debuff_resistance",
         "display_name": "Yêu Thể Bất Phược",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -6167,7 +6445,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -6179,7 +6458,8 @@
       "warning_time": 0.65,
       "recovery": 0.3,
       "dash_distance": 200,
-      "dash_duration": 0.32
+      "dash_duration": 0.32,
+      "element": "fire"
     },
     "reward": {
       "exp": 1,
@@ -6199,7 +6479,7 @@
       "def": 6.551356,
       "move_speed": 70,
       "attack_range": 350,
-      "attack_speed": 0.42,
+      "attack_speed": 0.294,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -6211,12 +6491,13 @@
         "id": "debuff_resistance",
         "display_name": "Yêu Thể Bất Phược",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -6228,7 +6509,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -6241,7 +6523,8 @@
       "recovery": 0.3,
       "projectile_speed": 320,
       "projectile_lifetime": 3.5,
-      "hit_radius": 16
+      "hit_radius": 16,
+      "element": "fire"
     },
     "reward": {
       "exp": 1,
@@ -6265,7 +6548,7 @@
       "def": 59.816733,
       "move_speed": 80,
       "attack_range": 110,
-      "attack_speed": 0.5,
+      "attack_speed": 0.35,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -6275,12 +6558,13 @@
       {
         "id": "debuff_resistance",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -6292,7 +6576,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": true
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -6312,7 +6597,8 @@
       "paralysis_duration": 0.5,
       "cooldown": 2,
       "initial_cooldown": 0,
-      "range": 180
+      "range": 180,
+      "element": "metal"
     },
     "boss_skills": [
       {
@@ -6332,7 +6618,8 @@
         "paralysis_duration": 0.5,
         "cooldown": 2,
         "initial_cooldown": 0,
-        "range": 180
+        "range": 180,
+        "element": "metal"
       },
       {
         "id": "B02",
@@ -6355,7 +6642,8 @@
         "bleed_duration": 4,
         "cooldown": 7,
         "initial_cooldown": 2,
-        "range": 470
+        "range": 470,
+        "element": "metal"
       },
       {
         "id": "B03",
@@ -6381,7 +6669,8 @@
         "knockback_distance": 50,
         "cooldown": 11,
         "initial_cooldown": 5,
-        "range": 600
+        "range": 600,
+        "element": "metal"
       },
       {
         "id": "B04",
@@ -6407,7 +6696,8 @@
         "cleanse_on_activate": true,
         "cooldown": 300,
         "initial_cooldown": 0,
-        "range": 1200
+        "range": 1200,
+        "element": "metal"
       }
     ],
     "reward": {
@@ -6432,7 +6722,7 @@
       "def": 52.339641,
       "move_speed": 60,
       "attack_range": 500,
-      "attack_speed": 0.35,
+      "attack_speed": 0.245,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -6442,12 +6732,13 @@
       {
         "id": "debuff_resistance",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -6459,7 +6750,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -6480,7 +6772,8 @@
       "burn_duration": 4,
       "cooldown": 2.8,
       "initial_cooldown": 0,
-      "range": 600
+      "range": 600,
+      "element": "fire"
     },
     "boss_skills": [
       {
@@ -6501,7 +6794,8 @@
         "burn_duration": 4,
         "cooldown": 2.8,
         "initial_cooldown": 0,
-        "range": 600
+        "range": 600,
+        "element": "fire"
       },
       {
         "id": "Z02",
@@ -6526,7 +6820,8 @@
         "tick_interval": 1,
         "cooldown": 7,
         "initial_cooldown": 3,
-        "range": 600
+        "range": 600,
+        "element": "fire"
       },
       {
         "id": "Z03",
@@ -6546,7 +6841,8 @@
         "burn_duration": 4,
         "cooldown": 10,
         "initial_cooldown": 6,
-        "range": 750
+        "range": 750,
+        "element": "fire"
       },
       {
         "id": "Z04",
@@ -6569,7 +6865,8 @@
         "revive_hp_ratio": 0.5,
         "cooldown": 300,
         "initial_cooldown": 0,
-        "range": 650
+        "range": 650,
+        "element": "fire"
       }
     ],
     "reward": {
@@ -6590,7 +6887,7 @@
       "def": 10.143341,
       "move_speed": 78,
       "attack_range": 70,
-      "attack_speed": 0.58,
+      "attack_speed": 0.406,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -6602,12 +6899,13 @@
         "id": "debuff_resistance",
         "display_name": "Yêu Thể Bất Phược",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -6619,7 +6917,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -6629,7 +6928,8 @@
       "radius": 65,
       "damage_multiplier": 1,
       "warning_time": 0.35,
-      "recovery": 0.3
+      "recovery": 0.3,
+      "element": "earth"
     },
     "reward": {
       "exp": 1,
@@ -6649,7 +6949,7 @@
       "def": 7.303206,
       "move_speed": 95,
       "attack_range": 65,
-      "attack_speed": 0.72,
+      "attack_speed": 0.504,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -6661,12 +6961,13 @@
         "id": "debuff_resistance",
         "display_name": "Yêu Thể Bất Phược",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -6678,7 +6979,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -6688,7 +6990,8 @@
       "radius": 65,
       "damage_multiplier": 1,
       "warning_time": 0.35,
-      "recovery": 0.3
+      "recovery": 0.3,
+      "element": "earth"
     },
     "reward": {
       "exp": 1,
@@ -6708,7 +7011,7 @@
       "def": 31.154548,
       "move_speed": 65,
       "attack_range": 170,
-      "attack_speed": 0.42,
+      "attack_speed": 0.294,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -6720,12 +7023,13 @@
         "id": "debuff_resistance",
         "display_name": "Yêu Thể Bất Phược",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -6737,7 +7041,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -6749,7 +7054,8 @@
       "warning_time": 0.65,
       "recovery": 0.3,
       "dash_distance": 160,
-      "dash_duration": 0.5
+      "dash_duration": 0.5,
+      "element": "earth"
     },
     "reward": {
       "exp": 1,
@@ -6769,7 +7075,7 @@
       "def": 3.418099,
       "move_speed": 65,
       "attack_range": 330,
-      "attack_speed": 0.48,
+      "attack_speed": 0.336,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -6781,12 +7087,13 @@
         "id": "debuff_resistance",
         "display_name": "Yêu Thể Bất Phược",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -6798,7 +7105,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -6819,7 +7127,8 @@
           "dps": 20,
           "tick_interval": 0.75
         }
-      ]
+      ],
+      "element": "earth"
     },
     "reward": {
       "exp": 1,
@@ -6839,7 +7148,7 @@
       "def": 12.983477,
       "move_speed": 72,
       "attack_range": 80,
-      "attack_speed": 0.48,
+      "attack_speed": 0.336,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -6851,12 +7160,13 @@
         "id": "debuff_resistance",
         "display_name": "Yêu Thể Bất Phược",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -6868,7 +7178,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -6878,7 +7189,8 @@
       "radius": 85,
       "damage_multiplier": 1,
       "warning_time": 0.35,
-      "recovery": 0.3
+      "recovery": 0.3,
+      "element": "earth"
     },
     "reward": {
       "exp": 1,
@@ -6898,7 +7210,7 @@
       "def": 6.086005,
       "move_speed": 110,
       "attack_range": 195,
-      "attack_speed": 0.65,
+      "attack_speed": 0.455,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -6910,12 +7222,13 @@
         "id": "debuff_resistance",
         "display_name": "Yêu Thể Bất Phược",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -6927,7 +7240,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -6939,7 +7253,8 @@
       "warning_time": 0.65,
       "recovery": 0.3,
       "dash_distance": 200,
-      "dash_duration": 0.32
+      "dash_duration": 0.32,
+      "element": "earth"
     },
     "reward": {
       "exp": 1,
@@ -6959,7 +7274,7 @@
       "def": 6.551356,
       "move_speed": 70,
       "attack_range": 350,
-      "attack_speed": 0.42,
+      "attack_speed": 0.294,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -6971,12 +7286,13 @@
         "id": "debuff_resistance",
         "display_name": "Yêu Thể Bất Phược",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -6988,7 +7304,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -7001,7 +7318,8 @@
       "recovery": 0.3,
       "projectile_speed": 320,
       "projectile_lifetime": 3.5,
-      "hit_radius": 16
+      "hit_radius": 16,
+      "element": "earth"
     },
     "reward": {
       "exp": 1,
@@ -7025,7 +7343,7 @@
       "def": 59.816733,
       "move_speed": 80,
       "attack_range": 110,
-      "attack_speed": 0.5,
+      "attack_speed": 0.35,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -7035,12 +7353,13 @@
       {
         "id": "debuff_resistance",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -7052,7 +7371,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": true
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -7072,7 +7392,8 @@
       "paralysis_duration": 0.5,
       "cooldown": 2,
       "initial_cooldown": 0,
-      "range": 180
+      "range": 180,
+      "element": "metal"
     },
     "boss_skills": [
       {
@@ -7092,7 +7413,8 @@
         "paralysis_duration": 0.5,
         "cooldown": 2,
         "initial_cooldown": 0,
-        "range": 180
+        "range": 180,
+        "element": "metal"
       },
       {
         "id": "B02",
@@ -7115,7 +7437,8 @@
         "bleed_duration": 4,
         "cooldown": 7,
         "initial_cooldown": 2,
-        "range": 470
+        "range": 470,
+        "element": "metal"
       },
       {
         "id": "B03",
@@ -7141,7 +7464,8 @@
         "knockback_distance": 50,
         "cooldown": 11,
         "initial_cooldown": 5,
-        "range": 600
+        "range": 600,
+        "element": "metal"
       },
       {
         "id": "B04",
@@ -7167,7 +7491,8 @@
         "cleanse_on_activate": true,
         "cooldown": 300,
         "initial_cooldown": 0,
-        "range": 1200
+        "range": 1200,
+        "element": "metal"
       }
     ],
     "reward": {
@@ -7192,7 +7517,7 @@
       "def": 52.339641,
       "move_speed": 60,
       "attack_range": 500,
-      "attack_speed": 0.35,
+      "attack_speed": 0.245,
       "projectile_speed": 320,
       "crit_rate": 0,
       "crit_damage": 1.5
@@ -7202,12 +7527,13 @@
       {
         "id": "debuff_resistance",
         "params": {
+          "duration_multiplier": 0,
           "effect_ids": [
             "root"
           ],
-          "duration_multiplier": 0,
           "duration_seconds": null
-        }
+        },
+        "element": "neutral"
       },
       {
         "id": "beast_bloodline",
@@ -7219,7 +7545,8 @@
           "max_triggers": 1,
           "duration_seconds": null,
           "manual_activation": false
-        }
+        },
+        "element": "neutral"
       }
     ],
     "attack_skill": {
@@ -7240,7 +7567,8 @@
       "burn_duration": 4,
       "cooldown": 2.8,
       "initial_cooldown": 0,
-      "range": 600
+      "range": 600,
+      "element": "fire"
     },
     "boss_skills": [
       {
@@ -7261,7 +7589,8 @@
         "burn_duration": 4,
         "cooldown": 2.8,
         "initial_cooldown": 0,
-        "range": 600
+        "range": 600,
+        "element": "fire"
       },
       {
         "id": "Z02",
@@ -7286,7 +7615,8 @@
         "tick_interval": 1,
         "cooldown": 7,
         "initial_cooldown": 3,
-        "range": 600
+        "range": 600,
+        "element": "fire"
       },
       {
         "id": "Z03",
@@ -7306,7 +7636,8 @@
         "burn_duration": 4,
         "cooldown": 10,
         "initial_cooldown": 6,
-        "range": 750
+        "range": 750,
+        "element": "fire"
       },
       {
         "id": "Z04",
@@ -7329,7 +7660,8 @@
         "revive_hp_ratio": 0.5,
         "cooldown": 300,
         "initial_cooldown": 0,
-        "range": 650
+        "range": 650,
+        "element": "fire"
       }
     ],
     "reward": {

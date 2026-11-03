@@ -1,0 +1,75 @@
+{
+  "utc": "2026-11-03T07:27:52.325788+00:00",
+  "config_version": 88,
+  "result": "PASS",
+  "legacy_enemies": 99,
+  "species": 50,
+  "effective_speed_checks": 1250,
+  "multiplier": 0.7,
+  "other_catalog_stats_and_stage_wave_data_unchanged": true,
+  "examples": [
+    {
+      "group": "roles",
+      "id": "tank",
+      "before": 0.775,
+      "after": 0.5425
+    },
+    {
+      "group": "roles",
+      "id": "damage",
+      "before": 0.725,
+      "after": 0.5075
+    },
+    {
+      "group": "roles",
+      "id": "ranger",
+      "before": 1.5,
+      "after": 1.05
+    },
+    {
+      "group": "roles",
+      "id": "medium",
+      "before": 0.75,
+      "after": 0.525
+    },
+    {
+      "group": "roles",
+      "id": "runner",
+      "before": 1.56,
+      "after": 1.092
+    },
+    {
+      "group": "boss_elements",
+      "id": "earth",
+      "before": 1.86,
+      "after": 1.302
+    },
+    {
+      "group": "boss_elements",
+      "id": "fire",
+      "before": 1.74,
+      "after": 1.218
+    },
+    {
+      "group": "boss_elements",
+      "id": "metal",
+      "before": 1.8,
+      "after": 1.26
+    },
+    {
+      "group": "boss_elements",
+      "id": "water",
+      "before": 1.8,
+      "after": 1.26
+    },
+    {
+      "group": "boss_elements",
+      "id": "wood",
+      "before": 2.34,
+      "after": 1.638
+    }
+  ],
+  "backup": "tmp\\enemy-attack-speed-1793690739742",
+  "client_framework_checks": 1191,
+  "local_installer_idempotence": "ALREADY_INSTALLED"
+}

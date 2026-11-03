@@ -1,4 +1,7 @@
 import http from 'node:http';
+import {retentionKeys,tickArchiveExpiry} from './archive-operations.js';
+import {restoreAccount} from './deletion.js';
+import {archivePolicy as deletionPolicy,archiveAccount,purgeGameplay,dataset} from './archive.js';
 import {readFile} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import {randomUUID,createHmac,timingSafeEqual} from 'node:crypto';
@@ -19,6 +22,9 @@ export async function createService(env=process.env,overrides={}) {
  const google=overrides.google||new OAuth2Client();
  const transport=overrides.transport||createSmtpTransport(env);
  await pool.query(await readFile(new URL('../schema.sql',import.meta.url),'utf8'));
+ await pool.query(await readFile(new URL('../archive-v3.sql',import.meta.url),'utf8'));
+ await pool.query(await readFile(new URL('../archive-operations.sql',import.meta.url),'utf8'));
+ const keys=retentionKeys(env);
  const bridge=overrides.bridge||async function(action,payload={}) {
    const url=new URL('/v2/rpc/account_identity_bridge',nkURL);url.searchParams.set('http_key',env.NAKAMA_HTTP_KEY);
    const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(JSON.stringify({...payload,action,secret:env.ACCOUNT_IDENTITY_SECRET})),signal:AbortSignal.timeout(20000)});
@@ -55,13 +61,15 @@ export async function createService(env=process.env,overrides={}) {
      const pending=await db.query(`SELECT count(*)::INT AS n FROM account_identity_challenges WHERE email=$1 AND purpose=$2 AND consumed_at IS NULL AND expires_at>NOW()`,[email,purpose]);
      if(pending.rows[0].n>=5)return;
      const token=newToken(),id=randomUUID();
+     const ttl=['delete_account','restore_account'].includes(purpose)?(await deletionPolicy(db)).reauth.email_link_ttl_seconds:900;
      await db.query(`INSERT INTO account_identity_challenges(id,token_hash,purpose,email,user_id,generation,expires_at)
-       VALUES($1,$2,$3,$4,$5,$6,NOW()+INTERVAL '15 minutes')`,[id,hash(token),purpose,email,account?.user_id||null,account?.generation||'']);
+       VALUES($1,$2,$3,$4,$5,$6,NOW()+$7*INTERVAL '1 second')`,[id,hash(token),purpose,email,account?.user_id||null,account?.generation||'',ttl]);
      await db.query('INSERT INTO account_identity_outbox(challenge_id,payload) VALUES($1,$2)',[id,seal({token,purpose,email},env.ACCOUNT_IDENTITY_OUTBOX_KEY)]);
    });
  }
  const deletionReceipt=key=>createHmac('sha256',env.ACCOUNT_IDENTITY_SECRET).update('C232-deletion:'+key).digest('base64url');
  async function claimDeletion(db,a,confirmationHash) {
+   const policy=await deletionPolicy(db);
    const receipt=confirmationHash?deletionReceipt(confirmationHash):newToken(),id=randomUUID();
    const current=await db.query(`SELECT u.id,u.email,u.google_id,s.generation FROM users u JOIN player_login_sessions s ON s.user_id=u.id WHERE u.id=$1 FOR UPDATE OF u`,[a.user_id]);
    const row=current.rows[0];if(!row||row.generation!==a.generation||String(row.email||'')!==a.email||String(row.google_id||'')!==String(a.google_id||''))throw fail('IDENTITY_CHANGED',409);
@@ -73,8 +81,12 @@ export async function createService(env=process.env,overrides={}) {
    const lock=await db.query(`INSERT INTO account_link_state(user_id,status,active_requests) VALUES($1,'deleting',0)
      ON CONFLICT(user_id) DO UPDATE SET status='deleting' WHERE account_link_state.status='active' RETURNING user_id`,[a.user_id]);
    if(!lock.rowCount)throw fail('ACCOUNT_BUSY',409);
-   await db.query('INSERT INTO account_identity_deletions(id,user_id,receipt_hash,confirmation_hash) VALUES($1,$2,$3,$4)',[id,a.user_id,hash(receipt),confirmationHash||null]);
-   return {success:true,receipt,message:'Đã tiếp nhận yêu cầu xóa. Tài khoản đã ngừng hoạt động; việc xóa dữ liệu đang được xử lý.'};
+   const accepted=await db.query(`INSERT INTO account_identity_deletions(id,user_id,receipt_hash,confirmation_hash,status,flow_version,soft_deleted_at,restore_until,policy_snapshot)
+     VALUES($1,$2,$3,$4,'soft_deleted',3,NOW(),NOW()+$5*INTERVAL '1 day',$6::jsonb) RETURNING restore_until`,[id,a.user_id,hash(receipt),confirmationHash||null,policy.soft_delete_days,JSON.stringify(policy)]);
+   await db.query('UPDATE player_login_sessions SET generation=$2 WHERE user_id=$1',[a.user_id,'deleting-'+id]);
+   if(a.email)await db.query('INSERT INTO account_deletion_notices(deletion_id,payload) VALUES($1,$2)',[id,seal({email:a.email,receipt,restore_until:accepted.rows[0].restore_until},env.ACCOUNT_IDENTITY_OUTBOX_KEY)]);
+   return {success:true,receipt,status:'soft_deleted',restore_until:accepted.rows[0].restore_until,message:'Đạo hữu đã xác nhận yêu cầu xóa. Tài khoản tạm ngừng hoạt động; có thể khôi phục trước hạn hiển thị trên biên nhận. Email và số điện thoại vẫn được giữ chỗ trong thời gian này.'};
+
  }
  async function completeRegistration(body) {
    if(!validToken(body.token)||!passwordValid(body.password)||! /^[A-Za-z0-9_\-]{3,64}$/.test(body.username||''))throw fail('INVALID_REGISTRATION');
@@ -101,12 +113,13 @@ export async function createService(env=process.env,overrides={}) {
      if(accepted.rowCount)return {success:true,receipt:deletionReceipt(hash(body.token)),message:'Yêu cầu xóa đã được tiếp nhận trước đó.'};
    }
    return transaction(async db=>{
-     const {rows}=await db.query(`SELECT * FROM account_identity_challenges WHERE token_hash=$1 AND purpose IN('verify_legacy_email','delete_account')
+     const {rows}=await db.query(`SELECT * FROM account_identity_challenges WHERE token_hash=$1 AND purpose IN('verify_legacy_email','delete_account','restore_account')
        AND consumed_at IS NULL AND expires_at>NOW() FOR UPDATE`,[hash(body.token)]);
      const c=rows[0];if(!c||body.purpose!==c.purpose)throw fail('LINK_EXPIRED');
      if(c.purpose==='delete_account'&&body.confirmation!=='XOA')throw fail('CONFIRMATION_REQUIRED');
-     await bridge('password_proof',{user_id:c.user_id,email:c.email,generation:c.generation,password:body.password});
+     await bridge(c.purpose==='restore_account'?'restore_password_proof':'password_proof',{user_id:c.user_id,email:c.email,generation:c.generation,password:body.password});
      await db.query('UPDATE account_identity_challenges SET consumed_at=NOW() WHERE id=$1',[c.id]);
+     if(c.purpose==='restore_account')return restoreAccount(db,c.user_id,c.generation);
      if(c.purpose==='verify_legacy_email') {
        // Row lock + fresh identity recheck after network proof prevents link/email race.
        const owner=await db.query(`SELECT u.id FROM users u JOIN player_login_sessions s ON s.user_id=u.id WHERE u.id=$1 AND u.email=$2 AND s.generation=$3 FOR UPDATE OF u`,[c.user_id,c.email,c.generation]);
@@ -123,6 +136,20 @@ export async function createService(env=process.env,overrides={}) {
  async function tick() {
    if(running)return;running=true;
    try{
+     if((await pool.query('SELECT state FROM account_archive_restore_gate WHERE singleton=TRUE')).rows[0]?.state!=='ready')return;
+     const notices=await pool.query(`UPDATE account_deletion_notices SET lease_until=NOW()+INTERVAL '90 seconds'
+       WHERE deletion_id IN(SELECT deletion_id FROM account_deletion_notices WHERE status='queued' AND next_attempt_at<=NOW() AND (lease_until IS NULL OR lease_until<NOW()) LIMIT 3 FOR UPDATE SKIP LOCKED) RETURNING *`);
+     for(const notice of notices.rows)try{
+       const data=unseal(notice.payload,env.ACCOUNT_IDENTITY_OUTBOX_KEY);
+       const state=await pool.query('SELECT status FROM account_identity_deletions WHERE id=$1',[notice.deletion_id]);
+       const archivedNotice=data.event==='archived';
+       if(!state.rows.length||(archivedNotice?!['archived','gameplay_purged','gameplay_review'].includes(state.rows[0].status):state.rows[0].status!=='soft_deleted'||new Date(data.restore_until)<=new Date())){await pool.query("UPDATE account_deletion_notices SET payload='',status='discarded' WHERE deletion_id=$1",[notice.deletion_id]);continue;}
+       const url=new URL('/account/confirm',publicURL);url.hash=new URLSearchParams({receipt:data.receipt}).toString();
+       const until=new Date(archivedNotice?data.gameplay_purge_at:data.restore_until).toLocaleString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'});
+       await transport.sendMail({from:{name:'Thông Thiên Lộ',address:env.SMTP_FROM},to:data.email,subject:archivedNotice?'Thông Thiên Lộ — Tài khoản đã được lưu trữ':'Thông Thiên Lộ — Đã tiếp nhận yêu cầu xóa',
+         text:archivedNotice?'Tài khoản của đạo hữu đã được lưu trữ và không thể khôi phục. Email và số điện thoại đã được giải phóng. Lịch dọn dữ liệu trò chơi: '+until+' (GMT+7). Một số hồ sơ tài khoản và hồ sơ giao dịch được giữ theo chính sách riêng. Biên nhận: '+url.href:'Đạo hữu đã xác nhận yêu cầu xóa. Tài khoản tạm ngừng hoạt động. Hạn khôi phục: '+until+' (GMT+7). Email và số điện thoại tiếp tục được giữ chỗ trong thời gian chờ. Hết hạn sẽ không thể khôi phục. Khi hoàn tất lưu trữ, thông tin đăng ký được giải phóng; dữ liệu trò chơi được dọn theo lịch riêng ghi trên biên nhận. Xóa không tự hủy đăng ký hoặc hoàn tiền Google Play. Biên nhận: '+url.href+' . Để khôi phục bằng email và mật khẩu: '+new URL('/account/confirm#restore=1',publicURL).href});
+       await pool.query("UPDATE account_deletion_notices SET payload='',status='sent',lease_until=NULL WHERE deletion_id=$1 AND payload=$2",[notice.deletion_id,notice.payload]);
+     }catch{await pool.query("UPDATE account_deletion_notices SET next_attempt_at=NOW()+INTERVAL '60 seconds',lease_until=NULL WHERE deletion_id=$1 AND payload=$2",[notice.deletion_id,notice.payload]);}
      const {rows}=await pool.query(`UPDATE account_identity_outbox SET lease_until=NOW()+INTERVAL '90 seconds',attempts=attempts+1
        WHERE challenge_id IN(SELECT o.challenge_id FROM account_identity_outbox o WHERE status='queued' AND next_attempt_at<=NOW()
        AND (lease_until IS NULL OR lease_until<NOW()) ORDER BY next_attempt_at LIMIT 3 FOR UPDATE SKIP LOCKED) RETURNING *`);
@@ -143,10 +170,29 @@ export async function createService(env=process.env,overrides={}) {
          console.warn('account-identity: SMTP send failed; retry queued (credentials and recipient omitted)');
        }
      }
-     const jobs=await pool.query("SELECT id FROM account_identity_deletions WHERE status IN('queued','processing','retrying') AND (attempts=0 OR updated_at<NOW()-INTERVAL '30 seconds') ORDER BY updated_at LIMIT 5");
-     for(const job of jobs.rows){try{const result=await bridge('delete_tick',{job_id:job.id});if(result.status==='retrying')throw Error('Lease not drained');}catch{
-       await pool.query("UPDATE account_identity_deletions SET attempts=attempts+1,status=CASE WHEN attempts>=11 THEN 'manual_review' ELSE 'retrying' END,updated_at=NOW() WHERE id=$1 AND status<>'completed'",[job.id]);
-       console.warn('account-identity: deletion retry/manual review pending');}}
+     // v1/v2 destructive jobs require explicit migration/review; never use old delete_tick.
+     await pool.query("UPDATE account_identity_deletions SET status='manual_review',updated_at=NOW() WHERE flow_version<>3 AND (status IN('queued','processing','retrying','purge_pending') OR status='soft_deleted' AND restore_until<=NOW())");
+     let p;try{p=await deletionPolicy(pool);}catch{p=null;}
+     if(p){
+       const due=await pool.query("SELECT id FROM account_identity_deletions WHERE flow_version=3 AND status IN('soft_deleted','archive_failed') AND restore_until<=NOW() AND next_attempt_at<=NOW() AND NOT hold AND NOT EXISTS(SELECT 1 FROM account_archive_holds h WHERE h.deletion_id=account_identity_deletions.id AND h.released_at IS NULL AND h.action IN('all','archive')) AND EXISTS(SELECT 1 FROM account_link_state a WHERE a.user_id=account_identity_deletions.user_id AND a.active_requests=0) ORDER BY restore_until LIMIT $1",[p.worker.batch_size]);
+       for(const job of due.rows)try{
+         await transaction(db=>archiveAccount(db,job.id,env.ACCOUNT_RETENTION_KEY!==env.ACCOUNT_IDENTITY_OUTBOX_KEY&&env.ACCOUNT_RETENTION_KEY!==env.ACCOUNT_IDENTITY_SECRET?env.ACCOUNT_RETENTION_KEY:'',env.ACCOUNT_RETENTION_KEY_ID,{key:env.ACCOUNT_IDENTITY_OUTBOX_KEY,secret:env.ACCOUNT_IDENTITY_SECRET},keys));
+       }catch{
+         await pool.query("UPDATE account_identity_deletions SET attempts=attempts+1,status=CASE WHEN attempts+1 >= $2 THEN 'manual_review' ELSE 'archive_failed' END,last_error_code='ARCHIVE_DEFERRED',next_attempt_at=NOW()+$3*INTERVAL '1 second',updated_at=NOW() WHERE id=$1 AND status IN('soft_deleted','archive_failed')",[job.id,p.worker.max_attempts,p.worker.retry_backoff_seconds]);
+       }
+       const scan=await transaction(async db=>{
+         const claim=await db.query("SELECT name FROM account_archive_worker_state WHERE name='gameplay' AND next_run_at<=NOW() FOR UPDATE SKIP LOCKED");
+         if(!claim.rowCount||!p.gameplay_purge_enabled)return [];
+         await db.query("UPDATE account_archive_worker_state SET next_run_at=NOW()+$1*INTERVAL '1 second' WHERE name='gameplay'",[p.worker.scan_interval_seconds]);
+         return (await db.query("SELECT id FROM account_identity_deletions WHERE flow_version=3 AND status='archived' AND gameplay_purge_at<=NOW() AND next_attempt_at<=NOW() AND NOT hold AND NOT EXISTS(SELECT 1 FROM account_archive_holds h WHERE h.deletion_id=account_identity_deletions.id AND h.released_at IS NULL AND h.action IN('all','gameplay_purge')) ORDER BY gameplay_purge_at LIMIT $1",[p.worker.batch_size])).rows;
+       });
+       for(const job of scan)try{await transaction(db=>purgeGameplay(db,job.id));}catch{
+         await pool.query("UPDATE account_identity_deletions SET attempts=attempts+1,status=CASE WHEN attempts+1 >= $3 THEN 'gameplay_review' ELSE status END,last_error_code='GAMEPLAY_PURGE_DEFERRED',next_attempt_at=NOW()+$2*INTERVAL '1 second' WHERE id=$1 AND status='archived'",[job.id,p.worker.retry_backoff_seconds,p.worker.max_attempts]);
+         await pool.query("UPDATE account_archive_worker_state SET next_run_at=LEAST(next_run_at,NOW()+$1*INTERVAL '1 second') WHERE name='gameplay'",[p.worker.retry_backoff_seconds]);
+       }
+       if(scan.length===p.worker.batch_size)await pool.query("UPDATE account_archive_worker_state SET next_run_at=NOW() WHERE name='gameplay'");
+     }
+     await tickArchiveExpiry(pool);
      // No passwords in pending data; expired delivery payloads redacted promptly.
      await pool.query(`UPDATE account_identity_outbox SET payload='',status='discarded' WHERE status='queued' AND challenge_id IN(SELECT id FROM account_identity_challenges WHERE expires_at<=NOW() OR consumed_at IS NOT NULL)`);
      await pool.query("DELETE FROM account_identity_rates WHERE expires_at<NOW()-INTERVAL '1 day'");
@@ -156,9 +202,11 @@ export async function createService(env=process.env,overrides={}) {
    }finally{running=false;}
  }
  const messages={INVALID_EMAIL:'Địa chỉ email không hợp lệ.',INVALID_REGISTRATION:'Tên đăng nhập cần 3–64 ký tự chữ/số/_/-. Mật khẩu cần ít nhất 8 ký tự, tối đa 72 byte.',
+   ARCHIVE_RESTORE_BLOCKED:'Máy chủ đang đối soát dữ liệu khôi phục. Đạo hữu vui lòng thử lại sau.',
+   DELETION_POLICY_UNAVAILABLE:'Chưa có chính sách xóa tài khoản hợp lệ. Đạo hữu vui lòng thử lại sau.',RESTORE_UNAVAILABLE:'Đạo hữu không còn yêu cầu xóa có thể khôi phục trong thời hạn.',
    LINK_EXPIRED:'Link đã hết hạn, đã dùng hoặc không còn hợp lệ. Hãy yêu cầu link mới.',ACCOUNT_EXISTS:'Địa chỉ này đã có tài khoản. Hãy quay lại đăng nhập; link đăng ký không thể đổi mật khẩu.',
    INVALID_PROOF:'Thông tin xác nhận chưa hợp lệ.',AUTH_REQUIRED:'Vui lòng đăng nhập lại.',IDENTITY_CHANGED:'Tài khoản hoặc phiên đăng nhập đã đổi. Hãy yêu cầu link mới.',
-   CONFIRMATION_REQUIRED:'Nhập XOA để xác nhận xóa vĩnh viễn.',ACCOUNT_BUSY:'Tài khoản đang có yêu cầu xử lý. Hãy thử lại hoặc liên hệ hỗ trợ.',
+   CONFIRMATION_REQUIRED:'Nhập XOA để xác nhận bắt đầu thời gian chờ xóa.',ACCOUNT_BUSY:'Tài khoản đang có yêu cầu xử lý. Hãy thử lại hoặc liên hệ hỗ trợ.',
    BACKEND_UNAVAILABLE:'Chưa thể xác minh với máy chủ. Vui lòng thử lại.',BACKEND_REJECTED:'Không xác minh được tài khoản. Kiểm tra mật khẩu hoặc yêu cầu link mới.',
    USE_GOOGLE_OR_SUPPORT:'Hãy xác nhận Google hoặc liên hệ admin@lkvustudio.com để được hỗ trợ xác minh.',
    VERIFY_EMAIL_FIRST:'Vui lòng xác nhận email tài khoản trước.',RATE_LIMIT:'Bạn thao tác quá nhanh. Vui lòng đợi một phút rồi thử lại.',
@@ -181,6 +229,7 @@ export async function createService(env=process.env,overrides={}) {
        res.setHeader('Content-Type','text/html; charset=utf-8');res.removeHeader('Content-Security-Policy');return res.end(await readFile(new URL('../documents/'+file,import.meta.url)));
      }
      if(req.method!=='POST')throw fail('NOT_FOUND',404);
+     if(!['/account/deletion/status','/account/link/status'].includes(path)&&(await pool.query('SELECT state FROM account_archive_restore_gate WHERE singleton=TRUE')).rows[0]?.state!=='ready')throw fail('ARCHIVE_RESTORE_BLOCKED',503);
      if(req.headers.origin&&req.headers.origin!==publicURL.origin)throw fail('FORBIDDEN',403);
      if(!String(req.headers['content-type']||'').startsWith('application/json'))throw fail('JSON_REQUIRED',415);
      const ip=req.socket.remoteAddress||'unknown';
@@ -197,19 +246,37 @@ export async function createService(env=process.env,overrides={}) {
        if(supplied.length!==expected.length||!timingSafeEqual(supplied,expected))throw fail('FORBIDDEN',403);
        const audience=String(env.GOOGLE_WEB_CLIENT_IDS||'').split(',').map(s=>s.trim()).filter(Boolean);if(!audience.length)throw fail('GOOGLE_NOT_CONFIGURED',503);
        const ticket=await google.verifyIdToken({idToken:body.id_token,audience}),claims=ticket.getPayload();
+       if(path==='/account/internal/google-proof') {
+         const reserved=await pool.query(`SELECT 1 FROM users u JOIN account_identity_deletions d ON d.user_id=u.id WHERE (u.google_id=$1 OR (LOWER(u.email)=LOWER($2) AND $2<>'')) AND d.status<>'cancelled'`,[claims.sub,googleEmailAuthority(claims)?claims.email:'']);
+         if(reserved.rowCount)throw fail('RESTORE_UNAVAILABLE',409);
+       }
        if(path==='/account/internal/google-proof')return json(res,200,{success:true,authoritative_email:googleEmailAuthority(claims)?claims.email:''});
        const {rows}=await pool.query('SELECT email,google_id FROM users WHERE id=$1',[body.user_id]);
        if(!rows.length||rows[0].google_id!==claims.sub||rows[0].email!==claims.email||!googleEmailAuthority(claims))throw fail('VERIFY_EMAIL_FIRST',403);
        result={success:true,email:claims.email};
      }else if(path==='/account/link/status') {
-       if(!validToken(body.token)||!['register_email','verify_legacy_email','delete_account'].includes(body.purpose))throw fail('LINK_EXPIRED',410);
+       if(!validToken(body.token)||!['register_email','verify_legacy_email','delete_account','restore_account'].includes(body.purpose))throw fail('LINK_EXPIRED',410);
        const {rows}=await pool.query(`SELECT c.id FROM account_identity_challenges c
          WHERE c.token_hash=$1 AND c.purpose=$2 AND c.consumed_at IS NULL AND c.expires_at>NOW()
          AND (c.purpose='register_email' AND NOT EXISTS(SELECT 1 FROM users u WHERE u.email=c.email)
            OR c.purpose<>'register_email' AND EXISTS(SELECT 1 FROM users u JOIN player_login_sessions s ON s.user_id=u.id
-             WHERE u.id=c.user_id AND u.email=c.email AND s.generation=c.generation))`,[hash(body.token),body.purpose]);
+             WHERE u.id=c.user_id AND u.email=c.email AND s.generation=c.generation)
+             AND (c.purpose<>'restore_account' OR EXISTS(SELECT 1 FROM account_identity_deletions d WHERE d.user_id=c.user_id AND d.status='soft_deleted' AND d.flow_version IN(2,3) AND d.restore_until>NOW())))`,[hash(body.token),body.purpose]);
        if(!rows.length)throw fail('LINK_EXPIRED',410);
-       result={success:true};
+       if(body.purpose==='delete_account'){const p=await deletionPolicy(pool);result={success:true,deletion_policy:{soft_delete_days:p.soft_delete_days,gameplay_purge_calendar_months:dataset(p,'gameplay').calendar_months,notice_template_revision:p.notice_template_revision}};}else result={success:true};
+     }else if(path==='/account/restoration/request') {
+       const email=normalizeEmail(body.email);
+       const {rows}=await pool.query(`SELECT u.id AS user_id,u.email,s.generation FROM users u JOIN player_login_sessions s ON s.user_id=u.id
+         JOIN account_identity_deletions d ON d.user_id=u.id WHERE u.email=$1 AND octet_length(u.password)>0 AND d.flow_version IN(2,3) AND d.status='soft_deleted' AND d.restore_until>NOW()`,[email]);
+       if(rows.length)await queue(email,'restore_account',rows[0],ip);
+       result={success:true,message:GENERIC};
+     }else if(path==='/account/restoration/google') {
+       const audience=String(env.GOOGLE_WEB_CLIENT_IDS||'').split(',').map(s=>s.trim()).filter(Boolean);if(!audience.length)throw fail('GOOGLE_NOT_CONFIGURED',503);
+       const ticket=await google.verifyIdToken({idToken:body.id_token,audience}),claims=ticket.getPayload();
+       if(!claims.sub||!claims.iat||claims.iat<Date.now()/1000-(await deletionPolicy(pool)).reauth.google_max_age_seconds||claims.iat>Date.now()/1000+30)throw fail('INVALID_GOOGLE_PROOF',403);
+       const {rows}=await pool.query('SELECT u.id,s.generation FROM users u JOIN player_login_sessions s ON s.user_id=u.id WHERE u.google_id=$1',[claims.sub]);
+       if(!rows.length)throw fail('RESTORE_UNAVAILABLE',409);
+       result=await transaction(db=>restoreAccount(db,rows[0].id,rows[0].generation));
      }else if(path==='/account/registration/request') {
        await queue(normalizeEmail(body.email),'register_email',null,ip);result={success:true,message:GENERIC};
      }else if(path==='/account/registration/complete')result=await completeRegistration(body);
@@ -227,12 +294,12 @@ export async function createService(env=process.env,overrides={}) {
        if(body.confirmation!=='XOA'||!a.google_linked||!body.id_token)throw fail('INVALID_PROOF');
        const audiences=String(env.GOOGLE_WEB_CLIENT_IDS||'').split(',').map(s=>s.trim()).filter(Boolean);if(!audiences.length)throw fail('GOOGLE_NOT_CONFIGURED',503);
        const ticket=await google.verifyIdToken({idToken:body.id_token,audience:audiences});const claims=ticket.getPayload();
-       if(claims.sub!==a.google_id||!claims.iat||claims.iat<Date.now()/1000-300||claims.iat>Date.now()/1000+30)throw fail('INVALID_GOOGLE_PROOF',403);
+       if(claims.sub!==a.google_id||!claims.iat||claims.iat<Date.now()/1000-(await deletionPolicy(pool)).reauth.google_max_age_seconds||claims.iat>Date.now()/1000+30)throw fail('INVALID_GOOGLE_PROOF',403);
        result=await transaction(db=>claimDeletion(db,a,hash(body.request_key)));
      }else if(path==='/account/deletion/status') {
        if(!validToken(body.receipt))throw fail('NOT_FOUND',404);
-       const {rows}=await pool.query('SELECT status FROM account_identity_deletions WHERE receipt_hash=$1',[hash(body.receipt)]);if(!rows.length)throw fail('NOT_FOUND',404);
-       result={success:true,status:rows[0].status};
+       const {rows}=await pool.query("SELECT status,CASE WHEN status='soft_deleted' AND restore_until<=NOW() THEN 'archive_pending' ELSE status END AS lifecycle_state,restore_until,archived_at,gameplay_purge_at,gameplay_purged_at,identity_released_at IS NOT NULL AS identity_released,(status='soft_deleted' AND flow_version IN(2,3) AND restore_until>NOW()) AS restore_eligible FROM account_identity_deletions WHERE receipt_hash=$1",[hash(body.receipt)]);if(!rows.length)throw fail('NOT_FOUND',404);
+       result={success:true,...rows[0]};
      }else throw fail('NOT_FOUND',404);
      json(res,200,result);
    }catch(error){json(res,error.status||400,{success:false,code:messages[error.message]?error.message:'REQUEST_FAILED',message:messages[error.message]||'Yêu cầu chưa hoàn tất. Thử lại hoặc liên hệ admin@lkvustudio.com.'});}

@@ -25,6 +25,7 @@ const nk={
  },
  notificationSend(){throw Error('disconnected socket');},
  sqlQuery(sql,args){
+  if(sql==='SELECT id, level_min, sort_order FROM game_arcs ORDER BY sort_order')return[{id:'arc_1',level_min:1,sort_order:1}];
   if(sql.includes('FROM game_stages'))return[{id:'stage_1_1',exp_weight:1,is_boss:false,arc_id:'arc_1'}];
   if(sql.includes('FROM game_stage_levels'))return[{stamina_cost:1,exp_multiplier:1,gold_reward:10,loot_table:[{item_id:'material',base_quantity:10,min_qty:1,max_qty:20,drop_rate:1}],boss_loot_table:[]}];
   if(sql.includes('SELECT stackable'))return[{stackable:true,max_stack:999999}];

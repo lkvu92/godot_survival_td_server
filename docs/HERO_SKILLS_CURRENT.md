@@ -16,7 +16,7 @@ Tài liệu không phải gameplay config và không chứng minh bản local/VP
 | 4 — U Ảnh Độc Tôn | [Hero 4](heroes/HERO_4.md) | Mốc damage/độc mới, giới hạn bẫy theo hero; xoáy 2,5s/5 nhịp, độc kim cộng ATK và cap 5.000 DPS. |
 | 5 — Vạn Tượng Quán Âm | [Hero 5](heroes/HERO_5.md) | Tia/nổ riêng, cổ ngữ trễ, chưởng/đất nứt/sóng lan; kim thân đứng yên, bảo vệ 0,5s, ấn ký tính từ hit thật. |
 
-[Chỉ số hero và mô phỏng Lv1/50/70 — cân bằng vòng 2](HERO_STATS_CURRENT.md).
+[Chỉ số hero và mô phỏng Lv1/30/50/70 — cân bằng vòng 3](HERO_STATS_CURRENT.md).
 
 ## Cách đọc và quyền dữ liệu
 

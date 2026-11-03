@@ -21,6 +21,7 @@ const base={sqlQuery(sql,args){
 },notificationSend(){notifications++;throw Error('offline socket');}};
 c.getRemoteConfigValue=()=>({warning_hours:24,retention_days:7});
 c.parseJsonObject=v=>typeof v==='string'?JSON.parse(v):v;
+c.talismanItemQuantity=(items,id)=>items.filter(i=>i.item_id===id).reduce((sum,i)=>sum+Number(i.quantity||0),0);
 c.weeklyClaimKey=(p,b)=>p+'_'+b;
 c.progressionApplyUser=(_nk,p,amount)=>{p.exp=(p.exp||0)+amount;};c.progressionReconcileLevelUnlocks=()=>{};
 const scope={accountId:'buyer',serverId:'s001',generation:1},nk=fn('characterRuntime')(base,scope),userId='buyer';
@@ -32,6 +33,9 @@ const claim=id=>fn('mailClaimOne')(nk,userId,id),read=(collection,key)=>nk.stora
 const id=deliver({}).id;assert.equal(deliver({}).idempotent,true);assert.equal(notifications,1);
 fail=true;assert.equal(claim(id).code,'DATA_CHANGED');assert.equal(read('player_profiles','main').value.resources.gold,0);assert.equal(read('player_inventory','items').value.items.length,0);assert.equal(read('player_mail',id).value.claimed_at_ms,null);
 assert.equal(claim(id).success,true);assert.equal(read('player_profiles','main').value.resources.gold,7);assert.equal(read('player_profiles','main').value.exp,3);assert.equal(read('player_inventory','items').value.items[0].quantity,2);assert.equal(read('player_mail',id).value.read_at_ms,read('player_mail',id).value.claimed_at_ms);
+assert.deepEqual(copy(read('player_mail',id).value.asset_changes),[{type:'resource',id:'gold',delta:7,balance_after:7},{type:'item',id:'ticket',delta:2,balance_after:2},{type:'resource',id:'exp',delta:3,balance_after:3}]);
+assert(!('asset_changes' in fn('mailPresent')(nk,read('player_mail',id).value,now)),'player RPC must not expose admin trace');
+assert.deepEqual(copy(read('player_mail_deliveries',id).value.asset_changes),copy(read('player_mail',id).value.asset_changes),'delivery marker retains the claim trace');
 assert.equal(claim(id).already_claimed,true);assert.equal(read('player_profiles','main').value.resources.gold,7);
 const purchase=fn('applyPurchaseMailRewards')(nk,userId,'purchase-hero-mail','first_topup_pack','non_consumable',[{reward_type:'hero',reward_id:'hero_5',quantity:1}]);
 assert(purchase.mail&&purchase.mail.id,'paid hero must be sent through purchase mail');
@@ -51,6 +55,7 @@ assert.equal(fn('mailMutateOne')(nk,userId,id,'delete').success,true);const bulk
 base.storageDelete=refs=>refs.forEach(r=>store.delete(key(r)));
 nk.storageDelete([{collection:'player_mail',key:id,userId,version:read('player_mail',id).version}]);
 assert.equal(deliver({}).idempotent,true,'purging mail does not purge delivery identity');
+assert.equal(read('player_mail_deliveries',id).value.asset_changes[0].balance_after,7,'deleting mail must retain claim balances');
 assert.throws(()=>deliver({source_id:'bad',attachments:[{type:'item',id:'unknown',amount:1}]}),/INVALID_ITEM/);
 seed('player_stage_runs','active',{run_id:'run1',status:'active'});
 const combat=fn('mailCombatRuntime')(nk,userId),run=read('player_stage_runs','active');
@@ -90,3 +95,31 @@ for(const product of packCatalog){
 
 }
 console.log('PASS C147/C173: atomic claims, expiry, scoped ownership, daily-only activation rollback, immutable daily snapshots and durable replay suppression');
+
+// Daily pack claim writes the entitlement and mail in one versioned batch.
+const dailyClaim=fn('claimDailyPack');
+const invokeDaily=id=>JSON.parse(dailyClaim({userId},{},nk,JSON.stringify({product_id:id})));
+for(const product of packCatalog){
+ const before=read('player_profiles','main').value;
+ const invBefore=read('player_inventory','items').value;
+ const snapshot=new Map([...store].map(([k,v])=>[k,copy(v)]));
+ fail=true; assert.equal(invokeDaily(product.id).code,409);
+ assert.deepEqual(store,snapshot,'failed batch must not mark the daily entitlement or create mail');
+ const result=invokeDaily(product.id); assert.equal(result.status,'success');
+ const mail=read('player_mail',result.data.mail_id).value;
+ const stamina=product.id==='daily_deal'?1:2;
+ assert(mail.attachments.some(a=>a.id==='energy_elixir'&&a.amount===stamina));
+ assert.deepEqual(read('player_inventory','items').value,invBefore,'claiming pack does not grant inventory directly');
+ assert.deepEqual(read('player_profiles','main').value.resources,before.resources,'claiming pack does not grant currency directly');
+ assert.equal(invokeDaily(product.id).idempotent,true);
+}
+const profileOld=read('player_profiles','main');
+profileOld.value.daily_packs.daily_deal.last_claim_day=-1;
+profileOld.value.daily_packs.daily_deal.grant_id='old-20';
+profileOld.value.daily_packs.daily_deal.rewards=[{reward_type:'stamina',reward_id:'stamina',quantity:20}];
+nk.storageWrite([{...profileOld,userId}]);
+const legacy=invokeDaily('daily_deal');assert.equal(legacy.status,'success');
+const legacyItems=read('player_mail',legacy.data.mail_id).value.attachments;
+assert(legacyItems.some(a=>a.id==='energy_elixir'&&a.amount===1));
+assert(legacyItems.some(a=>a.id==='energy_elixir_low'&&a.amount===1));
+console.log('PASS daily pack mail: atomic conflict, replay, 15/30 and legacy 20 conversion');

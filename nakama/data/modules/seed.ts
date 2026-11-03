@@ -24,12 +24,120 @@ function seedPgArray(values: string[]): string {
     return "{" + values.map(value => '"' + value.replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '"').join(",") + "}";
 }
 
+// C239 native executor admission mirrors client validation; no runtime fallback.
+function validNativeSkillPayload(skill:any, payload:any):boolean {
+    const castTypes=["basic_attack", "beast_melee", "beast_dash", "beast_bolt", "tiger_claw", "tiger_pounce", "tiger_roar", "tiger_bloodline", "vermilion_volley", "vermilion_sweep", "vermilion_rain", "vermilion_domain", "ice_claw", "ice_pillar", "ice_bolt", "ice_trinity", "ice_linglong", "fire_claw", "fire_ball", "fire_stomp", "fire_meteor", "fire_formation", "wood_bolt", "wood_vine", "wood_swamp", "wood_soul", "metal_slash", "metal_bolt", "metal_punch", "metal_shatter", "metal_fist", "earth_punch", "earth_orb", "earth_stones", "earth_dragon", "wraith_volley", "wraith_binding", "wraith_calamity", "wraith_ultimate", "slam_aoe", "control_resistance_over_time"], traitIds=["haste", "damage_shield", "defense_aura", "max_hp_buff", "pierce_guard", "debuff_resistance", "defense_buff", "damage_reflect", "invincible", "beast_bloodline", "regeneration"];
+    const validNumbers=(value:any):boolean=>{
+        if(typeof value==="number")return Number.isFinite(value);
+        if(Array.isArray(value))return value.every(validNumbers);
+        if(value&&typeof value==="object")return Object.keys(value).every(key=>validNumbers(value[key])&&(!["radius","range","cooldown","warning_time","damage_multiplier"].includes(key)||typeof value[key]!=="number"||value[key]>=0));
+        return true;
+    };
+    return !!payload&&typeof payload==="object"&&!Array.isArray(payload)&&!!(payload.id||payload.type)&&payload.element===skill.element&&validNumbers(payload)&&(skill.executor==="enemy_cast"?castTypes.indexOf(payload.type)>=0:skill.executor==="enemy_trait"&&traitIds.indexOf(payload.id)>=0&&!!payload.params&&typeof payload.params==="object"&&!Array.isArray(payload.params));
+}
+
+// C239: validate the opt-in catalog before accepting authoritative progression seed.
+function validateEnemyFrameworkCatalog(value: any): string {
+    const object = (v:any):boolean => !!v && typeof v === "object" && !Array.isArray(v);
+    const nonnegative = (v:any):boolean => typeof v === "number" && Number.isFinite(v) && v >= 0;
+    const elements = ["neutral","metal","water","wood","fire","earth"];
+    if (!object(value) || value.version !== 2 || !Number.isInteger(value.max_level) || value.max_level < 1 || value.max_level > 10000) return "Invalid enemy framework version/level";
+    if (!object(value.species) || !Object.keys(value.species).length || !object(value.skill_atlas) || !Object.keys(value.skill_atlas).length) return "Missing species/skill atlas";
+    if (value.boss_element_baselines !== undefined) {
+        if (!object(value.boss_element_baselines)) return "Invalid boss element baselines";
+        for (const element of elements.filter(e=>e!=="neutral")) {
+            const row = value.boss_element_baselines[element];
+            if (!object(row) || ["hp","atk","def","attack_speed","move_speed"].some(stat=>!nonnegative(row[stat]) || row[stat] <= 0)) return "Invalid boss element baseline";
+        }
+    }
+    for (const id of Object.keys(value.species)) {
+        const row = value.species[id];
+        if (row && row.balance_profile !== undefined && (row.balance_profile !== "element_boss" || !object(value.boss_element_baselines))) return "Invalid boss balance profile";
+        if (!object(row) || ["element","elements","skills","learnable_skills","balance_reference_level"].some(key=>row[key] !== undefined)) return "Species cannot own elements or skill lists";
+        if (typeof row.visual_definition_id !== "string" || !row.visual_definition_id || !object(row.base_attributes) || !object(row.growth_per_level) || !object(row.reward)) return "Invalid species definition";
+        if (row.presentation_variants !== undefined && (!Array.isArray(row.presentation_variants) || row.presentation_variants.some((id:any)=>typeof id!=="string" || !id) || new Set(row.presentation_variants).size!==row.presentation_variants.length)) return "Invalid presentation variants";
+        for (const stat of ["hp","atk","def","move_speed","attack_speed","attack_range"]) {
+            if (!nonnegative(row.base_attributes[stat]) || (stat !== "def" && row.base_attributes[stat] <= 0) || !nonnegative(row.growth_per_level[stat])) return "Invalid species growth";
+        }
+        for (const stat of Object.keys(row.growth_per_level)) if (!nonnegative(row.growth_per_level[stat]) || !nonnegative(row.base_attributes[stat])) return "Invalid extra growth";
+        for (const stat of Object.keys(row.base_attributes)) if (!nonnegative(row.base_attributes[stat])) return "Invalid base attribute";
+        for (const key of ["exp","gold"]) if (!Number.isInteger(row.reward[key]) || row.reward[key] < 0) return "Invalid species reward";
+    }
+    for (const id of Object.keys(value.skill_atlas)) {
+        const skill = value.skill_atlas[id], seen:{[key:string]:boolean}={};
+        if (!object(skill) || skill.id !== id || elements.indexOf(skill.element) < 0 || ["direct","area","max_hp","native"].indexOf(skill.kind) < 0 || !Array.isArray(skill.levels) || !skill.levels.length) return "Invalid shared skill";
+        for (const level of skill.levels) {
+            if (!object(level) || !Number.isInteger(level.level) || level.level < 1 || seen[level.level]) return "Invalid skill level";
+            seen[level.level] = true;
+            if (skill.kind === "native") {
+                if (!validNativeSkillPayload(skill,level.payload)) return "Invalid native skill payload";
+            } else if (skill.kind === "max_hp") { if (!nonnegative(level.hp_multiplier) || level.hp_multiplier < 1) return "Invalid passive"; }
+            else {
+                for (const key of ["damage_multiplier","cooldown","range"]) if (!nonnegative(level[key]) || level[key] <= 0) return "Invalid skill parameter";
+                if (skill.kind === "area" && (!nonnegative(level.radius) || level.radius <= 0)) return "Invalid skill area";
+                if (!nonnegative(level.slow_percent === undefined ? 0 : level.slow_percent) || Number(level.slow_percent || 0) >= 1 || !nonnegative(level.slow_duration === undefined ? 0 : level.slow_duration)) return "Invalid skill slow";
+            }
+        }
+    }
+    if(value.loadout_templates!==undefined) {
+        if(!object(value.loadout_templates)) return "Invalid element loadout templates";
+        for(const templateId of Object.keys(value.loadout_templates)) {
+            const template=value.loadout_templates[templateId];
+            if(!object(template)||!Object.keys(template).length) return "Invalid element loadout template";
+            for(const element of Object.keys(template)) {
+                const refs=template[element], seen:{[key:string]:boolean}={};
+                if(elements.indexOf(element)<0||element==="neutral"||!Array.isArray(refs)) return "Invalid element loadout";
+                let attacks=0;
+                for(const ref of refs) {
+                    if(!object(ref)||!Number.isInteger(ref.level)) return "Invalid loadout reference";
+                    const skill=value.skill_atlas[ref.skill_id];
+                    if(!skill||!skill.levels.some((row:any)=>row.level===ref.level)||(skill.element!=="neutral"&&skill.element!==element)) return "Incompatible loadout skill";
+                    const slot=skill.kind==="native"?String(ref.slot||""):"shared", key=ref.skill_id+":"+slot;
+                    if(seen[key]) return "Duplicate loadout skill";seen[key]=true;
+                    if(skill.kind==="native") {
+                        if(["attack_skill","boss_skills","generic_skills"].indexOf(slot)<0||(slot==="generic_skills")!==(skill.executor==="enemy_trait")) return "Invalid loadout slot";
+                        if(slot==="attack_skill"&&++attacks>1) return "Duplicate loadout attack";
+                    }
+                }
+            }
+        }
+    }
+    if(value.native_defaults!==undefined) {
+        if(!object(value.native_defaults))return "Invalid native defaults";
+        for(const slot of Object.keys(value.native_defaults)) {
+            if(["enemy_skills","boss_skills"].indexOf(slot)<0||!object(value.native_defaults[slot]))return "Invalid native default slot";
+            for(const id of Object.keys(value.native_defaults[slot])) {
+                const ref=value.native_defaults[slot][id], skill=ref&&value.skill_atlas[ref.skill_id];
+                if(!skill||skill.kind!=="native"||!Number.isInteger(ref.level)||!skill.levels.some((row:any)=>row.level===ref.level)||(slot==="enemy_skills")!==(skill.executor==="enemy_trait"))return "Invalid native default reference";
+            }
+        }
+    }
+    if (value.enemy_skill_bindings !== undefined) {
+        if (!object(value.enemy_skill_bindings)) return "Invalid enemy skill bindings";
+        for (const id of Object.keys(value.enemy_skill_bindings)) {
+            const binding=value.enemy_skill_bindings[id]; if (!object(binding)) return "Invalid enemy binding";
+            for (const slot of ["attack_skill","boss_skills","generic_skills"]) {
+                const refs=slot==="attack_skill"?(binding[slot]===null?[]:[binding[slot]]):binding[slot];
+                if (!Array.isArray(refs)) return "Invalid binding slot";
+                for(const ref of refs) {
+                    if(!object(ref)||!Number.isInteger(ref.level)) return "Invalid native reference";
+                    const skill=value.skill_atlas[ref.skill_id];
+                    if(!skill||skill.kind!=="native"||!skill.levels.some((row:any)=>row.level===ref.level)||(slot==="generic_skills")!==(skill.executor==="enemy_trait")) return "Missing native reference/level or wrong slot";
+                }
+            }
+        }
+    }
+    return "";
+}
+
 function validateSeedRequest(data: any): string {
     const tables = ["heroes","enemies","items","skills","stages","stage_levels","arcs","cards","effects","talismans","store_catalog","content_configs","config","remote_settings"];
     if (tables.indexOf(data.table) < 0) return "Unknown table";
     if (data.replace_all !== undefined && typeof data.replace_all !== "boolean") return "replace_all must be boolean";
     if (data.table === "config") {
-        return typeof data.config_key !== "string" || !data.config_key || !data.config_value || typeof data.config_value !== "object" || Array.isArray(data.config_value) ? "Invalid config" : "";
+        if (typeof data.config_key !== "string" || !data.config_key || !data.config_value || typeof data.config_value !== "object" || Array.isArray(data.config_value)) return "Invalid config";
+        if (data.config_key === "progression" && data.config_value.enemy_framework !== undefined) return validateEnemyFrameworkCatalog(data.config_value.enemy_framework);
+        return "";
     }
     const ids: {[id:string]: boolean} = {};
     const extensions = seedExtensionColumns()[data.table] || {};
@@ -38,12 +146,20 @@ function validateSeedRequest(data: any): string {
         const id = data.table === "remote_settings" ? row.module + ":" + row.key : row.id;
         if ((typeof id !== "string" && typeof id !== "number") || !String(id) || ids[String(id)]) return "Missing or duplicate id";
         ids[String(id)] = true;
+        if (data.table === "skills" && ["neutral","metal","water","wood","fire","earth","thunder"].indexOf(row.element) < 0) return "Missing or invalid fixed skill element";
+        if (data.table === "skills" && row.id === "hero_basic_attack" && row.element !== "neutral") return "Basic attack must be neutral";
         if (data.table === "store_catalog") {
             if (typeof row.product_id !== "string" || !row.product_id || ids["product:" + row.product_id]) return "Missing or duplicate product_id";
             ids["product:" + row.product_id] = true;
         }
         if (data.table === "talismans" && (!Number.isInteger(row.id) || row.id <= 0)) return "Invalid talisman id";
         if (["heroes","enemies","items","skills","stages","arcs","cards","effects"].indexOf(data.table) >= 0 && (typeof row.display_name !== "string" || !row.display_name)) return "Missing display_name";
+        if(data.table==='stages'&&Number((row.stage_rules||{}).enemy_framework_version)===2) {
+            for(const wave of row.waves||[])for(const entry of wave.entries||[]) {
+                for(const branch of [entry,...Object.keys(entry.difficulty_overrides||{}).map(k=>entry.difficulty_overrides[k])])
+                    if(!branch||['modifiers','attributes','hp_mul','atk_mul','def_mul','boss_skill_ids'].some(k=>Object.prototype.hasOwnProperty.call(branch,k)))return 'Legacy stat/skill override in v2 entry';
+            }
+        }
         if (data.table === "stage_levels" && (!row.stage_id || !row.level_id)) return "Missing stage reference";
         for (const key of Object.keys(extensions)) {
             if (row[key] === undefined) continue;
@@ -73,7 +189,7 @@ const seedGameData: nkruntime.RpcFunction = (
     nk: nkruntime.Nakama,
     payload: string
 ): string => {
-    if (ctx.userId && ctx.userId !== String(ctx.env.CONFIG_ADMIN_USER_ID || "")) {
+    if (ctx.userId && !isConfigAdmin(ctx)) {
         return JSON.stringify({error: "Forbidden", code: 403});
     }
     let data: any;
@@ -112,6 +228,7 @@ const seedGameData: nkruntime.RpcFunction = (
     const validation = validateSeedRequest(data);
     if (validation) return JSON.stringify({error: validation});
     let inserted = 0;
+    const preservedLevelledStages: string[] = [];
 
     switch (table) {
         case "heroes":
@@ -255,6 +372,13 @@ const seedGameData: nkruntime.RpcFunction = (
         case "stages":
             // stages.json has waves embedded — split into game_stages + game_stage_waves
             for (const row of rows) {
+                if(Number((row.stage_rules||{}).enemy_framework_version)!==2) {
+                    const deployed=nk.sqlQuery("SELECT id FROM game_stages WHERE id=$1 AND stage_rules->>'enemy_framework_version'='2'",[row.id]);
+                    if(deployed.length){preservedLevelledStages.push(String(row.id));inserted++;continue;}
+                    // Lock and recheck inside the actual transaction, not just planner preflight.
+                    statements.push(`PERFORM id FROM game_stages WHERE id=${seedSqlLiteral(row.id)} FOR UPDATE`);
+                    statements.push(`IF EXISTS(SELECT 1 FROM game_stages WHERE id=${seedSqlLiteral(row.id)} AND stage_rules->>'enemy_framework_version'='2') THEN RAISE EXCEPTION 'C239_LEGACY_SEED_DOWNGRADE_BLOCKED'; END IF`);
+                }
                 write(`
                     INSERT INTO game_stages (id, arc_id, level, display_name, description,
                         sort_order, exp_weight, is_boss, background, music, enabled_if, difficulty_levels, loot_table)
@@ -528,6 +652,7 @@ const seedGameData: nkruntime.RpcFunction = (
 
     const columns = seedExtensionColumns()[table];
     if (columns) for (const row of rows) {
+        if(table==='stages'&&preservedLevelledStages.indexOf(String(row.id))>=0)continue;
         const fields = Object.keys(columns).filter(key => key === "metadata" || row[key] !== undefined);
         if (!fields.length) continue;
         const params: any[] = [row.id];
@@ -547,10 +672,10 @@ const seedGameData: nkruntime.RpcFunction = (
         checks.push(`IF NOT EXISTS (SELECT 1 FROM game_${table} WHERE id=${seedSqlLiteral(row.id)} AND ${predicates.join(" AND ")}) THEN RAISE EXCEPTION 'Seed extension readback mismatch'; END IF`);
     }
     // One PostgreSQL statement runs every mutation atomically, even with pooled connections.
-    const body = "BEGIN\nPERFORM pg_advisory_xact_lock(143,2);\n" + statements.concat(checks).join(";\n") + ";\nEND";
+    const body = "BEGIN\nPERFORM pg_advisory_xact_lock(143,2);\n" + statements.concat(checks).concat(["NULL"]).join(";\n") + ";\nEND";
     nk.sqlExec("DO " + seedSqlLiteral(body), []);
     logger.info(`Seeded ${inserted} rows into ${table}`);
-    return JSON.stringify({ success: true, table, inserted });
+    return JSON.stringify({ success: true, table, inserted, ...(preservedLevelledStages.length?{preserved_levelled:preservedLevelledStages.length}: {}) });
     } catch (error) {
         logger.error("Seed request failed: %s", String(error));
         return JSON.stringify({error: "Seed failed; no changes committed", code: 422});

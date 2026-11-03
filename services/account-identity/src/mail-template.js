@@ -23,13 +23,21 @@ const messages = {
     detail: 'Mở trang xác nhận và nhập mật khẩu hiện tại của tài khoản. Sau khi hoàn tất, quay lại trò chơi để tiếp tục.',
     note: 'Liên kết này chỉ xác minh email. Nó không đặt lại mật khẩu hoặc tạo một tài khoản khác.'
   },
+  restore_account: {
+    subject:'Thông Thiên Lộ — Khôi phục tài khoản',category:'KHÔI PHỤC TÀI KHOẢN',
+    title:'Đạo hữu muốn trở lại?',action:'KHÔI PHỤC TÀI KHOẢN',
+    preheader:'Xác nhận email và mật khẩu để hủy yêu cầu xóa trước hạn.',
+    intro:'Đạo hữu vừa yêu cầu khôi phục tài khoản đang chờ xóa.',
+    detail:'Mở liên kết và nhập mật khẩu hiện tại. Chỉ có thể khôi phục trước thời hạn trong biên nhận.',
+    note:'Mở liên kết chưa tự động khôi phục. Không chia sẻ liên kết hoặc mật khẩu.'
+  },
   delete_account: {
     subject: 'Thông Thiên Lộ — Xác nhận yêu cầu xóa tài khoản', category: 'YÊU CẦU XÓA TÀI KHOẢN',
     title: 'Kiểm tra yêu cầu xóa', action: 'XEM YÊU CẦU XÓA',
     preheader: 'Yêu cầu xóa chỉ được tiếp nhận sau khi bạn xác minh và xác nhận bước cuối trên trang bảo mật.',
     intro: 'Tài khoản Thông Thiên Lộ của bạn vừa có yêu cầu xóa tài khoản.',
-    detail: 'Nếu đây là yêu cầu của bạn, mở trang bên dưới, nhập mật khẩu hiện tại và chủ động xác nhận “Xóa vĩnh viễn”.',
-    note: 'Xóa tài khoản áp dụng cho nhân vật, vật phẩm và tiến trình trên TẤT CẢ máy chủ, không thể hoàn tác. Việc xóa không tự động hoàn tiền hoặc hủy gói đăng ký trên Google Play.'
+    detail: 'Nếu đây là yêu cầu của bạn, mở trang bên dưới, nhập mật khẩu hiện tại và chủ động xác nhận bắt đầu thời gian chờ xóa.',
+    note: 'Xóa tài khoản áp dụng cho nhân vật, vật phẩm và tiến trình trên TẤT CẢ máy chủ, có thể khôi phục trước hạn trong biên nhận. Hết hạn không thể khôi phục. Hoàn tất lưu trữ sẽ giải phóng thông tin đăng ký; dữ liệu trò chơi được dọn theo lịch riêng trên biên nhận. Một số hồ sơ tài khoản và hồ sơ cần lưu được giữ theo chính sách riêng. Việc xóa không tự động hoàn tiền hoặc hủy gói đăng ký trên Google Play.'
   }
 };
 

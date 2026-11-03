@@ -1,0 +1,167 @@
+{
+  "version": 1,
+  "status": "PASS",
+  "test_only": true,
+  "results": [
+    {
+      "id": "additive",
+      "exit": 0,
+      "status": "PASS",
+      "timed_out": false,
+      "script_errors": false,
+      "other_errors": [],
+      "cleanup_warning": false,
+      "log": "tmp\\c240-runtime\\additive.log"
+    },
+    {
+      "id": "arc7",
+      "exit": 0,
+      "status": "PASS",
+      "timed_out": false,
+      "script_errors": false,
+      "other_errors": [],
+      "cleanup_warning": false,
+      "log": "tmp\\c240-runtime\\arc7.log"
+    },
+    {
+      "id": "creep_casts",
+      "exit": 0,
+      "status": "PASS",
+      "timed_out": false,
+      "script_errors": false,
+      "other_errors": [],
+      "cleanup_warning": false,
+      "log": "tmp\\c240-runtime\\creep_casts.log"
+    },
+    {
+      "id": "element",
+      "exit": 0,
+      "status": "PASS",
+      "timed_out": false,
+      "script_errors": false,
+      "other_errors": [],
+      "cleanup_warning": false,
+      "log": "tmp\\c240-runtime\\element.log"
+    },
+    {
+      "id": "layered_talismans",
+      "exit": 0,
+      "status": "PASS",
+      "timed_out": false,
+      "script_errors": false,
+      "other_errors": [],
+      "cleanup_warning": false,
+      "log": "tmp\\c240-runtime\\layered_talismans.log"
+    },
+    {
+      "id": "low_talismans",
+      "exit": 0,
+      "status": "PASS",
+      "timed_out": false,
+      "script_errors": false,
+      "other_errors": [],
+      "cleanup_warning": false,
+      "log": "tmp\\c240-runtime\\low_talismans.log"
+    },
+    {
+      "id": "mid_talismans",
+      "exit": 0,
+      "status": "PASS",
+      "timed_out": false,
+      "script_errors": false,
+      "other_errors": [],
+      "cleanup_warning": false,
+      "log": "tmp\\c240-runtime\\mid_talismans.log"
+    },
+    {
+      "id": "shared",
+      "exit": 0,
+      "status": "PASS",
+      "timed_out": false,
+      "script_errors": false,
+      "other_errors": [],
+      "cleanup_warning": false,
+      "log": "tmp\\c240-runtime\\shared.log"
+    },
+    {
+      "id": "source_lifetime",
+      "exit": 0,
+      "status": "PASS",
+      "timed_out": false,
+      "script_errors": false,
+      "other_errors": [],
+      "cleanup_warning": false,
+      "log": "tmp\\c240-runtime\\source_lifetime.log"
+    },
+    {
+      "id": "status_lifetime",
+      "exit": 0,
+      "status": "PASS",
+      "timed_out": false,
+      "script_errors": false,
+      "other_errors": [],
+      "cleanup_warning": false,
+      "log": "tmp\\c240-runtime\\status_lifetime.log"
+    },
+    {
+      "id": "tiger_casts",
+      "exit": 0,
+      "status": "PASS",
+      "timed_out": false,
+      "script_errors": false,
+      "other_errors": [],
+      "cleanup_warning": false,
+      "log": "tmp\\c240-runtime\\tiger_casts.log"
+    },
+    {
+      "id": "tower_battle",
+      "exit": 0,
+      "status": "PASS",
+      "timed_out": false,
+      "script_errors": false,
+      "other_errors": [],
+      "cleanup_warning": false,
+      "log": "tmp\\c240-runtime\\tower_battle.log"
+    },
+    {
+      "id": "tower_parity",
+      "exit": 0,
+      "status": "PASS",
+      "timed_out": false,
+      "script_errors": false,
+      "other_errors": [],
+      "cleanup_warning": false,
+      "log": "tmp\\c240-runtime\\tower_parity.log"
+    },
+    {
+      "id": "tribulation",
+      "exit": 0,
+      "status": "PASS",
+      "timed_out": false,
+      "script_errors": false,
+      "other_errors": [],
+      "cleanup_warning": false,
+      "log": "tmp\\c240-runtime\\tribulation.log"
+    },
+    {
+      "id": "vermilion_casts",
+      "exit": 0,
+      "status": "PASS",
+      "timed_out": false,
+      "script_errors": false,
+      "other_errors": [],
+      "cleanup_warning": false,
+      "log": "tmp\\c240-runtime\\vermilion_casts.log"
+    },
+    {
+      "id": "wraith_casts",
+      "exit": 0,
+      "status": "PASS",
+      "timed_out": false,
+      "script_errors": false,
+      "other_errors": [],
+      "cleanup_warning": false,
+      "log": "tmp\\c240-runtime\\wraith_casts.log"
+    }
+  ]
+}

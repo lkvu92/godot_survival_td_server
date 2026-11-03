@@ -1,6 +1,28 @@
+- [Arc creation workflow - C239/C240](ARC_CREATION_WORKFLOW.md): species growth, shared skills, stage/waves, element rules, testing, local rollout and UI evidence.
+
+C251 1.1.0: individual consent withdrawal without OTP; scoped tests pass. B7/D5 full acceptance remains open.
+
+C252 1.0.0 ACTIVE (desktop scoped): responsive catalog/HTTP decode workers; ~8s CPU validation no longer blocks UI. See client/docs/reports/C252_LOADING_PROFILING.md from workspace; Android profiling pending.
+
+C251 1.0.0 LOCAL / TESTED_SCOPED: profile consent + OTP receipt + withdrawal; KYC confirmation last. External optional processing disabled; production acceptance open.
+
+C245 1.3.1: header/TabUI/mobile icons/transaction-only scroll correction; UI regression fixtures PASS.
+
+C245 1.3.0: mockup-inspired parchment history UI using existing utilities/assets; portrait fixture evidence PASS.
+
+C245 1.2.0: account history cards and shared inventory pagination restored; cursor API unchanged, UI fixtures PASS.
+
+C232 3.1.0 / C250 1.0.0: protected archive operations TESTED_SCOPED; runtime local deployed, production acceptance pending.
+
+C250 operations: [runbook](ARCHIVE_RECOVERY_RUNBOOK.md), contract 1.0.0 TESTED_SCOPED; production recovery/IAM/offsite acceptance remains open.
+- [C239 v1.4.1 correction](reports/C239_UI_ELEMENT_CORRECTION.md): restored creep HP/icon anchor, leftward secondary icons, boss elements below HP bar and single-element Arc 1.
+- C239 v1.4 Arc 1 local migration: all ten stages, random/dual elements and native skills; ACTIVE. [Acceptance and UI proof](reports/C239_ARC1_ACCEPTANCE.md).
+- C239 v1.2: creep/boss canonical atlas migration and native executor bindings; ACTIVE.
+- [C240 Shared combat damage](contracts/C240_SHARED_COMBAT_DAMAGE.md): deterministic kernel, neutral basics and explicit skill elements across gameplay/tower/tribulation; ACTIVE. [Usage](COMBAT_DAMAGE.md), [acceptance](reports/C240_ACCEPTANCE.md).
+- [C239 Levelled enemies and shared skill atlas](contracts/C239_LEVELLED_ENEMY_FRAMEWORK.md): opt-in framework and isolated stage pilot; ACTIVE. [Acceptance](reports/C239_ACCEPTANCE.md).
 - [C237 Chu Tước rework](contracts/C237_ARC7_VAN_YEU_CO_LINH.md) v1.6.1: six-angle feather shots converge on the locked snapshot center; retains Lv60 campaign progression.
 - [C196 v1.5 Skill 1 H4](contracts/C196_HERO4_SKILL_REBALANCE.md): phục hồi sát thương trực tiếp 40/55/70/85/100% ATK sau C238; giữ nguyên độc và hồi chiêu.
-- [C238 Hero growth balance](contracts/C238_HERO_GROWTH_BALANCE.md) v1.0.0: [Lv1/50/70 simulation and exact curves](HERO_STATS_CURRENT.md), round-2 growth for all five heroes.
+- [C238 Hero growth balance](contracts/C238_HERO_GROWTH_BALANCE.md) v1.1.1: [Lv1/30/50/70 simulation and exact curves](HERO_STATS_CURRENT.md), approved H2/H4 growth; [production rollout verified](reports/C238_PRODUCTION_ROLLOUT.md).
 - [C237 Arc 7 Van Yeu Co Linh](contracts/C237_ARC7_VAN_YEU_CO_LINH.md) v1.4.1 ACTIVE: fixed Lv60 baseline, seven creeps, random elements, Bach Ho stage 5 and Chu Tuoc stage 10.
 - [C234 Gift codes](contracts/C234_GIFT_CODES.md): server management, atomic mail redemption, welcome/opening/tester campaigns and Profile dialog. [Operations](GIFT_CODES.md) · [Validation](reports/C234_GIFT_CODES_VALIDATION.md).
 - [C134 stamina storage cap](contracts/C134_RESULT_AD_SYSTEM_CONFIG.md) v1.0.2: storage 200, natural regeneration 30; daily-pack/current/legacy grants and regression expectations aligned.
@@ -297,3 +319,30 @@ C015 v1.18.0: talisman and element enhancement gold x1000.
 - C173 v1.1.0: Gold Vault new-purchase reward is 2.5M Gold; existing paid snapshots preserved.
 
 - C173 v1.2.0: exact 4/7 daily reward bundles and 2.5M Gold Vault; pricing revision 250002.
+
+- C239 1.6: role baselines and multi-element boss stats (see contract).
+- [C242 health reminders](contracts/C242_HEALTH_REMINDERS.md): account activity heartbeat and 30/60-minute reminders.
+- [C243 Soft Gate](contracts/C243_SOFT_GATE.md): lobby preview, mock OTP/guardian and server time admission.
+- [C244 payment reconciliation](contracts/C244_PAYMENT_RECONCILIATION.md): B1 read-only report and policy.
+- [C245 Account history](contracts/C245_ACCOUNT_HISTORY.md): B2 customer lookup and server-authoritative summaries.
+- [C246 Google financial records](contracts/C246_GOOGLE_FINANCIALS.md): trusted order totals/refunds and B1/B2 integration.
+- [C247 Protected profile lifecycle](contracts/C247_PROFILE_LIFECYCLE.md): B3 owner lookup, masked phone, atomic audit and re-verification.
+# C248 SpeedSMS OTP: [contract](contracts/C248_SPEEDSMS_OTP.md)
+# C249 retention assessment: [contract](contracts/C249_RETENTION_ASSESSMENT.md)
+
+- C232 v2.0.0 (LOCAL / TESTED_SCOPED): 14-day configurable soft delete, identity reservations, proof-based restoration and encrypted archive gate before operational purge; B6 acceptance still open.
+
+- C232 v3.0.0 DESIGN: [archive lifecycle](ACCOUNT_ARCHIVE_LIFECYCLE.md),14-day soft delete → archive/release identity → gameplay cleanup after3 calendar months; runtime remains v2.0 pending implementation/evidence.
+
+- C232 v3.0.1 core LOCAL/TESTED_SCOPED: native atomic archive/release, daily3-month gameplay cleanup retaining users/finance, native API/session guards, scoped host hold/retry; phase-v3 evidence. Production/legal/backup acceptance still open.
+
+- C2391.6.1: seed preserves deployed v2 stage/wave metadata against legacy inputs; mixed-schema loading regression repaired locally and rechecked via DataRegistry.
+# C250 archive operations/recovery
+
+[Contract C250](contracts/C250_ARCHIVE_RECOVERY.md): protected expiry/key rotation/DB roles and isolated encrypted restore drill; production acceptance pending. [Seed/loading repair](reports/C239_SEED_LOADING_REPAIR.md) records C2391.6.1 regression verification.
+
+C255: [Gameplay VIP config](contracts/C255_GAMEPLAY_VIP.md) - x3 speed and auto-card thresholds.
+
+C256: [Inventory tags](contracts/C256_INVENTORY_TAGS.md) - semantic multi-tag catalog and inventory filters.
+
+[Enemy attack speed reduction](reports/ENEMY_ATTACK_SPEED_REDUCTION.md) - 30% creep/boss rate reduction, local release 88.

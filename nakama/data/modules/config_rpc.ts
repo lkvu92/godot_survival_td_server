@@ -467,7 +467,7 @@ function parseRemoteSetting(valueType: string, raw: string): any {
 const publishConfigRelease: nkruntime.RpcFunction = (
     ctx: nkruntime.Context, _logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string
 ): string => {
-    if (!ctx.userId || ctx.userId !== String(ctx.env.CONFIG_ADMIN_USER_ID || "")) {
+    if (!isConfigAdmin(ctx)) {
         return JSON.stringify({ status: "error", code: 403, message: "Forbidden" });
     }
     return publishValidatedConfig(ctx.userId, nk, payload);
@@ -506,6 +506,20 @@ function validCampaignWavePressure(value:any):boolean {
 function validateReleaseSnapshot(nk:nkruntime.Nakama,snapshot:any):string|null {
     if(!snapshot || !snapshot.system || typeof snapshot.system!=='object')
         return JSON.stringify({status:'error',code:422,message:'Missing system config'});
+    if(snapshot.system.payment_financials!==undefined){try{financialPolicy(snapshot.system.payment_financials);}catch(_e){return JSON.stringify({status:'error',code:422,message:'Invalid system.payment_financials'});}}
+    if(snapshot.system.account_history!==undefined) {
+        try{accountHistoryPolicy(snapshot.system.account_history);}catch(_e){return JSON.stringify({status:'error',code:422,message:'Invalid system.account_history'});}
+    }
+    if(snapshot.system.payment_reconciliation!==undefined) {
+        const p=snapshot.system.payment_reconciliation;
+        if(!p || p.schema_version!==1 || !Number.isSafeInteger(p.revision) || p.revision<1 || !Number.isSafeInteger(p.lookback_days) || p.lookback_days<1 || p.lookback_days>365 || !Number.isSafeInteger(p.pending_grace_seconds) || p.pending_grace_seconds<60 || p.pending_grace_seconds>604800 || !Number.isSafeInteger(p.delivery_grace_seconds) || p.delivery_grace_seconds<60 || p.delivery_grace_seconds>604800)
+            return JSON.stringify({status:'error',code:422,message:'Invalid system.payment_reconciliation'});
+    }
+    if(snapshot.system.privacy_consent!==undefined){try{privacyPolicyValue(snapshot.system.privacy_consent);}catch(_e){return JSON.stringify({status:'error',code:422,message:'Invalid system.privacy_consent'});}}
+    if(snapshot.system.compliance_policy!==undefined) {
+        try {compliancePolicyValue(snapshot.system.compliance_policy);}
+        catch(_e){return JSON.stringify({status:'error',code:422,message:'Invalid system.compliance_policy'});}
+    }
     try{featureValidateConfig(snapshot.system.feature_unlocks,snapshot.system.realm_milestones);}
     catch(_error){return JSON.stringify({status:"error",code:422,message:"Missing or invalid system.feature_unlocks / realm_milestones"});}
     const minVersion = String(snapshot.system.min_app_version || "");
@@ -539,6 +553,10 @@ function validateReleaseSnapshot(nk:nkruntime.Nakama,snapshot:any):string|null {
     if (snapshot.system.leaderboard_rewards !== undefined && (!validWeeklyLeaderboardConfig(snapshot.system.leaderboard_rewards)
         || !weeklyConfigItemsExist(nk,snapshot.system.leaderboard_rewards))) return JSON.stringify({status:"error",code:422,message:"Invalid system.leaderboard_rewards or unknown reward items"});
     const latestVersion = String(snapshot.system.latest_app_version || "");
+    const gameplayVip = snapshot.system.gameplay_vip;
+    if (gameplayVip !== undefined && (!gameplayVip || Array.isArray(gameplayVip)
+        || ["speed_3x", "auto_card_pick"].some(key => !Number.isSafeInteger(gameplayVip[key]) || gameplayVip[key] < 0)))
+        return JSON.stringify({status:"error",code:422,message:"Invalid system.gameplay_vip"});
     if (typeof snapshot.system.ads_enabled !== "boolean" || typeof snapshot.system.payment_enabled !== "boolean") {
         return JSON.stringify({status: "error", code: 422, message: "Missing or invalid monetization flags"});
     }
@@ -565,4 +583,142 @@ function operatorConfigRelease(ctx:nkruntime.Context, logger:nkruntime.Logger, n
         return JSON.stringify({status:'ok',config_version:active.version});
     }
     return publishValidatedConfig('operator:deploy',nk,JSON.stringify({store_url:request.store_url}));
+}
+
+function rpcAdminConfigGet(ctx: nkruntime.Context, _l: nkruntime.Logger, nk: nkruntime.Nakama, _payload: string): string {
+    if (!isConfigAdmin(ctx)) throw { message: 'Forbidden', code: 7 };
+    const settings = nk.sqlQuery("SELECT module, key, value_type, value, description, is_active, EXTRACT(EPOCH FROM updated_at)*1000 AS updated_at_ms, updated_by FROM remote_config_settings ORDER BY module, key", []);
+    const active = getActiveRemoteConfig(nk);
+    const releases = nk.sqlQuery("SELECT config_version, min_app_version, latest_app_version, store_url, EXTRACT(EPOCH FROM published_at)*1000 AS published_at_ms, published_by FROM remote_config_releases ORDER BY config_version DESC LIMIT 20", []);
+    return JSON.stringify({
+        success: true,
+        data: {
+            active_version: active.version,
+            active_config: active.config,
+            settings: settings.map((s: any) => ({
+                module: String(s.module),
+                key: String(s.key),
+                value_type: String(s.value_type),
+                value: String(s.value),
+                description: String(s.description || ''),
+                is_active: Boolean(s.is_active),
+                updated_at_ms: Number(s.updated_at_ms || 0),
+                updated_by: String(s.updated_by || '')
+            })),
+            releases: releases.map((r: any) => ({
+                config_version: Number(r.config_version),
+                min_app_version: String(r.min_app_version),
+                latest_app_version: String(r.latest_app_version),
+                store_url: String(r.store_url || ''),
+                published_at_ms: Number(r.published_at_ms || 0),
+                published_by: String(r.published_by || '')
+            }))
+        }
+    });
+}
+
+function rpcAdminConfigUpdate(ctx: nkruntime.Context, _l: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    if (!isConfigAdmin(ctx)) throw { message: 'Forbidden', code: 7 };
+    let req: any;
+    try { req = JSON.parse(payload || '{}'); } catch (_e) { return JSON.stringify({ success: false, status: 'error', code: 400, message: 'Invalid JSON' }); }
+    const items = Array.isArray(req.updates) ? req.updates : [req];
+    for (const item of items) {
+        if (!item.module || !item.key || item.value === undefined) {
+            return JSON.stringify({ success: false, status: 'error', code: 400, message: 'Module, key and value are required' });
+        }
+        const valStr = typeof item.value === 'object' ? JSON.stringify(item.value) : String(item.value);
+        let valType = String(item.value_type || '');
+        if (!valType) {
+            if (typeof item.value === 'boolean' || valStr === 'true' || valStr === 'false') valType = 'bool';
+            else if (typeof item.value === 'number') valType = Number.isInteger(item.value) ? 'int' : 'float';
+            else if (typeof item.value === 'object') valType = 'json';
+            else valType = 'string';
+        }
+        const isActive = item.is_active !== undefined ? Boolean(item.is_active) : true;
+        const desc = String(item.description || '');
+        nk.sqlExec(
+            `INSERT INTO remote_config_settings(module, key, value_type, value, description, is_active, updated_at, updated_by)
+             VALUES($1, $2, $3, $4, $5, $6, NOW(), $7)
+             ON CONFLICT (module, key) DO UPDATE SET
+               value_type = EXCLUDED.value_type,
+               value = EXCLUDED.value,
+               description = CASE WHEN EXCLUDED.description <> '' THEN EXCLUDED.description ELSE remote_config_settings.description END,
+               is_active = EXCLUDED.is_active,
+               updated_at = NOW(),
+               updated_by = EXCLUDED.updated_by`,
+            [String(item.module), String(item.key), valType, valStr, desc, isActive, ctx.userId || 'admin']
+        );
+    }
+    return JSON.stringify({ success: true, message: `Updated ${items.length} setting(s) successfully` });
+}
+
+function rpcAdminConfigToggle(ctx: nkruntime.Context, _l: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    if (!isConfigAdmin(ctx)) throw { message: 'Forbidden', code: 7 };
+    let req: any;
+    try { req = JSON.parse(payload || '{}'); } catch (_e) { return JSON.stringify({ success: false, status: 'error', code: 400, message: 'Invalid JSON' }); }
+    if (!req.module || !req.key || typeof req.is_active !== 'boolean') {
+        return JSON.stringify({ success: false, status: 'error', code: 400, message: 'module, key and is_active (boolean) are required' });
+    }
+    nk.sqlExec("UPDATE remote_config_settings SET is_active = $1, updated_at = NOW(), updated_by = $2 WHERE module = $3 AND key = $4",
+        [req.is_active, ctx.userId || 'admin', String(req.module), String(req.key)]);
+    return JSON.stringify({ success: true, module: req.module, key: req.key, is_active: req.is_active });
+}
+
+function rpcAdminConfigValidate(ctx: nkruntime.Context, _l: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    if (!isConfigAdmin(ctx)) throw { message: 'Forbidden', code: 7 };
+    let req: any = {};
+    try { req = JSON.parse(payload || '{}'); } catch (_e) { /* use current settings */ }
+    let snapshot = req.snapshot;
+    if (!snapshot || typeof snapshot !== 'object') {
+        const rows = nk.sqlQuery("SELECT module, key, value_type, value FROM remote_config_settings WHERE is_active = TRUE ORDER BY module, key", []);
+        snapshot = { system: {}, game_play: {} };
+        try {
+            rows.forEach((row: any) => { snapshot[String(row.module)][String(row.key)] = parseRemoteSetting(String(row.value_type), String(row.value)); });
+        } catch (e) { return JSON.stringify({ success: false, valid: false, code: 422, message: String(e) }); }
+    }
+    const invalid = validateReleaseSnapshot(nk, snapshot);
+    if (invalid) {
+        const parsed = JSON.parse(invalid);
+        return JSON.stringify({ success: false, valid: false, ...parsed });
+    }
+    return JSON.stringify({ success: true, valid: true, message: 'Configuration snapshot is valid' });
+}
+
+function rpcAdminConfigRollback(ctx: nkruntime.Context, _l: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    if (!isConfigAdmin(ctx)) throw { message: 'Forbidden', code: 7 };
+    let req: any;
+    try { req = JSON.parse(payload || '{}'); } catch (_e) { return JSON.stringify({ success: false, status: 'error', code: 400, message: 'Invalid JSON' }); }
+    const targetVersion = Number(req.target_version);
+    if (!Number.isSafeInteger(targetVersion) || targetVersion < 1) {
+        return JSON.stringify({ success: false, status: 'error', code: 400, message: 'target_version is required' });
+    }
+    const rows = nk.sqlQuery("SELECT snapshot, min_app_version, latest_app_version, store_url FROM remote_config_releases WHERE config_version = $1", [targetVersion]);
+    if (rows.length === 0) {
+        return JSON.stringify({ success: false, status: 'error', code: 404, message: `Release version ${targetVersion} not found` });
+    }
+    const target = rows[0];
+    const snapshot = parseJsonb(target.snapshot);
+    if (!snapshot || !snapshot.system) {
+        return JSON.stringify({ success: false, status: 'error', code: 500, message: 'Target release snapshot corrupted' });
+    }
+    for (const mod of ['system', 'game_play']) {
+        const section = snapshot[mod] || {};
+        for (const [k, v] of Object.entries(section)) {
+            const valStr = typeof v === 'object' ? JSON.stringify(v) : String(v);
+            let valType = 'string';
+            if (typeof v === 'boolean') valType = 'bool';
+            else if (typeof v === 'number') valType = Number.isInteger(v) ? 'int' : 'float';
+            else if (typeof v === 'object') valType = 'json';
+            nk.sqlExec(
+                `INSERT INTO remote_config_settings(module, key, value_type, value, description, is_active, updated_at, updated_by)
+                 VALUES($1, $2, $3, $4, '', TRUE, NOW(), $5)
+                 ON CONFLICT (module, key) DO UPDATE SET value_type = EXCLUDED.value_type, value = EXCLUDED.value, is_active = TRUE, updated_at = NOW(), updated_by = EXCLUDED.updated_by`,
+                [mod, k, valType, valStr, `rollback to v${targetVersion} by ${ctx.userId}`]
+            );
+        }
+    }
+    return publishValidatedConfig(ctx.userId || 'admin:rollback', nk, JSON.stringify({
+        store_url: target.store_url || '',
+        reason: `Rollback to version ${targetVersion}: ${String(req.reason || '')}`
+    }));
 }

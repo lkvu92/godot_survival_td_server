@@ -13,7 +13,7 @@ test('all authored mail text pairs meet WCAG AA normal-text contrast',()=>{
 });
 test('three mail purposes have HTML/plain-text parity, actual expiry and safe non-destructive email CTA',()=>{
  const subjects=new Set();
- for(const purpose of ['register_email','verify_legacy_email','delete_account']) {
+ for(const purpose of ['register_email','verify_legacy_email','delete_account','restore_account']) {
   const mail=render(purpose);subjects.add(mail.subject);
   assert.ok(mail.html.includes('role="presentation"')&&mail.html.includes('<!--[if mso]>'));
   assert.ok(mail.html.includes('v:roundrect')&&mail.html.includes('max-width:600px'));
@@ -29,7 +29,7 @@ test('three mail purposes have HTML/plain-text parity, actual expiry and safe no
    assert.ok(mail.html.includes('Mở liên kết chưa tự động xóa tài khoản.'));
   }
  }
- assert.equal(subjects.size,3);
+ assert.equal(subjects.size,4);
 });
 test('mail renderer rejects external links, mismatched purpose, unsafe protocol and injected markup',()=>{
  for(const actionUrl of ['https://evil.example/account/confirm#token=x&purpose=register_email','javascript:alert(1)',origin+'/account/confirm#token=x&purpose=delete_account',origin+'/account/confirm?tracking=1#token=x&purpose=register_email'])assert.throws(()=>render('register_email',{actionUrl}));

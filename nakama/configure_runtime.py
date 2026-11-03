@@ -58,6 +58,12 @@ def make_config(env):
                      "MONETIZATION_VERIFIER_SECRET", "ADMOB_REWARDED_UNIT_ID_DEVELOP",
                      "ADMOB_REWARDED_UNIT_ID_PRODUCTION"]
     runtime_env = [name + "=" + required(name) for name in runtime_names]
+    runtime_env.append("COMPLIANCE_ALLOW_MOCK=" + ("true" if env.get("APP_ENVIRONMENT") == "develop" else "false"))
+    for name in ["SPEEDSMS_ACCESS_TOKEN", "SPEEDSMS_SMS_TYPE", "SPEEDSMS_SENDER", "SPEEDSMS_OTP_HMAC_KEY", "SPEEDSMS_CONTENT"]:
+        value = str(env.get(name) or "")
+        if "\n" in value or "\r" in value:
+            raise ConfigError("Invalid SpeedSMS variable: " + name)
+        runtime_env.append(name + "=" + value)
     runtime_env.append("GOOGLE_PLAY_TESTER_EMAILS=" + str(env.get("GOOGLE_PLAY_TESTER_EMAILS") or "").strip())
     if str(env.get("MULTI_SERVER_ENABLED") or "").lower() == "true":
         runtime_env.append("MULTI_SERVER_ENABLED=true")

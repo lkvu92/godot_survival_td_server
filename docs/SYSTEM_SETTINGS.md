@@ -149,3 +149,5 @@ Các biến kết nối và quyền gọi seed/publish được mô tả trong [
 | Nút x2 không hiện hoặc bị khóa | Kết quả settlement thắng đủ điều kiện, kết nối, quota, đã nhận chưa, cấu hình placement và cờ quảng cáo chung. |
 | Miễn quảng cáo vẫn hết lượt | Đây là hành vi đúng: miễn xem quảng cáo không bỏ giới hạn thưởng. |
 | Sửa file seed nhưng game không đổi | File chỉ là đầu vào; cần stage System setting và publish release. |
+
+`gameplay_vip` (JSON): `{ "speed_3x": 3, "auto_card_pick": 4 }`. Nonnegative integer VIP thresholds; 0 permits any authenticated VIP level. Publish a release after editing. See C255.

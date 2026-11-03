@@ -10,13 +10,15 @@ box.parseJsonb=x=>typeof x==='string'?JSON.parse(x):x;
 box.parseJsonObject=box.parseJsonb;
 box.getRemoteConfigValue=(_nk,_module,_key,fallback)=>fallback;
 let serial=0,fail=false,vipExp=1000,randomCalls=0;
+// A persisted creation timestamp must not move past the RPC's captured clock.
+const characterCreatedAt=Date.now()-60000;
 const db=new Map(),key=r=>r.userId+'/'+r.collection+'/'+r.key;
 const base={sqlQuery(sql,args=[]){
   if(sql.includes('sha256'))return[{hash:crypto.createHash('sha256').update(args[0]).digest('hex')}];
   if(sql.includes('game_content_configs'))return[{payload:copy(config)}];
   if(sql.includes('FROM player_vip_credits'))return[{exp:vipExp,revision:2}];
   if(sql.includes('game_items'))return items.filter(i=>i.id===args[0]).map(copy);
-  if(sql.includes('player_characters')&&sql.includes('created_at_ms'))return[{created_at_ms:Date.now()}];
+  if(sql.includes('player_characters')&&sql.includes('created_at_ms'))return[{created_at_ms:characterCreatedAt}];
   throw Error('Unexpected SQL: '+sql);
 },sqlExec(){},notificationSend(){},storageRead(refs){return refs.map(r=>db.get(key(r))).filter(Boolean).map(copy);},storageWrite(writes){
   for(const w of writes){const old=db.get(key(w));if(w.version==='*'?!!old:!old||w.version!==old.version)throw Error('CAS_CONFLICT');}

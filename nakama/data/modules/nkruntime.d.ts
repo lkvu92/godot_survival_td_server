@@ -45,6 +45,8 @@ declare namespace nkruntime {
             timeoutMs?: number
         ): { code: number; headers: { [key: string]: string[] }; body: string };
         uuidv4(): string;
+        base64Encode(input: string | ArrayBuffer): string;
+        hmacSha256Hash(input: string, key: string): ArrayBuffer;
         purchaseValidateGoogle(userId: string, receipt: string, persist?: boolean): ValidatePurchaseResponse;
 
         // Storage

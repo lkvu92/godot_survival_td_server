@@ -1,0 +1,17 @@
+# C247 B3 protected profile lifecycle
+Version 1.3.0; Status IN_PROGRESS.
+
+1.2.0 phone ownership: `system.compliance_policy.guardian_phone_max_accounts` (integer 1..100) limits verified profiles using the same normalized guardian number; one personal profile per phone. A phone may also be a guardian contact for other profiles, within the guardian cap. Checks run server-side after successful OTP against verified current profiles; same account excluded on update. Per-phone protected HMAC lock objects and profile/audit are written in a single CAS batch; concurrent conflicting changes cannot both succeed. Old and new numbers are locked when changing, no old ownership is released until verified profile commit. A conflict returns friendly PHONE_ALREADY_USED/GUARDIAN_PHONE_LIMIT or PROFILE_CHANGED; old profile remains intact. No raw phone in lock key or log. Shared lock key must remain stable across all nodes during key rotation; no production rollout until legacy conflicts and deployment/key rotation are audited. Policy missing fails closed.
+
+1.1.0: authenticated own-profile and verify responses include the stored `phone_number` as well as `phone_mask`, scoped strictly to `ctx.userId`; request-supplied user IDs are ignored. Protected storage and audit permissions remain unchanged. Client uses `phone_owner` to prefill the player or guardian phone field. Audit/logs/evidence must not contain real raw phone numbers. Any profile changes still require a new verified OTP. This supersedes the masked-only response description below.
+
+Extends compliance_access with action=profile (owner from ctx.userId). Returns own full_name/birth_date/guardian_name, masked phone only, revision/method/phone_owner/verified_at and public policy; never raw phone/challenge/OTP. Client preloads saved data, requires entering phone and OTP again for modifications. New profile remains pending until verification. is_verified legacy never grants phone activation.
+
+Request challenge captures base profile storage version and server-generated challenge_id. Verify uses one atomic Nakama storageWrite batch: CAS profile and append-only audit:<challenge_id>, permissionRead=permissionWrite=0. Audit metadata holds revision/time/method/owner/consent-policy reference, no raw phone/name/DOB/OTP. Lost delete/retry cannot duplicate update; concurrent/stale profile version returns PROFILE_CHANGED. Existing activation profiles retain access and gain revision on next verified update; no upgrade from legacy declared-profile flags.
+
+Policy optional allow_birth_date_change default false after first activation; changing DOB requires support unless explicitly allowed via validated system config. Initial DOB must be valid. No counter reset on profile revision. Guardian consent metadata persisted at request and verification. This remains mock OTP only until real provider integration; profile revision/audit is not proof of real phone ownership or guardianship. Retention and full privacy acceptance remain B6/D5 dependencies.
+
+B3 docs/evidence separate under implementation/profile-lifecycle/B3 and evidence/profile-lifecycle/B3. Changelog 1.0.0 initial profile lookup, versioned verified updates and masked UI.
+
+
+Changelog 1.3.0 (2026-11-03): C251 optional consent snapshot/receipt in KYC OTP transaction, profile consent projection and withdrawal; KYC confirmation is last checkbox. Processing remains disabled; see C251 for scoped limitations.

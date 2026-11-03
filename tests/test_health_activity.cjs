@@ -1,0 +1,28 @@
+const fs = require('fs');
+const vm = require('vm');
+const cp = require('child_process');
+const assert = require('assert');
+const context = {Date, JSON, Math, Number, String};
+vm.createContext(context);
+vm.runInContext(fs.readFileSync(require('path').join(__dirname, '../nakama/data/modules/build/main.js'), 'utf8'), context);
+const now = Date.now() / 1000;
+const day = new Date((now + 25200) * 1000).toISOString().slice(0,10);
+let mode = 'normal';
+const nk = {sqlQuery(sql, args) {
+  if (sql.startsWith('UPDATE')) return [];
+  const literal = v => typeof v === 'number' ? String(v) : typeof v === 'boolean' ? String(v) : "'" + String(v).replaceAll("'", "''") + "'";
+  sql = sql.replace(/\$(\d+)/g, (_, n) => literal(args[Number(n)-1]));
+  const last = now - (mode === 'gap' ? 1000 : 30);
+  const setup = `CREATE TEMP TABLE player_health_activity(user_id uuid PRIMARY KEY,day text,seconds double precision DEFAULT 0,continuous_seconds double precision DEFAULT 0,last_at double precision,active boolean,milestone integer DEFAULT 0); INSERT INTO player_health_activity VALUES('00000000-0000-0000-0000-000000000001','${day}',1770,1770,${last},true,0);`;
+  const query = setup + 'WITH result AS (' + sql + ') SELECT row_to_json(result) FROM result;';
+  const output = cp.execFileSync('docker', ['exec','survival_td_local-postgres-1','psql','-U','postgres','-d','nakama','-At','-c',query], {encoding:'utf8'});
+  return [JSON.parse(output.trim().split('\n').pop())];
+}, notificationSend() {}};
+let result = JSON.parse(context.healthHeartbeat({userId:'00000000-0000-0000-0000-000000000001'}, {warn(){}}, nk, '{"active":true}'));
+assert(result.seconds >= 1800 && result.seconds < 1805);
+assert.equal(result.milestone, 1);
+mode = 'gap';
+result = JSON.parse(context.healthHeartbeat({userId:'00000000-0000-0000-0000-000000000001'}, {warn(){}}, nk, '{"active":true}'));
+assert.equal(result.seconds,1770);
+assert.equal(result.continuous_seconds,0);
+console.log('PASS C242 real PostgreSQL heartbeat credit, milestone and long-gap reset (temporary tables only)');

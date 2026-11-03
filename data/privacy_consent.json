@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "revision": 1,
+  "notice": {
+    "id": "profile-privacy-v1",
+    "revision": 1,
+    "text": "Thông Thiên Lộ sử dụng thông tin tài khoản, họ tên, ngày sinh, số điện thoại và thông tin giám hộ khi cần để đăng ký, xác thực, quản lý quyền chơi, giới hạn thời gian và hỗ trợ tài khoản. Hồ sơ giao dịch được xử lý riêng để thanh toán, đối soát và thực hiện nghĩa vụ liên quan. Các lựa chọn bên dưới là tùy chọn; không chọn vẫn xác thực KYC và tham gia trò chơi theo điều kiện hiện hành.\n\nLựa chọn quảng bá chỉ dành cho thông tin về trò chơi do bên vận hành gửi qua email liên kết với tài khoản, khi tính năng này được triển khai hợp lệ. Hiện chưa bật hoạt động gửi quảng bá hoặc chia sẻ dữ liệu tùy chọn. Không cung cấp quyền chung cho mọi bên thứ ba. Dịch vụ xác thực SMS, email giao dịch, đăng nhập và thanh toán có mục đích và phạm vi riêng, không sử dụng checkbox quảng bá làm căn cứ chung.\n\nCó thể tắt lựa chọn trong hồ sơ mà không cần OTP; yêu cầu về truy cập, sửa, hạn chế hoặc xóa dữ liệu gửi tới admin@lkvustudio.com. Rút lựa chọn tùy chọn không tự xóa dữ liệu đang cần lưu theo nghĩa vụ hoặc quy trình xóa tài khoản. Chi tiết chính sách quyền riêng tư được công bố tại trang chính sách của trò chơi. OTP thử nghiệm không phải xác minh số điện thoại thật."
+  },
+  "purposes": [
+    {
+      "id": "game_marketing_email",
+      "revision": 1,
+      "label": "Tôi cho phép bên vận hành gửi thông tin quảng bá về trò chơi qua email liên kết.",
+      "enabled": true,
+      "processing_enabled": false
+    },
+    {
+      "id": "optional_partner_sharing",
+      "revision": 1,
+      "label": "Chia sẻ dữ liệu tùy chọn với đối tác: chưa cung cấp, luôn tắt.",
+      "enabled": false,
+      "processing_enabled": false
+    }
+  ]
+}

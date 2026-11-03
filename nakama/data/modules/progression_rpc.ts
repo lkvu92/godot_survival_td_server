@@ -833,6 +833,12 @@ function progressionMaxStageBaseExp(nk: nkruntime.Nakama, stageId: string): numb
         if (!Array.isArray(entries)) continue;
         for (let j = 0; j < entries.length; j++) {
             const entry = entries[j] || {};
+            if (entry.species_id !== undefined) {
+                const exp = Number(entry.exp), count = Number(entry.count);
+                if (!Number.isInteger(exp) || exp < 0 || !Number.isInteger(count) || count < 0) throw new Error("Invalid levelled stage EXP");
+                total += count * exp;
+                continue;
+            }
             const enemyId = String(entry.enemy_id || "");
             const enemyRows = nk.sqlQuery("SELECT exp FROM game_enemies WHERE id = $1", [enemyId]);
             if (enemyRows.length === 0) continue;

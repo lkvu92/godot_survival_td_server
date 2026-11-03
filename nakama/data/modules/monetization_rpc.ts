@@ -5,6 +5,67 @@ interface StoreRewardLine {
     metadata?: any;
 }
 
+function financialPolicy(p:any):any {
+    if(!p||p.schema_version!==1||!Number.isSafeInteger(p.revision)||p.revision<1||typeof p.enabled!=='boolean')throw Error('FINANCIAL_POLICY_INVALID');
+    for(const spec of [['batch_size',1,100],['retry_seconds',30,86400],['resync_seconds',60,2592000],['lookback_days',1,3650]] as any[])
+        if(!Number.isSafeInteger(p[spec[0]])||p[spec[0]]<spec[1]||p[spec[0]]>spec[2])throw Error('FINANCIAL_POLICY_INVALID');
+    return p;
+}
+function financialSnapshot(value:any):any {
+    const amount=(v:any)=>typeof v==='string'&&/^\d{1,18}\.\d{9}$/.test(v);
+    if(!value||value.schema_version!==1||value.source!=='google_orders_api'||typeof value.google_order_id!=='string'||!value.google_order_id||value.google_order_id.length>200||!/^[A-Z]{3}$/.test(value.currency)||!amount(value.paid_amount)||!amount(value.refunded_amount)||(value.tax_amount!==null&&!amount(value.tax_amount))||!isFinite(Date.parse(value.provider_event_at))||typeof value.provider_state!=='string'||value.provider_state.length>64||!Array.isArray(value.events)||value.events.length>100)throw Error('FINANCIAL_DATA_INVALID');
+    const events=value.events.map((e:any)=>{
+        if(!e||['partial_refund','full_refund'].indexOf(e.type)<0||!isFinite(Date.parse(e.time))||typeof e.state!=='string'||e.state.length>64||!amount(e.amount)||e.currency!==value.currency)throw Error('FINANCIAL_EVENT_INVALID');
+        return {type:e.type,time:String(e.time),state:e.state,amount:e.amount,currency:e.currency};
+    });
+    return {schema_version:1,source:'google_orders_api',google_order_id:value.google_order_id,currency:value.currency,paid_amount:value.paid_amount,tax_amount:value.tax_amount,refunded_amount:value.refunded_amount,provider_state:value.provider_state,provider_event_at:String(value.provider_event_at),events:events};
+}
+function financialRecordSql():string {
+    return `WITH binding AS (SELECT id FROM monetization_purchase_orders WHERE id=$1 AND transaction_id=$2 AND platform='android' AND status='fulfilled' AND COALESCE(vip_environment,'')<>'mock'),
+      record AS (INSERT INTO payment_financial_records(purchase_order_id,google_order_id,currency,original_amount,tax_amount)
+      SELECT id,$2,$3,$4::numeric,$5::numeric FROM binding WHERE $6::numeric<=$4::numeric
+      ON CONFLICT(purchase_order_id) DO UPDATE SET last_synced_at=NOW()
+      WHERE payment_financial_records.google_order_id=EXCLUDED.google_order_id AND payment_financial_records.currency=EXCLUDED.currency AND payment_financial_records.original_amount=EXCLUDED.original_amount
+      RETURNING purchase_order_id),
+      snap AS (INSERT INTO payment_financial_snapshots(purchase_order_id,snapshot_hash,provider_event_at,provider_state,refunded_amount,snapshot)
+      SELECT purchase_order_id,encode(sha256(convert_to(($9::jsonb)::text,'UTF8')),'hex'),$7::timestamptz,$8,$6::numeric,$9::jsonb FROM record
+      ON CONFLICT DO NOTHING RETURNING 1)
+      SELECT EXISTS(SELECT 1 FROM record) AS accepted,(SELECT COUNT(*) FROM snap) AS inserted`;
+}
+function googlePlayFinancialSync(ctx:nkruntime.Context,_logger:nkruntime.Logger,nk:nkruntime.Nakama,payload:string):string {
+    let req:any;
+    try{req=JSON.parse(payload||'{}');}catch(_e){return JSON.stringify({success:false,reason:'INVALID_REQUEST'});}
+    if(ctx.userId||!ctx.env||!ctx.env.MONETIZATION_VERIFIER_SECRET||req.verifier_secret!==ctx.env.MONETIZATION_VERIFIER_SECRET)return JSON.stringify({success:false,reason:'FORBIDDEN'});
+    let p:any;try{p=financialPolicy(getRemoteConfigValue(nk,'system','payment_financials',null));}catch(_e){return JSON.stringify({success:false,reason:'POLICY_UNAVAILABLE'});}
+    if(!p.enabled)return JSON.stringify(req.action==='batch'?{success:true,policy:p,orders:[]}:{success:false,reason:'SYNC_DISABLED'});
+    if(req.action==='batch'){
+        const orders=nk.sqlQuery(`SELECT o.id AS purchase_order_id,o.transaction_id AS google_order_id,COALESCE(NULLIF(o.store_product_id,''),o.product_id) AS store_product_id
+          FROM monetization_purchase_orders o LEFT JOIN payment_financial_records f ON f.purchase_order_id=o.id LEFT JOIN payment_financial_attempts a ON a.purchase_order_id=o.id
+          WHERE o.platform='android' AND o.status='fulfilled' AND o.transaction_id<>'' AND COALESCE(o.vip_environment,'')<>'mock'
+          AND o.created_at>=NOW()-($1*INTERVAL '1 day') AND (f.last_synced_at IS NULL OR f.last_synced_at<NOW()-($2*INTERVAL '1 second'))
+          AND (a.last_attempt_at IS NULL OR a.last_attempt_at<NOW()-($3*INTERVAL '1 second'))
+          ORDER BY COALESCE(a.last_attempt_at,o.created_at),o.id LIMIT $4`,[p.lookback_days,p.resync_seconds,p.retry_seconds,p.batch_size]);
+        return JSON.stringify({success:true,policy:p,orders:orders});
+    }
+    const orderId=String(req.purchase_order_id||'');
+    if(!orderId||orderId.length>200)return JSON.stringify({success:false,reason:'INVALID_ORDER'});
+    if(req.action==='error'){
+        nk.sqlExec(`INSERT INTO payment_financial_attempts(purchase_order_id,failures) SELECT id,1 FROM monetization_purchase_orders WHERE id=$1 AND platform='android' AND status='fulfilled'
+          ON CONFLICT(purchase_order_id) DO UPDATE SET last_attempt_at=NOW(),failures=payment_financial_attempts.failures+1`,[orderId]);
+        return JSON.stringify({success:true});
+    }
+    if(req.action==='record'){
+        try{
+            const f=financialSnapshot(req.financial);
+            const rows=nk.sqlQuery(financialRecordSql(),[orderId,f.google_order_id,f.currency,f.paid_amount,f.tax_amount,f.refunded_amount,f.provider_event_at,f.provider_state,JSON.stringify(f)]);
+            if(!rows.length||!rows[0].accepted)return JSON.stringify({success:false,reason:'FINANCIAL_BINDING_OR_AMOUNT_CONFLICT'});
+            nk.sqlExec(`INSERT INTO payment_financial_attempts(purchase_order_id,failures) VALUES($1,0) ON CONFLICT(purchase_order_id) DO UPDATE SET last_attempt_at=NOW(),failures=0`,[orderId]);
+            return JSON.stringify({success:true,inserted:Number(rows[0].inserted)});
+        }catch(_e){return JSON.stringify({success:false,reason:'FINANCIAL_DATA_REJECTED'});}
+    }
+    return JSON.stringify({success:false,reason:'INVALID_ACTION'});
+}
+
 const MONETIZATION_PRODUCTS: { [key: string]: number } = {
     remove_ads_1d: 24 * 60 * 60,
     remove_ads_3d: 3 * 24 * 60 * 60,
@@ -509,27 +570,34 @@ const claimDailyPack: nkruntime.RpcFunction = (ctx, _logger, nk, payload) => {
     if (!status.claimable) return JSON.stringify({ status: "success", idempotent: true, data: dailyPackResponse(ctx.userId, profile, now) });
     const pack = profile.daily_packs[id];
     if (!Array.isArray(pack.rewards) || !pack.rewards.length) return monetizationError(409, "Pack rewards missing");
-    const inventory: any = inventoryRow.value;
-    inventory.items = Array.isArray(inventory.items) ? inventory.items : [];
-    profile.resources = profile.resources || {};
     try {
+        const attachments: any[] = [];
         for (const reward of pack.rewards) {
-            if (!Number.isSafeInteger(reward.quantity) || reward.quantity <= 0) throw Error("Invalid reward quantity");
+            const amount = Number(reward.quantity);
+            if (!Number.isSafeInteger(amount) || amount <= 0) throw Error("Invalid reward quantity");
             if (reward.reward_type === "currency" && ["gold", "gems"].indexOf(reward.reward_id) >= 0) {
-                profile.resources[reward.reward_id] = Math.max(0, Number(profile.resources[reward.reward_id] || 0)) + reward.quantity;
-            } else if (reward.reward_type === "stamina" && reward.reward_id === "stamina") {
-                profile.stamina = staminaClamp(nk, Number(profile.stamina || 0) + reward.quantity);
-                profile.last_stamina_update = Math.floor(now / 1000);
+                attachments.push({type:"resource", id:reward.reward_id, amount});
             } else if (reward.reward_type === "item") {
-                addStoreInventoryItem(nk, inventory.items, String(reward.reward_id), reward.quantity);
+                attachments.push({type:"item", id:String(reward.reward_id), amount});
+            } else if (reward.reward_type === "stamina" && reward.reward_id === "stamina") {
+                const normal = Math.floor(amount / 15), low = Math.ceil((amount % 15) / 5);
+                if (normal) attachments.push({type:"item", id:"energy_elixir", amount:normal});
+                if (low) attachments.push({type:"item", id:"energy_elixir_low", amount:low});
             } else throw Error("Unsupported pack reward");
         }
+        const source = 'daily_pack:' + pack.grant_id + ':' + (status.day - 1);
+        const mail = mailDefinition(nk,{source_id:source,source_type:'daily_pack',title:'Qu? g?i ng?y',
+            body:'??o h?u h?y nh?n ph?n th??ng g?i ng?y t?i ??y.',attachments});
+        const marker = {collection:'player_mail_deliveries',key:mail.id,userId:ctx.userId};
+        if (nk.storageRead([marker]).length) throw Error("Delivery already exists");
         pack.last_claim_day = status.day - 1;
         nk.storageWrite([
-            { collection: "player_profiles", key: "main", userId: ctx.userId, value: profile, version: profileRow.version, permissionRead: 1, permissionWrite: 0 },
-            { collection: "player_inventory", key: "items", userId: ctx.userId, value: inventory, version: inventoryRow.version, permissionRead: 1, permissionWrite: 0 }
+            {collection:"player_profiles",key:"main",userId:ctx.userId,value:profile,version:profileRow.version,permissionRead:1,permissionWrite:0},
+            Object.assign(mailWrite(mail,ctx.userId),{version:'*'}),
+            Object.assign({},marker,{value:{source_id:source,created_at_ms:mail.created_at_ms},version:'*',permissionRead:0,permissionWrite:0})
         ]);
-        return JSON.stringify({ status: "success", data: Object.assign(dailyPackResponse(ctx.userId, profile, now), { profile, inventory, rewards: pack.rewards }) });
+        mailPush(nk,ctx.userId,mail.id);
+        return JSON.stringify({status:"success",data:Object.assign(dailyPackResponse(ctx.userId,profile,now),{mail_id:mail.id,rewards:pack.rewards})});
     } catch (_) { return monetizationError(409, "Pack reward claim failed; refresh and retry"); }
 };
 

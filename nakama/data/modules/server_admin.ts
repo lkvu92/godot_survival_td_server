@@ -1,7 +1,37 @@
 // C143: registry administration and explicitly planned, generation-scoped lifecycle.
+const adminAssetTrace:nkruntime.RpcFunction=(ctx,_logger,nk,payload)=>{
+    const denied=requireServerAdmin(ctx);if(denied)return denied;
+    let req:any;try{req=JSON.parse(payload||'{}');}catch(_e){return serverFailure('INVALID_REQUEST',400,'Invalid JSON');}
+    if(!req||typeof req!=='object'||Array.isArray(req)||typeof req.user_id!=='string'||!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(req.user_id)
+        ||typeof req.server_id!=='string'||!/^[a-z][a-z0-9_]{0,31}$/.test(req.server_id)||!Number.isSafeInteger(req.generation)||req.generation<1
+        ||['item_request','mail_claim'].indexOf(req.source)<0)return serverFailure('INVALID_REQUEST',400,'Invalid trace scope');
+    const prefix=req.server_id+':g'+req.generation+':',cursor=req.cursor===undefined?'':req.cursor,limit=req.limit===undefined?20:req.limit;
+    if(typeof cursor!=='string'||cursor.length>240||(cursor!==''&&cursor.indexOf(prefix)!==0)||!Number.isSafeInteger(limit)||limit<1||limit>30)return serverFailure('INVALID_REQUEST',400,'Invalid pagination');
+    const collection=req.source==='item_request'?'player_item_requests':'player_mail_deliveries';
+    const rows=nk.sqlQuery(`SELECT key,value->'created_at' AS created_at,value->'claimed_at_ms' AS claimed_at_ms,
+      value->>'fingerprint' AS fingerprint,value->>'source_type' AS source_type,value->'asset_changes' AS asset_changes
+      FROM storage WHERE user_id=$1::uuid AND collection=$2 AND key LIKE $3 AND key>$4 ORDER BY key LIMIT $5`,
+      [req.user_id,collection,prefix.replace(/_/g,'\\_')+'%',cursor,limit+1]);
+    const more=rows.length>limit;if(more)rows.pop();
+    return JSON.stringify({success:true,records:rows.map((r:any)=>({reference:r.key,at:r.claimed_at_ms||r.created_at||null,
+      fingerprint:r.fingerprint||null,source_type:r.source_type||null,asset_changes:r.asset_changes||null})),next_cursor:more?rows[rows.length-1].key:''});
+};
+// Single source of truth for admin authorization. CONFIG_ADMIN_USER_ID accepts one UUID or a comma-separated list.
+// Fail closed: empty/missing config, anonymous or non-listed callers are never admins.
+function isConfigAdmin(ctx: nkruntime.Context): boolean {
+    const uid=String(ctx.userId||'').trim().toLowerCase();
+    if(!uid)return false;
+    const allowed=String(ctx.env && ctx.env.CONFIG_ADMIN_USER_ID || '').split(',').map(s=>s.trim().toLowerCase()).filter(s=>s.length>0);
+    return allowed.indexOf(uid)>=0;
+}
 function requireServerAdmin(ctx: nkruntime.Context): string|null {
-    const configured=String(ctx.env && ctx.env.CONFIG_ADMIN_USER_ID || '');
-    return ctx.userId && configured && ctx.userId===configured ? null : serverFailure('FORBIDDEN',403,'Forbidden');
+    return isConfigAdmin(ctx) ? null : serverFailure('FORBIDDEN',403,'Forbidden');
+}
+// Role probe for the admin web. Non-admins get a real HTTP 403 (PERMISSION_DENIED), never a 200 body.
+function rpcAdminWhoami(ctx: nkruntime.Context, _l: nkruntime.Logger, _n: nkruntime.Nakama, _p: string): string {
+    if(!ctx.userId)throw {message:'Authentication required',code:16};
+    if(!isConfigAdmin(ctx))throw {message:'Forbidden',code:7};
+    return JSON.stringify({success:true,user_id:ctx.userId,role:'admin'});
 }
 
 function serverAdminHandler(action: string): nkruntime.RpcFunction {

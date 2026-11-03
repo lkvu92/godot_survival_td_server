@@ -1,0 +1,76 @@
+{
+  "roles": {
+    "tank": {
+      "hp": 88,
+      "atk": 2.6,
+      "def": 3,
+      "attack_speed": 0.5425,
+      "move_speed": 116
+    },
+    "damage": {
+      "hp": 18,
+      "atk": 6,
+      "def": 0.25,
+      "attack_speed": 0.5075,
+      "move_speed": 118
+    },
+    "ranger": {
+      "hp": 23.5,
+      "atk": 2.4,
+      "def": 1.2,
+      "attack_speed": 1.05,
+      "move_speed": 114
+    },
+    "medium": {
+      "hp": 48,
+      "atk": 2.3,
+      "def": 1,
+      "attack_speed": 0.525,
+      "move_speed": 179.2
+    },
+    "runner": {
+      "hp": 37,
+      "atk": 1.25,
+      "def": 0.3,
+      "attack_speed": 1.092,
+      "move_speed": 214.4
+    }
+  },
+  "boss_elements": {
+    "earth": {
+      "hp": 3520,
+      "atk": 5.2,
+      "def": 22.5,
+      "attack_speed": 1.302,
+      "move_speed": 290
+    },
+    "fire": {
+      "hp": 2880,
+      "atk": 6,
+      "def": 7.5,
+      "attack_speed": 1.218,
+      "move_speed": 295
+    },
+    "metal": {
+      "hp": 3760,
+      "atk": 4.8,
+      "def": 18,
+      "attack_speed": 1.26,
+      "move_speed": 285
+    },
+    "water": {
+      "hp": 3840,
+      "atk": 4.6,
+      "def": 15,
+      "attack_speed": 1.26,
+      "move_speed": 280
+    },
+    "wood": {
+      "hp": 2960,
+      "atk": 5,
+      "def": 9,
+      "attack_speed": 1.638,
+      "move_speed": 335
+    }
+  }
+}
