@@ -196,7 +196,14 @@ const seedGameData: nkruntime.RpcFunction = (
     try { data = JSON.parse(payload); } catch (_e) { return JSON.stringify({error: "Invalid JSON"}); }
     if (!data || typeof data !== "object" || Array.isArray(data)) return JSON.stringify({error: "Expected object"});
     if(data.table==='bundle')return seedGameDataBundle(ctx,logger,nk,data);
+    const managedEnemyVersion=typeof enemyCatalogVersion==='function'?enemyCatalogVersion(nk):'0';
+    if(managedEnemyVersion!=='0'&&data.table==='enemies')return JSON.stringify({success:true,table:'enemies',inserted:0,preserved_catalog:true,enemy_catalog_version:managedEnemyVersion});
+    if(managedEnemyVersion!=='0'&&data.table==='config'&&data.config_key==='progression'){
+        const current=parseJsonb(nk.sqlQuery("SELECT value FROM game_config WHERE key='progression'",[])[0].value);
+        data.config_value=Object.assign({},data.config_value,{enemy_framework:current.enemy_framework});
+    }
     const statements: string[] = [];
+    if(managedEnemyVersion!=='0')statements.push(`PERFORM id FROM enemy_catalog_state WHERE id=1 FOR UPDATE; IF (SELECT active_release::TEXT FROM enemy_catalog_state WHERE id=1) IS DISTINCT FROM ${seedSqlLiteral(managedEnemyVersion)} THEN RAISE EXCEPTION 'C259_CATALOG_CHANGED'; END IF`);
     const checks: string[] = [];
     const write = (sql: string, params: any[]) => {
         statements.push(seedBindSql(sql, params));
@@ -372,6 +379,10 @@ const seedGameData: nkruntime.RpcFunction = (
         case "stages":
             // stages.json has waves embedded — split into game_stages + game_stage_waves
             for (const row of rows) {
+                if(managedEnemyVersion!=='0'){
+                    const managed=nk.sqlQuery("SELECT id FROM game_stages WHERE id=$1 AND stage_rules->>'enemy_framework_version'='2'",[row.id]);
+                    if(managed.length){preservedLevelledStages.push(String(row.id));inserted++;continue;}
+                }
                 if(Number((row.stage_rules||{}).enemy_framework_version)!==2) {
                     const deployed=nk.sqlQuery("SELECT id FROM game_stages WHERE id=$1 AND stage_rules->>'enemy_framework_version'='2'",[row.id]);
                     if(deployed.length){preservedLevelledStages.push(String(row.id));inserted++;continue;}

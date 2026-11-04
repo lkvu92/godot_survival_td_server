@@ -1,6 +1,6 @@
 # C252 — Responsive catalog bootstrap
 
-Version 1.0.0 · ACTIVE (desktop scoped) · 2026-11-03.
+Version 1.1.0 · ACTIVE (desktop scoped) · 2026-11-03.
 
 55% LoadingScreen maps to ConfigService.load_all_config: network response, JSON parsing, full DataRegistry validation including all stages/difficulties, copies/indexes. Diagnose using the authenticated remote catalog fixture and monotonic stage timing/frame gaps, never gameplay fallback.
 
@@ -18,3 +18,23 @@ Actual battle compilation remains unchanged and always builds full descriptors/c
 Acceptance 2026-11-03: measured baseline ~8.26s synchronous UI CPU work; worker/context/HTTP-envelope tests PASS, frame gap ~10ms in isolated desktop harness, main install ~3ms; framework1191/native1209/damage611 PASS, client static PASS. Android profiling pending; no claim of reduced total validation time. Details: client/docs/reports/C252_LOADING_PROFILING.md from workspace.
 
 Live-local acceptance follow-up: real SDK/auth/RPC and LoadingScreen presentation on a dedicated acceptance device, no saved tokens: ~12.36s total, 1782 frames, max gap19.51ms without screenshot I/O. Visual capture verifies progress during validation. Source report C252_LIVE_LOCAL_NOCAPTURE.json; Android remains pending.
+
+## 1.1.0 ? 2026-11-04 loading latency
+
+Catalog admission validates all stage difficulties, schedules and references,
+but does not construct per-spawn wave output. A job-local cache shares identical
+compile_entry validation across stages/difficulties; keys include species,
+presentation, elements, skills and boss. Level/stat overflow and EXP are checked
+independently on every entry, including cache hits. Visual admission copies only
+the already validated visual ID, not animation metadata. Cache never survives a
+snapshot. Actual selected-stage compilation, RNG, spawn counts and resume stay
+unchanged. Admission still validates every random primary loadout and samples
+its seeded descriptor as before. No schema-only admission or validation bypass.
+
+Server loads stage waves in one ordered query, casts entries JSONB to text at
+the SQL boundary and groups by stage ID. The RPC response schema and complete
+catalog are unchanged. No data publication/release creation is required.
+
+Validation: compare full RPC payload before/after, query-count regression,
+malformed schedule/reference/override/skill rejection, unchanged seeded battle
+compile, worker/context regressions and before/after local timing.

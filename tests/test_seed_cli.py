@@ -82,6 +82,56 @@ class SeedCliTests(unittest.TestCase):
                 with self.assertRaises(cli.SeedError):
                     cli.invoke_seed("heroes", {"rows": [{"id": "hero"}]})
 
+    def test_explicit_enemy_catalog_preservation_is_not_a_count_mismatch(self):
+        for extra in ({}, {"enemy_catalog_version": "7"}):
+            response = {"success": True, "table": "enemies", "inserted": 0, "preserved_catalog": True, **extra}
+            output = io.StringIO()
+            with patch.object(cli, "invoke_rpc", return_value=response), contextlib.redirect_stdout(output):
+                cli.invoke_seed("enemies", {"rows": [{"id": "legacy_enemy"}]})
+            self.assertIn("preserved; 0 seed rows written", output.getvalue())
+            self.assertNotIn("1 rows verified", output.getvalue())
+
+    def test_preservation_does_not_bypass_other_table_or_malformed_readback_checks(self):
+        request = {"table": "enemies", "rows": [{"id": "legacy"}]}
+        valid = {"success": True, "table": "enemies", "inserted": 0, "preserved_catalog": True, "enemy_catalog_version": "7"}
+        invalid = [
+            {**valid, "inserted": 1}, {**valid, "inserted": False},
+            {**valid, "preserved_catalog": "true"}, {**valid, "preserved_catalog": False},
+            {**valid, "enemy_catalog_version": "0"}, {**valid, "enemy_catalog_version": 7},
+            {**valid, "enemy_catalog_version": "invalid"}, {**valid, "success": False},
+        ]
+        for result in invalid:
+            with self.subTest(result=result), self.assertRaises(cli.SeedError):
+                cli.verify_seed_readback(request, result, atomic=True)
+        for table in ("heroes", "items", "config"):
+            with self.subTest(table=table), self.assertRaises(cli.SeedError):
+                cli.verify_seed_readback({**request, "table": table}, {**valid, "table": table})
+
+    def test_preserved_enemy_bundle_continues_to_explicit_publish(self):
+        calls = []
+        def respond(name, body, bearer=None):
+            calls.append(name)
+            if name == "seed_game_data":
+                results = [{"success": True, "table": request["table"], "inserted": len(request["rows"]) if "rows" in request else 1}
+                           for request in body["requests"]]
+                for result in results:
+                    if result["table"] == "enemies":
+                        result.update(inserted=0, preserved_catalog=True, enemy_catalog_version="7")
+                return {"success": True, "atomic": True, "table": "bundle", "results": results}
+            return {"status": "ok", "config_version": 107}
+        with patch.dict(os.environ, {"NAKAMA_CONFIG_PUBLISH_TOKEN": "synthetic-operator-token"}, clear=True), patch.object(cli, "invoke_rpc", side_effect=respond):
+            self.assertEqual(self.run_main(["--publish"]), 0)
+        self.assertEqual(calls, ["seed_game_data", "operator_config_release", "operator_config_release"])
+
+    def test_unmarked_enemy_count_mismatch_stops_publish(self):
+        def respond(name, body, bearer=None):
+            results = [{"success": True, "table": request["table"], "inserted": 0 if request["table"] == "enemies" else len(request["rows"]) if "rows" in request else 1}
+                       for request in body["requests"]]
+            return {"success": True, "atomic": True, "table": "bundle", "results": results}
+        with patch.dict(os.environ, {"NAKAMA_CONFIG_PUBLISH_TOKEN": "synthetic-operator-token"}, clear=True), patch.object(cli, "invoke_rpc", side_effect=respond) as rpc:
+            self.assertEqual(self.run_main(["--publish"]), 1)
+        self.assertEqual(rpc.call_count, 1)
+
     def test_missing_data_fails(self):
         with self.assertRaises(cli.SeedError):
             cli.seed_file("heroes", "does-not-exist.json")

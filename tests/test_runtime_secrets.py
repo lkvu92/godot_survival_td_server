@@ -49,6 +49,15 @@ class RuntimeSecretsTests(unittest.TestCase):
             if os.name != "nt":
                 self.assertEqual(token_path.stat().st_mode & 0o777, 0o600)
 
+    def test_live_drafts_require_develop_and_explicit_flag(self):
+        for environment, flag, expected in [("develop", "true", "true"), ("develop", "false", "false"), ("develop", None, "false"), ("production", "true", "false"), ("unknown", "true", "false")]:
+            env = self.env()
+            env["APP_ENVIRONMENT"] = environment
+            if flag is not None:
+                env["CONFIG_DRAFT_LIVE_ENABLED"] = flag
+            config = runtime.make_config(env)
+            self.assertIn("CONFIG_DRAFT_LIVE_ENABLED=" + expected, config["runtime"]["env"])
+
     def test_mapping_and_distinct_keys(self):
         env = self.env()
         config = runtime.make_config(env)

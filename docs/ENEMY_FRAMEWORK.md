@@ -1,10 +1,10 @@
 # Enemy framework v2 — C239
 
-Khung mới được bật bằng `stage_rules.enemy_framework_version: 2`. Các stage hiện có chưa chuyển sang v2. Không có thay đổi DB/profile hoặc publication trong giai đoạn thử nghiệm.
+Khung v2 được bật bằng `stage_rules.enemy_framework_version: 2`. Local hiện có 70 stage campaign đã chuyển đổi. Từ C259, quản lý enemy/stats/asset/skill/stage entries qua DB và admin RPC; xem [hướng dẫn vận hành](ENEMY_CATALOG_ADMIN.md). Các phần seed/pilot phía dưới là lịch sử và công cụ tham chiếu, không ghi đè catalog đã quản lý.
 
 ## Nguồn dữ liệu
 
-`server/data/progression.json → enemy_framework` là seed input. Khi phát hành qua quy trình config hiện có, Nakama lưu trong `game_config.progression` và trả qua bootstrap có xác thực. Client chỉ đọc snapshot đã validate; không đọc seed JSON để chơi offline.
+`server/data/progression.json → enemy_framework` chỉ là seed input ban đầu cho môi trường chưa chuyển đổi. Với catalog đã migrate, 5 bảng C259 và release đã publish là nguồn chỉnh sửa; generic seed bảo toàn dữ liệu này. Runtime tiếp tục dùng `game_config.progression` qua bootstrap có xác thực. Client chỉ đọc snapshot đã validate; không có gameplay JSON fallback.
 
 - `species`: mỗi loài có base attributes, growth riêng, reward và tham chiếu presentation. Không có element hay danh sách skill theo loài.
 - `skill_atlas`: mỗi ID có một element cố định, executor và dữ liệu từng level. Player/Enemy dùng chung resolver và executor.

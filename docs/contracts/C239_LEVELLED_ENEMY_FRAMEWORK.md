@@ -1,6 +1,6 @@
 # C239 Levelled enemies and shared skill atlas
 
-Version: 1.6.2 | Status: IN_PROGRESS | Date: 2026-10-30
+Version: 1.6.4 | Status: IN_PROGRESS | Date: 2026-11-04
 
 ## Scope and authority
 Version 2 is opt-in per stage.stage_rules.enemy_framework_version. Legacy stages retain their original spawn/stat generation. Damage resolution for every stage is shared under C240. Authoritative catalog is progression.enemy_framework, transported by the existing authenticated config bootstrap RPC (request {table:"all"}; response progression includes enemy_framework). Existing game_config progression seed path is reused. No new RPC, local gameplay fallback, profile mutation or production publication. Test-only fixtures may load explicit server data in the existing harness.
@@ -107,3 +107,15 @@ Creep levels increase every five waves. Boss base level is the maximum stage lev
 Generic legacy stages seed must preserve already-deployed v2 stage rows, waves and extension metadata rather than overwrite waves while leaving v2 rules. Report preserved_levelled in seed result; no automatic production migration. Recheck native stage lock inside the atomic seed transaction to reject a concurrent legacy downgrade. Explicit v2 authoring rejects legacy override fields in every difficulty branch before writes. Existing local catalog corruption is repaired from canonical migration inputs with backup/CAS; player and finance data untouched.
 
 Changelog 1.6.2 (2026-11-03): C252 moves client bulk parse/validation to worker, pure element-matrix validation and opt-out of live matchup prepare for admission only. Gameplay/default compilation and authority rules unchanged; desktop regressions PASS.
+
+
+## C259 authoring authority - 1.6.3 (2026-11-04)
+
+For migrated catalogs, C259 supersedes JSON-first authoring and the earlier no-new-RPC/publication scope. Enemy tables and immutable releases author the existing progression.enemy_framework runtime projection. Optional species.element_baselines takes precedence over the initial global boss baseline; import copies identical values, preserving math. Optional catalog_version identifies the published snapshot. Stage species_id projection and C239/C240 combat behavior remain compatible. Client presentation_assets resolve only through registered AtlasRegistry sources. See [C259](C259_ENEMY_CATALOG_ADMIN.md) and [operator guide](../ENEMY_CATALOG_ADMIN.md).
+
+Changelog 1.6.3 (2026-11-04): DB authoring authority, independent per-boss baseline override, published catalog version and registered presentation assets; baseline migration preserves all existing framework parameters and wave entries.
+
+
+## Changelog 1.6.4 (2026-11-04)
+
+C259 neutral presentation IDs receive empty legacy binding records and retain explicit v2 stage loadouts. Arc 7 legacy catalog admission runs only for legacy Arc 7 stages; v2 stages use the already-completed framework admission checks. Legacy regression still rejects a missing elemental compatibility definition. No combat math changes.

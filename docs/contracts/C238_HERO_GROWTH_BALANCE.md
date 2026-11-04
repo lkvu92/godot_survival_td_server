@@ -1,6 +1,6 @@
 # C238 Hero growth balance round 2
 
-Version: 1.1.1 | Status: ACTIVE | Updated: 2026-10-30
+Version: 1.1.2 | Status: ACTIVE | Updated: 2026-11-04
 
 ## Contract
 
@@ -37,8 +37,15 @@ Verify Lv1/50/70 against the actual backend calculator; check H4 remains fastest
 
 ## Changelog
 
+1.1.2 admin display correction: show exact level_up_stats coefficients and choose
+multiply/add notation by the stat's contract, never by the magnitude of its
+numeric value. HP/ATK/DEF/move_speed/attack_speed/attack_range are multiplicative;
+crit_rate/crit_damage/regen_percent_per_10s are additive. This is display-only and
+does not change hero growth data or either runtime growth formula.
+
 | Version | Date | Change |
 |---|---|---|
+| 1.1.2 | 2026-11-04 | Correct admin growth labels for additive versus multiplicative stats; retain raw DB coefficients. |
 | 1.1.1 | 2026-10-30 | User-authorized production catalog-only rollout of the six approved H2/H4 growth fields; preserve other catalog fields, seed data outside scope, profiles and published settings. |
 | 1.1.0 | 2026-10-30 | Approved H2 ATK/HP/crit-rate and H4 HP/attack-speed/crit-damage growth adjustment; Lv70 endpoint targets and updated stat tables. |
 | 1.0.0 | 2026-10-29 | Round-2 hero growth, exact simulation, per-hero documentation and scoped local rollout. |

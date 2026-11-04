@@ -58,6 +58,7 @@ def make_config(env):
                      "MONETIZATION_VERIFIER_SECRET", "ADMOB_REWARDED_UNIT_ID_DEVELOP",
                      "ADMOB_REWARDED_UNIT_ID_PRODUCTION"]
     runtime_env = [name + "=" + required(name) for name in runtime_names]
+    runtime_env.append("CONFIG_DRAFT_LIVE_ENABLED=" + ("true" if env.get("APP_ENVIRONMENT") == "develop" and str(env.get("CONFIG_DRAFT_LIVE_ENABLED", "false")).lower() == "true" else "false"))
     runtime_env.append("COMPLIANCE_ALLOW_MOCK=" + ("true" if env.get("APP_ENVIRONMENT") == "develop" else "false"))
     for name in ["SPEEDSMS_ACCESS_TOKEN", "SPEEDSMS_SMS_TYPE", "SPEEDSMS_SENDER", "SPEEDSMS_OTP_HMAC_KEY", "SPEEDSMS_CONTENT"]:
         value = str(env.get(name) or "")

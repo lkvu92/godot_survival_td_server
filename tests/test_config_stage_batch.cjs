@@ -1,0 +1,15 @@
+const assert=require('node:assert/strict');
+const {runtime}=require('../tools/enemy_catalog_db.cjs');
+const ctx=runtime();
+const stages=[{id:'s2',sort_order:1},{id:'s1',sort_order:2},{id:'__proto__',sort_order:3},{id:'empty',sort_order:4}];
+const waves=[{stage_id:'s1',wave_index:1,wave_id:'w1',display_name:'??t 1',entries:JSON.stringify([{species_id:'h?',count:2}])},{stage_id:'s2',wave_index:1,id:7,entries:'[]'},{stage_id:'s2',wave_index:2,wave_id:'w2',entries:'[]'},{stage_id:'__proto__',wave_index:1,wave_id:'safe',entries:'[]'}];
+const copy=x=>JSON.parse(JSON.stringify(x));
+const legacy={sqlQuery(sql,args){assert(sql.includes('WHERE stage_id = $1'));return copy(waves.filter(w=>w.stage_id===args[0]));}};
+const expected=stages.map(s=>ctx.processStage(copy(s),legacy));
+let queries=0;
+const nk={sqlQuery(sql){queries++;if(sql.includes('FROM game_stages'))return copy(stages);assert(sql.includes('entries::TEXT AS entries')&&sql.includes('ORDER BY stage_id, wave_index'));return copy(waves);}};
+const actual=ctx.loadConfigStages(nk);
+assert.deepEqual(copy(actual),copy(expected));
+assert.equal(queries,2,'Stage count must not increase SQL count');
+assert.deepEqual(copy(actual[3].waves),[]);
+console.log('PASS stage batch: two queries, identical ordering/schema/Unicode, empty stages and special IDs');

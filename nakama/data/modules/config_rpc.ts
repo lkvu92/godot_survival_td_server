@@ -9,6 +9,13 @@ function processSeedExtensions(row: any, table: string): any {
     return row;
 }
 
+const getGameConfig: nkruntime.RpcFunction = (ctx,logger,nk,payload) => {
+    const before=typeof enemyCatalogVersion==='function'?enemyCatalogVersion(nk):'0';
+    const result=getGameConfigTables(ctx,logger,nk,payload);
+    if(typeof enemyCatalogVersion==='function'&&before!==enemyCatalogVersion(nk))return JSON.stringify({success:false,code:409,reason:'ENEMY_CATALOG_CHANGED',message:'Enemy catalog changed during bootstrap; retry'});
+    return result;
+};
+
 // Client gọi RPC này để lấy game config — tương đương DataRegistry._load_json()
 function decodeUtf8Bytes(val: number[]): string {
     let str = "";
@@ -78,6 +85,8 @@ function processHero(row: any): any {
 
 function processEnemy(row: any): any {
     if (!row) return row;
+	if(row.catalog_projection){const projection=parseJsonb(row.catalog_projection);if(projection&&typeof projection==='object')Object.assign(row,projection);}
+	delete row.catalog_projection;
 	processSeedExtensions(row, "enemies");
     row.attack_skill = parseJsonb(row.attack_skill);
     row.attributes = parseJsonb(row.attributes);
@@ -148,15 +157,15 @@ function processEffect(row: any): any {
     return row;
 }
 
-function processStage(row: any, nk: nkruntime.Nakama): any {
+function processStage(row: any, nk: nkruntime.Nakama, prefetchedWaves?: any[]): any {
 	if (!row) return row;
     processSeedExtensions(row, "stages");
 	row.enabled_if = parseJsonb(row.enabled_if);
 	row.difficulty_levels = parseJsonb(row.difficulty_levels);
 	row.loot_table = parseJsonb(row.loot_table);
     
-    const waves = nk.sqlQuery(
-        "SELECT * FROM game_stage_waves WHERE stage_id = $1 ORDER BY wave_index",
+    const waves = prefetchedWaves !== undefined ? prefetchedWaves : nk.sqlQuery(
+        "SELECT *, entries::TEXT AS entries FROM game_stage_waves WHERE stage_id = $1 ORDER BY wave_index",
         [row.id]
     );
     row.waves = waves.map((w: any) => ({
@@ -166,6 +175,14 @@ function processStage(row: any, nk: nkruntime.Nakama): any {
         entries: parseJsonb(w.entries)
     }));
     return row;
+}
+
+function loadConfigStages(nk: nkruntime.Nakama): any[] {
+    const stages = nk.sqlQuery("SELECT * FROM game_stages ORDER BY sort_order, level, id", []);
+    const waves = nk.sqlQuery("SELECT *, entries::TEXT AS entries FROM game_stage_waves ORDER BY stage_id, wave_index", []);
+    const grouped: {[key:string]:any[]} = Object.create(null);
+    for (const wave of waves) (grouped[String(wave.stage_id)] || (grouped[String(wave.stage_id)] = [])).push(wave);
+    return stages.map(stage => processStage(stage, nk, grouped[String(stage.id)] || []));
 }
 
 function processStageLevel(row: any): any {
@@ -241,7 +258,7 @@ function readContentConfig(nk: nkruntime.Nakama, id: string): any {
     return rows.length > 0 ? (parseJsonb(rows[0].payload) || {}) : {};
 }
 
-const getGameConfig: nkruntime.RpcFunction = (
+const getGameConfigTables: nkruntime.RpcFunction = (
     ctx: nkruntime.Context,
     logger: nkruntime.Logger,
     nk: nkruntime.Nakama,
@@ -268,8 +285,7 @@ const getGameConfig: nkruntime.RpcFunction = (
         case "effects":
             return JSON.stringify(nk.sqlQuery("SELECT * FROM game_effects ORDER BY id", []).map(processEffect));
         case "stages": {
-            const stages = nk.sqlQuery("SELECT * FROM game_stages ORDER BY sort_order, level, id", []);
-            return JSON.stringify(stages.map(s => processStage(s, nk)));
+            return JSON.stringify(loadConfigStages(nk));
         }
         case "stage_levels":
             return JSON.stringify(stageLevelsWithCompletionLoot(nk));
@@ -292,8 +308,7 @@ const getGameConfig: nkruntime.RpcFunction = (
             result.cards = nk.sqlQuery("SELECT * FROM game_cards ORDER BY id", []).map(processCard);
             result.effects = nk.sqlQuery("SELECT * FROM game_effects ORDER BY id", []).map(processEffect);
 
-            const stages = nk.sqlQuery("SELECT * FROM game_stages ORDER BY sort_order, level, id", []);
-            result.stages = stages.map(s => processStage(s, nk));
+            result.stages = loadConfigStages(nk);
             result.stage_levels = stageLevelsWithCompletionLoot(nk);
 
             const progRows = nk.sqlQuery("SELECT value FROM game_config WHERE key = 'progression'", []);
@@ -397,7 +412,15 @@ function invokeWithVersionGate(ctx: nkruntime.Context, logger: nkruntime.Logger,
                 latest_app_version: getRemoteConfigValue(nk, "system", "latest_app_version", minVersion),
                 store_url: "" });
         }
+        if (typeof startStage==='function' && handler===startStage && typeof enemyCatalogVersion==='function'
+            && enemyCatalogVersion(nk)!=='0' && Number(request.config_version)!==active.version) {
+            return JSON.stringify({success:false,code:409,reason:'CONFIG_UPDATED',config_version:active.version,
+                message:'Cấu hình đã thay đổi. Vui lòng đồng bộ trước khi bắt đầu trận.'});
+        }
         const raw = handler(ctx, logger, sweepResourceRuntime(nk,ctx.userId), payload);
+        if (handler === getGameConfig && getActiveRemoteConfig(nk).version !== active.version) {
+            return JSON.stringify({success:false,code:409,reason:'ENEMY_CATALOG_CHANGED',message:'Config changed during bootstrap; retry'});
+        }
         try {
             const response = JSON.parse(raw || "{}");
             if (response && typeof response === "object" && !Array.isArray(response)) {
@@ -481,6 +504,10 @@ function publishValidatedConfig(publisher:string, nk:nkruntime.Nakama, payload:s
     try {
         rows.forEach((row: any) => { snapshot[String(row.module)][String(row.key)] = parseRemoteSetting(String(row.value_type), String(row.value)); });
     } catch (e) { return JSON.stringify({ status: "error", code: 422, message: String(e) }); }
+    if(typeof enemyCatalogVersion==='function'){
+        const catalogVersion=enemyCatalogVersion(nk);
+        if(catalogVersion!=='0')snapshot.system.enemy_catalog_version=catalogVersion;
+    }
     const invalid=validateReleaseSnapshot(nk,snapshot);
     if(invalid)return invalid;
     const minVersion=String(snapshot.system.min_app_version);

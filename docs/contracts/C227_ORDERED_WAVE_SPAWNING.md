@@ -29,3 +29,9 @@ No UI/assets/signals change. Exercise four-wave boundaries, role order, overlapp
 - Full server static suite BLOCKED by test_arc6_catalog.cjs: current stage_6_01 Normal recommendation 13978 differs from generated 4045. Reproduced using pre-change HEAD stage seed; no unrelated recommendation overwrite performed. Gate 4 is incomplete; contract remains IN_PROGRESS.
 - Presentation gate N/A: no assets/UI changes; existing wave signals retained. Implementation review score 8.5/10, conditional on resolving the existing full-suite blocker and later combat calibration.
 - No server seed/publication/deployment performed. Rollout requires both the updated client and a published authenticated stage catalog containing the metadata; older catalogs retain legacy entry eligibility.
+
+## User verification - 2026-11-04
+
+The user confirmed real gameplay checks PASS for C015/C230 (mid-tier IDs 16-25) and C227. Record USER_VERIFIED_PASS; practical playtesting is no longer an outstanding task for these items.
+
+Rerun results: test_mid_tier_talisman_config.cjs, test_campaign_spawn_formation.cjs and test_arc6_catalog.cjs PASS. The historical Arc 6 failure did not reproduce. Full static suites and deployed DB revisions were not reverified; this confirmation does not assert production publication. Contract IN_PROGRESS remains pending those technical gates.

@@ -4,6 +4,7 @@ import base64
 import getpass
 import json
 import os
+import re
 import sys
 import urllib.error
 import urllib.parse
@@ -88,10 +89,29 @@ def invoke_seed(table, payload):
         _pending_requests.append({"table": table, **payload})
         return
     result = invoke_rpc("seed_game_data", {"table": table, **payload})
-    expected = len(payload["rows"]) if "rows" in payload else 1
-    if result.get("success") is not True or result.get("table") != table or result.get("inserted") != expected:
-        raise SeedError(f"{table}: invalid success/readback count")
-    print(f"[OK] {table}: {expected} rows verified")
+    print(verify_seed_readback({"table": table, **payload}, result))
+
+
+def verify_seed_readback(request, result, atomic=False):
+    table = request["table"]
+    expected = len(request["rows"]) if "rows" in request else 1
+    failure = "Bundle readback mismatch: " + table if atomic else table + ": invalid success/readback count"
+    if not isinstance(result, dict) or result.get("success") is not True or result.get("table") != table or type(result.get("inserted")) is not int:
+        raise SeedError(failure)
+    preserved = result.get("preserved_catalog", False)
+    if preserved is not True and preserved is not False:
+        raise SeedError(failure)
+    if preserved:
+        if table != "enemies" or result["inserted"] != 0:
+            raise SeedError(failure)
+        version = result.get("enemy_catalog_version")
+        if version is not None and (not isinstance(version, str) or re.fullmatch(r"[1-9][0-9]{0,18}", version) is None):
+            raise SeedError(failure)
+        label = f" v{version}" if version is not None else ""
+        return f"[OK] enemies: published C259 catalog{label} preserved; 0 seed rows written"
+    if result["inserted"] != expected:
+        raise SeedError(failure)
+    return f"[OK] {table}: {expected} rows verified" + (" atomically" if atomic else "")
 
 
 def read_json(filename):
@@ -199,11 +219,9 @@ def main(argv=None):
             results = result.get("results", [])
             if len(results) != len(requests):
                 raise SeedError("Bundle readback result count mismatch")
-            for request, readback in zip(requests, results):
-                expected = len(request["rows"]) if "rows" in request else 1
-                if readback.get("success") is not True or readback.get("table") != request["table"] or readback.get("inserted") != expected:
-                    raise SeedError("Bundle readback mismatch: " + request["table"])
-                print(f"[OK] {request['table']}: {expected} rows verified atomically")
+            messages = [verify_seed_readback(request, readback, atomic=True) for request, readback in zip(requests, results)]
+            for readback, message in zip(results, messages):
+                print(message)
                 if readback.get("preserved_levelled", 0):
                     print(f"[INFO] Preserved {readback['preserved_levelled']} deployed v2 stages; legacy stage/wave inputs skipped")
         if args.publish:

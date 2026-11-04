@@ -51,3 +51,9 @@ Không đổi RPC hoặc payload C015. Snapshot server đầu trận quyết đ�
 ## Kết quả triển khai
 
 2026-10-27: source/seed JSON và 31 tầng đã triển khai, mô tả trước code. Runtime Trung phẩm, Hạ phẩm, C137 và static/data tests riêng đều PASS. Đã render fixture OpenGL. Chưa publish DB; backend suite tổng dừng ở lỗi stamina gói ngày 200/330 ngoài phạm vi. Giữ IN_PROGRESS cho nghiệm thu phát hành. Báo cáo: client/docs/reports/mid_tier_talismans/IMPLEMENTATION.md.
+
+## User verification - 2026-11-04
+
+The user confirmed real gameplay checks PASS for C015/C230 (mid-tier IDs 16-25) and C227. Record USER_VERIFIED_PASS; practical playtesting is no longer an outstanding task for these items.
+
+Rerun results: test_mid_tier_talisman_config.cjs, test_campaign_spawn_formation.cjs and test_arc6_catalog.cjs PASS. The historical Arc 6 failure did not reproduce. Full static suites and deployed DB revisions were not reverified; this confirmation does not assert production publication. Contract IN_PROGRESS remains pending those technical gates.

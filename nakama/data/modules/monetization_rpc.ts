@@ -767,12 +767,29 @@ const createPurchaseOrder: nkruntime.RpcFunction = (ctx, _logger, nk, payload) =
         return JSON.stringify({ status: "success", data: { purchase_order_id: String(pending.id),
             product_id: productId, platform:String(pending.platform||'android'), store_product_id:String(pending.store_product_id||productId), fulfillment_type: String(product.fulfillment_type) }, idempotent: true });
     }
-    if (Number(product.purchase_limit || 0) > 0 && String(product.purchase_limit_period) === "day") {
-        const today = nk.sqlQuery(`SELECT COUNT(*)::INT AS count FROM monetization_purchase_orders
+    if (Number(product.purchase_limit || 0) > 0) {
+        const period = String(product.purchase_limit_period || "").trim().toLowerCase();
+        let periodClause = "";
+        if (period === "day" || period === "daily") {
+            periodClause = "AND fulfilled_at >= DATE_TRUNC('day', NOW())";
+        } else if (period === "week" || period === "weekly") {
+            periodClause = "AND fulfilled_at >= DATE_TRUNC('week', NOW())";
+        } else if (period === "month" || period === "monthly") {
+            periodClause = "AND fulfilled_at >= DATE_TRUNC('month', NOW())";
+        }
+
+        const limitQuery = `SELECT COUNT(*)::INT AS count FROM monetization_purchase_orders
             WHERE user_id = $1 AND product_id = $2 AND status = 'fulfilled'
               AND target_server_id=$3 AND target_generation=$4
-              AND fulfilled_at >= DATE_TRUNC('day', NOW())`, [ctx.userId, productId,target?target.serverId:'',target?target.generation:0]);
-        if (Number(today[0].count || 0) >= Number(product.purchase_limit)) return monetizationError(409, "Daily purchase limit reached");
+              ${periodClause}`;
+        const limitCount = nk.sqlQuery(limitQuery, [ctx.userId, productId, target ? target.serverId : '', target ? target.generation : 0]);
+        if (Number(limitCount[0]?.count || 0) >= Number(product.purchase_limit)) {
+            const periodLabel = (period === "day" || period === "daily") ? "hôm nay"
+                : (period === "week" || period === "weekly") ? "tuần này"
+                : (period === "month" || period === "monthly") ? "tháng này"
+                : "cho gói này";
+            return monetizationError(409, `Đã đạt giới hạn lượt mua ${periodLabel}`);
+        }
     }
 
     const rewardRows = nk.sqlQuery(

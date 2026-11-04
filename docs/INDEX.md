@@ -1,3 +1,4 @@
+- [Store Packages & Purchase Models Admin](STORE_PACKAGES_ADMIN.md): mô hình 3 loại mua (1 lần duy nhất, giới hạn chu kỳ, vô hạn), authoritative RPCs, bộ lọc quản trị và đồng bộ Godot client.
 - [Arc creation workflow - C239/C240](ARC_CREATION_WORKFLOW.md): species growth, shared skills, stage/waves, element rules, testing, local rollout and UI evidence.
 
 C251 1.1.0: individual consent withdrawal without OTP; scoped tests pass. B7/D5 full acceptance remains open.
@@ -283,7 +284,7 @@ C197 v1.1.0: fixed golden phantom, 0.5s protection, actual-hit repeat damage and
 
 - C196 v1.3.0: halve Skill1 poison, Skill2 art +30%, Skill4 combat unlock15 and ground vortex below hero.
 
-- [C227 Ordered wave spawning](contracts/C227_ORDERED_WAVE_SPAWNING.md) v1.0.0 IN_PROGRESS: four-wave batches and overlapping tanker/ranger/fast/boss queues.
+- [C227 Ordered wave spawning](contracts/C227_ORDERED_WAVE_SPAWNING.md) v1.0.0: USER_VERIFIED_PASS 2026-11-04. Metadata/Arc6 tests PASS; full-suite and deployed revision verification remain open.
 
 
 - [C015 v1.16.0 — Cân bằng Hạ phẩm ID 2–15](contracts/C015_TALISMAN_EQUIPMENT_SYSTEM.md): baseline mới, tích hợp và nghiệm thu lần lượt bốn nhóm; IN_PROGRESS.
@@ -296,7 +297,7 @@ C197 v1.1.0: fixed golden phantom, 0.5s protection, actual-hit repeat damage and
 - Trung phẩm ID 16–25: [kế hoạch/data đề xuất 31 tầng theo asset thực tế](plans/MID_TIER_TALISMAN_SKILLS.proposed.json); giữ hệ catalog, DRAFT_NOT_SEEDED.
 - [C218 runtime recommendations](contracts/C218_CAMPAIGN_WAVE_PRESSURE.md) v2.4.1: explicit Arc 6 calibration; default catalog write remains Arc 1–5 with fingerprint checks.
 
-- [C230 — Trung phẩm 31 tầng và effect gameplay](contracts/C230_MID_TIER_TALISMAN_SKILLS.md), v1.0.0 IN_PROGRESS.
+- [C230 Mid-tier talisman gameplay](contracts/C230_MID_TIER_TALISMAN_SKILLS.md): C015/C230 IDs 16-25 DONE per user confirmation 2026-11-04.
 - [C218 historical recommendation DB update](contracts/C218_CAMPAIGN_WAVE_PRESSURE.md) v2.4.2: selective local Arc 1–5 power update with backups and unchanged active settings.
 - [C196 Hero4 damage redistribution](contracts/C196_HERO4_SKILL_REBALANCE.md) v1.4.0: halve Skill1 direct hit; move half Skill2/3 direct damage into poison while preserving isolated raw budgets and Skill2 range falloff.
 
@@ -350,3 +351,25 @@ C256: [Inventory tags](contracts/C256_INVENTORY_TAGS.md) - semantic multi-tag ca
 - C109 v1.2.0: pending catalog rollover preserves original receipts and scoped checkout uniqueness; client retains RPC transport errors.
 
 - C245 v1.4.0: exact numbered history pagination, five transactions/page and one content scroll without sticky summary.
+
+- [C259 Enemy catalog admin](contracts/C259_ENEMY_CATALOG_ADMIN.md): DB authoring, per-table admin RPC, assets, stage loadouts and versioned publication.
+
+C259 local acceptance and operator guide: [Enemy catalog admin](../../server/docs/ENEMY_CATALOG_ADMIN.md), [acceptance](../../server/docs/reports/C259_ACCEPTANCE.md).
+
+C259 1.1.0 ACTIVE: species master-detail workspace; neutral identical visual sets; local release 5/config 104. C239 1.6.4 scopes legacy admission to legacy stages.
+
+C259 1.1.1 ACTIVE: explicit retirement of the original eight obsolete pilot species; visual normalization never archives unused species. Local release 6/config 105; 42 authoring species.
+
+C259 1.1.2 ACTIVE: explicit Chu Tuoc elemental runtime alias retirement; one neutral definition, unchanged stage-selected level/elements/skills. Local release 7/config 106.
+
+C259 1.1.4 ACTIVE: guarded seed-preservation readback; isolated sprite preview and stat dialog with complete source growth data. C238 1.1.2 corrects Hero growth display notation only. Local generic seed publication verified at config 107, enemy release 7 unchanged.
+
+[C260 Development config policy](contracts/C260_DEVELOPMENT_CONFIG_POLICY.md): local live settings and relaxed app/config compatibility checks; production strict.
+
+C260 1.1.0: local validated enemy draft saves materialize atomically without release creation; production retains explicit publication.
+
+C252 1.1.0: job-local admission validation cache and batched stage-wave transport; unchanged full catalog and battle compilation.
+
+- C104/C233 2026-11-04: local UMP/reward/billing regressions and disposable PostgreSQL PASS; C233 1.0.1 adds consent rechecks and sandbox test geography. [Client evidence](../../client/docs/reports/C104_C233_20261104/README.md). Android/Google/provider E2E and release-console proof remain open.
+
+- C015/C230 IDs 16-25: DONE per user confirmation 2026-11-04.

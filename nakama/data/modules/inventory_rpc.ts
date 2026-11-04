@@ -392,6 +392,8 @@ function talismanCreateStageRun(nk: nkruntime.Nakama, userId: string, stageId: s
     const waveCount = waveRows.length > 0 ? Math.max(1, Math.floor(Number(waveRows[0].wave_count || 1))) : 1;
     const run = {
         run_id: nk.uuidv4(), stage_id: stageId, difficulty_id: difficultyId,
+        enemy_catalog_version: typeof enemyCatalogVersion === 'function' ? enemyCatalogVersion(nk) : '0',
+        max_stage_base_exp: progressionMaxStageBaseExp(nk, stageId),
         status: "active", started_at_ms: now, expires_at_ms: now + 2 * 60 * 60 * 1000,
         // A victory cannot be settled immediately after start. This is not a
         // replacement for a fully authoritative combat simulation, but it

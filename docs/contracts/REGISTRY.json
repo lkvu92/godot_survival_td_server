@@ -1,6 +1,20 @@
 {
   "contracts": [
     {
+      "id": "C260_DEVELOPMENT_CONFIG_POLICY",
+      "version": "1.1.0",
+      "status": "IN_PROGRESS",
+      "updated_at": "2026-11-04",
+      "contract_file": "docs/contracts/C260_DEVELOPMENT_CONFIG_POLICY.md"
+    },
+    {
+      "id": "C259_ENEMY_CATALOG_ADMIN",
+      "version": "1.2.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-11-04",
+      "contract_file": "docs/contracts/C259_ENEMY_CATALOG_ADMIN.md"
+    },
+    {
       "id": "C256_INVENTORY_TAGS",
       "version": "1.0.0",
       "status": "ACTIVE",
@@ -14,7 +28,7 @@
     },
     {
       "id": "C252_RESPONSIVE_BOOTSTRAP",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "status": "ACTIVE",
       "contract_file": "docs/contracts/C252_RESPONSIVE_BOOTSTRAP.md"
     },
@@ -87,16 +101,16 @@
     },
     {
       "id": "C239_LEVELLED_ENEMY_FRAMEWORK",
-      "version": "1.6.2",
+      "version": "1.6.4",
       "status": "IN_PROGRESS",
-      "updated_at": "2026-10-30",
+      "updated_at": "2026-11-04",
       "contract_file": "docs/contracts/C239_LEVELLED_ENEMY_FRAMEWORK.md"
     },
     {
       "id": "C238_HERO_GROWTH_BALANCE",
-      "version": "1.1.1",
+      "version": "1.1.2",
       "status": "ACTIVE",
-      "updated_at": "2026-10-30",
+      "updated_at": "2026-11-04",
       "contract_file": "docs/contracts/C238_HERO_GROWTH_BALANCE.md"
     },
     {

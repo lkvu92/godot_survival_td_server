@@ -919,7 +919,8 @@ const awardStageProgression: nkruntime.RpcFunction = (
     const stageRows = nk.sqlQuery("SELECT exp_weight, is_boss, arc_id FROM game_stages WHERE id = $1", [stageId]);
 	const difficultyRows = nk.sqlQuery("SELECT exp_multiplier, gold_reward, loot_table, boss_loot_table FROM game_stage_levels WHERE stage_id = $1 AND level_id = $2", [stageId, difficultyId]);
     if (stageRows.length === 0 || difficultyRows.length === 0) return JSON.stringify({ success: false, message: "Unknown stage or difficulty" });
-    const maxBaseExp = progressionMaxStageBaseExp(nk, stageId);
+    const maxBaseExp = Number.isSafeInteger(run.max_stage_base_exp) && run.max_stage_base_exp >= 0
+        ? run.max_stage_base_exp : progressionMaxStageBaseExp(nk, stageId);
     if (requestedBaseExp > maxBaseExp) return JSON.stringify({ success: false, message: "Invalid stage EXP" });
 
     const profile = progressionObject(profileObject.value);
