@@ -1,7 +1,8 @@
-import { createHash, verify as verifySignature } from "node:crypto";
+import { createHash } from "node:crypto";
 import { createServer } from "node:http";
 import { google } from "googleapis";
 import { syncFinancialBatch } from "./play_financials.js";
+import { processAdmobCallback, ssvErrorReason } from "./admob_ssv.js";
 
 const port = Number(process.env.PORT || 8080);
 const appEnvironment = String(process.env.APP_ENVIRONMENT || "develop").toLowerCase() === "production"
@@ -85,42 +86,6 @@ async function getAdmobKeys() {
   return keys;
 }
 
-function fromBase64Url(value) {
-  const normalized = value.replace(/-/g, "+").replace(/_/g, "/");
-  return Buffer.from(normalized + "=".repeat((4 - (normalized.length % 4)) % 4), "base64");
-}
-
-function isExpectedAdUnit(received, expected) {
-  if (!received || !expected) return false;
-  const expectedNumericId = expected.includes("/") ? expected.slice(expected.lastIndexOf("/") + 1) : expected;
-  return received === expected || received === expectedNumericId;
-}
-
-async function verifyAdmobCallback(rawUrl) {
-  const query = rawUrl.includes("?") ? rawUrl.slice(rawUrl.indexOf("?") + 1) : "";
-  const signatureMarker = "&signature=";
-  const signatureIndex = query.indexOf(signatureMarker);
-  if (signatureIndex < 0) throw new Error("Missing signature");
-  const signedContent = query.slice(0, signatureIndex);
-  const params = new URLSearchParams(query);
-  const keyId = params.get("key_id") || "";
-  const signature = params.get("signature") || "";
-  const keys = await getAdmobKeys();
-  const pem = keys.get(keyId);
-  if (!pem || !verifySignature("sha256", Buffer.from(signedContent), pem, fromBase64Url(signature))) {
-    throw new Error("Invalid AdMob signature");
-  }
-  const custom = JSON.parse(params.get("custom_data") || "{}");
-  const adUnit = String(params.get("ad_unit") || "");
-  if (!isExpectedAdUnit(adUnit, admobRewardedUnitId)) throw new Error("Unexpected AdMob ad unit");
-  return {
-    ad_session_id: String(custom.ad_session_id || ""),
-    user_id: String(params.get("user_id") || custom.user_id || ""),
-    transaction_id: String(params.get("transaction_id") || ""),
-    ad_unit: adUnit,
-  };
-}
-
 async function confirmWithNakama(verified) {
   if (!nakamaHttpKey || !verifierSecret) throw new Error("Nakama verifier bridge is not configured");
   const response = await fetch(
@@ -176,8 +141,10 @@ async function processRtdn(request) {
 }
 
 const server = createServer(async (request, response) => {
+  let route = "";
   try {
     const url = new URL(request.url || "/", `http://${request.headers.host || "localhost"}`);
+    route = url.pathname;
     if (request.method === "GET" && url.pathname === "/health") return json(response, 200, { ok: true });
 
     if (request.method === "POST" && url.pathname === "/google-play/verify") {
@@ -186,9 +153,13 @@ const server = createServer(async (request, response) => {
     }
 
     if (request.method === "GET" && url.pathname === "/admob/ssv") {
-      const verified = await verifyAdmobCallback(request.url || "");
-      await confirmWithNakama(verified);
-      return json(response, 200, { ok: true });
+      const result = await processAdmobCallback(request.url || "", {
+        getKeys: getAdmobKeys,
+        expectedAdUnit: admobRewardedUnitId,
+        confirm: confirmWithNakama,
+        onEvent: event => console.log(JSON.stringify({ event })),
+      });
+      return json(response, 200, result);
     }
 
     if (request.method === "POST" && url.pathname === "/google-play/rtdn") {
@@ -198,6 +169,11 @@ const server = createServer(async (request, response) => {
 
     return json(response, 404, { error: "not_found" });
   } catch (error) {
+    if (route === "/admob/ssv") {
+      const reason = ssvErrorReason(error);
+      console.warn(JSON.stringify({ event: "admob_ssv_rejected", reason }));
+      return json(response, 400, { error: reason });
+    }
     console.error(error);
     return json(response, 400, { error: error instanceof Error ? error.message : "request_failed" });
   }

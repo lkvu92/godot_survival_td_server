@@ -373,3 +373,7 @@ C252 1.1.0: job-local admission validation cache and batched stage-wave transpor
 - C104/C233 2026-11-04: local UMP/reward/billing regressions and disposable PostgreSQL PASS; C233 1.0.1 adds consent rechecks and sandbox test geography. [Client evidence](../../client/docs/reports/C104_C233_20261104/README.md). Android/Google/provider E2E and release-console proof remain open.
 
 - C015/C230 IDs 16-25: DONE per user confirmation 2026-11-04.
+
+- C104 1.11.6 / C233 Android production 2026-11-04: release APK installed; Google license-test purchase/cancel/decline, mailbox claim and localized VND price verified scoped. Rewarded SDK earned but server remains prepared; pending resolution and financial sync remain open. [Device evidence](../../client/docs/reports/C104_C233_20261104/device-production/README.md).
+
+- [C104 1.12.0 recovery](contracts/C104_MONETIZATION.md): pending/resume full-batch receipt recovery and Google-signed SSV Console setup probe without rewards; implementation/acceptance in progress.
