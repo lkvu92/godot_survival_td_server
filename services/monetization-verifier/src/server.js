@@ -174,6 +174,11 @@ const server = createServer(async (request, response) => {
       console.warn(JSON.stringify({ event: "admob_ssv_rejected", reason }));
       return json(response, 400, { error: reason });
     }
+    if (route === "/admob/ssv") {
+      const reason = ssvErrorReason(error);
+      console.warn(JSON.stringify({ event: "admob_ssv_rejected", reason }));
+      return json(response, 400, { error: reason });
+    }
     console.error(error);
     return json(response, 400, { error: error instanceof Error ? error.message : "request_failed" });
   }
