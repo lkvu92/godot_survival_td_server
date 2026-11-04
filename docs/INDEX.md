@@ -1,3 +1,5 @@
+- [C263 Tra cứu và trích xuất dữ liệu người chơi](contracts/C263_PLAYER_DATA_EXPORT.md): contract IN_PROGRESS; chưa triển khai hoặc nghiệm thu production.
+- C232 3.4.0: vô hiệu hóa cleanup gameplay tự động sau archive trong mã; cần áp dụng migration SQL và triển khai service, kiểm thử integration và đường hard delete/server riêng.
 - [Store Packages & Purchase Models Admin](STORE_PACKAGES_ADMIN.md): mô hình 3 loại mua (1 lần duy nhất, giới hạn chu kỳ, vô hạn), authoritative RPCs, bộ lọc quản trị và đồng bộ Godot client.
 - [Arc creation workflow - C239/C240](ARC_CREATION_WORKFLOW.md): species growth, shared skills, stage/waves, element rules, testing, local rollout and UI evidence.
 
@@ -113,7 +115,7 @@ C250 operations: [runbook](ARCHIVE_RECOVERY_RUNBOOK.md), contract 1.0.0 TESTED_S
 
 - [C123 Account password setup](contracts/C123_ACCOUNT_PASSWORD.md) v1.1.0 IN_PROGRESS - Google proof, same account email login and Login-style UI.
 
-- [C125 Player names](contracts/C125_PLAYER_NAMES.md) v1.0.0 - persistent Google game names and one-time rename.
+- [C125 Player names](contracts/C125_PLAYER_NAMES.md) v1.2.0 - persistent Google game names, one-time rename and bilingual profanity filter.
 
 - [C135 Weekly leaderboard rewards](contracts/C135_WEEKLY_LEADERBOARD_REWARDS.md): weekly snapshots, 3 categories, top500 rewards and System configuration.
 
@@ -377,3 +379,11 @@ C252 1.1.0: job-local admission validation cache and batched stage-wave transpor
 - C104 1.11.6 / C233 Android production 2026-11-04: release APK installed; Google license-test purchase/cancel/decline, mailbox claim and localized VND price verified scoped. Rewarded SDK earned but server remains prepared; pending resolution and financial sync remain open. [Device evidence](../../client/docs/reports/C104_C233_20261104/device-production/README.md).
 
 - [C104 1.12.0 recovery](contracts/C104_MONETIZATION.md): pending/resume full-batch receipt recovery and Google-signed SSV Console setup probe without rewards; implementation/acceptance in progress.
+
+- [C261 Boss speed reduction](contracts/C261_BOSS_SPEED_REDUCTION.md): attack speed x0.70 and movement speed x0.60 across all elements; local draft:431 TESTED_SCOPED; production pending.
+
+- [C262 Login functions and Vietnam phone validation](contracts/C262_LOGIN_PHONE_AUDIT.md): three tabs, phone validation, forgot-password audit.
+
+- C232 3.2.0: restoration requires privileged administrator review; local implementation pending verification and production rollout.
+
+- C232 3.3.0: email password reset with atomic single-use and idempotent retry; isolated Nakama/PostgreSQL and browser checks passed; real SMTP, Android and production verification remain open.

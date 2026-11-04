@@ -20,6 +20,23 @@ test('browser keeps credentials hidden until validated, and hides consumed links
  }
 });
 
+test('password reset page requires matching passwords before submitting',async()=>{
+ const source=await readFile(new URL('../public/confirm.js',import.meta.url),'utf8');
+ const nodes=new Map(),calls=[];
+ const document={getElementById(id){if(!nodes.has(id))nodes.set(id,{value:'',dataset:{},classList:{toggle(){}},handlers:{},addEventListener(event,fn){this.handlers[event]=fn;}});return nodes.get(id);}};
+ const fetch=async(path,options)=>{calls.push({path,options});return {ok:true,json:async()=>({success:true,message:'done'})};};
+ vm.runInNewContext(source,{document,URLSearchParams,location:{hash:'#token='+ 'a'.repeat(43)+'&purpose=reset_password',pathname:'/account/confirm'},history:{replaceState(){}},fetch});
+ await new Promise(r=>setImmediate(r));
+ assert.equal(nodes.get('form').hidden,false);
+ assert.equal(nodes.get('confirm-password-row').hidden,false);
+ nodes.get('password').value='valid-password-1';nodes.get('password-again').value='different-password';
+ await nodes.get('form').handlers.submit({preventDefault(){}});
+ assert.equal(calls.length,1,'mismatched passwords do not reach server');
+ nodes.get('password-again').value='valid-password-1';
+ await nodes.get('form').handlers.submit({preventDefault(){}});
+ assert.equal(calls[1].path,'/account/password-reset/complete');
+});
+
 test('Google proof accepts valid Gmail OAuth even when email registration reports conflict',async t=>{
  const queries=[];
  const db={async query(sql){queries.push(sql);if(sql.includes('SELECT state FROM account_archive_restore_gate'))return {rows:[{state:'ready'}],rowCount:1};if(sql.includes('RETURNING count'))return {rows:[{count:1}]};if(sql==='SELECT 1 FROM users WHERE email=$1')return {rowCount:1,rows:[{}]};return {rows:[],rowCount:0};},release(){}};

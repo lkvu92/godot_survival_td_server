@@ -1,3 +1,29 @@
+// C263: bounded single-user extraction; SQL selects only public account fields.
+const adminPlayerDataExport:nkruntime.RpcFunction=(ctx,_logger,nk,payload)=>{
+ const denied=requireServerAdmin(ctx);if(denied)return denied;
+ let req:any;try{req=JSON.parse(payload||'{}');}catch(_e){return serverFailure('INVALID_REQUEST',400,'Invalid JSON');}
+ if(!req||typeof req.user_id!=='string'||!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(req.user_id))return serverFailure('INVALID_USER_ID',400,'User ID không hợp lệ');
+ const account=nk.sqlQuery('SELECT id,username,display_name,create_time,update_time,disable_time FROM users WHERE id=$1::uuid',[req.user_id]);
+ if(!account.length)return serverFailure('USER_NOT_FOUND',404,'Không tìm thấy người chơi');
+ const playtime=nk.sqlQuery('SELECT game_id,day,seconds::text AS recorded_seconds FROM compliance_playtime WHERE user_id=$1::uuid ORDER BY day,game_id LIMIT 10001',[req.user_id]);
+ if(playtime.length>10000)return serverFailure('EXPORT_TOO_LARGE',413,'Dữ liệu vượt giới hạn xuất');
+ const characters=nk.sqlQuery('SELECT server_id,generation,status,created_at,last_entered_at FROM player_characters WHERE account_id=$1::uuid ORDER BY server_id',[req.user_id]);
+ const identity=nk.sqlQuery(`SELECT collection,key,jsonb_build_object('full_name',value->'full_name','birth_date',value->'birth_date','phone_number',value->'phone_number','guardian_name',value->'guardian_name','phone_owner',value->'phone_owner','is_phone_verified',value->'is_phone_verified','verified_at',value->'verified_at','email',value->'email')::text AS profile FROM storage WHERE user_id=$1::uuid AND ((collection='compliance_activation' AND key='profile') OR (collection='player_compliance_profiles' AND key='profile')) ORDER BY collection`,[req.user_id]);
+ const inventory=nk.sqlQuery(`SELECT key,(value->'items')::text AS items,update_time FROM storage WHERE user_id=$1::uuid AND collection='player_inventory' ORDER BY key LIMIT 10001`,[req.user_id]);
+ const resources=nk.sqlQuery(`SELECT key,(value->'resources')::text AS resources,update_time FROM storage WHERE user_id=$1::uuid AND collection='player_profiles' ORDER BY key LIMIT 10001`,[req.user_id]);
+ const payments=nk.sqlQuery(accountHistoryQuery(),[req.user_id,'','','',10001]);
+ for(const row of identity)if(typeof row.profile==='string')row.profile=JSON.parse(row.profile);
+ for(const row of inventory)if(typeof row.items==='string')row.items=JSON.parse(row.items);
+ for(const row of resources)if(typeof row.resources==='string')row.resources=JSON.parse(row.resources);
+ const archiveResponse=nk.httpRequest('http://account-identity:8080/account/internal/player-export','POST',{'Content-Type':'application/json','Authorization':'Bearer '+ctx.env.ACCOUNT_IDENTITY_SECRET},JSON.stringify({user_id:req.user_id}),10000);
+ if(archiveResponse.code!==200)return serverFailure('ARCHIVE_UNAVAILABLE',503,'Không thể đọc danh tính lưu trữ; chưa tạo file xuất.');
+ const archived=JSON.parse(archiveResponse.body);
+ if(archived.success!==true||!Array.isArray(archived.records))return serverFailure('ARCHIVE_UNAVAILABLE',503,'Phản hồi danh tính lưu trữ không hợp lệ');
+ if(inventory.length>10000||resources.length>10000||payments.length>10000)return serverFailure('EXPORT_TOO_LARGE',413,'Dữ liệu vượt giới hạn xuất');
+ nk.sqlExec(`CREATE TABLE IF NOT EXISTS player_data_export_audit(id BIGSERIAL PRIMARY KEY,actor_id UUID NOT NULL,subject_id UUID NOT NULL,created_at TIMESTAMPTZ NOT NULL DEFAULT NOW())`,[]);
+ nk.sqlExec('INSERT INTO player_data_export_audit(actor_id,subject_id) VALUES($1::uuid,$2::uuid)',[ctx.userId,req.user_id]);
+ return JSON.stringify({success:true,schema_version:3,generated_at:new Date().toISOString(),user_id:req.user_id,account:account[0],characters,playtime,identity,archived_identity:archived.records,inventory,resources,payments,warnings:['Thời gian là số giây đã ghi nhận; chưa bao gồm lease đang chạy.','Túi đồ và số dư là trạng thái hiện tại; chưa phải lịch sử mọi biến động.','Số tiền thanh toán chưa xác minh được giữ null; không suy từ giá catalog.'].concat(archived.warnings||[])});
+};
 // C143: registry administration and explicitly planned, generation-scoped lifecycle.
 const adminAssetTrace:nkruntime.RpcFunction=(ctx,_logger,nk,payload)=>{
     const denied=requireServerAdmin(ctx);if(denied)return denied;

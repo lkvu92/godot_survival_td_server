@@ -1,7 +1,19 @@
 # C232 — Verified email registration and account deletion
 
-Version: 3.1.0 · Status: IN_PROGRESS · Updated: 2026-11-03
+Version: 3.4.0 · Status: IN_PROGRESS · Updated: 2026-11-04
 
+### Changelog 3.4.0 — giữ dữ liệu gameplay sau archive (2026-11-04)
+
+Theo yêu cầu người dùng, archive không tự dọn gameplay, bao gồm thời gian chơi, nhân vật và tài sản. Tắt worker và chặn hàm SQL cleanup tự động kể cả khi cấu hình cũ bật; không lên lịch dọn mới. Hard delete user hoặc xóa server theo quy trình lifecycle riêng là các trường hợp được phép dọn dữ liệu tương ứng. Các đường đó và việc dọn toàn bộ bảng liên quan cần kiểm thử; không coi bản thay đổi này là đã xác minh cascade đầy đủ. Recovery checkpoint đã purge từ phiên bản cũ phải được xử lý riêng, không tự chạy lại hàm cleanup. Thời hạn lưu từng dataset và yêu cầu pháp lý vẫn cần rà soát. Thay đổi mã nguồn không tự cập nhật container hoặc SQL đã cài.
+
+
+### Changelog 3.3.0 — email password reset (2026-11-04)
+
+POST `/account/password-reset/request {email}` always returns a generic acknowledgement for valid email addresses. Only an active account with an existing password and verified matching email receives a 15-minute single-use link. POST `/account/password-reset/complete {token,password}` validates the new password, then locks the account and challenge, changes the bcrypt credential, revokes login generation, consumes all reset links, and marks the used challenge completed in one database transaction. A replay of the completed token acknowledges prior completion without applying another password; competing links cannot change it twice. Email scanners and GET never mutate. Account identity, verified email, password existence, deletion state, token expiry and archive gate are rechecked at commit. Google-only first password setup and administrator-approved deletion restoration remain separate. Missing network/config blocks the operation; never store plaintext passwords or tokens. Rate limits, encrypted mail outbox and token hashing follow C232. Scoped integration covers concurrency, retry, expiry, inactive accounts, session invalidation and SMTP/provider limits; production verification remains open.
+
+### Changelog 3.2.0 — restoration requires administrator review (2026-11-04)
+
+Fresh email/password or Google proof creates one pending restoration request per deletion job; it does not cancel deletion or enable login. The deletion receipt exposes restoration status without identity information. A privileged operator lists requests and approves or rejects with an auditable operator and case reference. Approval locks and rechecks the deletion job, deadline and current deleting-account state, then cancels deletion atomically; rejection leaves deletion unchanged. The existing deadline and archive policy remain in force: a request must be approved before the deadline, otherwise it expires. No public approval endpoint or offline fallback. This is a product policy, not a claimed legal mandate. Production and legal acceptance remain open.
 
 ### Changelog 3.1.0 — protected operations (2026-11-03)
 

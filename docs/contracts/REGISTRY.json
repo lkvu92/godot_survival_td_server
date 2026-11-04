@@ -1,6 +1,27 @@
 {
   "contracts": [
     {
+      "id": "C263_PLAYER_DATA_EXPORT",
+      "version": "1.0.1",
+      "status": "IN_PROGRESS",
+      "updated_at": "2026-11-04",
+      "contract_file": "docs/contracts/C263_PLAYER_DATA_EXPORT.md"
+    },
+    {
+      "id": "C262_LOGIN_PHONE_AUDIT",
+      "version": "1.0.0",
+      "status": "IN_PROGRESS",
+      "updated_at": "2026-11-04",
+      "contract_file": "docs/contracts/C262_LOGIN_PHONE_AUDIT.md"
+    },
+    {
+      "id": "C261_BOSS_SPEED_REDUCTION",
+      "version": "1.0.0",
+      "status": "IN_PROGRESS",
+      "updated_at": "2026-11-04",
+      "contract_file": "docs/contracts/C261_BOSS_SPEED_REDUCTION.md"
+    },
+    {
       "id": "C104_MONETIZATION",
       "version": "1.12.0",
       "status": "IN_PROGRESS",
@@ -136,9 +157,9 @@
     },
     {
       "id": "C232_ACCOUNT_IDENTITY",
-      "version": "3.1.0",
+      "version": "3.4.0",
       "status": "IN_PROGRESS",
-      "updated_at": "2026-11-03",
+      "updated_at": "2026-11-04",
       "contract_file": "docs/contracts/C232_ACCOUNT_IDENTITY.md"
     },
     {
@@ -705,9 +726,9 @@
     },
     {
       "id": "C125_PLAYER_NAMES",
-      "version": "1.1.0",
-      "status": "IN_PROGRESS",
-      "updated_at": "2026-10-17",
+      "version": "1.2.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-11-04",
       "contract_file": "docs/contracts/C125_PLAYER_NAMES.md"
     },
     {

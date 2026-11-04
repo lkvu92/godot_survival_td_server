@@ -102,7 +102,7 @@ const accountIdentityStatus:nkruntime.RpcFunction=(ctx,_l,nk)=>{
     const deletionRows=nk.sqlQuery("SELECT snapshot#>'{system,account_deletion}' AS policy FROM remote_config_releases ORDER BY config_version DESC LIMIT 1",[]);
     const deletionPolicy=deletionRows.length?parseJsonb(deletionRows[0].policy):null;
     const gameplay=deletionPolicy&&Array.isArray(deletionPolicy.datasets)?deletionPolicy.datasets.filter((d:any)=>d.id==='gameplay')[0]:null;
-    const deletionPresentation=deletionPolicy&&deletionPolicy.schema_version===2&&gameplay?{soft_delete_days:deletionPolicy.soft_delete_days,gameplay_purge_calendar_months:gameplay.calendar_months}:null;
+    const deletionPresentation=deletionPolicy&&deletionPolicy.schema_version===2&&gameplay?{soft_delete_days:deletionPolicy.soft_delete_days}:null;
     return JSON.stringify({success:true,user_id:ctx.userId,email:a.email||'',google_linked:!!a.google_id,
       google_id:a.google_id||'',has_password:!!a.has_password,verified:!!a.verified,generation:a.generation,
       character_server_count:Number(characters[0].count),no_ads_active:!!entitlement.length&&!!entitlement[0].active,
@@ -111,6 +111,17 @@ const accountIdentityStatus:nkruntime.RpcFunction=(ctx,_l,nk)=>{
 const accountIdentityBridge:nkruntime.RpcFunction=(ctx,logger,nk,payload)=>{
     const p=JSON.parse(payload||'{}');
     if(ctx.userId||!identityEnabled(ctx)||!ctx.env.ACCOUNT_IDENTITY_SECRET||p.secret!==ctx.env.ACCOUNT_IDENTITY_SECRET)throw Error('Forbidden');
+    if(p.action==='hash_reset_password') {
+        const password=String(p.password||'');
+        let bytes=0;try{bytes=encodeURIComponent(password).replace(/%[0-9A-F]{2}|./g,'x').length;}catch(_e){throw Error('Invalid password');}
+        if(Array.from(password).length<8||bytes>72)throw Error('Invalid password');
+        return JSON.stringify({success:true,password_hash:nk.bcryptHash(password)});
+    }
+    if(p.action==='logout_reset_sessions') {
+        if(!/^[a-f0-9-]{36}$/.test(String(p.user_id||'')))throw Error('Invalid user');
+        nk.sessionLogout(String(p.user_id));
+        return JSON.stringify({success:true});
+    }
     if(p.action==='create') {
         if(!/^[a-f0-9-]{36}$/.test(String(p.intent||'')))throw Error('Invalid intent');
         const email=String(p.email||'').trim().toLowerCase(), custom='c232:'+p.intent;

@@ -49,22 +49,18 @@ export async function archiveAccount(db,id,key,keyId,notice,keys){
  await db.query('UPDATE storage SET read=0,write=0 WHERE user_id=ANY($1::uuid[])',[subjects]);
  await db.query('DELETE FROM account_identity_challenges WHERE user_id=ANY($1::uuid[])',[subjects]);
  await db.query('UPDATE player_login_sessions SET generation=$2 WHERE user_id=ANY($1::uuid[])',[subjects,'archived-'+id]);
- const committed=(await db.query(`UPDATE account_identity_deletions SET status='archived',archived_at=t.stamp,identity_released_at=t.stamp,subject_manifest=$2::jsonb,
- gameplay_purge_at=((t.stamp AT TIME ZONE $3)+$4*INTERVAL '1 month') AT TIME ZONE $3,updated_at=NOW(),attempts=0,next_attempt_at=NOW(),last_error_code=NULL
- FROM (SELECT clock_timestamp() AS stamp) t WHERE id=$1 RETURNING gameplay_purge_at`,[id,JSON.stringify(subjects),p.timezone,dataset(p,'gameplay').calendar_months])).rows[0];
+ await db.query(`UPDATE account_identity_deletions SET status='archived',archived_at=t.stamp,identity_released_at=t.stamp,subject_manifest=$2::jsonb,
+ gameplay_purge_at=NULL,updated_at=NOW(),attempts=0,next_attempt_at=NOW(),last_error_code=NULL
+ FROM (SELECT clock_timestamp() AS stamp) t WHERE id=$1`,[id,JSON.stringify(subjects)]);
  const owner=data.find(s=>s.id===job.user_id);
  if(notice&&owner.email&&job.confirmation_hash){
   const receipt=createHmac('sha256',notice.secret).update('C232-deletion:'+job.confirmation_hash).digest('base64url');
-  await db.query(`INSERT INTO account_deletion_notices(deletion_id,payload) VALUES($1,$2) ON CONFLICT(deletion_id) DO UPDATE SET payload=EXCLUDED.payload,status='queued',next_attempt_at=NOW(),lease_until=NULL`,[id,seal({event:'archived',email:owner.email,receipt,gameplay_purge_at:committed.gameplay_purge_at},notice.key)]);
+  await db.query(`INSERT INTO account_deletion_notices(deletion_id,payload) VALUES($1,$2) ON CONFLICT(deletion_id) DO UPDATE SET payload=EXCLUDED.payload,status='queued',next_attempt_at=NOW(),lease_until=NULL`,[id,seal({event:'archived',email:owner.email,receipt},notice.key)]);
  }
  await db.query("INSERT INTO account_archive_audit(deletion_id,action,result) VALUES($1,'archive_committed',$2::jsonb)",[id,JSON.stringify({subjects:subjects.length,key_id:p.retention_key_id,policy_revision:p.revision,identity_released:true})]);
  return true;
 }
 export async function purgeGameplay(db,id){
- const current=await archivePolicy(db);if(!current.gameplay_purge_enabled)return false;
- const job=(await db.query("SELECT * FROM account_identity_deletions WHERE id=$1 AND flow_version=3 AND status='archived' AND gameplay_purge_at<=clock_timestamp() FOR UPDATE SKIP LOCKED",[id])).rows[0];
- if(!job||job.hold||await hold(db,id,'gameplay_purge'))return false;
- if(!(await db.query("SELECT 1 FROM account_retention_archives WHERE deletion_id=$1 AND payload<>'' AND NOT hold",[id])).rowCount)return false;
- validateArchivePolicy(job.policy_snapshot);
- await db.query('SELECT account_gameplay_cleanup_v1($1::uuid)',[id]);return true;
+ // Archived gameplay remains available until an explicit hard-delete workflow.
+ void db; void id; return false;
 }

@@ -5,7 +5,7 @@ const catalog=JSON.parse(fs.readFileSync(path.join(__dirname,'../data/items.json
 let now=Date.now(),serial=0,failWrites=0,beforeCommit=null,archivedClaim=false,queryRows=[];
 class Clock extends Date{static now(){return now;}}
 const c=vm.createContext({Date:Clock});
-for(const name of ['character_repository','config_rpc','monetization_rpc','mailbox','gift_codes'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../nakama/data/modules/build',name+'.js'),'utf8'),c);
+for(const name of ['character_repository','config_rpc','inventory_rpc','monetization_rpc','mailbox','gift_codes'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../nakama/data/modules/build',name+'.js'),'utf8'),c);
 const fn=name=>vm.runInContext(name,c),copy=value=>JSON.parse(JSON.stringify(value)),store=new Map();
 const owner='00000000-0000-0000-0000-000000000000',key=r=>r.userId+'/'+r.collection+'/'+r.key;
 const logger={error(){},warn(){}};

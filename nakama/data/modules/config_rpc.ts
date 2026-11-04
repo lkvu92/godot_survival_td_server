@@ -490,7 +490,7 @@ function parseRemoteSetting(valueType: string, raw: string): any {
 const publishConfigRelease: nkruntime.RpcFunction = (
     ctx: nkruntime.Context, _logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string
 ): string => {
-    if (!isConfigAdmin(ctx)) {
+    if (typeof isConfigAdmin === 'function' ? !isConfigAdmin(ctx) : !(ctx.env && ctx.env.CONFIG_ADMIN_USER_ID && ctx.userId && String(ctx.env.CONFIG_ADMIN_USER_ID).split(',').map((s:any)=>s.trim().toLowerCase()).includes(String(ctx.userId).trim().toLowerCase()))) {
         return JSON.stringify({ status: "error", code: 403, message: "Forbidden" });
     }
     return publishValidatedConfig(ctx.userId, nk, payload);

@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS account_identity_challenges (
  expires_at TIMESTAMPTZ NOT NULL, consumed_at TIMESTAMPTZ, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS identity_challenge_email_idx ON account_identity_challenges(email,purpose,created_at);
+ALTER TABLE account_identity_challenges ADD COLUMN IF NOT EXISTS reset_completed_at TIMESTAMPTZ;
 CREATE TABLE IF NOT EXISTS account_identity_outbox (
  challenge_id UUID PRIMARY KEY REFERENCES account_identity_challenges(id) ON DELETE CASCADE,
  payload TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'queued', attempts INT NOT NULL DEFAULT 0,
@@ -70,3 +71,13 @@ BEGIN
  END LOOP;
  UPDATE server_operation_plans SET actor_id='00000000-0000-0000-0000-000000000000' WHERE actor_id=uid;
 END $cleanup$;
+
+-- C232 v3.2: proof requests never activate an account without operator approval.
+CREATE TABLE IF NOT EXISTS account_restoration_requests (
+ id UUID PRIMARY KEY, deletion_id UUID NOT NULL REFERENCES account_identity_deletions(id),
+ user_id UUID NOT NULL, generation TEXT NOT NULL,
+ status TEXT NOT NULL CHECK(status IN ('pending','approved','rejected')),
+ created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), reviewed_at TIMESTAMPTZ,
+ reviewed_by TEXT, case_reference TEXT
+);
+CREATE UNIQUE INDEX IF NOT EXISTS account_restoration_one_pending ON account_restoration_requests(deletion_id) WHERE status='pending';

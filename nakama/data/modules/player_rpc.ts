@@ -40,8 +40,19 @@ const renamePlayer: nkruntime.RpcFunction = (ctx, _logger, nk, payload) => {
     try {req=JSON.parse(payload||"{}");} catch (_e) {return fail(400,"Tên người chơi không hợp lệ.");}
     if (!req || typeof req.display_name!=="string" || req.display_name.length>200) return fail(400,"Tên người chơi không hợp lệ.");
     const name=req.display_name.trim();
-    if (Array.from(name).length<3 || Array.from(name).length>24 || /[\x00-\x1f\x7f-\x9f\u200b-\u200f\u202a-\u202e\u2060-\u206f\ufeff<>\[\]]/.test(name))
-        return fail(400,"Tên cần từ 3 đến 24 ký tự, không chứa ký tự điều khiển hoặc ký hiệu định dạng.");
+    const check = typeof validatePlayerName === 'function'
+        ? validatePlayerName(name)
+        : (Array.from(name).length<3 || Array.from(name).length>24 || /[\x00-\x1f\x7f-\x9f\u200b-\u200f\u202a-\u202e\u2060-\u206f\ufeff<>\[\]]/.test(name))
+            ? { valid: false, code: 400, error_code: 'NAME_INVALID_FORMAT', message: 'Tên cần từ 3 đến 24 ký tự, không chứa ký tự điều khiển hoặc ký hiệu định dạng.' }
+            : { valid: true };
+    if (!check.valid) {
+        return JSON.stringify({
+            success: false,
+            code: check.code || 400,
+            error_code: check.error_code || 'NAME_INVALID_FORMAT',
+            message: check.message || 'Tên người chơi không hợp lệ.'
+        });
+    }
     const rows=nk.storageRead([{collection:"player_profiles",key:"main",userId:ctx.userId}]);
     if (!rows.length) return fail(409,"Chưa tải được hồ sơ. Hãy đăng nhập lại.");
     const profile=rows[0].value;
@@ -514,7 +525,10 @@ const saveComplianceProfile: nkruntime.RpcFunction = (
     const fullName = String(data.full_name || "").trim().slice(0, 100);
     const birthDate = String(data.birth_date || "").trim().slice(0, 30);
     const idNumber = String(data.id_number || "").trim().slice(0, 30);
-    const phoneNumber = String(data.phone_number || "").trim().slice(0, 20);
+    const phoneNumber = String(data.phone_number || "").replace(/[\s.-]/g, '').replace(/^\+84/, '0');
+    if (phoneNumber && !/^0[35789]\d{8}$/.test(phoneNumber)) {
+        return JSON.stringify({ success: false, message: "Chỉ hỗ trợ số di động Việt Nam hợp lệ." });
+    }
     const email = String(data.email || "").trim().slice(0, 120);
 
     const complianceData: any = {

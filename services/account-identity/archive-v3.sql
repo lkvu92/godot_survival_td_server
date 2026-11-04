@@ -28,6 +28,7 @@ INSERT INTO account_archive_worker_state(name) VALUES('gameplay') ON CONFLICT DO
 CREATE OR REPLACE FUNCTION account_gameplay_cleanup_v1(job_id UUID) RETURNS VOID LANGUAGE plpgsql AS $purge$
 DECLARE job account_identity_deletions%ROWTYPE; subjects UUID[]; tbl TEXT; field TEXT; n BIGINT; deleted_storage BIGINT;
 BEGIN
+ RAISE EXCEPTION 'Automatic gameplay cleanup is disabled; hard deletion requires a separate workflow';
  SELECT * INTO job FROM account_identity_deletions WHERE id=job_id FOR UPDATE;
  IF NOT FOUND OR job.flow_version<>3 OR job.status<>'archived' OR job.gameplay_purge_at IS NULL
   OR job.gameplay_purge_at>clock_timestamp() OR job.identity_released_at IS NULL OR job.hold THEN RAISE EXCEPTION 'Gameplay purge not authorized'; END IF;

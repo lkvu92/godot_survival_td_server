@@ -532,6 +532,7 @@ function InitModule(
 ): void {
     initializer.registerRpc('health_heartbeat', linkedRpc_health_heartbeat);
     initializer.registerRpc('admin_asset_trace',linkedRpc_admin_asset_trace);
+    initializer.registerRpc('admin_player_data_export',adminPlayerDataExport);
     initializer.registerRpc('compliance_access', linkedRpc_compliance_access);
     initializer.registerRpc('account_history', linkedRpc_account_history);
     initializer.registerRpc('google_play_financial_sync', googlePlayFinancialSync);

@@ -135,7 +135,7 @@ function mailClaimOne(nk:nkruntime.Nakama,userId:string,id:string):any {
                 if(!Number.isSafeInteger(total))return mailError('RESOURCE_LIMIT','Tài nguyên vượt giới hạn.');
                 p.value.resources[reward.id]=total;
                 assetChanges.push({type:'resource',id:reward.id,delta:reward.amount,balance_after:total});
-            }else if(reward.type==='item'){addStoreInventoryItem(nk,i.value.items,reward.id,reward.amount);if(i.value.items.length>2000)return mailError('INVENTORY_FULL','Túi đồ đầy. Hãy dọn túi rồi nhận lại.');assetChanges.push({type:'item',id:reward.id,delta:reward.amount,balance_after:talismanItemQuantity(i.value.items,reward.id)});}
+            }else if(reward.type==='item'){addStoreInventoryItem(nk,i.value.items,reward.id,reward.amount);if(i.value.items.length>2000)return mailError('INVENTORY_FULL','Túi đồ đầy. Hãy dọn túi rồi nhận lại.');assetChanges.push({type:'item',id:reward.id,delta:reward.amount,balance_after:(typeof talismanItemQuantity==='function'?talismanItemQuantity(i.value.items,reward.id):Number((i.value.items.find((entry:any)=>entry&&entry.item_id===reward.id)||{}).quantity||0))});}
             else if(reward.type==='exp'){
                 const beforeExp=Number(p.value.exp||0),beforeLevel=Number(p.value.level||1);
                 progressionApplyUser(nk,p.value,reward.amount);progressionReconcileLevelUnlocks(nk,p.value);

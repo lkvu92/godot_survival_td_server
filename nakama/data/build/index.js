@@ -1,3 +1,301 @@
+const PROFANITY_CONFIG = {
+  leetspeak: {
+    "0": "o",
+    "1": "i",
+    "3": "e",
+    "4": "a",
+    "5": "s",
+    "7": "t",
+    "8": "b",
+    "@": "a",
+    "$": "s"
+  },
+  reserved_words: [
+    "admin",
+    "administrator",
+    "gamemaster",
+    "gm",
+    "moderator",
+    "mod",
+    "bqt",
+    "banquantri",
+    "cskh",
+    "hotro",
+    "hethong",
+    "system",
+    "server",
+    "official"
+  ],
+  exact_tokens: [
+    // Vietnamese single vulgar tokens / acronyms
+    "cac",
+    "c\u1EB7c",
+    "lon",
+    "l\u1ED3n",
+    "dit",
+    "\u0111\u1ECBt",
+    "buoi",
+    "bu\u1ED3i",
+    "cc",
+    "cl",
+    "dm",
+    "\u0111m",
+    "dkm",
+    "\u0111km",
+    "dcm",
+    "\u0111cm",
+    "vcl",
+    "vkl",
+    "clgt",
+    "loz",
+    "cax",
+    "vl",
+    "vcc",
+    "\u0111\xF9",
+    "l\u1ED3z",
+    "c\u1EB7k",
+    "\u0111\u1EC7ch",
+    "\u0111\u1EBFch",
+    // English short vulgar tokens
+    "ass",
+    "cum",
+    "fag",
+    "tit",
+    "dick",
+    "cock",
+    "cunt",
+    "twat",
+    "piss",
+    "slut",
+    "whore",
+    "shat",
+    "crap"
+  ],
+  contains_phrases: [
+    // Vietnamese vulgar compound phrases
+    "\u0111\u1ECBt m\u1EB9",
+    "dit me",
+    "\u0111\u1ECBt con m\u1EB9",
+    "dit con me",
+    "\u0111\u1EE5 m\xE1",
+    "du ma",
+    "dume",
+    "\u0111\u1EE5 m\u1EB9",
+    "du me",
+    "l\u1ED3n m\u1EB9",
+    "lon me",
+    "\u0103n c\u1EB7c",
+    "an cac",
+    "c\u1EB7c ng\u1EF1a",
+    "cac ngua",
+    "b\xFA c\u1EB7c",
+    "bu cac",
+    "b\xFA cu",
+    "bu cu",
+    "th\u1EB1ng ch\xF3",
+    "thang cho",
+    "con ch\xF3",
+    "con cho",
+    "\u0111\u1ECBt b\xE0",
+    "dit ba",
+    "ch\xF3 \u0111\u1EBB",
+    "cho de",
+    "\xF3c ch\xF3",
+    "oc cho",
+    "m\u1EB9 m\xE0y",
+    "me may",
+    "b\u1ED1 m\xE0y",
+    "bo may",
+    "ti\xEAn s\u01B0",
+    "m\u1EA5t d\u1EA1y",
+    "mat day",
+    "\u0111\u0129 m\u1EB9",
+    "di me",
+    "con \u0111\u0129",
+    "con di",
+    "l\xE0m t\xECnh",
+    "lam tinh",
+    "th\u1EE7 d\xE2m",
+    "thu dam",
+    // English vulgar phrases
+    "fuck",
+    "motherfucker",
+    "mother fucker",
+    "bitch",
+    "bastard",
+    "nigger",
+    "nigga",
+    "pussy",
+    "asshole",
+    "blowjob",
+    "handjob",
+    "deepthroat",
+    "masturbat",
+    "dumbass",
+    "jackass",
+    "dipshit",
+    "bullshit",
+    "horseshit"
+  ],
+  whitelist: [
+    // Clean single words in Vietnamese / Xianxia
+    "long",
+    "b\xE1c",
+    "bac",
+    "c\xE1t",
+    "cat",
+    "ph\xFAc",
+    "phuc",
+    "khang",
+    "b\xE1ch",
+    "bach",
+    "th\u1EAFng",
+    "thang",
+    "b\xEDch",
+    "bich",
+    "c\xFAc",
+    "cuc",
+    "t\xEDch",
+    "tich",
+    "dung",
+    "ti\xEAu",
+    "tieu",
+    "h\xE0n",
+    "han",
+    "li\u1EC5u",
+    "lieu",
+    "v\xE2n",
+    "van",
+    "l\u1EA1c",
+    "lac",
+    "t\xE1c",
+    "tac",
+    "c\xE1c",
+    // Clean compound words in Vietnamese / Xianxia
+    "th\u0103ng long",
+    "thang long",
+    "b\u1EA1ch long",
+    "bach long",
+    "long th\u1EA7n",
+    "long than",
+    "long v\u01B0\u01A1ng",
+    "long vuong",
+    "phi long",
+    "h\u1EAFc long",
+    "hac long",
+    "kim long",
+    "b\xE1c \xE1i",
+    "bac ai",
+    "th\xE1c b\u1EA3n",
+    "thac ban",
+    "t\xE1c gi\u1EA3",
+    "tac gia",
+    "c\xE1c h\u1EA1",
+    "cac ha",
+    "c\xE1t t\u01B0\u1EDDng",
+    "cat tuong",
+    "ph\xFAc khang",
+    "phuc khang",
+    "b\xE1ch th\u1EAFng",
+    "bach thang",
+    "b\xEDch dao",
+    "bich dao",
+    "c\xFAc hoa",
+    "cuc hoa",
+    "h\xE0n l\u1EADp",
+    "han lap",
+    "ti\xEAu vi\xEAm",
+    "tieu viem",
+    "b\u1EA1ch thi\u1EC3n",
+    "bach thien",
+    "thanh v\xE2n",
+    "thanh van",
+    "thi\xEAn m\u1EC7nh",
+    "thien menh",
+    "di t\xEDch",
+    "di tich",
+    "c\u1ED5 t\xEDch",
+    "co tich",
+    "chi\u1EBFn t\xEDch",
+    "chien tich",
+    // Clean English words containing sensitive substrings
+    "assassin",
+    "classic",
+    "cassandra",
+    "passionate",
+    "asset",
+    "assist",
+    "entity",
+    "title",
+    "titan"
+  ]
+};
+function stripAccents(str) {
+  return str.replace(/[àáạảãâầấậẩẫăằắặẳẵ]/g, "a").replace(/[èéẹẻẽêềếệểễ]/g, "e").replace(/[ìíịỉĩ]/g, "i").replace(/[òóọỏõôồốộổỗơờớợởỡ]/g, "o").replace(/[ùúụủũưừứựửữ]/g, "u").replace(/[ỳýỵỷỹ]/g, "y").replace(/đ/g, "d");
+}
+function canonicalizeText(str) {
+  let s = str.normalize("NFC").toLowerCase().trim();
+  for (const [k, v] of Object.entries(PROFANITY_CONFIG.leetspeak)) {
+    s = s.split(k).join(v);
+  }
+  return s;
+}
+function validatePlayerName(name) {
+  if (typeof name !== "string") {
+    return { valid: false, code: 400, error_code: "NAME_INVALID_FORMAT", message: "T\xEAn ng\u01B0\u1EDDi ch\u01A1i kh\xF4ng h\u1EE3p l\u1EC7." };
+  }
+  const trimmed = name.trim();
+  const charCount = Array.from(trimmed).length;
+  if (charCount < 3 || charCount > 24 || /[\x00-\x1f\x7f-\x9f\u200b-\u200f\u202a-\u202e\u2060-\u206f\ufeff<>\[\]]/.test(trimmed)) {
+    return { valid: false, code: 400, error_code: "NAME_INVALID_FORMAT", message: "T\xEAn c\u1EA7n t\u1EEB 3 \u0111\u1EBFn 24 k\xFD t\u1EF1, kh\xF4ng ch\u1EE9a k\xFD t\u1EF1 \u0111i\u1EC1u khi\u1EC3n ho\u1EB7c k\xFD hi\u1EC7u \u0111\u1ECBnh d\u1EA1ng." };
+  }
+  const norm = canonicalizeText(trimmed);
+  const unacc = stripAccents(norm);
+  const whitelistSet = new Set(PROFANITY_CONFIG.whitelist);
+  if (whitelistSet.has(norm) || whitelistSet.has(unacc)) {
+    return { valid: true };
+  }
+  const collapsedAlphanumeric = unacc.replace(/[^a-z0-9]/g, "");
+  for (const reserved of PROFANITY_CONFIG.reserved_words) {
+    if (collapsedAlphanumeric === reserved || collapsedAlphanumeric.startsWith(reserved + "_") || collapsedAlphanumeric.startsWith(reserved + "0") || collapsedAlphanumeric.startsWith(reserved + "1") || collapsedAlphanumeric.startsWith(reserved + "2") || collapsedAlphanumeric.startsWith(reserved + "3") || collapsedAlphanumeric.startsWith(reserved + "4") || collapsedAlphanumeric.startsWith(reserved + "5") || collapsedAlphanumeric.startsWith(reserved + "6") || collapsedAlphanumeric.startsWith(reserved + "7") || collapsedAlphanumeric.startsWith(reserved + "8") || collapsedAlphanumeric.startsWith(reserved + "9")) {
+      return { valid: false, code: 400, error_code: "NAME_RESERVED_KEYWORD", message: "T\xEAn ch\u1EE9a t\u1EEB kh\xF3a c\u1EE7a h\u1EC7 th\u1ED1ng ho\u1EB7c Ban Qu\u1EA3n Tr\u1ECB." };
+    }
+    const tokens = unacc.split(/[^a-z0-9]+/);
+    if (tokens.includes(reserved)) {
+      return { valid: false, code: 400, error_code: "NAME_RESERVED_KEYWORD", message: "T\xEAn ch\u1EE9a t\u1EEB kh\xF3a c\u1EE7a h\u1EC7 th\u1ED1ng ho\u1EB7c Ban Qu\u1EA3n Tr\u1ECB." };
+    }
+  }
+  const exactTokensSet = new Set(PROFANITY_CONFIG.exact_tokens);
+  const collapsedRaw = norm.replace(/[\s._\-–—,;:!?'"/\\]+/g, "");
+  const collapsedSpacesAndDots = unacc.replace(/[\s._\-–—,;:!?'"/\\]+/g, "");
+  if ((exactTokensSet.has(collapsedRaw) || exactTokensSet.has(collapsedSpacesAndDots)) && !whitelistSet.has(collapsedRaw) && !whitelistSet.has(collapsedSpacesAndDots)) {
+    return { valid: false, code: 400, error_code: "NAME_CONTAINS_PROFANITY", message: "T\xEAn ch\u1EE9a t\u1EEB ng\u1EEF kh\xF4ng ph\xF9 h\u1EE3p." };
+  }
+  for (const phrase of PROFANITY_CONFIG.contains_phrases) {
+    const phraseNorm = canonicalizeText(phrase);
+    const phraseUnacc = stripAccents(phraseNorm);
+    const phraseCollapsed = phraseUnacc.replace(/[\s._\-–—,;:!?'"/\\]+/g, "");
+    if (norm.includes(phraseNorm) || unacc.includes(phraseUnacc) || phraseCollapsed.length >= 3 && collapsedSpacesAndDots.includes(phraseCollapsed)) {
+      return { valid: false, code: 400, error_code: "NAME_CONTAINS_PROFANITY", message: "T\xEAn ch\u1EE9a t\u1EEB ng\u1EEF kh\xF4ng ph\xF9 h\u1EE3p." };
+    }
+  }
+  const rawTokens = norm.split(/[^a-z0-9à-ỹđ]+/i).filter(Boolean);
+  const unaccTokens = unacc.split(/[^a-z0-9]+/i).filter(Boolean);
+  for (const token of rawTokens) {
+    if (whitelistSet.has(token)) continue;
+    if (exactTokensSet.has(token)) {
+      return { valid: false, code: 400, error_code: "NAME_CONTAINS_PROFANITY", message: "T\xEAn ch\u1EE9a t\u1EEB ng\u1EEF kh\xF4ng ph\xF9 h\u1EE3p." };
+    }
+  }
+  for (const token of unaccTokens) {
+    if (whitelistSet.has(token)) continue;
+    if (exactTokensSet.has(token)) {
+      return { valid: false, code: 400, error_code: "NAME_CONTAINS_PROFANITY", message: "T\xEAn ch\u1EE9a t\u1EEB ng\u1EEF kh\xF4ng ph\xF9 h\u1EE3p." };
+    }
+  }
+  return { valid: true };
+}
+
 function createServerWeeklyTables(nk) {
   nk.sqlExec(`CREATE TABLE IF NOT EXISTS server_weekly_periods (
       server_id TEXT NOT NULL REFERENCES game_servers(server_id),generation INT NOT NULL,period_id BIGINT NOT NULL,
@@ -148,6 +446,37 @@ const claimServerWeekly = (ctx, _logger, nk, payload) => {
   return JSON.stringify({ success: true, already_claimed: false, rewards, profile: p.value, inventory: i.value.items });
 };
 
+const adminPlayerDataExport = (ctx, _logger, nk, payload) => {
+  const denied = requireServerAdmin(ctx);
+  if (denied) return denied;
+  let req;
+  try {
+    req = JSON.parse(payload || "{}");
+  } catch (_e) {
+    return serverFailure("INVALID_REQUEST", 400, "Invalid JSON");
+  }
+  if (!req || typeof req.user_id !== "string" || !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(req.user_id)) return serverFailure("INVALID_USER_ID", 400, "User ID kh\xF4ng h\u1EE3p l\u1EC7");
+  const account = nk.sqlQuery("SELECT id,username,display_name,create_time,update_time,disable_time FROM users WHERE id=$1::uuid", [req.user_id]);
+  if (!account.length) return serverFailure("USER_NOT_FOUND", 404, "Kh\xF4ng t\xECm th\u1EA5y ng\u01B0\u1EDDi ch\u01A1i");
+  const playtime = nk.sqlQuery("SELECT game_id,day,seconds::text AS recorded_seconds FROM compliance_playtime WHERE user_id=$1::uuid ORDER BY day,game_id LIMIT 10001", [req.user_id]);
+  if (playtime.length > 1e4) return serverFailure("EXPORT_TOO_LARGE", 413, "D\u1EEF li\u1EC7u v\u01B0\u1EE3t gi\u1EDBi h\u1EA1n xu\u1EA5t");
+  const characters = nk.sqlQuery("SELECT server_id,generation,status,created_at,last_entered_at FROM player_characters WHERE account_id=$1::uuid ORDER BY server_id", [req.user_id]);
+  const identity = nk.sqlQuery(`SELECT collection,key,jsonb_build_object('full_name',value->'full_name','birth_date',value->'birth_date','phone_number',value->'phone_number','guardian_name',value->'guardian_name','phone_owner',value->'phone_owner','is_phone_verified',value->'is_phone_verified','verified_at',value->'verified_at','email',value->'email')::text AS profile FROM storage WHERE user_id=$1::uuid AND ((collection='compliance_activation' AND key='profile') OR (collection='player_compliance_profiles' AND key='profile')) ORDER BY collection`, [req.user_id]);
+  const inventory = nk.sqlQuery(`SELECT key,(value->'items')::text AS items,update_time FROM storage WHERE user_id=$1::uuid AND collection='player_inventory' ORDER BY key LIMIT 10001`, [req.user_id]);
+  const resources = nk.sqlQuery(`SELECT key,(value->'resources')::text AS resources,update_time FROM storage WHERE user_id=$1::uuid AND collection='player_profiles' ORDER BY key LIMIT 10001`, [req.user_id]);
+  const payments = nk.sqlQuery(accountHistoryQuery(), [req.user_id, "", "", "", 10001]);
+  for (const row of identity) if (typeof row.profile === "string") row.profile = JSON.parse(row.profile);
+  for (const row of inventory) if (typeof row.items === "string") row.items = JSON.parse(row.items);
+  for (const row of resources) if (typeof row.resources === "string") row.resources = JSON.parse(row.resources);
+  const archiveResponse = nk.httpRequest("http://account-identity:8080/account/internal/player-export", "POST", { "Content-Type": "application/json", "Authorization": "Bearer " + ctx.env.ACCOUNT_IDENTITY_SECRET }, JSON.stringify({ user_id: req.user_id }), 1e4);
+  if (archiveResponse.code !== 200) return serverFailure("ARCHIVE_UNAVAILABLE", 503, "Kh\xF4ng th\u1EC3 \u0111\u1ECDc danh t\xEDnh l\u01B0u tr\u1EEF; ch\u01B0a t\u1EA1o file xu\u1EA5t.");
+  const archived = JSON.parse(archiveResponse.body);
+  if (archived.success !== true || !Array.isArray(archived.records)) return serverFailure("ARCHIVE_UNAVAILABLE", 503, "Ph\u1EA3n h\u1ED3i danh t\xEDnh l\u01B0u tr\u1EEF kh\xF4ng h\u1EE3p l\u1EC7");
+  if (inventory.length > 1e4 || resources.length > 1e4 || payments.length > 1e4) return serverFailure("EXPORT_TOO_LARGE", 413, "D\u1EEF li\u1EC7u v\u01B0\u1EE3t gi\u1EDBi h\u1EA1n xu\u1EA5t");
+  nk.sqlExec(`CREATE TABLE IF NOT EXISTS player_data_export_audit(id BIGSERIAL PRIMARY KEY,actor_id UUID NOT NULL,subject_id UUID NOT NULL,created_at TIMESTAMPTZ NOT NULL DEFAULT NOW())`, []);
+  nk.sqlExec("INSERT INTO player_data_export_audit(actor_id,subject_id) VALUES($1::uuid,$2::uuid)", [ctx.userId, req.user_id]);
+  return JSON.stringify({ success: true, schema_version: 3, generated_at: (/* @__PURE__ */ new Date()).toISOString(), user_id: req.user_id, account: account[0], characters, playtime, identity, archived_identity: archived.records, inventory, resources, payments, warnings: ["Th\u1EDDi gian l\xE0 s\u1ED1 gi\xE2y \u0111\xE3 ghi nh\u1EADn; ch\u01B0a bao g\u1ED3m lease \u0111ang ch\u1EA1y.", "T\xFAi \u0111\u1ED3 v\xE0 s\u1ED1 d\u01B0 l\xE0 tr\u1EA1ng th\xE1i hi\u1EC7n t\u1EA1i; ch\u01B0a ph\u1EA3i l\u1ECBch s\u1EED m\u1ECDi bi\u1EBFn \u0111\u1ED9ng.", "S\u1ED1 ti\u1EC1n thanh to\xE1n ch\u01B0a x\xE1c minh \u0111\u01B0\u1EE3c gi\u1EEF null; kh\xF4ng suy t\u1EEB gi\xE1 catalog."].concat(archived.warnings || []) });
+};
 const adminAssetTrace = (ctx, _logger, nk, payload) => {
   const denied = requireServerAdmin(ctx);
   if (denied) return denied;
@@ -3274,7 +3603,7 @@ function parseRemoteSetting(valueType, raw) {
   throw new Error("Unknown setting type");
 }
 const publishConfigRelease = (ctx, _logger, nk, payload) => {
-  if (!isConfigAdmin(ctx)) {
+  if (typeof isConfigAdmin === "function" ? !isConfigAdmin(ctx) : !(ctx.env && ctx.env.CONFIG_ADMIN_USER_ID && ctx.userId && String(ctx.env.CONFIG_ADMIN_USER_ID).split(",").map((s) => s.trim().toLowerCase()).includes(String(ctx.userId).trim().toLowerCase()))) {
     return JSON.stringify({ status: "error", code: 403, message: "Forbidden" });
   }
   return publishValidatedConfig(ctx.userId, nk, payload);
@@ -3640,8 +3969,15 @@ const renamePlayer = (ctx, _logger, nk, payload) => {
   }
   if (!req || typeof req.display_name !== "string" || req.display_name.length > 200) return fail(400, "T\xEAn ng\u01B0\u1EDDi ch\u01A1i kh\xF4ng h\u1EE3p l\u1EC7.");
   const name = req.display_name.trim();
-  if (Array.from(name).length < 3 || Array.from(name).length > 24 || /[\x00-\x1f\x7f-\x9f\u200b-\u200f\u202a-\u202e\u2060-\u206f\ufeff<>\[\]]/.test(name))
-    return fail(400, "T\xEAn c\u1EA7n t\u1EEB 3 \u0111\u1EBFn 24 k\xFD t\u1EF1, kh\xF4ng ch\u1EE9a k\xFD t\u1EF1 \u0111i\u1EC1u khi\u1EC3n ho\u1EB7c k\xFD hi\u1EC7u \u0111\u1ECBnh d\u1EA1ng.");
+  const check = typeof validatePlayerName === "function" ? validatePlayerName(name) : Array.from(name).length < 3 || Array.from(name).length > 24 || /[\x00-\x1f\x7f-\x9f\u200b-\u200f\u202a-\u202e\u2060-\u206f\ufeff<>\[\]]/.test(name) ? { valid: false, code: 400, error_code: "NAME_INVALID_FORMAT", message: "T\xEAn c\u1EA7n t\u1EEB 3 \u0111\u1EBFn 24 k\xFD t\u1EF1, kh\xF4ng ch\u1EE9a k\xFD t\u1EF1 \u0111i\u1EC1u khi\u1EC3n ho\u1EB7c k\xFD hi\u1EC7u \u0111\u1ECBnh d\u1EA1ng." } : { valid: true };
+  if (!check.valid) {
+    return JSON.stringify({
+      success: false,
+      code: check.code || 400,
+      error_code: check.error_code || "NAME_INVALID_FORMAT",
+      message: check.message || "T\xEAn ng\u01B0\u1EDDi ch\u01A1i kh\xF4ng h\u1EE3p l\u1EC7."
+    });
+  }
   const rows = nk.storageRead([{ collection: "player_profiles", key: "main", userId: ctx.userId }]);
   if (!rows.length) return fail(409, "Ch\u01B0a t\u1EA3i \u0111\u01B0\u1EE3c h\u1ED3 s\u01A1. H\xE3y \u0111\u0103ng nh\u1EADp l\u1EA1i.");
   const profile = rows[0].value;
@@ -4208,7 +4544,10 @@ const saveComplianceProfile = (ctx, logger, nk, payload) => {
   const fullName = String(data.full_name || "").trim().slice(0, 100);
   const birthDate = String(data.birth_date || "").trim().slice(0, 30);
   const idNumber = String(data.id_number || "").trim().slice(0, 30);
-  const phoneNumber = String(data.phone_number || "").trim().slice(0, 20);
+  const phoneNumber = String(data.phone_number || "").replace(/[\s.-]/g, "").replace(/^\+84/, "0");
+  if (phoneNumber && !/^0[35789]\d{8}$/.test(phoneNumber)) {
+    return JSON.stringify({ success: false, message: "Ch\u1EC9 h\u1ED7 tr\u1EE3 s\u1ED1 di \u0111\u1ED9ng Vi\u1EC7t Nam h\u1EE3p l\u1EC7." });
+  }
   const email = String(data.email || "").trim().slice(0, 120);
   const complianceData = {
     user_id: ctx.userId,
@@ -4366,7 +4705,7 @@ const accountIdentityStatus = (ctx, _l, nk) => {
   const deletionRows = nk.sqlQuery("SELECT snapshot#>'{system,account_deletion}' AS policy FROM remote_config_releases ORDER BY config_version DESC LIMIT 1", []);
   const deletionPolicy = deletionRows.length ? parseJsonb(deletionRows[0].policy) : null;
   const gameplay = deletionPolicy && Array.isArray(deletionPolicy.datasets) ? deletionPolicy.datasets.filter((d) => d.id === "gameplay")[0] : null;
-  const deletionPresentation = deletionPolicy && deletionPolicy.schema_version === 2 && gameplay ? { soft_delete_days: deletionPolicy.soft_delete_days, gameplay_purge_calendar_months: gameplay.calendar_months } : null;
+  const deletionPresentation = deletionPolicy && deletionPolicy.schema_version === 2 && gameplay ? { soft_delete_days: deletionPolicy.soft_delete_days } : null;
   return JSON.stringify({
     success: true,
     user_id: ctx.userId,
@@ -4385,6 +4724,22 @@ const accountIdentityStatus = (ctx, _l, nk) => {
 const accountIdentityBridge = (ctx, logger, nk, payload) => {
   const p = JSON.parse(payload || "{}");
   if (ctx.userId || !identityEnabled(ctx) || !ctx.env.ACCOUNT_IDENTITY_SECRET || p.secret !== ctx.env.ACCOUNT_IDENTITY_SECRET) throw Error("Forbidden");
+  if (p.action === "hash_reset_password") {
+    const password = String(p.password || "");
+    let bytes = 0;
+    try {
+      bytes = encodeURIComponent(password).replace(/%[0-9A-F]{2}|./g, "x").length;
+    } catch (_e) {
+      throw Error("Invalid password");
+    }
+    if (Array.from(password).length < 8 || bytes > 72) throw Error("Invalid password");
+    return JSON.stringify({ success: true, password_hash: nk.bcryptHash(password) });
+  }
+  if (p.action === "logout_reset_sessions") {
+    if (!/^[a-f0-9-]{36}$/.test(String(p.user_id || ""))) throw Error("Invalid user");
+    nk.sessionLogout(String(p.user_id));
+    return JSON.stringify({ success: true });
+  }
   if (p.action === "create") {
     if (!/^[a-f0-9-]{36}$/.test(String(p.intent || ""))) throw Error("Invalid intent");
     const email = String(p.email || "").trim().toLowerCase(), custom = "c232:" + p.intent;
@@ -11712,7 +12067,7 @@ function mailClaimOne(nk, userId, id) {
       } else if (reward.type === "item") {
         addStoreInventoryItem(nk, i.value.items, reward.id, reward.amount);
         if (i.value.items.length > 2e3) return mailError("INVENTORY_FULL", "T\xFAi \u0111\u1ED3 \u0111\u1EA7y. H\xE3y d\u1ECDn t\xFAi r\u1ED3i nh\u1EADn l\u1EA1i.");
-        assetChanges.push({ type: "item", id: reward.id, delta: reward.amount, balance_after: talismanItemQuantity(i.value.items, reward.id) });
+        assetChanges.push({ type: "item", id: reward.id, delta: reward.amount, balance_after: typeof talismanItemQuantity === "function" ? talismanItemQuantity(i.value.items, reward.id) : Number((i.value.items.find((entry) => entry && entry.item_id === reward.id) || {}).quantity || 0) });
       } else if (reward.type === "exp") {
         const beforeExp = Number(p.value.exp || 0), beforeLevel = Number(p.value.level || 1);
         progressionApplyUser(nk, p.value, reward.amount);
@@ -14497,6 +14852,7 @@ function linkedRpc_resolve_purchase_order(c, l, n, p) {
 function InitModule(ctx, logger, nk, initializer) {
   initializer.registerRpc("health_heartbeat", linkedRpc_health_heartbeat);
   initializer.registerRpc("admin_asset_trace", linkedRpc_admin_asset_trace);
+  initializer.registerRpc("admin_player_data_export", adminPlayerDataExport);
   initializer.registerRpc("compliance_access", linkedRpc_compliance_access);
   initializer.registerRpc("account_history", linkedRpc_account_history);
   initializer.registerRpc("google_play_financial_sync", googlePlayFinancialSync);

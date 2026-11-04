@@ -1,5 +1,7 @@
 const fs=require('fs'),vm=require('vm'),path=require('path'),assert=require('assert');
 const c=vm.createContext({});
+const filterPath = path.join(__dirname,'../nakama/data/modules/build/profanity_filter.js');
+if (fs.existsSync(filterPath)) vm.runInContext(fs.readFileSync(filterPath,'utf8'), c);
 vm.runInContext(fs.readFileSync(path.join(__dirname,'../nakama/data/modules/build/player_rpc.js'),'utf8'),c);
 const ensure=c.ensurePlayerName, rename=vm.runInContext('renamePlayer',c);
 let google=true, generated=0, db, conflict=false;
@@ -21,8 +23,11 @@ reset({display_name:'xYzSdkRandom'});ensure(nk,'user',db.player_profiles.value);
 reset({display_name:'Tên đã đặt'});ensure(nk,'user',db.player_profiles.value);assert.equal(db.player_profiles.value.display_name,'Tên đã đặt');
 reset();google=false;ensure(nk,'user',db.player_profiles.value);assert.equal(db.player_profiles.value.display_name,'EmailPlayer');
 for(const name of ['ab','x'.repeat(25),'bad\nname','[b]name','bad\u200bname']){reset();assert.equal(call(name).code,400);assert(!db.player_identity);}
+for(const bad of ['dit me','Admin','dkm','vcl','fuck','l0n','c4c']){reset();const r=call(bad);assert.equal(r.code,400);assert(r.error_code==='NAME_CONTAINS_PROFANITY'||r.error_code==='NAME_RESERVED_KEYWORD');assert(!db.player_identity);}
 reset({display_name:'Initial'});assert.equal(call('Initial').code,400);
-assert.equal(call('Tên Mới').success,true);assert.equal(db.player_identity.value.name_changes_used,1);
+reset({display_name:'Initial'});assert.equal(call('Thăng Long').success,true);
+reset({display_name:'Initial'});assert.equal(call('Bác Ái').success,true);
+reset({display_name:'Initial'});assert.equal(call('Tên Mới').success,true);assert.equal(db.player_identity.value.name_changes_used,1);
 assert.equal(call('Tên Mới').success,true,'same-name retry safe');assert.equal(call('Another Name').code,409);
 db.player_profiles.value={display_name:'stale client name',name_changes_used:0};
 assert.equal(call('Bypass Name').code,409,'stale profile cannot restore chance');
@@ -30,4 +35,4 @@ ensure(nk,'user',db.player_profiles.value);assert.equal(db.player_profiles.value
 reset({display_name:'Initial'});ensure(nk,'user',db.player_profiles.value);conflict=true;assert.equal(call('Concurrent Name').code,409);assert.equal(db.player_identity.value.name_changes_used,0);
 reset();assert.equal(JSON.parse(rename({}, {}, nk,'{}')).code,401);
 assert.equal(JSON.parse(rename({userId:'user'}, {}, nk,'null')).code,400);
-console.log('PASS player names: Google generation/persistence, email/custom preservation, validation, CAS, one-time/replay and stale-save guard');
+console.log('PASS player names: Google generation/persistence, email/custom preservation, validation, CAS, one-time/replay, stale-save guard and profanity filter');

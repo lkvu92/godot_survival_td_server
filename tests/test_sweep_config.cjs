@@ -1,7 +1,7 @@
 // Publication must reject broken sweep rules before creating an immutable release.
 const fs=require('fs'),path=require('path'),vm=require('vm'),assert=require('assert');
 const context=vm.createContext({});
-for(const file of ['feature_unlocks','sweep_rpc','config_rpc'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../nakama/data/modules/build',file+'.js'),'utf8'),context);
+for(const file of ['server_admin','feature_unlocks','sweep_rpc','config_rpc'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../nakama/data/modules/build',file+'.js'),'utf8'),context);
 const get=name=>vm.runInContext(name,context),clone=value=>JSON.parse(JSON.stringify(value));
 const defaults=clone(get('SWEEP_DEFAULTS'));
 context.validRewardedAdsConfig=()=>true;

@@ -157,3 +157,15 @@ Acceptance theo checklist tại B6 archive-policy, evidence thư mục riêng ph
 Native social/group relations không có processor purge được nghiệm thu trong đợt này; phải inventory riêng trước khi bật các tính năng đó. Không tuyên bố mọi bảng chứa user ID đều đã được xóa.
 
 Local build/package tests13 integration-enabled, static server/client và Godot/browser fixture đều có evidence phase-v3. Deployment local không xóa user thật; manifest ghi aggregate jobs/config/health và source hash. Tài liệu system/runbook/dossier cập nhật; B6 vẫn IN_PROGRESS, không ACCEPTED production/legal.
+# C232 v3.2 restoration review
+
+Restoration requests are submitted with email/password or fresh Google proof and remain pending until an operator reviews them. The account stays in the deleting state. The existing deletion deadline is not extended: approval after that deadline is rejected. Run these commands only on the restricted identity service host/container with authorized database credentials; use a traceable operator identity and support case:
+
+```sh
+node src/restore-operator.js --action=list
+node src/restore-operator.js --action=approve --request=<UUID> --confirm=<UUID> --operator=<operator-id> --case=<case-id>
+node src/restore-operator.js --action=reject --request=<UUID> --confirm=<UUID> --operator=<operator-id> --case=<case-id>
+```
+
+The request, decision, operator, case and review timestamp are retained. The service has no public approval endpoint. This administrative workflow is a product decision; deletion and personal-data obligations must be assessed separately.
+

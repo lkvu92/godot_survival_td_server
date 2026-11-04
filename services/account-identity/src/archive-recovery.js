@@ -65,6 +65,9 @@ export async function reconcileLedger(db,envelope,secret,expectedCheckpoint){
   report.unknown_restore_jobs=(await db.query('SELECT id FROM public.account_identity_deletions')).rows.filter(j=>!known.has(j.id)).length;
   for(const j of data.jobs){
    if(j.flow_version!==3){report.unsupported_jobs++;continue;}
+   // An old purged checkpoint cannot be replayed by deleting gameplay under v3.4.
+   // Keep the restore gate blocked for an operator to reconcile it separately.
+   if(j.status==='gameplay_purged'){report.unsupported_jobs++;continue;}
    const existing=(await db.query('SELECT user_id FROM public.account_identity_deletions WHERE id=$1',[j.id])).rows[0];
    if(!existing||existing.user_id!==j.user_id){report.unsupported_jobs++;continue;}
    if(!j.identity_released_at){
@@ -93,8 +96,7 @@ export async function reconcileLedger(db,envelope,secret,expectedCheckpoint){
    await db.query(`INSERT INTO public.account_retention_archives(deletion_id,payload,retain_until,hold,key_id,content_digest,expired_at) VALUES($1,$2,$3,$4,$5,$6,$7)
     ON CONFLICT(deletion_id) DO UPDATE SET payload=EXCLUDED.payload,retain_until=EXCLUDED.retain_until,hold=EXCLUDED.hold,key_id=EXCLUDED.key_id,content_digest=EXCLUDED.content_digest,expired_at=EXCLUDED.expired_at`,[j.id,a.expired_at?'':a.payload,a.retain_until,a.hold,a.expired_at?null:a.key_id,a.expired_at?null:a.content_digest,a.expired_at]);
    await db.query(`UPDATE public.account_identity_deletions SET status='archived',flow_version=3,archived_at=$2,identity_released_at=$3,gameplay_purge_at=$4,subject_manifest=$5::jsonb,policy_snapshot=$6::jsonb,hold=$7 WHERE id=$1`,[j.id,j.archived_at,j.identity_released_at,j.gameplay_purge_at,JSON.stringify(ids),JSON.stringify(j.policy_snapshot),j.hold]);
-   if(j.status==='gameplay_purged')await db.query('SELECT public.account_gameplay_cleanup_v1($1)',[j.id]);
-   else if(j.status!=='archived')report.unsupported_jobs++;
+   if(j.status!=='archived')report.unsupported_jobs++;
    report.replayed++;
   }
   for(const h of data.holds)await db.query(`INSERT INTO public.account_archive_holds(id,deletion_id,action,actor,reason,created_at,released_at,released_by) VALUES($1,$2,$3,$4,$5,$6,$7,$8)

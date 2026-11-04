@@ -54,6 +54,41 @@ test('C232 on real Nakama 3.24.2 / PostgreSQL: registration races, scanners, leg
  const used=await post('/link/status',{token:a.token,purpose:'register_email'});assert.equal(used.status,410);assert.equal(used.code,'LINK_EXPIRED');
  const existing=await post('/registration/request',{email});assert.equal(existing.status,409);assert.equal(existing.code,'ACCOUNT_EXISTS');
 
+ // Independent password-reset subject: two links, simultaneous submissions, replay and old sessions.
+ const resetEmail='reset'+unique+'@example.com', resetRegistration=await requestMail(resetEmail);
+ assert.equal((await post('/registration/complete',{token:resetRegistration.token,username:'reset'+unique,password:'original-password123'})).success,true);
+ const resetLogin=await native('/v2/account/authenticate/email?create=false',{email:resetEmail,password:'original-password123'});
+ const resetUser=decode(resetLogin.token).uid;
+ async function resetMail(address){
+   await q("UPDATE account_identity_challenges SET created_at=NOW()-INTERVAL '61 seconds' WHERE email=$1",[address]);
+   const count=mails.length;assert.equal((await post('/password-reset/request',{email:address})).success,true);await app.tick();
+   assert.equal(mails.length,count+1);return new URLSearchParams(new URL(mails.at(-1).text.split('\n').find(line=>line.startsWith('https://'))).hash.slice(1)).get('token');
+ }
+ const resetOne=await resetMail(resetEmail),resetTwo=await resetMail(resetEmail);
+ assert.equal((await post('/link/status',{token:resetOne,purpose:'reset_password'})).success,true);
+ const resetResults=await Promise.all([post('/password-reset/complete',{token:resetOne,password:'replacement-password123'}),post('/password-reset/complete',{token:resetOne,password:'different-password123'})]);
+ assert.equal(resetResults.filter(x=>x.success&&!x.already_completed).length,1);
+ assert.equal(resetResults.filter(x=>x.success&&x.already_completed).length,1);
+ assert.equal((await post('/password-reset/complete',{token:resetTwo,password:'replacement-other123'})).success,false,'other links invalidated');
+ assert.equal((await post('/link/status',{token:resetOne,purpose:'reset_password'})).status,410);
+ assert.equal((await post('/password-reset/complete',{token:resetOne,password:'replay-password123'})).already_completed,true);
+ const oldRpc=await native('/v2/rpc/account_identity_status','{}',resetLogin.token);assert.ok(oldRpc.status!==200||JSON.parse(oldRpc.payload).success===false,'old session revoked');
+ assert.notEqual((await native('/v2/account/authenticate/email?create=false',{email:resetEmail,password:'original-password123'})).status,200);
+ const p1=await native('/v2/account/authenticate/email?create=false',{email:resetEmail,password:'replacement-password123'});
+ const p2=await native('/v2/account/authenticate/email?create=false',{email:resetEmail,password:'different-password123'});
+ assert.equal([p1,p2].filter(x=>x.status===200).length,1,'exactly one password committed');
+ assert.notEqual((await native('/v2/account/authenticate/email?create=false',{email:resetEmail,password:'replay-password123'})).status,200);
+ await q('DELETE FROM account_identity_rates');
+ const concurrentOne=await resetMail(resetEmail),concurrentTwo=await resetMail(resetEmail);
+ const linkRace=await Promise.all([post('/password-reset/complete',{token:concurrentOne,password:'second-race-password-a'}),post('/password-reset/complete',{token:concurrentTwo,password:'second-race-password-b'})]);
+ assert.equal(linkRace.filter(x=>x.success).length,1,'two different links can produce only one password change');
+ const expiredReset=await resetMail(resetEmail);await q("UPDATE account_identity_challenges SET expires_at=NOW()-INTERVAL '1 second' WHERE token_hash=$1",[hash(expiredReset)]);
+ assert.equal((await post('/password-reset/complete',{token:expiredReset,password:'expired-password123'})).success,false);
+ await q('DELETE FROM account_identity_verifications WHERE user_id=$1',[resetUser]);
+ await q("UPDATE account_identity_challenges SET created_at=NOW()-INTERVAL '61 seconds' WHERE email=$1",[resetEmail]);
+ const beforeUnknown=mails.length;const unknown=await post('/password-reset/request',{email:'missing'+unique+'@example.com'}),unverified=await post('/password-reset/request',{email:resetEmail});await app.tick();
+ assert.equal(unknown.message,unverified.message);assert.equal(mails.length,beforeUnknown,'unverified and unknown email receive no reset link');
+
  const expiryEmail='expiry'+unique+'@example.com',old=await requestMail(expiryEmail);
  await q('UPDATE account_identity_challenges SET expires_at=NOW()-INTERVAL \'1 second\' WHERE token_hash=$1',[hash(old.token)]);
  assert.equal((await post('/link/status',{token:old.token,purpose:'register_email'})).status,410);
@@ -105,10 +140,14 @@ test('C232 on real Nakama 3.24.2 / PostgreSQL: registration races, scanners, leg
  const plan=randomUUID();
  await q("INSERT INTO server_operation_plans(id,server_id,action,generation,revision,actor_id,reason,manifest,manifest_hash) VALUES($1,'first','reset',1,1,$2,'fixture',$3,'fixture-hash')",[plan,peer,JSON.stringify({storage:[{user_id:user,key:'first:g1:main',value:{private:true}}],characters:[],weekly_scores:[],weekly_awards:[]})]);
  const deletion=await requestMail(email,'delete_account',login.token);
+ const beforeDeleteReset=newToken();
+ await q("INSERT INTO account_identity_challenges(id,token_hash,purpose,email,user_id,expires_at) VALUES($1,$2,'reset_password',$3,$4,NOW()+INTERVAL '15 minutes')",[randomUUID(),hash(beforeDeleteReset),email,user]);
  await q("INSERT INTO storage(collection,key,user_id,value,version,read,write) VALUES('compliance_activation','profile',$1,$2,'test',0,0)",[user,JSON.stringify({is_phone_verified:true,phone:'0900000001',phone_owner:'guardian',full_name:'Fixture',birth_date:'2015-01-01'})]);
  assert.equal((await post('/action/complete',{token:deletion.token,purpose:'delete_account',password:winningPassword,confirmation:''})).success,false);
  const accepted=await post('/action/complete',{token:deletion.token,purpose:'delete_account',password:winningPassword,confirmation:'XOA'});assert.equal(accepted.success,true);
  const acceptedState=await post('/deletion/status',{receipt:accepted.receipt});assert.equal(acceptedState.status,'soft_deleted');
+ assert.equal((await post('/password-reset/complete',{token:beforeDeleteReset,password:'should-not-reset123'})).success,false,'pending deletion blocks previously issued reset');
+ assert.equal((await post('/link/status',{token:beforeDeleteReset,purpose:'reset_password'})).status,410);
  const softNativeWrite=await native('/v2/storage',{objects:[{collection:'client_fixture',key:'main',value:'{}',permission_read:1,permission_write:1}]},login.token,'PUT');assert.notEqual(softNativeWrite.status,200,'native storage blocked already during soft-delete, before native account disable');
  const deadline=(await post('/deletion/status',{receipt:accepted.receipt})).restore_until;
  assert.ok(new Date(deadline)>new Date(Date.now()+13*86400000));
@@ -122,7 +161,14 @@ test('C232 on real Nakama 3.24.2 / PostgreSQL: registration races, scanners, leg
  assert.equal((await post('/action/complete',{token:restoreToken,purpose:'restore_account',password:'wrong-password123'})).success,false);
  const simultaneousRestore=await Promise.all([1,2].map(()=>post('/action/complete',{token:restoreToken,purpose:'restore_account',password:winningPassword})));
  assert.equal(simultaneousRestore.filter(r=>r.success).length,1,'concurrent recovery consumes proof exactly once');
- const restoredState=await post('/deletion/status',{receipt:accepted.receipt});assert.equal(restoredState.status,'cancelled');
+ const pendingState=await post('/deletion/status',{receipt:accepted.receipt});assert.equal(pendingState.status,'soft_deleted');assert.equal(pendingState.restoration_status,'pending');
+ const pendingLogin=await native('/v2/account/authenticate/email?create=false',{email,password:winningPassword});
+ if(pendingLogin.token){const blockedPending=await native('/v2/rpc/account_identity_status','{}',pendingLogin.token);assert.ok(blockedPending.status!==200||JSON.parse(blockedPending.payload).success===false,'pending review blocks account access');}
+ const request=(await q("SELECT id FROM account_restoration_requests WHERE user_id=$1 AND status='pending'",[user])).rows[0].id;
+ const cli=fileURLToPath(new URL('../src/restore-operator.js',import.meta.url));
+ execFileSync(process.execPath,[cli,'--action=approve','--request='+request,'--confirm='+request,'--operator=test-admin','--case=CASE-1234'],{env});
+ const restoredState=await post('/deletion/status',{receipt:accepted.receipt});assert.equal(restoredState.status,'cancelled');assert.equal(restoredState.restoration_status,'approved');
+ assert.throws(()=>execFileSync(process.execPath,[cli,'--action=approve','--request='+request,'--confirm='+request,'--operator=test-admin','--case=CASE-1234'],{env,stdio:'pipe'}),'repeat approval rejected');
  assert.equal((await post('/action/complete',{token:restoreToken,purpose:'restore_account',password:winningPassword})).success,false,'single use recovery');
  const restoredLogin=await native('/v2/account/authenticate/email?create=false',{email,password:winningPassword});
  await q('DELETE FROM account_identity_rates'); // Test fixture crosses the real 5 mails/hour quota.
@@ -227,8 +273,21 @@ test('C232 on real Nakama 3.24.2 / PostgreSQL: registration races, scanners, leg
  const personalRetry=await native('/v2/rpc/compliance_access',JSON.stringify({action:'verify',otp:'12345'}),duplicate.token);assert.equal(JSON.parse(personalRetry.payload).allowed,true,'personal phone becomes reusable on archive');
  const requestKey=newToken();await q('UPDATE users SET google_id=$2 WHERE id=$1',[peer,'wrong-'+unique]);assert.equal((await post('/deletion/google',{id_token:'test-proof',confirmation:'XOA',request_key:requestKey},otherAccount.token)).success,false);
  await q('UPDATE users SET google_id=$2 WHERE id=$1',[peer,'test-google-'+unique]);const googleDelete=await post('/deletion/google',{id_token:'test-proof',confirmation:'XOA',request_key:requestKey},otherAccount.token);assert.equal(googleDelete.success,true);
- assert.equal((await post('/restoration/google',{id_token:'test-proof'})).success,true);
- const legacyJob=randomUUID();await q('INSERT INTO account_identity_deletions(id,user_id,receipt_hash) VALUES($1,$2,$3)',[legacyJob,peer,hash(newToken())]);await app.tick();assert.equal((await q('SELECT status FROM account_identity_deletions WHERE id=$1',[legacyJob])).rows[0].status,'manual_review');
+ assert.equal((await post('/restoration/google',{id_token:'test-proof'})).status,'pending_review');
+ assert.equal((await q("SELECT status FROM account_link_state WHERE user_id=$1",[peer])).rows[0].status,'deleting');
+ assert.equal((await q("SELECT count(*)::int n FROM account_restoration_requests WHERE user_id=$1 AND status='pending'",[peer])).rows[0].n,1);
+ const googleRequest=(await q("SELECT id FROM account_restoration_requests WHERE user_id=$1 AND status='pending'",[peer])).rows[0].id;
+ execFileSync(process.execPath,[cli,'--action=reject','--request='+googleRequest,'--confirm='+googleRequest,'--operator=test-admin','--case=CASE-1234'],{env});
+ assert.equal((await q("SELECT status FROM account_link_state WHERE user_id=$1",[peer])).rows[0].status,'deleting');
+ assert.equal((await post('/restoration/google',{id_token:'test-proof'})).status,'pending_review');
+ const retryRequest=(await q("SELECT id FROM account_restoration_requests WHERE user_id=$1 AND status='pending'",[peer])).rows[0].id;
+ await q("UPDATE account_identity_deletions SET restore_until=NOW()-INTERVAL '1 second' WHERE user_id=$1 AND status='soft_deleted'",[peer]);
+ assert.throws(()=>execFileSync(process.execPath,[cli,'--action=approve','--request='+retryRequest,'--confirm='+retryRequest,'--operator=test-admin','--case=CASE-1234'],{env,stdio:'pipe'}),'expired requests cannot be approved');
+ await q("UPDATE account_identity_deletions SET restore_until=NOW()+INTERVAL '1 day' WHERE user_id=$1 AND status='soft_deleted'",[peer]);
+ execFileSync(process.execPath,[cli,'--action=approve','--request='+retryRequest,'--confirm='+retryRequest,'--operator=test-admin','--case=CASE-1234'],{env});
+ const legacyJob=randomUUID();await q('INSERT INTO account_identity_deletions(id,user_id,receipt_hash) VALUES($1,$2,$3)',[legacyJob,peer,hash(newToken())]);
+ let legacyStatus;for(let attempt=0;attempt<30;attempt++){await app.tick();legacyStatus=(await q('SELECT status FROM account_identity_deletions WHERE id=$1',[legacyJob])).rows[0].status;if(legacyStatus==='manual_review')break;await new Promise(resolve=>setTimeout(resolve,100));}
+ assert.equal(legacyStatus,'manual_review');
  if(process.env.C232_EVIDENCE==='true'){
   const dir=new URL('../../../../client/docs/standards/g2-registration/evidence/retention/B6/phase-v3/ARCH-03/',import.meta.url);await mkdir(dir,{recursive:true});
   const counts=(await q('SELECT (SELECT count(*) FROM users WHERE id=$1) AS minimal_users,(SELECT count(*) FROM storage WHERE user_id=$1) AS old_storage,(SELECT count(*) FROM monetization_purchases WHERE user_id=$2) AS preserved_transactions',[user,user])).rows[0];
