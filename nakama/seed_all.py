@@ -12,6 +12,7 @@ import urllib.request
 from pathlib import Path
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+DEFAULT_TIMEOUT = 180
 _pending_requests = None
 
 
@@ -43,14 +44,15 @@ def invoke_rpc(name, payload, bearer=None):
         raise SeedError("Seed bundle exceeds configured 8 MiB request limit; no request sent")
     request = urllib.request.Request(url, data=encoded, headers=headers)
     try:
-        with urllib.request.urlopen(request, timeout=float(os.environ.get("NAKAMA_SEED_TIMEOUT", "60"))) as response:
+        with urllib.request.urlopen(request, timeout=float(os.environ.get("NAKAMA_SEED_TIMEOUT", str(DEFAULT_TIMEOUT)))) as response:
             wire = json.loads(response.read().decode("utf-8"))
         result = json.loads(wire["payload"])
     except urllib.error.HTTPError as error:
         raise SeedError(f"{name}: HTTP {error.code}; no partial-seed fallback") from error
     except (urllib.error.URLError, ValueError, KeyError, TypeError, OSError) as error:
         # URLs and exception text may expose credentials.
-        raise SeedError(f"{name}: transport/response failure ({type(error).__name__})") from error
+        detail = "; commit status unknown; check Nakama socket.write_timeout_ms and DB readback before retry" if name == "seed_game_data" else ""
+        raise SeedError(f"{name}: transport/response failure ({type(error).__name__}){detail}") from error
     if not isinstance(result, dict) or result.get("error") or result.get("success") is False or result.get("status") in ("error", "force_update"):
         code = result.get("code", "unknown") if isinstance(result, dict) else "invalid-response"
         message = str(result.get("message") or result.get("error") or result.get("success") is False or result.get("status") or "Rejected") if isinstance(result, dict) else "Invalid response"
@@ -72,7 +74,7 @@ def admin_login(email, password):
     request = urllib.request.Request(url, data=json.dumps({"email": email, "password": password}).encode("utf-8"),
                                      headers={"Content-Type": "application/json", "Authorization": "Basic " + basic})
     try:
-        with urllib.request.urlopen(request, timeout=float(os.environ.get("NAKAMA_SEED_TIMEOUT", "60"))) as response:
+        with urllib.request.urlopen(request, timeout=float(os.environ.get("NAKAMA_SEED_TIMEOUT", str(DEFAULT_TIMEOUT)))) as response:
             session = json.loads(response.read().decode("utf-8"))
     except urllib.error.HTTPError as error:
         raise SeedError(f"Admin login: HTTP {error.code}") from error

@@ -8,8 +8,9 @@ console:
   port: 7351
 
 socket:
-  # Full catalog seed is one atomic RPC (~1.7 MB encoded today).
+  # Full catalog seed is one multi-MiB atomic RPC; SQL/readback can exceed 10s.
   max_request_size_bytes: 8388608
+  write_timeout_ms: 120000
 
 runtime:
   js_entrypoint: "build/index.js"

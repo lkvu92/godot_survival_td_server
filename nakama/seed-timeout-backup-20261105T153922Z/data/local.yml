@@ -1,0 +1,29 @@
+name: survival_td
+data_dir: "/nakama/data"
+
+logger:
+  level: "INFO"
+
+console:
+  port: 7351
+
+socket:
+  # Full catalog seed is one atomic RPC (~1.7 MB encoded today).
+  max_request_size_bytes: 8388608
+
+runtime:
+  js_entrypoint: "build/index.js"
+
+# Socket, console, session and runtime credentials/env are supplied by the
+# ignored runtime.secret.yml generated from .env. Never put secrets here.
+
+session:
+  token_expiry_sec: 7200 # 2 giờ
+  refresh_token_expiry_sec: 2592000 # 30 ngày
+
+# Production/staging must inject these values from a secret manager. Never
+# commit the service-account private key to this repository.
+# iap:
+#   google:
+#     client_email: "nakama-iap-validator@PROJECT.iam.gserviceaccount.com"
+#     private_key: "-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
