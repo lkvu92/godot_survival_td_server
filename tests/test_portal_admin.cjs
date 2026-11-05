@@ -1,0 +1,14 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const context=require('../tools/enemy_catalog_db.cjs').runtime();
+vm.runInContext(fs.readFileSync(path.resolve(__dirname,'../nakama/data/modules/build/portal_admin_rpc.js'),'utf8'),context);
+const admin={userId:'test-admin',env:{CONFIG_ADMIN_USER_ID:'test-admin'}},logger={error(){}};
+const request=(action,body,nk,identity=admin)=>JSON.parse(context.portalAdminRead(identity,logger,nk,JSON.stringify(body),action));
+for(const action of ['users_list','user_get','catalog_get','orders_list','order_get','ads_list','reconciliation'])assert.equal(request(action,{}, {sqlQuery(){throw Error('SQL must not run before authorization');}},{userId:'other',env:admin.env}).code,403);
+for(const body of [{sort_by:'username;DROP TABLE users'},{limit:10001},{status:'unknown'},{search:'x'.repeat(161)},{page:-1}])assert.equal(request('users_list',body,{sqlQuery(){throw Error('SQL must not run for invalid filters');}}).code,400);
+assert.equal(request('user_get',{id:'not-a-uuid'},{sqlQuery(){throw Error('SQL must not run for invalid UUID');}}).code,400);
+const calls=[];const nk={sqlQuery(sql,args=[]){calls.push({sql,args});if(sql.includes('total_orders'))return [{total_orders:1,fulfilled_orders:0,pending_orders:0}];if(sql.includes('GROUP BY f.currency'))return [{currency:'USD',total_amount:'9007199254740993.123456789',refunded_amount:'0'}];return [{id:'order-1',user_id:'u',product_id:'p',status:'superseded',platform:'android',created_at:'2026-11-06T00:00:00Z',reward_snapshot:[],original_amount:null,currency:null}];}};
+const value=request('orders_list',{search:"x' OR TRUE --",limit:1},nk);assert.equal(value.success,true);assert.equal(value.data.orders[0].status,'superseded');assert.equal(value.data.orders[0].amount,'');assert.equal(value.data.stats.revenue_by_currency[0].total_amount,'9007199254740993.123456789');assert(calls.every(c=>!c.sql.includes("x' OR TRUE --")));assert(calls.every(c=>c.args.some(a=>String(a).includes("x' OR TRUE --"))));
+const policy={schema_version:1,revision:1,lookback_days:30,pending_grace_seconds:60,delivery_grace_seconds:60};assert.equal(context.portalReportSql(policy),require('../tools/payment_reconciliation.cjs').reportSql(policy));assert.throws(()=>context.portalValidatePolicy({...policy,lookback_days:999}));
+assert.equal(request('reconciliation',{}, {sqlQuery(){return [];}}).code,503);
+assert.equal(request('order_get',{order_id:'missing'}, {sqlQuery(){return [];}}).code,404);
+console.log('PASS C270: admin guards, bounded filters, parameterization, raw ledger states, exact currency, missing data and C244 parity');

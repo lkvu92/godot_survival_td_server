@@ -397,3 +397,5 @@ C252 1.1.0: job-local admission validation cache and batched stage-wave transpor
 
 - [C257 Daily Pack Mail](contracts/C257_DAILY_PACK_MAIL.md) ? mail delivery/claim regression and full server static suite PASS (0.2.1).
 - C232 v3.4.2: WEB_CLIENT_URL preserves the public web base path (/ttl) independently from the identity API origin.
+
+- [C270 Workers admin data](contracts/C270_WORKERS_ADMIN_DATA.md): database-backed portal reads and Workers compatibility; implementation and production validation pending.

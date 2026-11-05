@@ -119,6 +119,9 @@ function createGameConfigTables(nk: nkruntime.Nakama, logger: nkruntime.Logger) 
         )
     `, []);
 
+    // C270: existing admin item RPCs require this additive catalog flag.
+    nk.sqlExec("ALTER TABLE game_items ADD COLUMN IF NOT EXISTS active BOOLEAN NOT NULL DEFAULT TRUE", []);
+
     // ── skills (47KB — lưu levels dạng JSONB blob per skill) ──
     nk.sqlExec(`
         CREATE TABLE IF NOT EXISTS game_skills (

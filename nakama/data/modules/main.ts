@@ -641,6 +641,13 @@ function InitModule(
     initializer.registerRpc("admin_enemy_release_get", rpc_admin_enemy_release_get);
     initializer.registerRpc("admin_enemy_audit_list", rpc_admin_enemy_audit_list);
     initializer.registerRpc("admin_enemy_audit_get", rpc_admin_enemy_audit_get);
+    initializer.registerRpc("admin_portal_user_get", rpcPortalUserGet);
+    initializer.registerRpc("admin_portal_users_list", rpcPortalUsersList);
+    initializer.registerRpc("admin_portal_catalog_get", rpcPortalCatalogGet);
+    initializer.registerRpc("admin_order_list", rpcPortalOrderList);
+    initializer.registerRpc("admin_order_get", rpcPortalOrderGet);
+    initializer.registerRpc("admin_ad_reward_list", rpcPortalAdList);
+    initializer.registerRpc("admin_reconciliation_report", rpcPortalReconciliation);
     initializer.registerRpc('admin_item_list', rpcAdminItemList);
     initializer.registerRpc('admin_item_get', rpcAdminItemGet);
     initializer.registerRpc('admin_item_update', rpcAdminItemUpdate);
