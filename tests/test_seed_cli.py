@@ -3,6 +3,8 @@ import importlib.util
 import io
 import json
 import os
+import re
+from http.client import RemoteDisconnected
 from pathlib import Path
 import unittest
 from unittest.mock import patch
@@ -13,6 +15,21 @@ spec.loader.exec_module(cli)
 
 
 class SeedCliTests(unittest.TestCase):
+    def test_client_budget_exceeds_server_write_deadline(self):
+        config = (Path(__file__).resolve().parents[1] / "nakama/data/local.yml").read_text(encoding="utf-8")
+        deadline = int(re.search(r"write_timeout_ms:\s*(\d+)", config).group(1)) / 1000
+        self.assertGreaterEqual(deadline, 120)
+        self.assertGreaterEqual(cli.DEFAULT_TIMEOUT, deadline + 30)
+
+    def test_disconnect_reports_uncertain_commit_without_exposing_secrets(self):
+        with patch.object(cli.urllib.request, "urlopen", side_effect=RemoteDisconnected("private-key-in-exception")) as http:
+            with self.assertRaises(cli.SeedError) as failure:
+                cli.invoke_rpc("seed_game_data", {"table": "bundle", "requests": []})
+        self.assertIn("commit status unknown", str(failure.exception))
+        self.assertIn("socket.write_timeout_ms", str(failure.exception))
+        self.assertNotIn("private-key-in-exception", str(failure.exception))
+        self.assertEqual(http.call_count, 1)
+
     def run_main(self, args):
         with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
             return cli.main(args)

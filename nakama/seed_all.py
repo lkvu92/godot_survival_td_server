@@ -13,6 +13,7 @@ from pathlib import Path
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 DEFAULT_TIMEOUT = 180
+DEFAULT_TIMEOUT = 180
 _pending_requests = None
 
 
