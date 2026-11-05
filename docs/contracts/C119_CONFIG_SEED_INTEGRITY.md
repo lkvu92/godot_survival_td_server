@@ -1,6 +1,6 @@
 # C119 Config and seed integrity
 
-Version: 1.1.0
+Version: 1.1.1
 Status: ACTIVE
 Updated: 2026-10-23
 
@@ -57,10 +57,15 @@ is claimed. No production database was seeded or flags enabled.
 
 | Version | Date | Change |
 |---|---|---|
+| 1.1.1 | 2026-11-05 | HTTP write timeout 120s and seed client timeout 180s for atomic full-catalog requests; uncertain commit diagnostics, no automatic retry. |
 | 1.1.0 | 2026-10-23 | Persistent VPS publisher credential, required sweep validation, active release checks and actionable CLI errors. |
 | 1.0.0 | 2026-10-16 | Preserve config fields, atomic validated seeding, explicit remote settings and reliable CLI. |
 
 ## VPS publication (1.1.0)
+
+### Atomic seed response budget (1.1.1)
+
+The public Nakama socket config sets `write_timeout_ms: 120000`; the seed CLI defaults to 180 seconds, overridable by NAKAMA_SEED_TIMEOUT. A full atomic seed may commit after the previous default 10s HTTP response deadline, leaving the caller with RemoteDisconnected. Transport failure does not prove rollback: diagnose DB/readback before retry; CLI never automatically retries or publishes after a failed seed response. Restart Nakama to load socket changes. No RPC, SQL transaction or publication authorization changes.
 
 configure_runtime.py creates a persistent 256-bit publish credential in
 nakama/<output>.publish-token (0600), injects CONFIG_PUBLISH_TOKEN into the
