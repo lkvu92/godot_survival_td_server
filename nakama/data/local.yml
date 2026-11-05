@@ -9,6 +9,7 @@ console:
 
 socket:
   # Full catalog seed is one multi-MiB atomic RPC; SQL/readback can exceed 10s.
+  # Full catalog seed is one multi-MiB atomic RPC; SQL/readback can exceed 10s.
   max_request_size_bytes: 8388608
   write_timeout_ms: 120000
 
