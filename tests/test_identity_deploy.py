@@ -34,9 +34,9 @@ class IdentityConfigurationTests(unittest.TestCase):
 
     def test_web_client_origin_is_separate_and_must_be_safe(self):
         services = self.fixture()
-        services['account-identity']['environment']['WEB_CLIENT_URL'] = 'https://lkvustudio.com/'
+        services['account-identity']['environment']['WEB_CLIENT_URL'] = 'https://lkvustudio.com/ttl'
         self.assertTrue(runtime.validate_identity(services))
-        for value in ['http://lkvustudio.com', 'https://lkvustudio.com/account', 'https://user:pass@lkvustudio.com', 'https://lkvustudio.com/?token=secret']:
+        for value in ['http://lkvustudio.com', 'https://lkvustudio.com/bad%20path', 'https://user:pass@lkvustudio.com', 'https://lkvustudio.com/?token=secret']:
             services['account-identity']['environment']['WEB_CLIENT_URL'] = value
             with self.assertRaises(runtime.ConfigError):
                 runtime.validate_identity(services)

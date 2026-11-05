@@ -41,7 +41,12 @@ export function validateWebClientURL(env) {
   const value=env.WEB_CLIENT_URL||env.ACCOUNT_IDENTITY_PUBLIC_URL;
   if(typeof value!=='string'||/[\r\n]/.test(value))throw new Error('Invalid WEB_CLIENT_URL');
   const url=new URL(value);
-  if(url.username||url.password||url.search||url.hash||url.pathname!=='/')throw new Error('Invalid WEB_CLIENT_URL');
+  if(url.username||url.password||url.search||url.hash||!/^\/(?:[A-Za-z0-9_-]+\/?)*$/.test(url.pathname))throw new Error('Invalid WEB_CLIENT_URL');
   if(url.protocol!=='https:'&&!(env.APP_ENVIRONMENT==='develop'&&url.protocol==='http:'))throw new Error('WEB_CLIENT_URL requires HTTPS outside develop');
   return url;
+}
+
+export function webClientLink(base, path) {
+  const directory=new URL(base);directory.pathname=directory.pathname.replace(/\/$/,'')+'/';
+  return new URL(path.replace(/^\/+/,'') ,directory);
 }

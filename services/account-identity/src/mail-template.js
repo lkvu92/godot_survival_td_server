@@ -1,3 +1,4 @@
+import {webClientLink} from './security.js';
 // C232 v1.1: no external assets, tracking or user-supplied markup in transactional mail.
 export const mailPalette = Object.freeze({
   background: '#EDF3EF', header: '#103D34', headerText: '#FAF8F0', gold: '#D9BD79',
@@ -56,7 +57,7 @@ export function renderAccountMail({purpose, actionUrl, publicOrigin, expiresAt, 
   if (!copy) throw Error('Unsupported mail purpose');
   const url = new URL(actionUrl), origin = new URL(publicOrigin);
   const fragment = new URLSearchParams(url.hash.slice(1));
-  if (url.origin !== origin.origin || url.pathname !== '/account/confirm' || url.search || url.username || url.password ||
+  if (url.origin !== origin.origin || url.pathname !== webClientLink(origin,'/account/confirm').pathname || url.search || url.username || url.password ||
       (url.protocol !== 'https:' && !(allowLocalHttp && url.protocol === 'http:')) ||
       fragment.get('purpose') !== purpose || !fragment.get('token') || [...fragment.keys()].some(k => !['purpose','token'].includes(k))) {
     throw Error('Invalid mail action URL');
@@ -65,14 +66,14 @@ export function renderAccountMail({purpose, actionUrl, publicOrigin, expiresAt, 
   if (!Number.isFinite(expiry.getTime())) throw Error('Invalid mail expiry');
   const until = new Intl.DateTimeFormat('vi-VN', {timeZone:'Asia/Ho_Chi_Minh', year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', hourCycle:'h23'}).format(expiry) + ' (GMT+7)';
   const p = mailPalette, href = escape(url.href), deletion = purpose === 'delete_account';
-  const privacy = escape(new URL('/account/privacy-policy/', origin).href);
+  const privacy = escape(webClientLink(origin,'/account/privacy-policy/').href);
   const text = [
     'THÔNG THIÊN LỘ', copy.title, '', copy.intro, copy.detail, '',
     copy.action + ':', url.href, '', 'Hiệu lực đến: ' + until + '. Liên kết dùng một lần, tối đa 15 phút kể từ lúc yêu cầu.',
     '', copy.note, deletion ? 'Mở liên kết trong email chưa tự động xóa tài khoản.' : '', '',
     'Nếu bạn không yêu cầu, hãy bỏ qua thư này. Không chia sẻ liên kết xác nhận.',
     'Chúng tôi không yêu cầu bạn gửi mật khẩu qua email.', '',
-    'Hỗ trợ: admin@lkvustudio.com', 'Chính sách quyền riêng tư: ' + new URL('/account/privacy-policy/', origin).href
+    'Hỗ trợ: admin@lkvustudio.com', 'Chính sách quyền riêng tư: ' + webClientLink(origin,'/account/privacy-policy/').href
   ].filter(line => line !== undefined).join('\n');
   const html = `<!doctype html>
 <html lang="vi" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office"><head>

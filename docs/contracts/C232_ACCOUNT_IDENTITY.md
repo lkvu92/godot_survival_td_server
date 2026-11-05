@@ -1,10 +1,10 @@
 # C232 — Verified email registration and account deletion
 
-Version: 3.4.1 · Status: IN_PROGRESS · Updated: 2026-11-05
+Version: 3.4.2 · Status: IN_PROGRESS · Updated: 2026-11-06
 
-### Changelog 3.4.1 — configurable web client origin
+### Changelog 3.4.2 — web client base URL with /ttl
 
-Optional `WEB_CLIENT_URL` is the HTTPS origin for confirmation, receipt, restoration and policy links. Configure develop as `https://survival-td-web.truyen24h.workers.dev` and production as `https://lkvustudio.com`. It is distinct from `ACCOUNT_IDENTITY_PUBLIC_URL`, which remains the API origin and Origin-check authority. Mail action origin validation uses the validated web origin. When WEB_CLIENT_URL differs from API origin, known public confirmation/document GET/HEAD routes redirect there without setting a fragment; all POST/token/session rules remain unchanged. Without the variable, legacy API-host pages/links remain compatible. Configured values reject credentials, paths, query, fragments and insecure production HTTP. No schema/RPC changes or user mutation.
+Optional `WEB_CLIENT_URL` is the HTTPS base URL for confirmation, receipt, restoration and policy links. Configure develop as `https://survival-td-web.truyen24h.workers.dev` and production as `https://lkvustudio.com/ttl`. It is distinct from `ACCOUNT_IDENTITY_PUBLIC_URL`, which remains the API origin and Origin-check authority. Mail action origin validation uses the validated web origin. When WEB_CLIENT_URL differs from API origin, known public confirmation/document GET/HEAD routes redirect there without setting a fragment; all POST/token/session rules remain unchanged. Without the variable, legacy API-host pages/links remain compatible. Configured values reject credentials, unsafe paths, query, fragments and insecure production HTTP. No schema/RPC changes or user mutation.
 
 ### Changelog 3.4.0 — giữ dữ liệu gameplay sau archive (2026-11-04)
 

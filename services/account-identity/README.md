@@ -4,7 +4,7 @@ Implements verified email registration, restricted legacy verification, Google r
 
 ## Public web origin
 
-Set `WEB_CLIENT_URL=https://survival-td-web.truyen24h.workers.dev` in develop (`nakama/.env.local`) and `WEB_CLIENT_URL=https://lkvustudio.com` in production (`nakama/.env`). Confirmation, reset, receipt, restore and privacy links use this origin. `ACCOUNT_IDENTITY_PUBLIC_URL` remains the identity API origin; do not replace it with the web origin. Known legacy page GET/HEAD routes redirect to WEB_CLIENT_URL while POST/token validation stays here. The proxy must continue denying `/account/internal/`. Without WEB_CLIENT_URL, old API-host links/static pages remain supported. Recreate the identity container after changing its env; no Nakama/database restart is needed for this variable. Only activate a new origin after its account routes are live.
+Set `WEB_CLIENT_URL=https://survival-td-web.truyen24h.workers.dev` in develop (`nakama/.env.local`) and `WEB_CLIENT_URL=https://lkvustudio.com/ttl` in production (`nakama/.env`). Confirmation, reset, receipt, restore and privacy links use this origin. `ACCOUNT_IDENTITY_PUBLIC_URL` remains the identity API origin; do not replace it with the web origin. Known legacy page GET/HEAD routes redirect to WEB_CLIENT_URL while POST/token validation stays here. The proxy must continue denying `/account/internal/`. Without WEB_CLIENT_URL, old API-host links/static pages remain supported. Recreate the identity container after changing its env; no Nakama/database restart is needed for this variable. Only activate a new origin after its account routes are live.
 
 ## Gmail settings
 

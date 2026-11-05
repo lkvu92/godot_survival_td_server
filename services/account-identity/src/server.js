@@ -10,7 +10,7 @@ import pg from 'pg';
 import {createSmtpTransport} from './smtp.js';
 import {renderAccountMail} from './mail-template.js';
 import {OAuth2Client} from 'google-auth-library';
-import {hash,newToken,normalizeEmail,seal,unseal,validateConfig,validateWebClientURL,googleEmailAuthority} from './security.js';
+import {hash,newToken,normalizeEmail,seal,unseal,validateConfig,validateWebClientURL,webClientLink,googleEmailAuthority} from './security.js';
 
 const GENERIC='Nếu địa chỉ hợp lệ và đủ điều kiện, thư xác nhận sẽ được gửi. Kiểm tra hộp thư/spam; bạn có thể thử lại sau 60 giây.';
 const fail=(code,status=400)=>Object.assign(new Error(code),{status});
@@ -175,10 +175,10 @@ export async function createService(env=process.env,overrides={}) {
        const state=await pool.query('SELECT status FROM account_identity_deletions WHERE id=$1',[notice.deletion_id]);
        const archivedNotice=data.event==='archived';
        if(!state.rows.length||(archivedNotice?!['archived','gameplay_purged','gameplay_review'].includes(state.rows[0].status):state.rows[0].status!=='soft_deleted'||new Date(data.restore_until)<=new Date())){await pool.query("UPDATE account_deletion_notices SET payload='',status='discarded' WHERE deletion_id=$1",[notice.deletion_id]);continue;}
-       const url=new URL('/account/confirm',webClientURL);url.hash=new URLSearchParams({receipt:data.receipt}).toString();
+       const url=webClientLink(webClientURL,'/account/confirm');url.hash=new URLSearchParams({receipt:data.receipt}).toString();
        const until=archivedNotice?'':new Date(data.restore_until).toLocaleString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'});
        await transport.sendMail({from:{name:'Thông Thiên Lộ',address:env.SMTP_FROM},to:data.email,subject:archivedNotice?'Thông Thiên Lộ — Tài khoản đã được lưu trữ':'Thông Thiên Lộ — Đã tiếp nhận yêu cầu xóa',
-         text:archivedNotice?'Tài khoản của đạo hữu đã được lưu trữ và không thể khôi phục. Email và số điện thoại đã được giải phóng. Dữ liệu trò chơi được giữ lại. Biên nhận: '+url.href:'Đạo hữu đã xác nhận yêu cầu xóa. Tài khoản tạm ngừng hoạt động. Hạn khôi phục: '+until+' (GMT+7). Email và số điện thoại tiếp tục được giữ chỗ trong thời gian chờ. Hết hạn sẽ không thể khôi phục. Khi hoàn tất lưu trữ, thông tin đăng ký được giải phóng; dữ liệu trò chơi được giữ lại. Xóa không tự hủy đăng ký hoặc hoàn tiền Google Play. Biên nhận: '+url.href+' . Để khôi phục bằng email và mật khẩu: '+new URL('/account/confirm#restore=1',webClientURL).href});
+         text:archivedNotice?'Tài khoản của đạo hữu đã được lưu trữ và không thể khôi phục. Email và số điện thoại đã được giải phóng. Dữ liệu trò chơi được giữ lại. Biên nhận: '+url.href:'Đạo hữu đã xác nhận yêu cầu xóa. Tài khoản tạm ngừng hoạt động. Hạn khôi phục: '+until+' (GMT+7). Email và số điện thoại tiếp tục được giữ chỗ trong thời gian chờ. Hết hạn sẽ không thể khôi phục. Khi hoàn tất lưu trữ, thông tin đăng ký được giải phóng; dữ liệu trò chơi được giữ lại. Xóa không tự hủy đăng ký hoặc hoàn tiền Google Play. Biên nhận: '+url.href+' . Để khôi phục bằng email và mật khẩu: '+webClientLink(webClientURL,'/account/confirm#restore=1').href});
        await pool.query("UPDATE account_deletion_notices SET payload='',status='sent',lease_until=NULL WHERE deletion_id=$1 AND payload=$2",[notice.deletion_id,notice.payload]);
      }catch{await pool.query("UPDATE account_deletion_notices SET next_attempt_at=NOW()+INTERVAL '60 seconds',lease_until=NULL WHERE deletion_id=$1 AND payload=$2",[notice.deletion_id,notice.payload]);}
      const {rows}=await pool.query(`UPDATE account_identity_outbox SET lease_until=NOW()+INTERVAL '90 seconds',attempts=attempts+1
@@ -189,8 +189,8 @@ export async function createService(env=process.env,overrides={}) {
        if(!c||c.consumed_at||new Date(c.expires_at)<=new Date()) {await pool.query("UPDATE account_identity_outbox SET payload='',status='discarded' WHERE challenge_id=$1",[mail.challenge_id]);continue;}
        try{
          const data=unseal(mail.payload,env.ACCOUNT_IDENTITY_OUTBOX_KEY);
-         const url=new URL('/account/confirm',webClientURL);url.hash=new URLSearchParams({token:data.token,purpose:data.purpose}).toString();
-         const content=renderAccountMail({purpose:data.purpose,actionUrl:url.href,publicOrigin:webClientURL.origin,expiresAt:c.expires_at,allowLocalHttp:env.APP_ENVIRONMENT==='develop'});
+         const url=webClientLink(webClientURL,'/account/confirm');url.hash=new URLSearchParams({token:data.token,purpose:data.purpose}).toString();
+         const content=renderAccountMail({purpose:data.purpose,actionUrl:url.href,publicOrigin:webClientURL.href,expiresAt:c.expires_at,allowLocalHttp:env.APP_ENVIRONMENT==='develop'});
          await transport.sendMail({from:{name:'Thông Thiên Lộ',address:env.SMTP_FROM},to:data.email,replyTo:env.SMTP_REPLY_TO||'admin@lkvustudio.com',
            envelope:{from:env.SMTP_FROM,to:[data.email]},
            headers:{'Auto-Submitted':'auto-generated','X-Auto-Response-Suppress':'All'},
@@ -244,8 +244,8 @@ export async function createService(env=process.env,overrides={}) {
    res.setHeader('Content-Security-Policy',"default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'");
    const path=new URL(req.url,'http://internal').pathname;
    try{
-     if(['GET','HEAD'].includes(req.method)&&webClientURL.origin!==publicURL.origin&&['/account/confirm','/account/confirm/','/account/privacy-policy','/account/privacy-policy/','/account/privacy-policy/index.html','/account/delete-account','/account/delete-account/','/account/delete-account/index.html'].includes(path)){
-       const target=new URL(path+new URL(req.url,'http://internal').search,webClientURL);res.writeHead(302,{Location:target.href});return res.end();
+     if(['GET','HEAD'].includes(req.method)&&webClientURL.href!==publicURL.href&&['/account/confirm','/account/confirm/','/account/privacy-policy','/account/privacy-policy/','/account/privacy-policy/index.html','/account/delete-account','/account/delete-account/','/account/delete-account/index.html'].includes(path)){
+       const target=webClientLink(webClientURL,path+new URL(req.url,'http://internal').search);res.writeHead(302,{Location:target.href});return res.end();
      }
      if(req.method==='GET'&&path==='/healthz'){await pool.query('SELECT 1');return json(res,200,{success:true});}
      if(req.method==='GET'&&staticFiles[path]){const [file,type]=staticFiles[path];res.setHeader('Content-Type',type);return res.end(await readFile(new URL('../public/'+file,import.meta.url)));}
