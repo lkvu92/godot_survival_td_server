@@ -1,4 +1,4 @@
-const fs = require('fs'), path = require('path'), vm = require('vm'), assert = require('assert');
+const fs = require('fs'), path = require('path'), vm = require('vm'), assert = require('assert'), crypto = require('crypto');
 const root = path.join(__dirname, '..'), DAY = 86400000, STAMINA_STORAGE_MAX = 200;
 const packs = JSON.parse(fs.readFileSync(path.join(root, 'data/packs.json'), 'utf8')).packs_by_tab.daily;
 const items = JSON.parse(fs.readFileSync(path.join(root, 'data/items.json'), 'utf8'));
@@ -6,9 +6,12 @@ let now = 1800000123456, conflict = false;
 class ServerDate extends Date { static now() { return now; } }
 const ctx = vm.createContext({Date: ServerDate});
 vm.runInContext(fs.readFileSync(path.join(root, 'nakama/data/modules/build/resource_rpc.js'), 'utf8'), ctx);
-ctx.getRemoteConfigValue = (_nk, _section, _key, fallback) => fallback;
+ctx.getRemoteConfigValue = (_nk, _section, key, fallback) => key === 'mailbox' ? {warning_hours:24,retention_days:7} : fallback;
+ctx.characterContext = () => null;
 assert.equal(vm.runInContext('staminaStorageMax',ctx)({}),STAMINA_STORAGE_MAX,'Canonical storage default is 200; natural regeneration is separate');
 vm.runInContext(fs.readFileSync(path.join(root, 'nakama/data/modules/build/monetization_rpc.js'), 'utf8'), ctx);
+vm.runInContext(fs.readFileSync(path.join(root, 'nakama/data/modules/build/mailbox.js'), 'utf8'), ctx);
+const claimMail = vm.runInContext('mailClaimOne', ctx);
 const grant = vm.runInContext('applyPurchaseStorageRewards', ctx);
 const claim = vm.runInContext('claimDailyPack', ctx);
 const status = vm.runInContext('getDailyPackStatus', ctx);
@@ -16,15 +19,19 @@ const order = vm.runInContext('createPurchaseOrder', ctx);
 ctx.isRemoteFlagEnabled = () => true;
 const clone = x => JSON.parse(JSON.stringify(x));
 let db;
-function reset() { db = {player_profiles:{value:{resources:{gold:0,gems:0},stamina:30},version:'1'}, player_inventory:{value:{items:[]},version:'1'}}; }
+function reset() { db = {player_profiles:{value:{resources:{gold:0,gems:0},stamina:30},version:'1'}, player_inventory:{value:{items:[]},version:'1'}, player_heroes:{value:{heroes:[]},version:'1'}}; }
+const storageKey = r => ['player_mail','player_mail_deliveries'].includes(r.collection) ? r.collection+':'+r.key : r.collection;
 const nk = {
-  storageRead(reads) { return reads.filter(r => db[r.collection]).map(r => ({...clone(db[r.collection]),collection:r.collection,key:r.key})); },
+  storageRead(reads) { return reads.filter(r => db[storageKey(r)]).map(r => ({...clone(db[storageKey(r)]),collection:r.collection,key:r.key,userId:r.userId})); },
   storageWrite(writes) {
     if (conflict) throw Error('CAS conflict');
-    for (const w of writes) assert.equal(w.version, db[w.collection].version);
-    for (const w of writes) db[w.collection] = {value:clone(w.value),version:String(Number(w.version)+1)};
+    for (const w of writes) { const old=db[storageKey(w)]; if(w.version==='*')assert.equal(old,undefined,'Create-only mail/ledger CAS');else assert.equal(w.version,old?.version); }
+    const next=clone(db);for (const w of writes) next[storageKey(w)] = {value:clone(w.value),version:String(Number(db[storageKey(w)]?.version||0)+1)};
+    db=next;
   },
+  notificationSend() {},
   sqlQuery(sql, [id]) {
+    if(sql.includes('sha256'))return [{hash:crypto.createHash('sha256').update(id).digest('hex')}];
     if (sql.includes('game_store_platform_products')) return [];
     if (sql.includes('game_store_products')) return [{product_id:id,active:true}];
     const item = items.find(i => i.id === id); assert(item, 'Unknown test reward: '+id); return [item];
@@ -33,6 +40,23 @@ const nk = {
 const user = {userId:'buyer'};
 const invoke = (fn, payload={}) => JSON.parse(fn(user, {}, nk, JSON.stringify(payload)));
 const readStatus = id => invoke(status).data.packs[id];
+const quantity = id => db.player_inventory.value.items.filter(i=>i.item_id===id).reduce((n,i)=>n+i.quantity,0);
+const mails = () => Object.entries(db).filter(([key])=>key.startsWith('player_mail:')).map(([,row])=>row.value);
+const attachments = rewards => rewards.flatMap(r=>{
+  if(r.reward_type==='stamina'){const normal=Math.floor(r.quantity/15),low=Math.ceil((r.quantity%15)/5);return [...(normal?[{type:'item',id:'energy_elixir',amount:normal}]:[]),...(low?[{type:'item',id:'energy_elixir_low',amount:low}]:[])];}
+  return [{type:r.reward_type==='currency'?'resource':'item',id:r.reward_id,amount:r.quantity}];
+});
+function receiveMail(result,rewards) {
+  const id=result.data.mail_id,row=db['player_mail:'+id];assert(row,'Claim must return an existing mail');
+  assert.equal(row.value.source_type,'daily_pack');assert.equal(row.value.claimed_at_ms,null);
+  assert.deepEqual(row.value.attachments,attachments(rewards),'Mail preserves the purchased reward snapshot and bottle denominations');
+  assert(db['player_mail_deliveries:'+id],'Delivery ledger is committed with the entitlement');
+  const pending=clone(db);conflict=true;assert.equal(claimMail(nk,'buyer',id).code,'DATA_CHANGED');conflict=false;
+  assert.deepEqual(db,pending,'Failed mail claim cannot grant assets or mark mail claimed');
+  assert.equal(claimMail(nk,'buyer',id).success,true);
+  const after=clone(db);assert.equal(claimMail(nk,'buyer',id).already_claimed,true);assert.deepEqual(db,after,'Mail replay never grants twice');
+}
+
 reset();
 assert.equal(invoke(claim,{product_id:'flash_sale'}).code,409);
 assert.equal(JSON.parse(claim({}, {}, nk, '{}')).code,401);
@@ -43,7 +67,7 @@ for (const pack of packs) {
   assert.equal(pack.duration_days,30);
   assert(pack.rewards.some(r => r.metadata.daily_pack_days === 30));
   grant(nk,'buyer','receipt-1',pack.id,'consumable',pack.rewards);
-  assert.equal(db.player_profiles.value.resources.gems,0,'Purchase activates only; daily claim grants rewards');
+  assert.equal(db.player_profiles.value.resources.gems,0,'Purchase activates only; rewards wait for mail claim');
   const activation = clone(db);
   grant(nk,'buyer','receipt-1',pack.id,'consumable',pack.rewards);
   assert.deepEqual(db,activation,'Receipt retry must not extend entitlement');
@@ -57,8 +81,12 @@ for (const pack of packs) {
   conflict=false;
   for (let day=0;day<30;day++) {
     now=start+day*DAY;
-    const result=invoke(claim,{product_id:pack.id}); assert.equal(result.status,'success'); assert(!result.idempotent);
-    assert.equal(db.player_profiles.value.stamina,Math.min(STAMINA_STORAGE_MAX,30+(day+1)*(pack.id==='daily_deal'?15:30)),'Every daily grant respects available storage');
+    const resourcesBefore=clone(db.player_profiles.value.resources),inventoryBefore=clone(db.player_inventory.value.items);
+    const result=invoke(claim,{product_id:pack.id}); assert.equal(result.status,'success',JSON.stringify(result)); assert(!result.idempotent);
+    assert.deepEqual(db.player_profiles.value.resources,resourcesBefore,'Daily claim only delivers mail, not currency');
+    assert.deepEqual(db.player_inventory.value.items,inventoryBefore,'Daily claim only delivers mail, not items');
+    assert.equal(db.player_profiles.value.stamina,30,'Daily stamina is mailed as bottles, never credited directly');
+    receiveMail(result,pack.rewards);
     assert(!readStatus(pack.id).claimable);
     const after=clone(db);
     assert(invoke(claim,{product_id:pack.id}).idempotent);
@@ -68,7 +96,9 @@ for (const pack of packs) {
   }
   assert.equal(db.player_profiles.value.resources.gems, pack.id==='daily_deal'?1500:3000);
   assert.equal(db.player_inventory.value.items.find(i=>i.item_id==='campaign_sweep_ticket').quantity,pack.id==='daily_deal'?150:300,'Every requested ticket grant recurs daily');
-  assert.equal(db.player_profiles.value.stamina,Math.min(STAMINA_STORAGE_MAX,30+(pack.id==='daily_deal'?450:900)),'Unspent stamina accumulates only up to configured storage capacity');
+  assert.equal(db.player_profiles.value.stamina,30,'Opening reward mail grants bottles without consuming them');
+  assert.equal(quantity('energy_elixir'),pack.id==='daily_deal'?30:60);
+  assert.equal(quantity('energy_elixir_low'),0);assert.equal(mails().length,30,'Exactly one mail for each claimed day');
   if (pack.id==='daily_deal') assert.equal(db.player_profiles.value.resources.gold,750000);
   else {
     assert.equal(db.player_profiles.value.resources.gold,1500000);
@@ -85,7 +115,8 @@ reset();
 for (const p of packs) grant(nk,'buyer','receipt-'+p.id,p.id,'consumable',p.rewards);
 assert(readStatus('daily_deal').claimable && readStatus('flash_sale').claimable,'Both products can coexist');
 now+=3*DAY;
-invoke(claim,{product_id:'flash_sale'});
+const missed=invoke(claim,{product_id:'flash_sale'});assert.equal(mails().length,1,'Missed days do not generate catch-up mail');
+assert.equal(db.player_profiles.value.resources.gems,0,'Rewards wait in mail');receiveMail(missed,packs.find(p=>p.id==='flash_sale').rewards);
 assert.equal(db.player_profiles.value.resources.gems,100,'Missed days are not banked');
 db.player_stage_runs={value:{status:'active',expires_at_ms:now+DAY},version:'1'};
 assert.equal(invoke(claim,{product_id:'daily_deal'}).code,409,'Do not mutate rewards during combat');
@@ -93,7 +124,7 @@ reset();
 ctx.parseJsonb = x => typeof x === 'string' ? JSON.parse(x) : x;
 ctx.vipConfig = () => ({product_exp:{daily_deal:100}});
 ctx.monetizationMode = () => 'mock';
-let insertedOrder;
+let insertedOrder;const retiredOrders=[];
 const purchaseNk = {...nk, uuidv4:()=> 'monthly-order',
   sqlQuery(sql) {
     if (sql.includes('game_store_platform_products')) return [];
@@ -102,10 +133,14 @@ const purchaseNk = {...nk, uuidv4:()=> 'monthly-order',
     if (sql.includes('game_store_product_rewards')) return packs[0].rewards;
     throw Error('Unexpected purchase query '+sql);
   },
-  sqlExec(sql,args) { assert(sql.includes('INSERT INTO monetization_purchase_orders')); insertedOrder=args; }
+  sqlExec(sql,args) {
+    if(sql.includes('UPDATE monetization_purchase_orders SET catalog_retired=TRUE')){assert(sql.includes("status='pending' AND catalog_retired=FALSE"));assert.deepEqual(clone(args.slice(1)),['buyer','daily_deal','',0]);retiredOrders.push(args[0]);return;}
+    assert(sql.includes('INSERT INTO monetization_purchase_orders')); insertedOrder=args;
+  }
 };
 const newOrder=JSON.parse(order(user,{},purchaseNk,JSON.stringify({product_id:'daily_deal'})));
 assert.equal(newOrder.data.purchase_order_id,'monthly-order','Do not launch new monthly purchase against old one-time snapshot');
+assert.deepEqual(retiredOrders,['old-paid-or-unpaid-order'],'Only stale pending checkout slot is retired; its purchased snapshot is not rewritten');
 assert(JSON.parse(insertedOrder[3]).some(r=>r.metadata.daily_pack_days===30));
 assert(JSON.parse(insertedOrder[3]).every(r=>r.metadata.pricing_version===250002));
 // Old recurring orders also must not be reused for today's lower daily rewards.
@@ -126,13 +161,14 @@ grant(nk,'buyer','old-recurring','daily_deal','consumable',[
  {reward_type:'stamina',reward_id:'stamina',quantity:20,metadata:{daily_pack_days:30}},
  {reward_type:'item',reward_id:'campaign_sweep_ticket',quantity:5,metadata:{daily_pack_days:30}}]);
 const oldStart=now;
-for(let day=0;day<30;day++){now=oldStart+day*DAY;assert.equal(invoke(claim,{product_id:'daily_deal'}).status,'success');}
+for(let day=0;day<30;day++){now=oldStart+day*DAY;const result=invoke(claim,{product_id:'daily_deal'});assert.equal(result.status,'success');receiveMail(result,readStatus('daily_deal').rewards);}
 assert.equal(db.player_profiles.value.resources.gems,3000);
 assert.equal(db.player_profiles.value.resources.gold,300000);
 assert.equal(readStatus('daily_deal').rewards.find(r=>r.reward_id==='gems').quantity,100,'Status exposes old purchased rewards for UI');
-assert.equal(db.player_profiles.value.stamina,STAMINA_STORAGE_MAX,'Legacy reward snapshots also obey the current storage cap');
+assert.equal(db.player_profiles.value.stamina,30,'Legacy stamina is also delivered as bottles');
+assert.equal(quantity('energy_elixir'),30);assert.equal(quantity('energy_elixir_low'),30,'Legacy 20 stamina converts to 15 + 5 per mail');
 assert.equal(db.player_inventory.value.items.find(i=>i.item_id==='campaign_sweep_ticket').quantity,150);
 const patch = require('../nakama/build_daily_pack_patch.cjs').sql;
 assert(patch.includes('BEGIN;') && patch.includes('COMMIT;'));
 assert(!/UPDATE (player_|monetization_purchase_orders)/.test(patch),'Patch must not rewrite players or old orders');
-console.log('PASS 30-day packs: activation/replay, 30 claims, boundaries, expiry, no catch-up, coexistence, CAS, stamina storage cap 200, current/legacy order snapshots and catalog patch');
+console.log('PASS 30-day packs through mail: activation/replay, 30 deliveries and exactly-once claims, boundaries/expiry, no catch-up, coexistence, atomic delivery/claim CAS, current/legacy snapshots and 15/5 bottles');

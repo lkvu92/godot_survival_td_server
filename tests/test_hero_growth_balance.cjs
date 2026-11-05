@@ -21,15 +21,15 @@ for(const level of [1,30,50,70]){
   const a=stats[i],g=h.level_up_stats,n=level-1;
   for(const k of ['hp','atk','def','move_speed','attack_speed','attack_range'])near(a[k],h.attributes[k]*g[k]**n);
   for(const [k,cap] of [['crit_rate',1],['crit_damage',10],['regen_percent_per_10s',.1]])near(a[k],Math.min(cap,h.attributes[k]+g[k]*n));
-  const source={heroes:[{hero_id:h.id,level,exp:123,owned:true,current_attribute:{hp:999999999}}]};
+  const source={heroes:[{hero_id:h.id,level,exp:123,owned:true,current_attribute:{hp:999999999,attack_speed:1.5}}]};
   const before=JSON.stringify(source),loaded=canonical(nk,source).find(x=>x.hero_id===h.id);
-  near(loaded.current_attribute.hp,a.hp);assert.equal(loaded.level,level);assert.equal(loaded.exp,123);assert.equal(loaded.owned,true);assert.equal(JSON.stringify(source),before);
+  near(loaded.current_attribute.hp,a.hp);near(loaded.current_attribute.attack_speed,a.attack_speed);assert.equal(loaded.level,level);assert.equal(loaded.exp,123);assert.equal(loaded.owned,true);assert.equal(JSON.stringify(source),before);
  }
  assert(stats.every(a=>a.move_speed<=stats[3].move_speed&&a.attack_speed<=stats[3].attack_speed));
  assert(stats.every(a=>a.def<=stats[2].def));
  if(level>1){
   assert(stats.every(a=>a.hp<=stats[4].hp));
-  const proxy=a=>a.atk*a.attack_speed*(1+a.crit_rate*(a.crit_damage-1));
+  const proxy=a=>a.atk*(a.attack_speed/100)*(1+a.crit_rate*(a.crit_damage-1));
   assert(stats.every(a=>proxy(a)<=proxy(stats[1])));
  }
 }
@@ -37,8 +37,11 @@ for(const level of [1,30,50,70]){
 const final=heroes.map(h=>calc(nk,h.id,70)),mean=k=>[0,2,4].reduce((sum,i)=>sum+final[i][k],0)/3;
 const ratioNear=(actual,target)=>assert(Math.abs(actual-target)<.0001,`${actual} != ${target}`);
 ratioNear(final[1].atk/mean('atk'),1.5);
-ratioNear(final[3].attack_speed/mean('attack_speed'),2);
+// C268 v1.1 replaces the old 2x endpoint: all bases=100; only growth differs.
+assert(heroes.every(h=>h.attributes.attack_speed===100));
+ratioNear(final[3].attack_speed/mean('attack_speed'),(heroes[3].level_up_stats.attack_speed/heroes[0].level_up_stats.attack_speed)**69);
+assert(final[3].attack_speed>final[1].attack_speed&&final[1].attack_speed>final[0].attack_speed);
 ratioNear(final[1].hp/(heroes[1].attributes.hp*1.055**69),1.15);
 ratioNear(final[3].hp/(heroes[3].attributes.hp*1.055**69),1.10);
 near(final[1].crit_rate,.3477);near(final[3].crit_damage,2.628);
-console.log('PASS C238 v1.1: actual backend Lv1/30/50/70, exact curves, H2/H4 endpoint targets and stale-stat refresh without progress changes');
+console.log('PASS C238 v1.1: actual backend Lv1/30/50/70, exact curves, H2/H4 non-SPD endpoint targets and C268 common-base SPD growth and stale-stat refresh without progress changes');

@@ -430,6 +430,9 @@ function linkedRpc_event_claim(ctx: nkruntime.Context, logger: nkruntime.Logger,
 function linkedRpc_start_stage(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
     return accountGuardedRpc("start_stage", gatedStartStage)(ctx, logger, nk, payload);
 }
+function linkedRpc_get_stage_plan(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    return accountGuardedRpc("get_stage_plan", getStagePlan)(ctx, logger, nk, payload);
+}
 function linkedRpc_upgrade_element(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
     return accountGuardedRpc("upgrade_element", gatedUpgradeElement)(ctx, logger, nk, payload);
 }
@@ -530,6 +533,18 @@ function InitModule(
     nk: nkruntime.Nakama,
     initializer: nkruntime.Initializer
 ): void {
+    createSupportTables(nk);
+    initializer.registerRpc('support_create',rpc_support_create);
+    initializer.registerRpc('support_list',rpc_support_list);
+    initializer.registerRpc('support_get',rpc_support_get);
+    initializer.registerRpc('support_read',rpc_support_read);
+    initializer.registerRpc('support_reply',rpc_support_reply);
+    initializer.registerRpc('support_close',rpc_support_close);
+    initializer.registerRpc('support_reopen',rpc_support_reopen);
+    initializer.registerRpc('admin_support_list',rpc_admin_support_list);
+    initializer.registerRpc('admin_support_get',rpc_admin_support_get);
+    initializer.registerRpc('admin_support_reply',rpc_admin_support_reply);
+    initializer.registerRpc('admin_support_update',rpc_admin_support_update);
     initializer.registerRpc('health_heartbeat', linkedRpc_health_heartbeat);
     initializer.registerRpc('admin_asset_trace',linkedRpc_admin_asset_trace);
     initializer.registerRpc('admin_player_data_export',adminPlayerDataExport);
@@ -606,6 +621,11 @@ function InitModule(
     initializer.registerRpc("admin_enemy_skill_get", rpc_admin_enemy_skill_get);
     initializer.registerRpc("admin_enemy_skill_save", rpc_admin_enemy_skill_save);
     initializer.registerRpc("admin_enemy_skill_delete", rpc_admin_enemy_skill_delete);
+    initializer.registerRpc("admin_campaign_overview", rpc_admin_campaign_overview);
+    initializer.registerRpc("admin_campaign_stage_get", rpc_admin_campaign_stage_get);
+    initializer.registerRpc("admin_campaign_stage_save", rpc_admin_campaign_stage_save);
+    initializer.registerRpc("admin_campaign_stage_resolve", rpc_admin_campaign_stage_resolve);
+    initializer.registerRpc("get_stage_plan", linkedRpc_get_stage_plan);
     initializer.registerRpc("admin_enemy_stage_entry_list", rpc_admin_enemy_stage_entry_list);
     initializer.registerRpc("admin_enemy_stage_entry_get", rpc_admin_enemy_stage_entry_get);
     initializer.registerRpc("admin_enemy_stage_entry_save", rpc_admin_enemy_stage_entry_save);

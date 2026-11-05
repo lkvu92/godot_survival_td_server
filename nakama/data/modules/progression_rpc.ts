@@ -924,6 +924,7 @@ const awardStageProgression: nkruntime.RpcFunction = (
     if (requestedBaseExp > maxBaseExp) return JSON.stringify({ success: false, message: "Invalid stage EXP" });
 
     const profile = progressionObject(profileObject.value);
+    if (typeof sweepReconcileStageGrades === "function") sweepReconcileStageGrades(profile);
     const grade = sweepGrade(nk, Number(req.objective_hp_ratio), won);
     if(won) sweepSetBest(profile,stageId,difficultyId,grade);
     delete profile.activity;

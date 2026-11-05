@@ -1,6 +1,41 @@
 {
   "contracts": [
     {
+      "id": "C257_DAILY_PACK_MAIL",
+      "version": "0.2.1",
+      "status": "IN_PROGRESS",
+      "contract_file": "docs/contracts/C257_DAILY_PACK_MAIL.md",
+      "updated_at": "2026-11-05"
+    },
+    {
+      "id": "C269_STAGE_DESIGNER",
+      "version": "1.1.0",
+      "status": "ACTIVE",
+      "contract_file": "docs/contracts/C269_STAGE_DESIGNER.md",
+      "updated_at": "2026-11-05"
+    },
+    {
+      "id": "C268_CANONICAL_SPD_ENGINE",
+      "version": "1.1.0",
+      "status": "IN_PROGRESS",
+      "updated_at": "2026-11-05",
+      "contract_file": "docs/contracts/C268_CANONICAL_SPD_ENGINE.md"
+    },
+    {
+      "id": "C267_HERO_SKILL_TRAVEL_SPEED",
+      "version": "1.0.0",
+      "status": "IN_PROGRESS",
+      "updated_at": "2026-11-05",
+      "contract_file": "docs/contracts/C267_HERO_SKILL_TRAVEL_SPEED.md"
+    },
+    {
+      "id": "C264_SUPPORT_TICKETS",
+      "version": "1.1.2",
+      "status": "ACTIVE",
+      "updated_at": "2026-11-05",
+      "contract_file": "docs/contracts/C264_SUPPORT_TICKETS.md"
+    },
+    {
       "id": "C263_PLAYER_DATA_EXPORT",
       "version": "1.0.1",
       "status": "IN_PROGRESS",
@@ -129,9 +164,9 @@
     },
     {
       "id": "C239_LEVELLED_ENEMY_FRAMEWORK",
-      "version": "1.6.4",
-      "status": "IN_PROGRESS",
-      "updated_at": "2026-11-04",
+      "version": "1.7.0",
+      "status": "ACTIVE",
+      "updated_at": "2026-11-05",
       "contract_file": "docs/contracts/C239_LEVELLED_ENEMY_FRAMEWORK.md"
     },
     {

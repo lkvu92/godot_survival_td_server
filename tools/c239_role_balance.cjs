@@ -10,7 +10,7 @@ function apply(migration){
   const role=damage.has(id)?'damage':s.role==='tank'?'tank':s.role==='ranger'?'ranger':s.role==='fast'?'runner':'medium';
   const base=baseline.roles[role];if(!base)throw Error('Missing role '+id);
   s.role=role;Object.assign(s.base_attributes,base);
-  for(const stat of ['hp','atk','def'])s.growth_per_level[stat]=base[stat];
+  for(const stat of ['hp','atk','def'])s.growth_per_level[stat]=Number((base[stat]*0.8).toFixed(6));
   s.growth_per_level.attack_speed=0;s.growth_per_level.move_speed=0;
  }
  const range=arcs[migration.arc_id];if(!range)throw Error('Unknown arc '+migration.arc_id);

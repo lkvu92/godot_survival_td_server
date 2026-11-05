@@ -351,7 +351,13 @@ const startStage: nkruntime.RpcFunction = (ctx, _logger, nk, payload): string =>
     if (sweepBlock) return JSON.stringify(sweepBlock);
     if ((profile.breakthrough || {}).in_tribulation === true) return JSON.stringify({success:false,code:'COMBAT_ACTIVE',message:'Tribulation is active'});
     const existingRuns=nk.storageRead([{collection:'player_stage_runs',key:'active',userId:ctx.userId}]);
-    if(existingRuns.length&&existingRuns[0].value.status==='active'&&Number(existingRuns[0].value.expires_at_ms)>Date.now())return JSON.stringify({success:false,code:'COMBAT_ACTIVE',message:'Combat is active'});
+    if(existingRuns.length&&existingRuns[0].value.status==='active'&&Number(existingRuns[0].value.expires_at_ms)>Date.now()){
+        const run=existingRuns[0].value;
+        if(typeof req.request_id==='string'&&req.request_id===run.start_request_id&&run.stage_id===stageId&&run.difficulty_id===levelId)return JSON.stringify({success:true,run_id:run.run_id,encounter_plan:run.encounter_plan||null,talisman:run.talisman,than_luan_snapshot:run.than_luan_snapshot,stamina_cost:0,stamina_remaining:profile.stamina});
+        return JSON.stringify({success:false,code:'COMBAT_ACTIVE',message:'Combat is active'});
+    }
+    if(stageRequirement.length&&Number(parseJsonObject(stageRequirement[0].stage_rules).stage_designer_version)===1&&req.stage_plan_version!==1)return JSON.stringify({success:false,code:'CLIENT_UPDATE_REQUIRED',message:'Update client for Stage Designer'});
+    if(stageRequirement.length&&Number(parseJsonObject(stageRequirement[0].stage_rules).stage_designer_version)===1&&req.enemy_catalog_version!==enemyCatalogVersion(nk))return JSON.stringify({success:false,code:409,reason:'CONFIG_UPDATED',message:'Content changed; reload before entering stage'});
     if(stageId==='stage_0_admin_test') {
         const allowed=nk.sqlQuery("SELECT 1 FROM users WHERE id=$1::UUID AND LOWER(email) IN (LOWER($2),LOWER($3)) AND COALESCE(EXTRACT(EPOCH FROM disable_time),0)=0 LIMIT 1",[ctx.userId,'lkvu92@gmail.com','lkvu921@gmail.com']);
         if(!allowed.length)return JSON.stringify({success:false,code:'FORBIDDEN'});
@@ -367,6 +373,7 @@ const startStage: nkruntime.RpcFunction = (ctx, _logger, nk, payload): string =>
     // unlocking existed, before validating the requested stage.
     progressionReconcileCampaignUnlocks(nk, profile);
     progressionReconcileArcModes(nk, profile);
+    if (typeof sweepReconcileStageGrades === "function") sweepReconcileStageGrades(profile);
     const unlock = (Array.isArray(profile.unlocked_stages) ? profile.unlocked_stages : [])
         .find((entry: any) => entry && String(entry.stage_id || entry) === stageId);
     const unlockedLevels = unlock && typeof unlock === "object" && Array.isArray(unlock.unlocked_levels)
@@ -380,6 +387,11 @@ const startStage: nkruntime.RpcFunction = (ctx, _logger, nk, payload): string =>
     if (stamina < cost) return JSON.stringify({ success: false, message: "Not enough stamina", stamina_cost: cost, stamina });
     profile.stamina = stamina - cost;
 	const runState = talismanCreateStageRun(nk, ctx.userId, stageId, levelId);
+    try {
+        const plan=stageRequirement.length&&Number(parseJsonObject(stageRequirement[0].stage_rules).stage_designer_version)===1?campaignRunPlan(nk,stageId,levelId,runState.run.run_id):null;
+        if(plan){if(plan.content_version!==runState.run.enemy_catalog_version||plan.content_version!==enemyCatalogVersion(nk))return JSON.stringify({success:false,code:'CONFIG_CHANGED',message:'Reload configuration'});runState.run.encounter_plan=plan;runState.run.max_stage_base_exp=plan.total_exp;}
+        if(typeof req.request_id==='string'&&req.request_id.length<=128)runState.run.start_request_id=req.request_id;
+    } catch(_error){return JSON.stringify({success:false,code:'STAGE_CONFIG_INVALID',message:'Cannot prepare stage plan'});}
 	profile.activity={type:'combat',activity_id:runState.run.run_id};
 	nk.storageWrite([
 		{ collection: "player_profiles", key: "main", userId: ctx.userId, value: profile,
@@ -390,5 +402,5 @@ const startStage: nkruntime.RpcFunction = (ctx, _logger, nk, payload): string =>
 	if (cost > 0) eventRecord(nk, ctx.userId, "stamina_spent", cost,
 		{ stage_id: stageId, difficulty_id: levelId }, String(runState.run.run_id));
 	return JSON.stringify({ success: true, stamina_cost: cost, stamina_remaining: profile.stamina,
-		run_id: runState.run.run_id, than_luan_snapshot:runState.run.than_luan_snapshot, talisman: runState.run.talisman });
+		run_id: runState.run.run_id, encounter_plan:runState.run.encounter_plan||null, than_luan_snapshot:runState.run.than_luan_snapshot, talisman: runState.run.talisman });
 };

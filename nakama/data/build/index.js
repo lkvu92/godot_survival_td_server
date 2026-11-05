@@ -295,6 +295,40 @@ function validatePlayerName(name) {
   }
   return { valid: true };
 }
+function validateSupportText(value) {
+  const norm = canonicalizeText(value.trim());
+  const unacc = stripAccents(norm);
+  const whitelistSet = new Set(PROFANITY_CONFIG.whitelist);
+  const exactTokensSet = new Set(PROFANITY_CONFIG.exact_tokens);
+  const collapsedRaw = norm.replace(/[\s._\-–—,;:!?'"/\\]+/g, "");
+  const collapsedSpacesAndDots = unacc.replace(/[\s._\-–—,;:!?'"/\\]+/g, "");
+  if ((exactTokensSet.has(collapsedRaw) || exactTokensSet.has(collapsedSpacesAndDots)) && !whitelistSet.has(collapsedRaw) && !whitelistSet.has(collapsedSpacesAndDots)) {
+    return false;
+  }
+  for (const phrase of PROFANITY_CONFIG.contains_phrases) {
+    const phraseNorm = canonicalizeText(phrase);
+    const phraseUnacc = stripAccents(phraseNorm);
+    const phraseCollapsed = phraseUnacc.replace(/[\s._\-–—,;:!?'"/\\]+/g, "");
+    if (norm.includes(phraseNorm) || unacc.includes(phraseUnacc) || phraseCollapsed.length >= 3 && collapsedSpacesAndDots.includes(phraseCollapsed)) {
+      return false;
+    }
+  }
+  const rawTokens = norm.split(/[^a-z0-9à-ỹđ]+/i).filter(Boolean);
+  const unaccTokens = unacc.split(/[^a-z0-9]+/i).filter(Boolean);
+  for (const token of rawTokens) {
+    if (whitelistSet.has(token)) continue;
+    if (exactTokensSet.has(token)) {
+      return false;
+    }
+  }
+  for (const token of unaccTokens) {
+    if (whitelistSet.has(token)) continue;
+    if (exactTokensSet.has(token)) {
+      return false;
+    }
+  }
+  return true;
+}
 
 function createServerWeeklyTables(nk) {
   nk.sqlExec(`CREATE TABLE IF NOT EXISTS server_weekly_periods (
@@ -4440,7 +4474,7 @@ const loadPlayerProfile = (ctx, logger, nk, payload) => {
       version: "*"
     });
   }
-  if (progressionReconcileArcModes(nk, result.profile) && !repairWrites.some((w) => w.collection === "player_profiles")) {
+  if ((progressionReconcileArcModes(nk, result.profile) || typeof sweepReconcileStageGrades === "function" && sweepReconcileStageGrades(result.profile)) && !repairWrites.some((w) => w.collection === "player_profiles")) {
     repairWrites.push({ collection: "player_profiles", key: "main", userId: ctx.userId, value: result.profile, version: profileObject ? profileObject.version : "*", permissionRead: 1, permissionWrite: 0 });
   }
   if (repairWrites.length > 0) {
@@ -6579,7 +6613,13 @@ const startStage = (ctx, _logger, nk, payload) => {
   if (sweepBlock) return JSON.stringify(sweepBlock);
   if ((profile.breakthrough || {}).in_tribulation === true) return JSON.stringify({ success: false, code: "COMBAT_ACTIVE", message: "Tribulation is active" });
   const existingRuns = nk.storageRead([{ collection: "player_stage_runs", key: "active", userId: ctx.userId }]);
-  if (existingRuns.length && existingRuns[0].value.status === "active" && Number(existingRuns[0].value.expires_at_ms) > Date.now()) return JSON.stringify({ success: false, code: "COMBAT_ACTIVE", message: "Combat is active" });
+  if (existingRuns.length && existingRuns[0].value.status === "active" && Number(existingRuns[0].value.expires_at_ms) > Date.now()) {
+    const run = existingRuns[0].value;
+    if (typeof req.request_id === "string" && req.request_id === run.start_request_id && run.stage_id === stageId && run.difficulty_id === levelId) return JSON.stringify({ success: true, run_id: run.run_id, encounter_plan: run.encounter_plan || null, talisman: run.talisman, than_luan_snapshot: run.than_luan_snapshot, stamina_cost: 0, stamina_remaining: profile.stamina });
+    return JSON.stringify({ success: false, code: "COMBAT_ACTIVE", message: "Combat is active" });
+  }
+  if (stageRequirement.length && Number(parseJsonObject(stageRequirement[0].stage_rules).stage_designer_version) === 1 && req.stage_plan_version !== 1) return JSON.stringify({ success: false, code: "CLIENT_UPDATE_REQUIRED", message: "Update client for Stage Designer" });
+  if (stageRequirement.length && Number(parseJsonObject(stageRequirement[0].stage_rules).stage_designer_version) === 1 && req.enemy_catalog_version !== enemyCatalogVersion(nk)) return JSON.stringify({ success: false, code: 409, reason: "CONFIG_UPDATED", message: "Content changed; reload before entering stage" });
   if (stageId === "stage_0_admin_test") {
     const allowed = nk.sqlQuery("SELECT 1 FROM users WHERE id=$1::UUID AND LOWER(email) IN (LOWER($2),LOWER($3)) AND COALESCE(EXTRACT(EPOCH FROM disable_time),0)=0 LIMIT 1", [ctx.userId, "lkvu92@gmail.com", "lkvu921@gmail.com"]);
     if (!allowed.length) return JSON.stringify({ success: false, code: "FORBIDDEN" });
@@ -6595,6 +6635,7 @@ const startStage = (ctx, _logger, nk, payload) => {
   }
   progressionReconcileCampaignUnlocks(nk, profile);
   progressionReconcileArcModes(nk, profile);
+  if (typeof sweepReconcileStageGrades === "function") sweepReconcileStageGrades(profile);
   const unlock = (Array.isArray(profile.unlocked_stages) ? profile.unlocked_stages : []).find((entry) => entry && String(entry.stage_id || entry) === stageId);
   const unlockedLevels = unlock && typeof unlock === "object" && Array.isArray(unlock.unlocked_levels) ? unlock.unlocked_levels : unlock ? ["normal"] : [];
   if (!progressionArcModeAllowed(nk, profile, stageId, levelId)) return JSON.stringify({ success: false, code: "ARC_MODE_LOCKED", message: "Clear the previous difficulty across this arc first" });
@@ -6606,6 +6647,17 @@ const startStage = (ctx, _logger, nk, payload) => {
   if (stamina < cost) return JSON.stringify({ success: false, message: "Not enough stamina", stamina_cost: cost, stamina });
   profile.stamina = stamina - cost;
   const runState = talismanCreateStageRun(nk, ctx.userId, stageId, levelId);
+  try {
+    const plan = stageRequirement.length && Number(parseJsonObject(stageRequirement[0].stage_rules).stage_designer_version) === 1 ? campaignRunPlan(nk, stageId, levelId, runState.run.run_id) : null;
+    if (plan) {
+      if (plan.content_version !== runState.run.enemy_catalog_version || plan.content_version !== enemyCatalogVersion(nk)) return JSON.stringify({ success: false, code: "CONFIG_CHANGED", message: "Reload configuration" });
+      runState.run.encounter_plan = plan;
+      runState.run.max_stage_base_exp = plan.total_exp;
+    }
+    if (typeof req.request_id === "string" && req.request_id.length <= 128) runState.run.start_request_id = req.request_id;
+  } catch (_error) {
+    return JSON.stringify({ success: false, code: "STAGE_CONFIG_INVALID", message: "Cannot prepare stage plan" });
+  }
   profile.activity = { type: "combat", activity_id: runState.run.run_id };
   nk.storageWrite([
     {
@@ -6640,6 +6692,7 @@ const startStage = (ctx, _logger, nk, payload) => {
     stamina_cost: cost,
     stamina_remaining: profile.stamina,
     run_id: runState.run.run_id,
+    encounter_plan: runState.run.encounter_plan || null,
     than_luan_snapshot: runState.run.than_luan_snapshot,
     talisman: runState.run.talisman
   });
@@ -7738,6 +7791,7 @@ const awardStageProgression = (ctx, _logger, nk, payload) => {
   const maxBaseExp = Number.isSafeInteger(run.max_stage_base_exp) && run.max_stage_base_exp >= 0 ? run.max_stage_base_exp : progressionMaxStageBaseExp(nk, stageId);
   if (requestedBaseExp > maxBaseExp) return JSON.stringify({ success: false, message: "Invalid stage EXP" });
   const profile = progressionObject(profileObject.value);
+  if (typeof sweepReconcileStageGrades === "function") sweepReconcileStageGrades(profile);
   const grade = sweepGrade(nk, Number(req.objective_hp_ratio), won);
   if (won) sweepSetBest(profile, stageId, difficultyId, grade);
   delete profile.activity;
@@ -10183,6 +10237,13 @@ function cpClamp(value, low, high) {
 function cpRound(value) {
   return Math.floor(value + 0.5);
 }
+function cpBasicAttackRate(spd) {
+  return Number.isFinite(spd) && spd > 0 ? spd / 100 : 0;
+}
+function cpValidSpeedUnits(progression) {
+  const c = cpObject(progression.combat_speed);
+  return c.version === 1 && c.hero_unit === "spd_points" && c.enemy_source_unit === "attacks_per_second" && c.reference_spd === 100 && c.skill_flight_enabled === false;
+}
 function cpHeroAttributes(hero, level, progression) {
   const result = JSON.parse(JSON.stringify(cpObject(hero.attributes)));
   const growth = cpObject(hero.level_up_stats);
@@ -10283,8 +10344,8 @@ function cpEvaluate(hero, level, affinities, roots, equipped, skills, progressio
   const element = String(hero.element || ""), amp = cpAmplification(cpNumber(roots[element]), progression);
   const attackMultiplier = 1 + Math.max(0, cpNumber(affinities[element])) * amp * 1e-4;
   const atk = Math.max(0, cpNumber(a.atk));
-  const basicCooldown = Math.max(0.2, 2 - Math.max(0, cpNumber(a.attack_speed)) * 5e-3);
-  let dps = hero.auto_basic_attack === false ? 0 : atk * cpNumber(cfg.basic_damage_multiplier) * crit / basicCooldown;
+  const basicRate = cpBasicAttackRate(cpNumber(a.attack_speed));
+  let dps = hero.auto_basic_attack === false ? 0 : atk * cpNumber(cfg.basic_damage_multiplier) * crit * basicRate;
   for (const id of cpArray(hero.starting_skills)) dps += cpSkillDps(String(id), 1, atk, crit, cpNumber(a.skill_cooldown_mul, 1), skills, cfg);
   dps *= attackMultiplier;
   if (equipped.length) {
@@ -10321,7 +10382,7 @@ function cpEvaluate(hero, level, affinities, roots, equipped, skills, progressio
 function calculateCombatPower(profile, states, inventory, heroes, skills, progression, items) {
   const cfg = cpObject(progression.combat_power);
   const result = { version: cpNumber(cfg.version), configured: false, score: 0, hero_id: "", heroes: [] };
-  if (cfg.version !== 2 || !(cfg.horizon_seconds > 0) || !(cfg.offense_weight > 0) || !(cfg.survival_weight > 0) || !(cfg.min_defense_multiplier > 0 && cfg.min_defense_multiplier <= 1) || !(cfg.minimum_cooldown > 0) || !(cfg.dodge_cap >= 0 && cfg.dodge_cap < 1) || !cpArray(cpObject(progression.element_combat).supported_elements).length) return result;
+  if (!cpValidSpeedUnits(progression) || cfg.version !== 2 || !(cfg.horizon_seconds > 0) || !(cfg.offense_weight > 0) || !(cfg.survival_weight > 0) || !(cfg.min_defense_multiplier > 0 && cfg.min_defense_multiplier <= 1) || !(cfg.minimum_cooldown > 0) || !(cfg.dodge_cap >= 0 && cfg.dodge_cap < 1) || !cpArray(cpObject(progression.element_combat).supported_elements).length) return result;
   result.configured = true;
   const equipped = cpEquipped(inventory, items), affinities = cpObject(profile.element_affinities), roots = cpObject(profile.elements);
   for (const hero of heroes) {
@@ -11027,11 +11088,34 @@ function sweepCombatError(profile) {
   return sweepActive(profile) ? { success: false, ok: false, code: "SWEEP_ACTIVE", message: "\u0110ang c\xE0n qu\xE9t. H\xE3y k\u1EBFt th\xFAc ho\u1EB7c h\u1EE7y c\xE0n qu\xE9t \u0111\u1EC3 tham chi\u1EBFn." } : null;
 }
 function sweepSetBest(profile, stage, mode, grade) {
-  if (!grade) return;
-  const order = ["D", "C", "B", "A", "S"];
-  profile.stage_grades = profile.stage_grades || {};
-  const key = stage + ":" + mode;
-  if (order.indexOf(grade) > order.indexOf(profile.stage_grades[key])) profile.stage_grades[key] = grade;
+  const normalized = String(grade || "").trim().toUpperCase();
+  const order = ["D", "C", "B", "A", "S", "SS", "SSS"];
+  if (order.indexOf(normalized) < 0) return;
+  profile.stage_grades = profile.stage_grades && typeof profile.stage_grades === "object" && !Array.isArray(profile.stage_grades) ? profile.stage_grades : {};
+  const key = stage + ":" + mode, current = String(profile.stage_grades[key] || "").trim().toUpperCase();
+  if (order.indexOf(normalized) > order.indexOf(current)) profile.stage_grades[key] = normalized;
+}
+function sweepReconcileStageGrades(profile) {
+  if (!profile || typeof profile !== "object") return false;
+  const completed = Array.isArray(profile.completed_stage_levels) ? profile.completed_stage_levels : [];
+  const grades = profile.stage_grades && typeof profile.stage_grades === "object" && !Array.isArray(profile.stage_grades) ? profile.stage_grades : {};
+  const order = ["D", "C", "B", "A", "S", "SS", "SSS"];
+  let changed = profile.stage_grades !== grades;
+  for (const entry of completed) {
+    if (!entry || typeof entry !== "object") continue;
+    const stageId = String(entry.stage_id || "").trim(), levelId = String(entry.level_id || "").trim();
+    if (!stageId || !levelId || stageId === "stage_0_1" || stageId === "stage_0_admin_test" || stageId.indexOf("stage_0_") === 0) continue;
+    const key = stageId + ":" + levelId, existing = String(grades[key] || "").trim().toUpperCase();
+    if (order.indexOf(existing) < 0) {
+      grades[key] = "S";
+      changed = true;
+    } else if (grades[key] !== existing) {
+      grades[key] = existing;
+      changed = true;
+    }
+  }
+  profile.stage_grades = grades;
+  return changed;
 }
 function sweepCount(items, ticket = SWEEP_TICKET) {
   return items.reduce((n, r) => n + (r.item_id === ticket ? Math.max(0, Number(r.quantity) || 0) : 0), 0);
@@ -11057,6 +11141,7 @@ function sweepRead(nk, userId, nowMs = Date.now()) {
   const p = get("player_profiles"), i = get("player_inventory"), h = get("player_heroes"), r = get("player_stage_runs");
   if (!p || !i || !h) throw new Error("PLAYER_INCOMPLETE");
   const profile = parseJsonObject(p.value);
+  sweepReconcileStageGrades(profile);
   sweepRefreshStamina(nk, profile, nowMs);
   const t = get("player_trial_tower");
   return { p, i, h, r, t, tower: t ? parseJsonObject(t.value) : {}, profile, inventory: parseJsonObject(i.value), heroes: parseJsonObject(h.value) };
@@ -11894,6 +11979,230 @@ const completeFeatureTour = (ctx, _logger, nk, payload) => {
   }
   return JSON.stringify({ success: true, feature_unlocks: s });
 };
+
+const SUPPORT_CATEGORIES = ["account", "payment", "bug", "report", "other"];
+const SUPPORT_STATUSES = ["new", "in_progress", "waiting_player", "resolved", "closed"];
+const SUPPORT_UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
+function createSupportTables(nk) {
+  nk.sqlExec(`CREATE TABLE IF NOT EXISTS support_tickets (
+ id UUID PRIMARY KEY,owner_id UUID NOT NULL,server_id TEXT NOT NULL DEFAULT '',generation INT NOT NULL DEFAULT 0,
+ character_name TEXT NOT NULL DEFAULT '',category TEXT NOT NULL,title TEXT NOT NULL,metadata JSONB NOT NULL DEFAULT '{}',
+ status TEXT NOT NULL DEFAULT 'new',priority TEXT NOT NULL DEFAULT 'normal',assignee TEXT NOT NULL DEFAULT '',
+ version INT NOT NULL DEFAULT 1,public_seq INT NOT NULL DEFAULT 0,player_read_seq INT NOT NULL DEFAULT 0,
+ created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),closed_at TIMESTAMPTZ);
+ CREATE INDEX IF NOT EXISTS support_owner_idx ON support_tickets(owner_id,created_at DESC,id DESC);
+ CREATE INDEX IF NOT EXISTS support_queue_idx ON support_tickets(status,assignee,created_at DESC);
+ CREATE TABLE IF NOT EXISTS support_messages(id BIGSERIAL PRIMARY KEY,ticket_id UUID NOT NULL REFERENCES support_tickets(id),
+ author_id UUID NOT NULL,author_kind TEXT NOT NULL,internal BOOLEAN NOT NULL DEFAULT FALSE,body TEXT NOT NULL,created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
+ CREATE INDEX IF NOT EXISTS support_thread_idx ON support_messages(ticket_id,id);
+ CREATE TABLE IF NOT EXISTS support_ticket_events(id BIGSERIAL PRIMARY KEY,ticket_id UUID NOT NULL REFERENCES support_tickets(id),actor_id UUID NOT NULL,action TEXT NOT NULL,detail JSONB NOT NULL,created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
+ CREATE TABLE IF NOT EXISTS support_receipts(actor_id UUID NOT NULL,request_id UUID NOT NULL,fingerprint JSONB NOT NULL,result JSONB NOT NULL,created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),PRIMARY KEY(actor_id,request_id));
+ CREATE OR REPLACE FUNCTION support_mutate(actor UUID,is_admin BOOLEAN,operation TEXT,r JSONB,new_id UUID) RETURNS JSONB LANGUAGE plpgsql AS $$
+ DECLARE t support_tickets%ROWTYPE; receipt support_receipts%ROWTYPE; result JSONB; next_status TEXT; note BOOLEAN; count_n INT;
+ BEGIN
+ PERFORM pg_advisory_xact_lock(hashtextextended('support:'||actor::text,0));
+ SELECT * INTO receipt FROM support_receipts WHERE actor_id=actor AND request_id=(r->>'request_id')::uuid;
+ IF FOUND THEN
+   IF receipt.fingerprint=jsonb_build_object('action',operation,'request',r-'character_name') THEN RETURN receipt.result; END IF;
+   RETURN jsonb_build_object('success',false,'code',409,'message','M\xE3 y\xEAu c\u1EA7u \u0111\xE3 d\xF9ng cho n\u1ED9i dung kh\xE1c.');
+ END IF;
+ IF operation='create' THEN
+   SELECT COUNT(*) INTO count_n FROM support_tickets WHERE owner_id=actor AND created_at>NOW()-INTERVAL '24 hours';
+   IF count_n>=5 OR (SELECT COUNT(*) FROM support_tickets WHERE owner_id=actor AND status NOT IN ('closed','resolved'))>=5 THEN RETURN jsonb_build_object('success',false,'code',429,'message','\u0110\xE3 \u0111\u1EA1t gi\u1EDBi h\u1EA1n 5 y\xEAu c\u1EA7u trong ng\xE0y ho\u1EB7c \u0111ang m\u1EDF.'); END IF;
+   INSERT INTO support_tickets(id,owner_id,server_id,generation,character_name,category,title,metadata,public_seq,player_read_seq)
+    VALUES(new_id,actor,COALESCE(r->>'server_id',''),COALESCE((r->>'generation')::int,0),COALESCE(r->>'character_name',''),r->>'category',r->>'title',COALESCE(r->'metadata','{}'),1,1) RETURNING * INTO t;
+   INSERT INTO support_messages(ticket_id,author_id,author_kind,body) VALUES(t.id,actor,'player',r->>'body');
+ ELSE
+   SELECT * INTO t FROM support_tickets WHERE id=(r->>'ticket_id')::uuid FOR UPDATE;
+   IF NOT FOUND OR (NOT is_admin AND t.owner_id<>actor) THEN RETURN jsonb_build_object('success',false,'code',404,'message','Kh\xF4ng t\xECm th\u1EA5y y\xEAu c\u1EA7u.'); END IF;
+   IF t.version<>(r->>'expected_version')::int THEN RETURN jsonb_build_object('success',false,'code',409,'message','Y\xEAu c\u1EA7u \u0111\xE3 thay \u0111\u1ED5i. H\xE3y t\u1EA3i l\u1EA1i tr\u01B0\u1EDBc khi thao t\xE1c.'); END IF;
+   next_status:=t.status;
+   IF operation='reply' THEN
+     note:=is_admin AND COALESCE((r->>'internal')::boolean,false);
+     IF t.status='closed' AND NOT note THEN RETURN jsonb_build_object('success',false,'code',409,'message','Y\xEAu c\u1EA7u \u0111\xE3 \u0111\xF3ng. H\xE3y m\u1EDF l\u1EA1i tr\u01B0\u1EDBc khi tr\u1EA3 l\u1EDDi.'); END IF;
+     SELECT COUNT(*) INTO count_n FROM support_messages WHERE author_id=actor AND created_at>NOW()-INTERVAL '1 hour';
+     IF count_n>=30 THEN RETURN jsonb_build_object('success',false,'code',429,'message','B\u1EA1n g\u1EEDi qu\xE1 nhanh. H\xE3y th\u1EED l\u1EA1i sau.'); END IF;
+     SELECT COUNT(*) INTO count_n FROM support_messages WHERE ticket_id=t.id;
+     IF count_n>=500 THEN RETURN jsonb_build_object('success',false,'code',429,'message','H\u1ED9i tho\u1EA1i \u0111\u1EA1t gi\u1EDBi h\u1EA1n 500 tin. H\xE3y t\u1EA1o y\xEAu c\u1EA7u m\u1EDBi.'); END IF;
+     INSERT INTO support_messages(ticket_id,author_id,author_kind,internal,body) VALUES(t.id,actor,CASE WHEN is_admin THEN 'admin' ELSE 'player' END,note,r->>'body');
+     IF NOT note THEN
+       IF (NOT is_admin AND t.status IN ('waiting_player','resolved')) OR (is_admin AND t.status='new') THEN next_status:='in_progress'; END IF;
+       t.public_seq:=t.public_seq+1;
+       IF NOT is_admin AND t.player_read_seq=t.public_seq-1 THEN t.player_read_seq:=t.public_seq; END IF;
+     END IF;
+   ELSIF operation='close' THEN
+     IF t.status<>'resolved' THEN RETURN jsonb_build_object('success',false,'code',409,'message','Ch\u1EC9 x\xE1c nh\u1EADn \u0111\xF3ng khi \u0111\xE3 gi\u1EA3i quy\u1EBFt.'); END IF;
+     next_status:='closed';
+   ELSIF operation='reopen' THEN
+     IF t.status<>'closed' OR t.closed_at<NOW()-INTERVAL '7 days' THEN RETURN jsonb_build_object('success',false,'code',409,'message','Kh\xF4ng th\u1EC3 m\u1EDF l\u1EA1i. H\xE3y t\u1EA1o y\xEAu c\u1EA7u m\u1EDBi.'); END IF;
+     next_status:='in_progress';
+   ELSIF operation='update' AND is_admin THEN
+     next_status:=COALESCE(r->>'status',t.status);
+     IF next_status<>t.status AND NOT (
+       (t.status='new' AND next_status='in_progress') OR
+       (t.status='in_progress' AND next_status IN ('waiting_player','resolved','closed')) OR
+       (t.status='waiting_player' AND next_status IN ('in_progress','resolved','closed')) OR
+       (t.status='resolved' AND next_status IN ('in_progress','closed')) OR
+       (t.status='closed' AND next_status='in_progress' AND t.closed_at>=NOW()-INTERVAL '7 days')
+     ) THEN RETURN jsonb_build_object('success',false,'code',409,'message','Chuy\u1EC3n tr\u1EA1ng th\xE1i kh\xF4ng h\u1EE3p l\u1EC7.'); END IF;
+     t.priority:=COALESCE(r->>'priority',t.priority);t.assignee:=COALESCE(r->>'assignee',t.assignee);
+     IF next_status<>t.status THEN t.public_seq:=t.public_seq+1; END IF;
+   ELSE RETURN jsonb_build_object('success',false,'code',400,'message','Thao t\xE1c kh\xF4ng h\u1EE3p l\u1EC7.');
+   END IF;
+   UPDATE support_tickets SET status=next_status,priority=t.priority,assignee=t.assignee,version=version+1,
+     public_seq=t.public_seq,player_read_seq=t.player_read_seq,updated_at=NOW(),
+     closed_at=CASE WHEN next_status='closed' THEN COALESCE(closed_at,NOW()) ELSE NULL END WHERE id=t.id RETURNING * INTO t;
+ END IF;
+ INSERT INTO support_ticket_events(ticket_id,actor_id,action,detail) VALUES(t.id,actor,operation,
+   jsonb_build_object('version',t.version,'status',t.status,'priority',t.priority,'assignee',t.assignee,'internal',COALESCE(note,false)));
+ result:=jsonb_build_object('success',true,'data',jsonb_build_object('ticket',to_jsonb(t)||jsonb_build_object('unread',t.public_seq>t.player_read_seq)));
+ INSERT INTO support_receipts(actor_id,request_id,fingerprint,result) VALUES(actor,(r->>'request_id')::uuid,jsonb_build_object('action',operation,'request',r-'character_name'),result);
+ RETURN result;
+ END $$;`, []);
+}
+function supportUtc(column) {
+  return "to_char(" + column + ` AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.MS"Z"')`;
+}
+function supportColumns(alias) {
+  const p = alias ? alias + "." : "";
+  return ["id", "owner_id", "server_id", "generation", "character_name", "category", "title", "status", "priority", "assignee", "version", "public_seq", "player_read_seq"].map((k) => p + k).join(",") + "," + p + "metadata::text AS metadata," + supportUtc(p + "created_at") + " AS created_at," + supportUtc(p + "updated_at") + " AS updated_at," + supportUtc(p + "closed_at") + " AS closed_at," + p + "public_seq>" + p + "player_read_seq AS unread";
+}
+function supportDecodeTicket(row) {
+  if (row && typeof row.metadata === "string") row.metadata = JSON.parse(row.metadata);
+  return row;
+}
+function supportResult(data) {
+  return JSON.stringify({ success: true, data });
+}
+function supportHandler(action, admin) {
+  return (ctx, _logger, nk, payload) => {
+    if (!ctx.userId) return serverFailure("AUTH_REQUIRED", 401, "C\u1EA7n \u0111\u0103ng nh\u1EADp.");
+    if (admin) {
+      const denied = requireServerAdmin(ctx);
+      if (denied) return denied;
+    }
+    let r;
+    try {
+      r = serverRequest(payload);
+      const allowed = ["ticket_id", "request_id", "expected_version", "category", "title", "body", "server_id", "generation", "metadata", "internal", "status", "priority", "assignee", "cursor", "limit", "search", "public_seq"];
+      const clean = {};
+      for (const k of allowed) if (r[k] !== void 0) clean[k] = r[k];
+      r = clean;
+    } catch (_e) {
+      return serverFailure("INVALID_REQUEST", 400, "JSON kh\xF4ng h\u1EE3p l\u1EC7.");
+    }
+    const fail = (s) => serverFailure("INVALID_REQUEST", 400, s);
+    if (action === "list") {
+      const limit = r.limit === void 0 ? 20 : r.limit, cursor = r.cursor || "";
+      if (!Number.isSafeInteger(limit) || limit < 1 || limit > 30 || typeof cursor !== "string" || cursor && !SUPPORT_UUID.test(cursor)) return fail("Ph\xE2n trang kh\xF4ng h\u1EE3p l\u1EC7.");
+      for (const key of ["search", "status", "category", "server_id", "assignee"]) if (r[key] !== void 0 && (typeof r[key] !== "string" || r[key].length > 120)) return fail("B\u1ED9 l\u1ECDc kh\xF4ng h\u1EE3p l\u1EC7.");
+      const filter = r.assignee === "mine" ? ctx.userId : r.assignee || "";
+      const rows = nk.sqlQuery(`SELECT ${supportColumns("t")} FROM support_tickets t WHERE
+    ($1::bool OR owner_id=$2::uuid) AND ($3='' OR (t.created_at,t.id)<(SELECT created_at,id FROM support_tickets WHERE id=NULLIF($3,'')::uuid AND ($1::bool OR owner_id=$2::uuid)))
+    AND (NOT $1::bool OR (($4='' OR status=$4) AND ($5='' OR category=$5) AND ($6='' OR server_id=$6)
+    AND ($7='' OR ($7='unassigned' AND assignee='') OR assignee=$7)
+    AND ($8='' OR position(lower($8) in lower(title||' '||id::text||' '||owner_id::text||' '||character_name))>0)))
+    ORDER BY created_at DESC,id DESC LIMIT $9`, [admin, ctx.userId, cursor, r.status || "", r.category || "", r.server_id || "", filter, r.search || "", limit + 1]);
+      const more = rows.length > limit;
+      if (more) rows.pop();
+      const count = admin ? 0 : Number(nk.sqlQuery("SELECT COUNT(*)::int AS n FROM support_tickets WHERE owner_id=$1::uuid AND public_seq>player_read_seq", [ctx.userId])[0].n);
+      return supportResult({ tickets: rows.map(supportDecodeTicket), next_cursor: more ? rows[rows.length - 1].id : "", unread_count: count });
+    }
+    if (action !== "create" && (typeof r.ticket_id !== "string" || !SUPPORT_UUID.test(r.ticket_id))) return fail("M\xE3 y\xEAu c\u1EA7u kh\xF4ng h\u1EE3p l\u1EC7.");
+    if (action === "get" || action === "read") {
+      const tickets = nk.sqlQuery("SELECT " + supportColumns("") + " FROM support_tickets WHERE id=$1::uuid AND ($2::bool OR owner_id=$3::uuid)", [r.ticket_id, admin, ctx.userId]);
+      if (!tickets.length) return serverFailure("NOT_FOUND", 404, "Kh\xF4ng t\xECm th\u1EA5y y\xEAu c\u1EA7u.");
+      if (action === "read") {
+        if (!Number.isSafeInteger(r.public_seq) || r.public_seq < 0 || r.public_seq > tickets[0].public_seq) return fail("M\u1ED1c \u0111\u1ECDc kh\xF4ng h\u1EE3p l\u1EC7.");
+        const rows = nk.sqlQuery("WITH changed AS (UPDATE support_tickets SET player_read_seq=GREATEST(player_read_seq,$2) WHERE id=$1::uuid AND owner_id=$3::uuid RETURNING *) SELECT " + supportColumns("changed") + " FROM changed", [r.ticket_id, r.public_seq, ctx.userId]);
+        return supportResult({ ticket: supportDecodeTicket(rows[0]) });
+      }
+      const cursor = r.cursor || "";
+      if (typeof cursor !== "string" || (!/^\d{0,19}$/.test(cursor) || cursor.length === 19 && cursor > "9223372036854775807")) return fail("Cursor kh\xF4ng h\u1EE3p l\u1EC7.");
+      const messages = nk.sqlQuery(`SELECT id::text,ticket_id,author_id,author_kind,internal,body,${supportUtc("created_at")} AS created_at FROM support_messages WHERE ticket_id=$1::uuid AND ($2::bool OR NOT internal) AND id>COALESCE(NULLIF($3,'')::bigint,0) ORDER BY support_messages.id LIMIT 51`, [r.ticket_id, admin, cursor]);
+      const more = messages.length > 50;
+      if (more) messages.pop();
+      const data = { ticket: supportDecodeTicket(tickets[0]), messages, next_cursor: more ? messages[messages.length - 1].id : "" };
+      if (admin) data.events = nk.sqlQuery("SELECT id::text,actor_id,action,detail::text AS detail," + supportUtc("created_at") + " AS created_at FROM support_ticket_events WHERE ticket_id=$1::uuid ORDER BY support_ticket_events.id DESC LIMIT 100", [r.ticket_id]).map((e) => {
+        e.detail = JSON.parse(e.detail);
+        return e;
+      });
+      return supportResult(data);
+    }
+    if (typeof r.request_id !== "string" || !SUPPORT_UUID.test(r.request_id)) return fail("C\u1EA7n m\xE3 ch\u1ED1ng g\u1EEDi tr\xF9ng.");
+    if (action !== "create" && (!Number.isSafeInteger(r.expected_version) || r.expected_version < 1)) return fail("Phi\xEAn b\u1EA3n kh\xF4ng h\u1EE3p l\u1EC7.");
+    if (action === "create" || action === "reply") {
+      if (typeof r.body !== "string" || !r.body.trim() || r.body.length > 4e3) return fail("N\u1ED9i dung c\u1EA7n t\u1EEB 1 \u0111\u1EBFn 4000 k\xFD t\u1EF1.");
+      if (!admin && !validateSupportText(r.body)) return fail("N\u1ED9i dung ch\u1EE9a t\u1EEB ng\u1EEF kh\xF4ng ph\xF9 h\u1EE3p.");
+      if (r.internal !== void 0 && typeof r.internal !== "boolean") return fail("Lo\u1EA1i ghi ch\xFA kh\xF4ng h\u1EE3p l\u1EC7.");
+    }
+    if (action === "create") {
+      if (typeof r.title !== "string" || r.title.trim().length < 5 || r.title.length > 120 || SUPPORT_CATEGORIES.indexOf(r.category) < 0) return fail("Ki\u1EC3m tra ti\xEAu \u0111\u1EC1 v\xE0 danh m\u1EE5c.");
+      if (!validateSupportText(r.title)) return fail("Ti\xEAu \u0111\u1EC1 ch\u1EE9a t\u1EEB ng\u1EEF kh\xF4ng ph\xF9 h\u1EE3p.");
+      if (r.metadata === void 0) r.metadata = {};
+      if (!r.metadata || typeof r.metadata !== "object" || Array.isArray(r.metadata)) return fail("Th\xF4ng tin b\u1ED5 sung kh\xF4ng h\u1EE3p l\u1EC7.");
+      const clean = {};
+      for (const k of ["version", "platform", "occurred_at", "order_id", "steps"]) {
+        if (r.metadata[k] !== void 0) {
+          if (typeof r.metadata[k] !== "string" || r.metadata[k].length > (k === "steps" ? 2e3 : 200)) return fail("Th\xF4ng tin b\u1ED5 sung qu\xE1 d\xE0i.");
+          clean[k] = r.metadata[k];
+        }
+      }
+      r.metadata = clean;
+      r.character_name = "";
+      r.server_id = r.server_id || "";
+      r.generation = r.generation || 0;
+      if (typeof r.server_id !== "string" || !Number.isSafeInteger(r.generation) || r.generation < 0) return fail("M\xE1y ch\u1EE7 kh\xF4ng h\u1EE3p l\u1EC7.");
+      if (r.server_id) {
+        if (!/^[a-z][a-z0-9_]{0,31}$/.test(r.server_id)) return fail("M\xE1y ch\u1EE7 kh\xF4ng h\u1EE3p l\u1EC7.");
+        const chars = nk.sqlQuery(`SELECT COALESCE(p.value->>'display_name','') AS name FROM player_characters c LEFT JOIN storage p ON p.user_id=c.account_id AND p.collection='player_profiles' AND p.key=c.server_id||':g'||c.generation::text||':main' WHERE c.account_id=$1::uuid AND c.server_id=$2 AND c.generation=$3 AND c.status='ready'`, [ctx.userId, r.server_id, r.generation]);
+        if (!chars.length) return fail("Kh\xF4ng t\xECm th\u1EA5y nh\xE2n v\u1EADt t\u1EA1i m\xE1y ch\u1EE7 n\xE0y.");
+        r.character_name = chars[0].name;
+      } else if (r.generation !== 0) return fail("M\xE1y ch\u1EE7 kh\xF4ng h\u1EE3p l\u1EC7.");
+    }
+    if (action === "update") {
+      if (!admin) return serverFailure("FORBIDDEN", 403, "Forbidden");
+      if (r.status !== void 0 && SUPPORT_STATUSES.indexOf(r.status) < 0) return fail("Tr\u1EA1ng th\xE1i kh\xF4ng h\u1EE3p l\u1EC7.");
+      if (r.priority !== void 0 && ["normal", "high", "urgent"].indexOf(r.priority) < 0) return fail("\u01AFu ti\xEAn kh\xF4ng h\u1EE3p l\u1EC7.");
+      if (r.assignee !== void 0 && (typeof r.assignee !== "string" || r.assignee !== "" && (!SUPPORT_UUID.test(r.assignee) || !isConfigAdmin({ userId: r.assignee, env: ctx.env })))) return fail("Ng\u01B0\u1EDDi ph\u1EE5 tr\xE1ch ph\u1EA3i l\xE0 admin \u0111\u01B0\u1EE3c c\u1EA5u h\xECnh.");
+    }
+    const result = nk.sqlQuery("SELECT support_mutate($1::uuid,$2::bool,$3,$4::jsonb,$5::uuid)::text AS result", [ctx.userId, admin, action, JSON.stringify(r), nk.uuidv4()])[0].result;
+    return typeof result === "string" ? result : JSON.stringify(result);
+  };
+}
+function rpc_support_create(c, l, n, p) {
+  return supportHandler("create", false)(c, l, n, p);
+}
+function rpc_support_list(c, l, n, p) {
+  return supportHandler("list", false)(c, l, n, p);
+}
+function rpc_support_get(c, l, n, p) {
+  return supportHandler("get", false)(c, l, n, p);
+}
+function rpc_support_read(c, l, n, p) {
+  return supportHandler("read", false)(c, l, n, p);
+}
+function rpc_support_reply(c, l, n, p) {
+  return supportHandler("reply", false)(c, l, n, p);
+}
+function rpc_support_close(c, l, n, p) {
+  return supportHandler("close", false)(c, l, n, p);
+}
+function rpc_support_reopen(c, l, n, p) {
+  return supportHandler("reopen", false)(c, l, n, p);
+}
+function rpc_admin_support_list(c, l, n, p) {
+  return supportHandler("list", true)(c, l, n, p);
+}
+function rpc_admin_support_get(c, l, n, p) {
+  return supportHandler("get", true)(c, l, n, p);
+}
+function rpc_admin_support_reply(c, l, n, p) {
+  return supportHandler("reply", true)(c, l, n, p);
+}
+function rpc_admin_support_update(c, l, n, p) {
+  return supportHandler("update", true)(c, l, n, p);
+}
 
 const MAIL_COLLECTION = "player_mail";
 const MAIL_DAY = 864e5;
@@ -13060,11 +13369,51 @@ function rpcItemBatchGet(_ctx, _l, nk, payload) {
   });
 }
 
+var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 const EC_TABLES = { catalog: "enemy_catalog", visual_set: "enemy_visual_sets", visual_asset: "enemy_visual_assets", skill: "enemy_skill_catalog", stage_entry: "enemy_stage_entries" };
 const EC_STATS = ["hp", "atk", "def", "move_speed", "attack_speed", "attack_range"];
 const EC_ELEMENTS = ["metal", "water", "wood", "fire", "earth"];
 const EC_ID = /^[a-zA-Z0-9][a-zA-Z0-9_.:-]{0,179}$/;
 function createEnemyCatalogTables(nk) {
+  nk.sqlExec(`CREATE OR REPLACE FUNCTION campaign_stage_write(doc JSONB,row_rev TEXT,draft_rev BIGINT,who TEXT,body JSONB,live BOOLEAN)
+      RETURNS JSONB LANGUAGE plpgsql AS $cp$
+      DECLARE state_rev BIGINT; old_doc JSONB; metadata_value JSONB; next_doc JSONB;
+      BEGIN
+       SELECT revision,metadata INTO state_rev,metadata_value FROM enemy_catalog_state WHERE id=1 FOR UPDATE;
+       IF state_rev<>draft_rev THEN RAISE EXCEPTION 'EC_CONFLICT'; END IF;
+       old_doc=metadata_value->'campaign_stages'->(doc->>'id');
+       IF COALESCE(old_doc->>'revision','0')<>row_rev THEN RAISE EXCEPTION 'EC_CONFLICT'; END IF;
+       next_doc=jsonb_build_object('document',doc,'revision',(state_rev+1)::TEXT);
+       metadata_value=jsonb_set(metadata_value,'{campaign_stages}',COALESCE(metadata_value->'campaign_stages','{}'::JSONB)||jsonb_build_object(doc->>'id',next_doc),TRUE);
+       DELETE FROM enemy_stage_entries WHERE data->>'stage_id'=doc->>'id';
+       UPDATE enemy_catalog_state SET revision=revision+1,metadata=metadata_value WHERE id=1;
+       INSERT INTO enemy_catalog_audit(actor,operation,entity,entity_id,before_data,after_data,draft_revision)
+        VALUES(who,'save','campaign_stage',doc->>'id',old_doc,next_doc,state_rev+1);
+       IF live THEN
+        body=jsonb_set(body,'{framework,catalog_version}',to_jsonb('draft:'||(state_rev+1)::TEXT),TRUE);
+        PERFORM enemy_catalog_apply_projection(body);
+        UPDATE enemy_catalog_state SET metadata=jsonb_set(metadata,'{runtime_version}',body->'framework'->'catalog_version',TRUE) WHERE id=1;
+       END IF;
+       RETURN next_doc||jsonb_build_object('draft_revision',(state_rev+1)::TEXT);
+      END $cp$;`, []);
   for (const key of Object.keys(EC_TABLES)) nk.sqlExec(`CREATE TABLE IF NOT EXISTS ${EC_TABLES[key]} (
       id TEXT PRIMARY KEY CHECK(length(id)<=180),data JSONB NOT NULL CHECK(jsonb_typeof(data)='object'),
       active BOOLEAN NOT NULL DEFAULT TRUE,revision BIGINT NOT NULL DEFAULT 1 CHECK(revision>0),
@@ -13138,6 +13487,13 @@ function createEnemyCatalogTables(nk) {
         INSERT INTO game_enemies(id,display_name,catalog_projection) VALUES(row->>'id',row->>'display_name',row)
         ON CONFLICT(id) DO UPDATE SET display_name=EXCLUDED.display_name,catalog_projection=EXCLUDED.catalog_projection,updated_at=NOW();
        END LOOP;
+       FOR row IN SELECT value FROM jsonb_array_elements(COALESCE(body->'campaign_stages','[]'::JSONB)) LOOP
+        UPDATE game_stages SET display_name=row->>'display_name',stage_rules=row->'stage_rules',updated_at=NOW() WHERE id=row->>'id' AND arc_id=row->>'arc_id';
+        IF NOT FOUND THEN RAISE EXCEPTION 'EC_STAGE_CHANGED'; END IF;
+        DELETE FROM game_stage_waves WHERE stage_id=row->>'id';
+        INSERT INTO game_stage_waves(stage_id,wave_index,wave_id,display_name,entries)
+         SELECT row->>'id',(w.ordinality-1)::INT,w.value->>'id',w.value->>'display_name',w.value->'entries' FROM jsonb_array_elements(row->'waves') WITH ORDINALITY AS w(value,ordinality);
+       END LOOP;
        FOR row IN SELECT value FROM jsonb_array_elements(body->'waves') LOOP
         UPDATE game_stage_waves SET entries=row->'entries' WHERE stage_id=row->>'stage_id' AND wave_index=(row->>'wave_index')::INT;
         IF NOT FOUND THEN RAISE EXCEPTION 'EC_STAGE_CHANGED'; END IF;
@@ -13166,6 +13522,9 @@ function createEnemyCatalogTables(nk) {
        SELECT revision INTO state_rev FROM enemy_catalog_state WHERE id=1 FOR UPDATE;
        IF state_rev<>draft_rev THEN RAISE EXCEPTION 'EC_CONFLICT'; END IF;
        IF rollback_version IS NOT NULL THEN SELECT snapshot INTO body FROM enemy_catalog_releases WHERE version=rollback_version; IF body IS NULL THEN RAISE EXCEPTION 'EC_NOT_FOUND'; END IF; END IF;
+       IF (SELECT metadata ? 'campaign_stages' FROM enemy_catalog_state WHERE id=1) THEN
+        IF EXISTS(SELECT 1 FROM game_stages s WHERE s.stage_rules->>'stage_designer_version'='1' AND NOT EXISTS(SELECT 1 FROM jsonb_array_elements(COALESCE(body->'campaign_stages','[]'::JSONB)) d WHERE d->>'id'=s.id)) THEN RAISE EXCEPTION 'EC_INCOMPLETE_CAMPAIGN_RELEASE'; END IF;
+       END IF;
        INSERT INTO enemy_catalog_releases(snapshot,created_by,note) VALUES(body,who,release_note) RETURNING version INTO ver;
        body=jsonb_set(body,'{framework,catalog_version}',to_jsonb(ver::TEXT),TRUE);
        UPDATE enemy_catalog_releases SET snapshot=body WHERE version=ver;
@@ -13351,7 +13710,8 @@ function ecProject(draft) {
     framework.species[id] = row;
     for (const setId of [row.visual_definition_id, ...row.presentation_variants || []]) for (const slot of ["avatar", "idle", "run", "attack", "hit", "die"]) if (!assigned[setId + ":" + slot]) errors.push("Missing required visual slot: " + setId + ":" + slot);
   }
-  const waves = ecCopy(draft.metadata.waves || []), waveMap = {}, stageMap = {};
+  const managed = draft.metadata.campaign_stages || {};
+  const waves = ecCopy(draft.metadata.waves || []).filter((w) => !managed[w.stage_id]), waveMap = {}, stageMap = {};
   for (const wave of waves) {
     waveMap[wave.stage_id + ":" + wave.wave_index] = wave;
     wave.entries = [];
@@ -13359,6 +13719,7 @@ function ecProject(draft) {
   for (const stage of draft.metadata.stages || []) stageMap[stage.id] = stage;
   const positions = {};
   for (const id of Object.keys(entries)) {
+    if (managed[entries[id].stage_id]) continue;
     const entry = ecCopy(entries[id]), wave = waveMap[entry.stage_id + ":" + entry.wave_index], stage = stageMap[entry.stage_id];
     if (!species[entry.enemy_id]) errors.push("Entry references missing/inactive enemy: " + id);
     if (!wave || !stage) {
@@ -13390,7 +13751,13 @@ function ecProject(draft) {
     const error = validateEnemyFrameworkCatalog(framework);
     if (error) errors.push(error);
   }
-  return { errors, snapshot: { framework, enemies: Object.keys(enemies).sort().map((id) => enemies[id]), waves }, counts: { catalog: Object.keys(species).length, visual_sets: Object.keys(sets).length, assets: Object.keys(assets).length, skills: Object.keys(skills).length, stage_entries: Object.keys(entries).length, waves: waves.length } };
+  const campaign_stages = Object.keys(managed).map((id) => ecCopy(managed[id].document));
+  for (const doc of campaign_stages) {
+    doc.stage_rules.wave_element_rates = {};
+    for (const wave of doc.waves) if (wave.element_rates) doc.stage_rules.wave_element_rates[wave.id] = wave.element_rates;
+  }
+  for (const doc of campaign_stages) errors.push(...campaignValidate(doc, framework));
+  return { errors, snapshot: { framework, enemies: Object.keys(enemies).sort().map((id) => enemies[id]), waves, campaign_stages }, counts: { catalog: Object.keys(species).length, visual_sets: Object.keys(sets).length, assets: Object.keys(assets).length, skills: Object.keys(skills).length, stage_entries: Object.keys(entries).length, waves: waves.length } };
 }
 function ecValidateEntry(entry, framework, stage) {
   if (!framework.species[entry.species_id] || !Number.isInteger(entry.level) || entry.level < 1 || entry.level > framework.max_level) return "Unknown enemy/invalid level";
@@ -13521,6 +13888,11 @@ function ecRpc(ctx, _logger, nk, payload, kind, action) {
       return row ? JSON.stringify({ success: true, data: ecRow(row) }) : ecError(404, "Not found");
     }
     const draft = ecRead(nk);
+    if (kind === "stage_entry" && ["save", "delete"].includes(action)) {
+      const previous = draft.stage_entry.find((r) => r.id === req.id);
+      const sid = (req.data || {}).stage_id || previous && previous.data.stage_id;
+      if ((draft.metadata.campaign_stages || {})[sid]) return ecError(409, "Edit this stage in Stage Designer");
+    }
     if (action === "status") return JSON.stringify({ success: true, data: { draft_revision: draft.revision, active_release: draft.active_release, counts: Object.keys(EC_TABLES).reduce((o, k) => {
       o[k] = draft[k].length;
       return o;
@@ -13538,7 +13910,7 @@ function ecRpc(ctx, _logger, nk, payload, kind, action) {
         if (!req.elements.length) return ecError(400, "Boss preview requires element");
         for (const stat of ["hp", "atk", "def", "attack_speed", "move_speed"]) stats[stat] = Math.max(...req.elements.map((e) => row.element_baselines[e][stat])) * (["hp", "atk", "def"].includes(stat) ? req.level : 1);
       }
-      return JSON.stringify({ success: true, data: { stats, stage_ids: Array.from(new Set(draft.stage_entry.filter((r) => r.active && r.data.enemy_id === req.enemy_id).map((r) => r.data.stage_id))) } });
+      return JSON.stringify({ success: true, data: { stats, stage_ids: Array.from(/* @__PURE__ */ new Set([...draft.stage_entry.filter((r) => r.active && r.data.enemy_id === req.enemy_id).map((r) => r.data.stage_id), ...Object.keys(draft.metadata.campaign_stages || {}).filter((id) => draft.metadata.campaign_stages[id].document.waves.some((w) => w.entries.some((e) => e.species_id === req.enemy_id)))])) } });
     }
     if (typeof req.expected_revision !== "string" || !/^\d{1,18}$/.test(req.expected_revision)) return ecError(400, "expected_revision decimal string required");
     if (action === "normalize") {
@@ -13567,7 +13939,15 @@ function ecRpc(ctx, _logger, nk, payload, kind, action) {
         const p = ecProject(draft);
         if (p.errors.length) return ecError(422, "Catalog validation failed", p.errors);
         snapshot = p.snapshot;
-      } else if (!/^\d+$/.test(String(req.version || ""))) return ecError(400, "Invalid release version");
+      } else {
+        if (!/^\d+$/.test(String(req.version || ""))) return ecError(400, "Invalid release version");
+        const old = nk.sqlQuery("SELECT snapshot FROM enemy_catalog_releases WHERE version=$1::BIGINT", [req.version])[0];
+        if (old) {
+          const target = parseJsonb(old.snapshot);
+          const current = nk.sqlQuery("SELECT id FROM game_stages WHERE (stage_rules->>'stage_designer_version')='1'", []);
+          if (current.some((r) => !(target.campaign_stages || []).some((d) => d.id === r.id))) return ecError(422, "Target predates Stage Designer migration; use a complete content checkpoint");
+        }
+      }
       const result = parseJsonb(nk.sqlQuery("SELECT enemy_catalog_publish($1::JSONB,$2::BIGINT,$3,$4,$5::BIGINT) AS result", [snapshot ? JSON.stringify(snapshot) : null, req.expected_revision, ctx.userId, req.note, action === "rollback" ? req.version : null])[0].result);
       return JSON.stringify({ success: true, data: result });
     }
@@ -13720,6 +14100,286 @@ function rpc_admin_enemy_audit_list(c, l, n, p) {
 function rpc_admin_enemy_audit_get(c, l, n, p) {
   return ecHistoryRpc(c, l, n, p, "audit", "get");
 }
+function campaignRates(value) {
+  return ecObject(value) && Object.keys(value).length === 5 && EC_ELEMENTS.every((e) => typeof value[e] === "number" && Number.isFinite(value[e]) && value[e] >= 0 && value[e] <= 100 && Math.abs(value[e] * 100 - Math.round(value[e] * 100)) < 1e-7) && Math.abs(EC_ELEMENTS.reduce((n, e) => n + value[e], 0) - 100) < 1e-7;
+}
+function campaignRandom(seed) {
+  let state = seed >>> 0;
+  return () => {
+    state = Math.imul(1664525, state) + 1013904223 >>> 0;
+    return state / 4294967296;
+  };
+}
+function campaignAllocate(count, rates, random) {
+  const rows = EC_ELEMENTS.map((element, index) => {
+    const numerator = count * Math.round(rates[element] * 100);
+    return { element, index, count: Math.floor(numerator / 1e4), remainder: numerator % 1e4 };
+  });
+  let remaining = count - rows.reduce((n, r) => n + r.count, 0);
+  for (const row of rows.slice().sort((a, b) => b.remainder - a.remainder || a.index - b.index)) {
+    if (remaining-- <= 0) break;
+    row.count++;
+  }
+  const result = [];
+  for (const row of rows) for (let n = 0; n < row.count; n++) result.push(row.element);
+  for (let n = result.length - 1; n > 0; n--) {
+    const at = Math.floor(random() * (n + 1)), temp = result[n];
+    result[n] = result[at];
+    result[at] = temp;
+  }
+  return result;
+}
+function campaignBonus(rules, wave) {
+  const p = rules.progression;
+  return wave < p.start_wave ? 0 : Math.min(p.max_bonus, (1 + Math.floor((wave - p.start_wave) / p.every)) * p.level_step);
+}
+function campaignDefaults() {
+  return { stage_designer_version: 1, enemy_framework_version: 2, enemy_visual_scale_multiplier: 1, boss_visual_scale_multiplier: 1, spawn_pacing: { batch_size: 1, batch_growth_every: 4, batch_max: 8, individual_delay: 0.4, batch_delay: 0.65, jitter: 0.25, max_alive: 45, lane_count: 7 }, wave_transition: { warning_sec: 120, grace_sec: 10, next_wave_delay: 1.5 }, progression: { start_wave: 1, every: 4, level_step: 0, max_bonus: 0 } };
+}
+function campaignValidate(doc, framework) {
+  const errors = [];
+  const fail = (path, message) => errors.push(path + ": " + message);
+  if (!ecObject(doc) || !EC_ID.test(doc.id || "") || !EC_ID.test(doc.arc_id || "") || typeof doc.display_name !== "string" || !doc.display_name.trim() || doc.display_name.length > 160) return ["Invalid stage identity/name"];
+  if (JSON.stringify(doc).length > 1048576) return ["Stage document exceeds 1 MiB"];
+  const r = doc.stage_rules;
+  if (!ecObject(r) || r.stage_designer_version !== 1 || r.enemy_framework_version !== 2 || !campaignRates(r.element_rates)) return ["stage_rules.element_rates: five percentages must total 100"];
+  const bounded = (o, key, min, max, integer = false) => {
+    if (!ecObject(o) || typeof o[key] !== "number" || !Number.isFinite(o[key]) || o[key] < min || o[key] > max || integer && !Number.isInteger(o[key])) fail("stage_rules." + key, "Invalid bound");
+  };
+  for (const key of ["enemy_visual_scale_multiplier", "boss_visual_scale_multiplier"]) bounded(r, key, 0.1, 5);
+  for (const [key, min, max] of [["batch_size", 1, 16], ["batch_growth_every", 0, 100], ["batch_max", 1, 16], ["max_alive", 1, 200], ["lane_count", 2, 16]]) bounded(r.spawn_pacing, key, min, max, true);
+  for (const key of ["batch_delay", "jitter"]) bounded(r.spawn_pacing, key, 0, 120);
+  if (ecObject(r.spawn_pacing) && r.spawn_pacing.individual_delay !== void 0) bounded(r.spawn_pacing, "individual_delay", 0.05, 120);
+  for (const key of ["warning_sec", "grace_sec", "next_wave_delay"]) bounded(r.wave_transition, key, 0, 3600);
+  for (const [key, min, max] of [["start_wave", 1, 100], ["every", 1, 100], ["level_step", 0, 100], ["max_bonus", 0, 1e4]]) bounded(r.progression, key, min, max, true);
+  if (errors.length) return errors;
+  if (r.spawn_pacing.batch_max < r.spawn_pacing.batch_size) fail("spawn_pacing.batch_max", "Below batch size");
+  if (r.wave_transition.warning_sec + r.wave_transition.grace_sec <= 0) fail("wave_transition", "Timeout must be positive");
+  if (!Array.isArray(doc.waves) || doc.waves.length < 1 || doc.waves.length > 100) return ["waves: expected 1..100"];
+  let total = 0;
+  const ids = {};
+  doc.waves.forEach((wave, wi) => {
+    const path = "waves." + wi;
+    if (!ecObject(wave) || !EC_ID.test(wave.id || "") || ids[wave.id]) {
+      fail(path, "Invalid/duplicate stable wave ID");
+      return;
+    }
+    ids[wave.id] = true;
+    if (typeof wave.display_name !== "string" || wave.display_name.length > 160) fail(path, "Invalid name");
+    if (wave.element_rates !== void 0 && !campaignRates(wave.element_rates)) {
+      fail(path + ".element_rates", "Percentages must total 100");
+      return;
+    }
+    if (!Array.isArray(wave.entries) || !wave.entries.length || wave.entries.length > 100) {
+      fail(path, "Expected 1..100 groups");
+      return;
+    }
+    const rates = wave.element_rates || r.element_rates, entryIds = {};
+    wave.entries.forEach((entry, ei) => {
+      const ep = path + ".entries." + ei;
+      if (!ecObject(entry) || !EC_ID.test(entry.id || "") || entryIds[entry.id]) {
+        fail(ep, "Invalid/duplicate group ID");
+        return;
+      }
+      entryIds[entry.id] = true;
+      for (const forbidden of ["resolved_elements", "random_elements", "element_sequence", "modifiers", "attributes"]) if (entry[forbidden] !== void 0) fail(ep, forbidden + " is not an authored field");
+      if (typeof entry.boss !== "boolean") fail(ep + ".boss", "Boolean required");
+      if (!entry.boss && entry.elements !== void 0) fail(ep + ".elements", "Creeps use stage/wave rates");
+      if (!Number.isInteger(entry.count) || entry.count < 1 || entry.count > 1e3) fail(ep + ".count", "Expected 1..1000");
+      else total += entry.count;
+      if (!Number.isSafeInteger(entry.exp) || entry.exp < 0 || entry.exp > 1e6) fail(ep + ".exp", "Invalid EXP");
+      if (typeof entry.interval !== "number" || !Number.isFinite(entry.interval) || entry.interval < 1e-3 || entry.interval > 3600 || typeof entry.start_delay !== "number" || !Number.isFinite(entry.start_delay) || entry.start_delay < 0 || entry.start_delay > 3600) fail(ep, "Invalid schedule");
+      const fixed = entry.boss && Array.isArray(entry.elements) && entry.elements.length > 0;
+      const elements = fixed ? entry.elements : EC_ELEMENTS.filter((e) => rates[e] > 0);
+      for (const difficulty of ["normal", "epic", "legend"]) {
+        const override = (entry.difficulty_overrides || {})[difficulty] || {};
+        if (!ecObject(override) || Object.keys(override).some((k) => !["level", "skills", "skills_by_element", "loadout_template_id"].includes(k))) {
+          fail(ep + ".difficulty_overrides", "Only level/loadout fields supported");
+          continue;
+        }
+        const effective = Object.assign({}, entry, override);
+        effective.level += campaignBonus(r, wi + 1);
+        const template = effective.loadout_template_id ? (framework.loadout_templates || {})[effective.loadout_template_id] : effective.skills_by_element;
+        if (effective.loadout_template_id && !template) {
+          fail(ep, "Unknown loadout template");
+          continue;
+        }
+        if (fixed) {
+          const candidate = ecCopy(effective);
+          if (template) candidate.skills = template[elements[0]];
+          delete candidate.loadout_template_id;
+          delete candidate.skills_by_element;
+          const error = ecValidateEntry(candidate, framework, doc);
+          if (error) fail(ep + "/" + difficulty, error);
+        } else for (const element of elements) {
+          const candidate = ecCopy(effective);
+          candidate.elements = [element];
+          if (template) candidate.skills = template[element];
+          delete candidate.loadout_template_id;
+          delete candidate.skills_by_element;
+          const error = ecValidateEntry(candidate, framework, doc);
+          if (error) fail(ep + "/" + difficulty + "/" + element, error);
+        }
+      }
+    });
+  });
+  if (total > 1e4) fail("waves", "Maximum 10000 individuals");
+  return errors;
+}
+function campaignResolve(doc, framework, difficulty, seed, version) {
+  if (!["normal", "epic", "legend"].includes(difficulty) || !Number.isInteger(seed) || seed < 0 || seed > 4294967295) throw Error("Invalid difficulty/seed");
+  const errors = campaignValidate(doc, framework);
+  if (errors.length) throw Error(errors.slice(0, 20).join("\n"));
+  const stage = ecCopy(doc), random = campaignRandom(seed);
+  let total_count = 0, total_exp = 0;
+  stage.waves.forEach((wave, wi) => {
+    const rates = wave.element_rates || stage.stage_rules.element_rates;
+    const allocated = campaignAllocate(wave.entries.filter((e) => !e.boss).reduce((n, e) => n + e.count, 0), rates, random);
+    let cursor = 0;
+    for (const entry of wave.entries) {
+      Object.assign(entry, (entry.difficulty_overrides || {})[difficulty] || {});
+      delete entry.difficulty_overrides;
+      entry.level += campaignBonus(stage.stage_rules, wi + 1);
+      entry.resolved_elements = [];
+      for (let i = 0; i < entry.count; i++) {
+        if (!entry.boss) entry.resolved_elements.push([allocated[cursor++]]);
+        else if (Array.isArray(entry.elements) && entry.elements.length) entry.resolved_elements.push(ecCopy(entry.elements));
+        else {
+          let pick = random() * 100, chosen = EC_ELEMENTS.filter((e) => rates[e] > 0).slice(-1)[0];
+          for (const element of EC_ELEMENTS) {
+            pick -= rates[element];
+            if (pick < 0) {
+              chosen = element;
+              break;
+            }
+          }
+          entry.resolved_elements.push([chosen]);
+        }
+      }
+      total_count += entry.count;
+      total_exp += entry.count * entry.exp;
+    }
+  });
+  return { version: 1, stage_id: doc.id, difficulty_id: difficulty, content_version: version, seed, stage, total_count, total_exp };
+}
+function campaignDocument(nk, draft, id) {
+  const saved = (draft.metadata.campaign_stages || {})[id];
+  if (saved) return ecCopy(saved);
+  const header = nk.sqlQuery("SELECT id,arc_id,display_name,stage_rules FROM game_stages WHERE id=$1", [id])[0];
+  if (!header) return null;
+  const rules = Object.assign({}, parseJsonb(header.stage_rules) || {}, campaignDefaults());
+  const arc = nk.sqlQuery("SELECT id,element,sort_order,enemy_visual_scale_multiplier FROM game_arcs WHERE id=$1", [header.arc_id])[0];
+  rules.campaign_arc_order = Number(arc && arc.sort_order || 0);
+  rules.enemy_visual_scale_multiplier = Number(arc && arc.enemy_visual_scale_multiplier || 1);
+  rules.boss_visual_scale_multiplier = [1, 3, 4, 5, 6].includes(rules.campaign_arc_order) ? 0.6 : 1;
+  rules.element_rates = EC_ELEMENTS.reduce((o, e) => {
+    o[e] = e === (arc && arc.element) ? 100 : 0;
+    return o;
+  }, {});
+  if (!campaignRates(rules.element_rates)) rules.element_rates = { metal: 20, water: 20, wood: 20, fire: 20, earth: 20 };
+  const waves = nk.sqlQuery("SELECT * FROM game_stage_waves WHERE stage_id=$1 ORDER BY wave_index", [id]).map((w) => ({ id: w.wave_id || "wave_" + w.wave_index, display_name: w.display_name || "", entries: draft.stage_entry.filter((e) => e.active && e.data.stage_id === id && e.data.wave_index === w.wave_index).sort((a, b) => a.data.entry_index - b.data.entry_index).map((row) => {
+    const e = ecCopy(row.data);
+    e.id = row.id;
+    e.species_id = e.enemy_id;
+    for (const key of ["enemy_id", "stage_id", "wave_index", "entry_index"]) delete e[key];
+    return e;
+  }) }));
+  for (const wave of waves) for (const entry of wave.entries) {
+    if (!entry.boss) delete entry.elements;
+    delete entry.random_elements;
+  }
+  return { document: { id, arc_id: header.arc_id, display_name: header.display_name, stage_rules: rules, waves }, revision: "0" };
+}
+function campaignFramework(draft) {
+  const framework = Object.assign({}, draft.metadata.framework || {}, { species: {}, skill_atlas: ecIndex(draft.skill) });
+  for (const row of draft.catalog) if (row.active) framework.species[row.id] = Object.assign({}, row.data, { visual_definition_id: row.data.visual_set_id });
+  return framework;
+}
+function campaignRpc(ctx, logger, nk, payload, action) {
+  if (!ctx.userId || !isConfigAdmin(ctx)) return ecError(403, "Forbidden");
+  try {
+    if (payload.length > 1048576) return ecError(400, "Payload exceeds 1 MiB");
+    const req = JSON.parse(payload || "{}"), draft = ecRead(nk);
+    if (action === "overview") {
+      const arcs = nk.sqlQuery("SELECT id,display_name,sort_order FROM game_arcs ORDER BY sort_order,id", []).map((a) => ({ id: a.id, display_name: a.display_name, order: Number(a.sort_order) }));
+      const stages = nk.sqlQuery("SELECT id,arc_id,display_name FROM game_stages WHERE (stage_rules->>'enemy_framework_version')='2' ORDER BY arc_id,sort_order,id", []).map((s) => __spreadProps(__spreadValues({}, s), { managed: !!(draft.metadata.campaign_stages || {})[s.id] }));
+      const visuals = {};
+      for (const asset of draft.visual_asset) if (asset.active && ["run", "idle"].includes(asset.data.slot)) {
+        const source = (draft.metadata.asset_sources || {})[asset.data.source_id];
+        const sheet = source && source.sheets && source.sheets[asset.data.slot];
+        if (sheet && typeof sheet.path === "string" && sheet.path.startsWith("res://assets/") && (!visuals[asset.data.visual_set_id] || asset.data.slot === "run")) visuals[asset.data.visual_set_id] = { path: "/api/assets/" + sheet.path.slice("res://assets/".length).split("/").map(encodeURIComponent).join("/"), columns: sheet.columns || 3, rows: sheet.rows || 3, frame_count: sheet.frame_count || 9 };
+      }
+      return JSON.stringify({ success: true, data: { arcs, stages, visuals, draft_revision: draft.revision, active_release: draft.active_release, enemies: draft.catalog.filter((r) => r.active).map((r) => ({ id: r.id, display_name: r.data.display_name, kind: r.data.kind, visual_set_id: r.data.visual_set_id })), loadout_templates: Object.keys((draft.metadata.framework || {}).loadout_templates || {}).map((id) => {
+        const template = draft.metadata.framework.loadout_templates[id], refs = template.fire || template[Object.keys(template)[0]] || [], primary = refs.find((r) => ((draft.metadata.framework.skill_atlas || {})[r.skill_id] || {}).element !== "neutral") || refs[0], skill = primary && draft.skill.find((r) => r.id === primary.skill_id);
+        return { id, label: (skill && skill.data.display_name || primary && primary.skill_id || id) + " / Lv" + (primary && primary.level || 1) + " / " + refs.length + " skills" };
+      }) } });
+    }
+    if (action === "get") {
+      if (!EC_ID.test(req.id || "")) return ecError(400, "Invalid ID");
+      const value = campaignDocument(nk, draft, req.id);
+      return value ? JSON.stringify({ success: true, data: __spreadProps(__spreadValues({}, value), { draft_revision: draft.revision }) }) : ecError(404, "Stage not found");
+    }
+    const doc = req.document;
+    if (!ecObject(doc)) return ecError(400, "document required");
+    const header = nk.sqlQuery("SELECT id,arc_id FROM game_stages WHERE id=$1", [doc.id])[0];
+    if (!header || header.arc_id !== doc.arc_id) return ecError(422, "Stage/Arc identity cannot change");
+    const arc = nk.sqlQuery("SELECT sort_order FROM game_arcs WHERE id=$1", [doc.arc_id])[0];
+    doc.stage_rules = __spreadProps(__spreadValues({}, doc.stage_rules), { campaign_arc_order: Number(arc && arc.sort_order || 0) });
+    const framework = campaignFramework(draft), errors = campaignValidate(doc, framework);
+    if (errors.length) return ecError(422, "Invalid stage", errors);
+    if (action === "resolve") return JSON.stringify({ success: true, data: campaignResolve(doc, framework, req.difficulty_id || "normal", req.seed === void 0 ? 269 : req.seed, draft.revision) });
+    if (action !== "save") return ecError(400, "Unknown operation");
+    if (!/^\d{1,18}$/.test(req.expected_revision || "") || !/^\d{1,18}$/.test(req.expected_draft_revision || "")) return ecError(400, "Revisions required");
+    const next = ecCopy(draft);
+    next.metadata.campaign_stages = next.metadata.campaign_stages || {};
+    next.metadata.campaign_stages[doc.id] = { document: doc, revision: req.expected_revision };
+    const result = ecLiveEnabled(ctx) ? ecProject(next) : { errors: [], snapshot: null };
+    if (result.errors.length) return ecError(422, "Content validation failed", result.errors.slice(0, 30));
+    const saved = parseJsonb(nk.sqlQuery("SELECT campaign_stage_write($1::JSONB,$2,$3::BIGINT,$4,$5::JSONB,$6) AS result", [JSON.stringify(doc), req.expected_revision, req.expected_draft_revision, ctx.userId, JSON.stringify(result.snapshot), ecLiveEnabled(ctx)])[0].result);
+    return JSON.stringify({ success: true, data: saved });
+  } catch (error) {
+    const message = String(error);
+    if (message.includes("EC_CONFLICT")) return ecError(409, "Configuration changed; reload before saving");
+    logger.error("Campaign operation failed: %s", message);
+    return ecError(422, "Stage operation failed; check configuration");
+  }
+}
+function rpc_admin_campaign_overview(c, l, n, p) {
+  return campaignRpc(c, l, n, p, "overview");
+}
+function rpc_admin_campaign_stage_get(c, l, n, p) {
+  return campaignRpc(c, l, n, p, "get");
+}
+function rpc_admin_campaign_stage_save(c, l, n, p) {
+  return campaignRpc(c, l, n, p, "save");
+}
+function rpc_admin_campaign_stage_resolve(c, l, n, p) {
+  return campaignRpc(c, l, n, p, "resolve");
+}
+function campaignRunPlan(nk, stageId, difficulty, runId) {
+  const row = nk.sqlQuery("SELECT id,arc_id,display_name,stage_rules FROM game_stages WHERE id=$1", [stageId])[0];
+  if (!row || Number((parseJsonb(row.stage_rules) || {}).stage_designer_version) !== 1) return null;
+  const framework = parseJsonb(nk.sqlQuery("SELECT value FROM game_config WHERE key='progression'", [])[0].value).enemy_framework;
+  const waves = nk.sqlQuery("SELECT * FROM game_stage_waves WHERE stage_id=$1 ORDER BY wave_index", [stageId]).map((w) => ({ id: w.wave_id, display_name: w.display_name || "", entries: parseJsonb(w.entries) }));
+  const rates = (parseJsonb(row.stage_rules) || {}).wave_element_rates || {};
+  for (const wave of waves) if (rates[wave.id]) wave.element_rates = rates[wave.id];
+  let seed = 269;
+  for (let i = 0; i < runId.length; i++) seed = Math.imul(seed, 31) + runId.charCodeAt(i) >>> 0;
+  return campaignResolve({ id: row.id, arc_id: row.arc_id, display_name: row.display_name, stage_rules: parseJsonb(row.stage_rules), waves }, framework, difficulty, seed, String(framework.catalog_version || "0"));
+}
+const getStagePlan = (ctx, _l, nk, payload) => {
+  if (!ctx.userId) return ecError(403, "Session required");
+  let req;
+  try {
+    req = JSON.parse(payload || "{}");
+  } catch (_) {
+    return ecError(400, "Invalid JSON");
+  }
+  const row = nk.storageRead([{ collection: "player_stage_runs", key: "active", userId: ctx.userId }])[0], run = row && row.value;
+  if (!run || run.run_id !== req.run_id || run.status !== "active" || Date.now() >= Number(run.expires_at_ms)) return ecError(404, "Active run not found");
+  if (run.enemy_catalog_version !== enemyCatalogVersion(nk)) return ecError(409, "Content changed; start a new run");
+  return JSON.stringify({ success: true, encounter_plan: run.encounter_plan || null });
+};
 
 var __defProp = Object.defineProperty;
 var __defProps = Object.defineProperties;
@@ -14746,6 +15406,9 @@ function linkedRpc_event_claim(ctx, logger, nk, payload) {
 function linkedRpc_start_stage(ctx, logger, nk, payload) {
   return accountGuardedRpc("start_stage", gatedStartStage)(ctx, logger, nk, payload);
 }
+function linkedRpc_get_stage_plan(ctx, logger, nk, payload) {
+  return accountGuardedRpc("get_stage_plan", getStagePlan)(ctx, logger, nk, payload);
+}
 function linkedRpc_upgrade_element(ctx, logger, nk, payload) {
   return accountGuardedRpc("upgrade_element", gatedUpgradeElement)(ctx, logger, nk, payload);
 }
@@ -14850,6 +15513,18 @@ function linkedRpc_resolve_purchase_order(c, l, n, p) {
   return accountGuardedRpc("resolve_purchase_order", (cc, ll, nn, pp) => invokeWithVersionGate(cc, ll, nn, pp, resolvePurchaseOrder))(c, l, n, p);
 }
 function InitModule(ctx, logger, nk, initializer) {
+  createSupportTables(nk);
+  initializer.registerRpc("support_create", rpc_support_create);
+  initializer.registerRpc("support_list", rpc_support_list);
+  initializer.registerRpc("support_get", rpc_support_get);
+  initializer.registerRpc("support_read", rpc_support_read);
+  initializer.registerRpc("support_reply", rpc_support_reply);
+  initializer.registerRpc("support_close", rpc_support_close);
+  initializer.registerRpc("support_reopen", rpc_support_reopen);
+  initializer.registerRpc("admin_support_list", rpc_admin_support_list);
+  initializer.registerRpc("admin_support_get", rpc_admin_support_get);
+  initializer.registerRpc("admin_support_reply", rpc_admin_support_reply);
+  initializer.registerRpc("admin_support_update", rpc_admin_support_update);
   initializer.registerRpc("health_heartbeat", linkedRpc_health_heartbeat);
   initializer.registerRpc("admin_asset_trace", linkedRpc_admin_asset_trace);
   initializer.registerRpc("admin_player_data_export", adminPlayerDataExport);
@@ -14925,6 +15600,11 @@ function InitModule(ctx, logger, nk, initializer) {
   initializer.registerRpc("admin_enemy_skill_get", rpc_admin_enemy_skill_get);
   initializer.registerRpc("admin_enemy_skill_save", rpc_admin_enemy_skill_save);
   initializer.registerRpc("admin_enemy_skill_delete", rpc_admin_enemy_skill_delete);
+  initializer.registerRpc("admin_campaign_overview", rpc_admin_campaign_overview);
+  initializer.registerRpc("admin_campaign_stage_get", rpc_admin_campaign_stage_get);
+  initializer.registerRpc("admin_campaign_stage_save", rpc_admin_campaign_stage_save);
+  initializer.registerRpc("admin_campaign_stage_resolve", rpc_admin_campaign_stage_resolve);
+  initializer.registerRpc("get_stage_plan", linkedRpc_get_stage_plan);
   initializer.registerRpc("admin_enemy_stage_entry_list", rpc_admin_enemy_stage_entry_list);
   initializer.registerRpc("admin_enemy_stage_entry_get", rpc_admin_enemy_stage_entry_get);
   initializer.registerRpc("admin_enemy_stage_entry_save", rpc_admin_enemy_stage_entry_save);

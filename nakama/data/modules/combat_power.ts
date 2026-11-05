@@ -14,6 +14,14 @@ function cpNumber(value: any, fallback: number = 0): number {
 }
 function cpClamp(value: number, low: number, high: number): number { return Math.max(low, Math.min(high, value)); }
 function cpRound(value: number): number { return Math.floor(value + 0.5); }
+// Canonical unit engine: the same conversion used by client CombatSpeedService.
+function cpBasicAttackRate(spd: number): number {
+    return Number.isFinite(spd) && spd > 0 ? spd / 100 : 0;
+}
+function cpValidSpeedUnits(progression: any): boolean {
+    const c = cpObject(progression.combat_speed);
+    return c.version === 1 && c.hero_unit === "spd_points" && c.enemy_source_unit === "attacks_per_second" && c.reference_spd === 100 && c.skill_flight_enabled === false;
+}
 function cpHeroAttributes(hero: any, level: number, progression: any): any {
     const result = JSON.parse(JSON.stringify(cpObject(hero.attributes)));
     const growth = cpObject(hero.level_up_stats);
@@ -113,9 +121,8 @@ function cpEvaluate(hero: any, level: number, affinities: any, roots: any, equip
     const element = String(hero.element || ""), amp = cpAmplification(cpNumber(roots[element]),progression);
     const attackMultiplier = 1+Math.max(0,cpNumber(affinities[element]))*amp*0.0001;
     const atk = Math.max(0,cpNumber(a.atk));
-    // Runtime Player treats SPD as linear cooldown reduction, not attacks/second.
-    const basicCooldown = Math.max(0.2,2-Math.max(0,cpNumber(a.attack_speed))*0.005);
-    let dps = hero.auto_basic_attack === false ? 0 : atk*cpNumber(cfg.basic_damage_multiplier)*crit/basicCooldown;
+    const basicRate = cpBasicAttackRate(cpNumber(a.attack_speed));
+    let dps = hero.auto_basic_attack === false ? 0 : atk*cpNumber(cfg.basic_damage_multiplier)*crit*basicRate;
     for (const id of cpArray(hero.starting_skills)) dps += cpSkillDps(String(id),1,atk,crit,cpNumber(a.skill_cooldown_mul,1),skills,cfg);
     dps *= attackMultiplier;
     if (equipped.length) {
@@ -155,7 +162,7 @@ function cpEvaluate(hero: any, level: number, affinities: any, roots: any, equip
 function calculateCombatPower(profile: any, states: any[], inventory: any[], heroes: any[], skills: any[], progression: any, items: any[]): any {
     const cfg = cpObject(progression.combat_power);
     const result: any = {version:cpNumber(cfg.version),configured:false,score:0,hero_id:"",heroes:[]};
-    if (cfg.version!==2 || !(cfg.horizon_seconds>0) || !(cfg.offense_weight>0) || !(cfg.survival_weight>0)
+    if (!cpValidSpeedUnits(progression) || cfg.version!==2 || !(cfg.horizon_seconds>0) || !(cfg.offense_weight>0) || !(cfg.survival_weight>0)
         || !(cfg.min_defense_multiplier>0 && cfg.min_defense_multiplier<=1) || !(cfg.minimum_cooldown>0)
         || !(cfg.dodge_cap>=0 && cfg.dodge_cap<1) || !cpArray(cpObject(progression.element_combat).supported_elements).length) return result;
     result.configured = true;

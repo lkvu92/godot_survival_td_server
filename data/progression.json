@@ -1460,37 +1460,37 @@
     "max_level": 200,
     "boss_element_baselines": {
       "earth": {
-        "hp": 3520,
-        "atk": 5.2,
-        "def": 22.5,
+        "hp": 2816,
+        "atk": 4.16,
+        "def": 18,
         "attack_speed": 1.302,
         "move_speed": 290
       },
       "fire": {
-        "hp": 2880,
-        "atk": 6,
-        "def": 7.5,
+        "hp": 2304,
+        "atk": 4.8,
+        "def": 6,
         "attack_speed": 1.218,
         "move_speed": 295
       },
       "metal": {
-        "hp": 3760,
-        "atk": 4.8,
-        "def": 18,
+        "hp": 3008,
+        "atk": 3.84,
+        "def": 14.4,
         "attack_speed": 1.26,
         "move_speed": 285
       },
       "water": {
-        "hp": 3840,
-        "atk": 4.6,
-        "def": 15,
+        "hp": 3072,
+        "atk": 3.68,
+        "def": 12,
         "attack_speed": 1.26,
         "move_speed": 280
       },
       "wood": {
-        "hp": 2960,
-        "atk": 5,
-        "def": 9,
+        "hp": 2368,
+        "atk": 4,
+        "def": 7.2,
         "attack_speed": 1.638,
         "move_speed": 335
       }
@@ -1720,9 +1720,9 @@
           "regen_percent_per_10s": 0
         },
         "growth_per_level": {
-          "hp": 18,
-          "atk": 6,
-          "def": 0.25,
+          "hp": 14.4,
+          "atk": 4.8,
+          "def": 0.2,
           "move_speed": 0,
           "attack_speed": 0,
           "attack_range": 0
@@ -1751,9 +1751,9 @@
           "regen_percent_per_10s": 0
         },
         "growth_per_level": {
-          "hp": 37,
-          "atk": 1.25,
-          "def": 0.3,
+          "hp": 29.6,
+          "atk": 1,
+          "def": 0.24,
           "move_speed": 0,
           "attack_speed": 0,
           "attack_range": 0
@@ -1779,9 +1779,9 @@
           "regen_percent_per_10s": 0
         },
         "growth_per_level": {
-          "hp": 23.5,
-          "atk": 2.4,
-          "def": 1.2,
+          "hp": 18.8,
+          "atk": 1.92,
+          "def": 0.96,
           "move_speed": 0,
           "attack_speed": 0,
           "attack_range": 0
@@ -1810,9 +1810,9 @@
           "regen_percent_per_10s": 0
         },
         "growth_per_level": {
-          "hp": 88,
-          "atk": 2.6,
-          "def": 3,
+          "hp": 70.4,
+          "atk": 2.08,
+          "def": 2.4,
           "move_speed": 0,
           "attack_speed": 0,
           "attack_range": 0
@@ -1899,9 +1899,9 @@
           "regen_percent_per_10s": 0
         },
         "growth_per_level": {
-          "hp": 18,
-          "atk": 6,
-          "def": 0.25,
+          "hp": 14.4,
+          "atk": 4.8,
+          "def": 0.2,
           "move_speed": 0,
           "attack_speed": 0,
           "attack_range": 0
@@ -1930,9 +1930,9 @@
           "regen_percent_per_10s": 0
         },
         "growth_per_level": {
-          "hp": 48,
-          "atk": 2.3,
-          "def": 1,
+          "hp": 38.4,
+          "atk": 1.84,
+          "def": 0.8,
           "move_speed": 0,
           "attack_speed": 0,
           "attack_range": 0
@@ -1994,9 +1994,9 @@
           "regen_percent_per_10s": 0
         },
         "growth_per_level": {
-          "hp": 48,
-          "atk": 2.3,
-          "def": 1,
+          "hp": 38.4,
+          "atk": 1.84,
+          "def": 0.8,
           "move_speed": 0,
           "attack_speed": 0,
           "attack_range": 0
@@ -2022,9 +2022,9 @@
           "regen_percent_per_10s": 0
         },
         "growth_per_level": {
-          "hp": 18,
-          "atk": 6,
-          "def": 0.25,
+          "hp": 14.4,
+          "atk": 4.8,
+          "def": 0.2,
           "move_speed": 0,
           "attack_speed": 0,
           "attack_range": 0
@@ -2050,9 +2050,9 @@
           "regen_percent_per_10s": 0
         },
         "growth_per_level": {
-          "hp": 48,
-          "atk": 2.3,
-          "def": 1,
+          "hp": 38.4,
+          "atk": 1.84,
+          "def": 0.8,
           "move_speed": 0,
           "attack_speed": 0,
           "attack_range": 0
@@ -2078,9 +2078,9 @@
           "regen_percent_per_10s": 0
         },
         "growth_per_level": {
-          "hp": 23.5,
-          "atk": 2.4,
-          "def": 1.2,
+          "hp": 18.8,
+          "atk": 1.92,
+          "def": 0.96,
           "move_speed": 0,
           "attack_speed": 0,
           "attack_range": 0
@@ -2106,9 +2106,9 @@
           "regen_percent_per_10s": 0
         },
         "growth_per_level": {
-          "hp": 18,
-          "atk": 6,
-          "def": 0.25,
+          "hp": 14.4,
+          "atk": 4.8,
+          "def": 0.2,
           "move_speed": 0,
           "attack_speed": 0,
           "attack_range": 0
@@ -2134,9 +2134,9 @@
           "regen_percent_per_10s": 0
         },
         "growth_per_level": {
-          "hp": 23.5,
-          "atk": 2.4,
-          "def": 1.2,
+          "hp": 18.8,
+          "atk": 1.92,
+          "def": 0.96,
           "move_speed": 0,
           "attack_speed": 0,
           "attack_range": 0
@@ -2162,9 +2162,9 @@
           "regen_percent_per_10s": 0
         },
         "growth_per_level": {
-          "hp": 88,
-          "atk": 2.6,
-          "def": 3,
+          "hp": 70.4,
+          "atk": 2.08,
+          "def": 2.4,
           "move_speed": 0,
           "attack_speed": 0,
           "attack_range": 0
@@ -2248,9 +2248,9 @@
           "regen_percent_per_10s": 0
         },
         "growth_per_level": {
-          "hp": 18,
-          "atk": 6,
-          "def": 0.25,
+          "hp": 14.4,
+          "atk": 4.8,
+          "def": 0.2,
           "move_speed": 0,
           "attack_speed": 0,
           "attack_range": 0
@@ -2279,9 +2279,9 @@
           "regen_percent_per_10s": 0
         },
         "growth_per_level": {
-          "hp": 37,
-          "atk": 1.25,
-          "def": 0.3,
+          "hp": 29.6,
+          "atk": 1,
+          "def": 0.24,
           "move_speed": 0,
           "attack_speed": 0,
           "attack_range": 0
@@ -2307,9 +2307,9 @@
           "regen_percent_per_10s": 0
         },
         "growth_per_level": {
-          "hp": 23.5,
-          "atk": 2.4,
-          "def": 1.2,
+          "hp": 18.8,
+          "atk": 1.92,
+          "def": 0.96,
           "move_speed": 0,
           "attack_speed": 0,
           "attack_range": 0
@@ -2338,9 +2338,9 @@
           "regen_percent_per_10s": 0
         },
         "growth_per_level": {
-          "hp": 88,
-          "atk": 2.6,
-          "def": 3,
+          "hp": 70.4,
+          "atk": 2.08,
+          "def": 2.4,
           "move_speed": 0,
           "attack_speed": 0,
           "attack_range": 0
@@ -2424,9 +2424,9 @@
           "regen_percent_per_10s": 0
         },
         "growth_per_level": {
-          "hp": 23.5,
-          "atk": 2.4,
-          "def": 1.2,
+          "hp": 18.8,
+          "atk": 1.92,
+          "def": 0.96,
           "move_speed": 0,
           "attack_speed": 0,
           "attack_range": 0
@@ -2452,9 +2452,9 @@
           "regen_percent_per_10s": 0
         },
         "growth_per_level": {
-          "hp": 37,
-          "atk": 1.25,
-          "def": 0.3,
+          "hp": 29.6,
+          "atk": 1,
+          "def": 0.24,
           "move_speed": 0,
           "attack_speed": 0,
           "attack_range": 0
@@ -2480,9 +2480,9 @@
           "regen_percent_per_10s": 0
         },
         "growth_per_level": {
-          "hp": 23.5,
-          "atk": 2.4,
-          "def": 1.2,
+          "hp": 18.8,
+          "atk": 1.92,
+          "def": 0.96,
           "move_speed": 0,
           "attack_speed": 0,
           "attack_range": 0
@@ -2511,9 +2511,9 @@
           "regen_percent_per_10s": 0
         },
         "growth_per_level": {
-          "hp": 88,
-          "atk": 2.6,
-          "def": 3,
+          "hp": 70.4,
+          "atk": 2.08,
+          "def": 2.4,
           "move_speed": 0,
           "attack_speed": 0,
           "attack_range": 0
@@ -2600,9 +2600,9 @@
           "regen_percent_per_10s": 0
         },
         "growth_per_level": {
-          "hp": 18,
-          "atk": 6,
-          "def": 0.25,
+          "hp": 14.4,
+          "atk": 4.8,
+          "def": 0.2,
           "move_speed": 0,
           "attack_speed": 0,
           "attack_range": 0
@@ -2631,9 +2631,9 @@
           "regen_percent_per_10s": 0
         },
         "growth_per_level": {
-          "hp": 37,
-          "atk": 1.25,
-          "def": 0.3,
+          "hp": 29.6,
+          "atk": 1,
+          "def": 0.24,
           "move_speed": 0,
           "attack_speed": 0,
           "attack_range": 0
@@ -2659,9 +2659,9 @@
           "regen_percent_per_10s": 0
         },
         "growth_per_level": {
-          "hp": 23.5,
-          "atk": 2.4,
-          "def": 1.2,
+          "hp": 18.8,
+          "atk": 1.92,
+          "def": 0.96,
           "move_speed": 0,
           "attack_speed": 0,
           "attack_range": 0
@@ -2690,9 +2690,9 @@
           "regen_percent_per_10s": 0
         },
         "growth_per_level": {
-          "hp": 88,
-          "atk": 2.6,
-          "def": 3,
+          "hp": 70.4,
+          "atk": 2.08,
+          "def": 2.4,
           "move_speed": 0,
           "attack_speed": 0,
           "attack_range": 0
@@ -2779,9 +2779,9 @@
           "regen_percent_per_10s": 0
         },
         "growth_per_level": {
-          "hp": 18,
-          "atk": 6,
-          "def": 0.25,
+          "hp": 14.4,
+          "atk": 4.8,
+          "def": 0.2,
           "move_speed": 0,
           "attack_speed": 0,
           "attack_range": 0
@@ -2810,9 +2810,9 @@
           "regen_percent_per_10s": 0
         },
         "growth_per_level": {
-          "hp": 37,
-          "atk": 1.25,
-          "def": 0.3,
+          "hp": 29.6,
+          "atk": 1,
+          "def": 0.24,
           "move_speed": 0,
           "attack_speed": 0,
           "attack_range": 0
@@ -2838,9 +2838,9 @@
           "regen_percent_per_10s": 0
         },
         "growth_per_level": {
-          "hp": 23.5,
-          "atk": 2.4,
-          "def": 1.2,
+          "hp": 18.8,
+          "atk": 1.92,
+          "def": 0.96,
           "move_speed": 0,
           "attack_speed": 0,
           "attack_range": 0
@@ -2869,9 +2869,9 @@
           "regen_percent_per_10s": 0
         },
         "growth_per_level": {
-          "hp": 88,
-          "atk": 2.6,
-          "def": 3,
+          "hp": 70.4,
+          "atk": 2.08,
+          "def": 2.4,
           "move_speed": 0,
           "attack_speed": 0,
           "attack_range": 0
@@ -26914,5 +26914,12 @@
         ]
       }
     }
+  },
+  "combat_speed": {
+    "version": 1,
+    "hero_unit": "spd_points",
+    "enemy_source_unit": "attacks_per_second",
+    "reference_spd": 100,
+    "skill_flight_enabled": false
   }
 }

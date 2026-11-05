@@ -1,3 +1,6 @@
+- C268 v1.1: every hero starts at 100 SPD; wood remains fastest-growing through its existing growth factor. Skill flight stays deferred.
+- [C268 Canonical SPD engine](contracts/C268_CANONICAL_SPD_ENGINE.md): 100 SPD = 1 attack/sec; factory/basic/CP units first, skill flight deferred.
+- [C267 Hero skill travel SPD](contracts/C267_HERO_SKILL_TRAVEL_SPEED.md): server-authored SPD multiplier for hero projectiles only.
 - [C263 Tra cứu và trích xuất dữ liệu người chơi](contracts/C263_PLAYER_DATA_EXPORT.md): contract IN_PROGRESS; chưa triển khai hoặc nghiệm thu production.
 - C232 3.4.0: vô hiệu hóa cleanup gameplay tự động sau archive trong mã; cần áp dụng migration SQL và triển khai service, kiểm thử integration và đường hard delete/server riêng.
 - [Store Packages & Purchase Models Admin](STORE_PACKAGES_ADMIN.md): mô hình 3 loại mua (1 lần duy nhất, giới hạn chu kỳ, vô hạn), authoritative RPCs, bộ lọc quản trị và đồng bộ Godot client.
@@ -387,3 +390,9 @@ C252 1.1.0: job-local admission validation cache and batched stage-wave transpor
 - C232 3.2.0: restoration requires privileged administrator review; local implementation pending verification and production rollout.
 
 - C232 3.3.0: email password reset with atomic single-use and idempotent retry; isolated Nakama/PostgreSQL and browser checks passed; real SMTP, Android and production verification remain open.
+
+- [C264 Support Tickets MVP](contracts/C264_SUPPORT_TICKETS.md) — ACTIVE v1.1.2.
+
+- [C269 Stage Designer](contracts/C269_STAGE_DESIGNER.md) ? server encounter plans, serial batch pacing and dashboard (C269 v1.1, ACTIVE).
+
+- [C257 Daily Pack Mail](contracts/C257_DAILY_PACK_MAIL.md) ? mail delivery/claim regression and full server static suite PASS (0.2.1).

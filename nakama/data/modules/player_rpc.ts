@@ -415,7 +415,7 @@ const loadPlayerProfile: nkruntime.RpcFunction = (
         repairWrites.push({ collection: "player_settings", key: "prefs", userId: ctx.userId,
             value: result.settings, permissionRead: 1, permissionWrite: 0, version: "*" });
     }
-    if (progressionReconcileArcModes(nk,result.profile) && !repairWrites.some(w=>w.collection==='player_profiles')) {
+    if ((progressionReconcileArcModes(nk,result.profile) || (typeof sweepReconcileStageGrades === "function" && sweepReconcileStageGrades(result.profile))) && !repairWrites.some(w=>w.collection==='player_profiles')) {
         repairWrites.push({collection:'player_profiles',key:'main',userId:ctx.userId,value:result.profile,version:profileObject?profileObject.version:'*',permissionRead:1,permissionWrite:0});
     }
     if (repairWrites.length > 0) {

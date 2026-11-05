@@ -5,6 +5,27 @@ const EC_ELEMENTS=['metal','water','wood','fire','earth'];
 const EC_ID=/^[a-zA-Z0-9][a-zA-Z0-9_.:-]{0,179}$/;
 
 function createEnemyCatalogTables(nk:nkruntime.Nakama):void {
+    nk.sqlExec(`CREATE OR REPLACE FUNCTION campaign_stage_write(doc JSONB,row_rev TEXT,draft_rev BIGINT,who TEXT,body JSONB,live BOOLEAN)
+      RETURNS JSONB LANGUAGE plpgsql AS $cp$
+      DECLARE state_rev BIGINT; old_doc JSONB; metadata_value JSONB; next_doc JSONB;
+      BEGIN
+       SELECT revision,metadata INTO state_rev,metadata_value FROM enemy_catalog_state WHERE id=1 FOR UPDATE;
+       IF state_rev<>draft_rev THEN RAISE EXCEPTION 'EC_CONFLICT'; END IF;
+       old_doc=metadata_value->'campaign_stages'->(doc->>'id');
+       IF COALESCE(old_doc->>'revision','0')<>row_rev THEN RAISE EXCEPTION 'EC_CONFLICT'; END IF;
+       next_doc=jsonb_build_object('document',doc,'revision',(state_rev+1)::TEXT);
+       metadata_value=jsonb_set(metadata_value,'{campaign_stages}',COALESCE(metadata_value->'campaign_stages','{}'::JSONB)||jsonb_build_object(doc->>'id',next_doc),TRUE);
+       DELETE FROM enemy_stage_entries WHERE data->>'stage_id'=doc->>'id';
+       UPDATE enemy_catalog_state SET revision=revision+1,metadata=metadata_value WHERE id=1;
+       INSERT INTO enemy_catalog_audit(actor,operation,entity,entity_id,before_data,after_data,draft_revision)
+        VALUES(who,'save','campaign_stage',doc->>'id',old_doc,next_doc,state_rev+1);
+       IF live THEN
+        body=jsonb_set(body,'{framework,catalog_version}',to_jsonb('draft:'||(state_rev+1)::TEXT),TRUE);
+        PERFORM enemy_catalog_apply_projection(body);
+        UPDATE enemy_catalog_state SET metadata=jsonb_set(metadata,'{runtime_version}',body->'framework'->'catalog_version',TRUE) WHERE id=1;
+       END IF;
+       RETURN next_doc||jsonb_build_object('draft_revision',(state_rev+1)::TEXT);
+      END $cp$;`,[]);
     for(const key of Object.keys(EC_TABLES))nk.sqlExec(`CREATE TABLE IF NOT EXISTS ${EC_TABLES[key]} (
       id TEXT PRIMARY KEY CHECK(length(id)<=180),data JSONB NOT NULL CHECK(jsonb_typeof(data)='object'),
       active BOOLEAN NOT NULL DEFAULT TRUE,revision BIGINT NOT NULL DEFAULT 1 CHECK(revision>0),
@@ -78,6 +99,13 @@ function createEnemyCatalogTables(nk:nkruntime.Nakama):void {
         INSERT INTO game_enemies(id,display_name,catalog_projection) VALUES(row->>'id',row->>'display_name',row)
         ON CONFLICT(id) DO UPDATE SET display_name=EXCLUDED.display_name,catalog_projection=EXCLUDED.catalog_projection,updated_at=NOW();
        END LOOP;
+       FOR row IN SELECT value FROM jsonb_array_elements(COALESCE(body->'campaign_stages','[]'::JSONB)) LOOP
+        UPDATE game_stages SET display_name=row->>'display_name',stage_rules=row->'stage_rules',updated_at=NOW() WHERE id=row->>'id' AND arc_id=row->>'arc_id';
+        IF NOT FOUND THEN RAISE EXCEPTION 'EC_STAGE_CHANGED'; END IF;
+        DELETE FROM game_stage_waves WHERE stage_id=row->>'id';
+        INSERT INTO game_stage_waves(stage_id,wave_index,wave_id,display_name,entries)
+         SELECT row->>'id',(w.ordinality-1)::INT,w.value->>'id',w.value->>'display_name',w.value->'entries' FROM jsonb_array_elements(row->'waves') WITH ORDINALITY AS w(value,ordinality);
+       END LOOP;
        FOR row IN SELECT value FROM jsonb_array_elements(body->'waves') LOOP
         UPDATE game_stage_waves SET entries=row->'entries' WHERE stage_id=row->>'stage_id' AND wave_index=(row->>'wave_index')::INT;
         IF NOT FOUND THEN RAISE EXCEPTION 'EC_STAGE_CHANGED'; END IF;
@@ -106,6 +134,9 @@ function createEnemyCatalogTables(nk:nkruntime.Nakama):void {
        SELECT revision INTO state_rev FROM enemy_catalog_state WHERE id=1 FOR UPDATE;
        IF state_rev<>draft_rev THEN RAISE EXCEPTION 'EC_CONFLICT'; END IF;
        IF rollback_version IS NOT NULL THEN SELECT snapshot INTO body FROM enemy_catalog_releases WHERE version=rollback_version; IF body IS NULL THEN RAISE EXCEPTION 'EC_NOT_FOUND'; END IF; END IF;
+       IF (SELECT metadata ? 'campaign_stages' FROM enemy_catalog_state WHERE id=1) THEN
+        IF EXISTS(SELECT 1 FROM game_stages s WHERE s.stage_rules->>'stage_designer_version'='1' AND NOT EXISTS(SELECT 1 FROM jsonb_array_elements(COALESCE(body->'campaign_stages','[]'::JSONB)) d WHERE d->>'id'=s.id)) THEN RAISE EXCEPTION 'EC_INCOMPLETE_CAMPAIGN_RELEASE'; END IF;
+       END IF;
        INSERT INTO enemy_catalog_releases(snapshot,created_by,note) VALUES(body,who,release_note) RETURNING version INTO ver;
        body=jsonb_set(body,'{framework,catalog_version}',to_jsonb(ver::TEXT),TRUE);
        UPDATE enemy_catalog_releases SET snapshot=body WHERE version=ver;
@@ -250,11 +281,13 @@ function ecProject(draft:any):any {
         framework.species[id]=row;
         for(const setId of [row.visual_definition_id,...(row.presentation_variants||[])])for(const slot of ['avatar','idle','run','attack','hit','die'])if(!assigned[setId+':'+slot])errors.push('Missing required visual slot: '+setId+':'+slot);
     }
-    const waves:any=ecCopy(draft.metadata.waves||[]),waveMap:any={},stageMap:any={};
+    const managed=draft.metadata.campaign_stages||{};
+    const waves:any=ecCopy(draft.metadata.waves||[]).filter((w:any)=>!managed[w.stage_id]),waveMap:any={},stageMap:any={};
     for(const wave of waves){waveMap[wave.stage_id+':'+wave.wave_index]=wave;wave.entries=[];}
     for(const stage of draft.metadata.stages||[])stageMap[stage.id]=stage;
     const positions:any={};
     for(const id of Object.keys(entries)){
+        if(managed[entries[id].stage_id])continue;
         const entry=ecCopy(entries[id]),wave=waveMap[entry.stage_id+':'+entry.wave_index],stage=stageMap[entry.stage_id];
         if(!species[entry.enemy_id])errors.push('Entry references missing/inactive enemy: '+id);
         if(!wave||!stage){errors.push('Entry references missing stage/wave: '+id);continue;}
@@ -271,7 +304,10 @@ function ecProject(draft:any):any {
     }
     for(const wave of waves){wave.entries.sort((a:any,b:any)=>a.sort-b.sort);wave.entries=wave.entries.map((e:any)=>e.entry);if(!wave.entries.length)errors.push('Empty managed wave: '+wave.stage_id+':'+wave.wave_index);}
     if(!errors.length){const error=validateEnemyFrameworkCatalog(framework);if(error)errors.push(error);}
-    return {errors,snapshot:{framework,enemies:Object.keys(enemies).sort().map(id=>enemies[id]),waves},counts:{catalog:Object.keys(species).length,visual_sets:Object.keys(sets).length,assets:Object.keys(assets).length,skills:Object.keys(skills).length,stage_entries:Object.keys(entries).length,waves:waves.length}};
+    const campaign_stages=Object.keys(managed).map(id=>ecCopy(managed[id].document));
+    for(const doc of campaign_stages){doc.stage_rules.wave_element_rates={};for(const wave of doc.waves)if(wave.element_rates)doc.stage_rules.wave_element_rates[wave.id]=wave.element_rates;}
+    for(const doc of campaign_stages)errors.push(...campaignValidate(doc,framework));
+    return {errors,snapshot:{framework,enemies:Object.keys(enemies).sort().map(id=>enemies[id]),waves,campaign_stages},counts:{catalog:Object.keys(species).length,visual_sets:Object.keys(sets).length,assets:Object.keys(assets).length,skills:Object.keys(skills).length,stage_entries:Object.keys(entries).length,waves:waves.length}};
 }
 
 function ecValidateEntry(entry:any,framework:any,stage:any):string {
@@ -365,13 +401,14 @@ function ecRpc(ctx:nkruntime.Context,_logger:nkruntime.Logger,nk:nkruntime.Nakam
             const row=nk.sqlQuery(`SELECT *,revision::TEXT FROM ${table} WHERE id=$1`,[req.id])[0];return row?JSON.stringify({success:true,data:ecRow(row)}):ecError(404,'Not found');
         }
         const draft=ecRead(nk);
+        if(kind==='stage_entry'&&['save','delete'].includes(action)){const previous=draft.stage_entry.find((r:any)=>r.id===req.id);const sid=(req.data||{}).stage_id||(previous&&previous.data.stage_id);if((draft.metadata.campaign_stages||{})[sid])return ecError(409,'Edit this stage in Stage Designer');}
         if(action==='status')return JSON.stringify({success:true,data:{draft_revision:draft.revision,active_release:draft.active_release,counts:Object.keys(EC_TABLES).reduce((o:any,k:string)=>{o[k]=draft[k].length;return o;},{}),asset_sources:draft.metadata.asset_sources||{},stages:draft.metadata.stages||[],waves:draft.metadata.waves||[],loadout_templates:(draft.metadata.framework||{}).loadout_templates||{},legacy_stage_ids:draft.metadata.legacy_stage_ids||[]}});
         if(action==='validate'){const projected=ecProject(draft);return JSON.stringify({success:true,data:{valid:!projected.errors.length,errors:projected.errors,counts:projected.counts,draft_revision:draft.revision}});}
         if(action==='preview'){
             const record=draft.catalog.find((r:any)=>r.id===req.enemy_id),row=record&&record.data;if(!row||!Number.isInteger(req.level)||req.level<1||req.level>Number((draft.metadata.framework||{}).max_level||200)||!Array.isArray(req.elements)||req.elements.some((e:any)=>!EC_ELEMENTS.includes(e)))return ecError(400,'Invalid preview');
             const stats:any={};for(const stat of Object.keys(row.base_attributes))stats[stat]=row.base_attributes[stat]+(req.level-1)*(row.growth_per_level[stat]||0);
             if(row.balance_profile==='element_boss'){if(!req.elements.length)return ecError(400,'Boss preview requires element');for(const stat of ['hp','atk','def','attack_speed','move_speed'])stats[stat]=Math.max(...req.elements.map((e:string)=>row.element_baselines[e][stat]))*(['hp','atk','def'].includes(stat)?req.level:1);}
-            return JSON.stringify({success:true,data:{stats,stage_ids:Array.from(new Set(draft.stage_entry.filter((r:any)=>r.active&&r.data.enemy_id===req.enemy_id).map((r:any)=>r.data.stage_id)))}});
+            return JSON.stringify({success:true,data:{stats,stage_ids:Array.from(new Set([...draft.stage_entry.filter((r:any)=>r.active&&r.data.enemy_id===req.enemy_id).map((r:any)=>r.data.stage_id),...Object.keys(draft.metadata.campaign_stages||{}).filter(id=>draft.metadata.campaign_stages[id].document.waves.some((w:any)=>w.entries.some((e:any)=>e.species_id===req.enemy_id)))]))}});
         }
         if(typeof req.expected_revision!=='string'||!/^\d{1,18}$/.test(req.expected_revision))return ecError(400,'expected_revision decimal string required');
         if(action==='normalize'){
@@ -395,7 +432,7 @@ function ecRpc(ctx:nkruntime.Context,_logger:nkruntime.Logger,nk:nkruntime.Nakam
         if(action==='publish'||action==='rollback'){
             if(typeof req.note!=='string'||!req.note.trim()||req.note.length>1000)return ecError(400,'Release note required');
             let snapshot:any=null;if(action==='publish'){const p=ecProject(draft);if(p.errors.length)return ecError(422,'Catalog validation failed',p.errors);snapshot=p.snapshot;}
-            else if(!/^\d+$/.test(String(req.version||'')))return ecError(400,'Invalid release version');
+            else {if(!/^\d+$/.test(String(req.version||'')))return ecError(400,'Invalid release version');const old=nk.sqlQuery('SELECT snapshot FROM enemy_catalog_releases WHERE version=$1::BIGINT',[req.version])[0];if(old){const target=parseJsonb(old.snapshot);const current=nk.sqlQuery("SELECT id FROM game_stages WHERE (stage_rules->>'stage_designer_version')='1'",[]);if(current.some((r:any)=>!(target.campaign_stages||[]).some((d:any)=>d.id===r.id)))return ecError(422,'Target predates Stage Designer migration; use a complete content checkpoint');}}
             const result=parseJsonb(nk.sqlQuery('SELECT enemy_catalog_publish($1::JSONB,$2::BIGINT,$3,$4,$5::BIGINT) AS result',[snapshot?JSON.stringify(snapshot):null,req.expected_revision,ctx.userId,req.note,action==='rollback'?req.version:null])[0].result);
             return JSON.stringify({success:true,data:result});
         }
@@ -471,3 +508,155 @@ function rpc_admin_enemy_release_list(c:nkruntime.Context,l:nkruntime.Logger,n:n
 function rpc_admin_enemy_release_get(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string{return ecHistoryRpc(c,l,n,p,"release","get");}
 function rpc_admin_enemy_audit_list(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string{return ecHistoryRpc(c,l,n,p,"audit","list");}
 function rpc_admin_enemy_audit_get(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string{return ecHistoryRpc(c,l,n,p,"audit","get");}
+// C269: one content lifecycle, server-owned element allocation and stage documents.
+function campaignRates(value:any):boolean {
+    return ecObject(value)&&Object.keys(value).length===5&&EC_ELEMENTS.every(e=>typeof value[e]==='number'&&Number.isFinite(value[e])&&value[e]>=0&&value[e]<=100&&Math.abs(value[e]*100-Math.round(value[e]*100))<1e-7)&&Math.abs(EC_ELEMENTS.reduce((n,e)=>n+value[e],0)-100)<1e-7;
+}
+function campaignRandom(seed:number):()=>number {
+    let state=seed>>>0;
+    return ()=>{state=(Math.imul(1664525,state)+1013904223)>>>0;return state/4294967296;};
+}
+function campaignAllocate(count:number,rates:any,random:()=>number):string[] {
+    const rows=EC_ELEMENTS.map((element,index)=>{const numerator=count*Math.round(rates[element]*100);return {element,index,count:Math.floor(numerator/10000),remainder:numerator%10000};});
+    let remaining=count-rows.reduce((n,r)=>n+r.count,0);
+    for(const row of rows.slice().sort((a,b)=>b.remainder-a.remainder||a.index-b.index)){if(remaining--<=0)break;row.count++;}
+    const result:string[]=[];for(const row of rows)for(let n=0;n<row.count;n++)result.push(row.element);
+    for(let n=result.length-1;n>0;n--){const at=Math.floor(random()*(n+1)),temp=result[n];result[n]=result[at];result[at]=temp;}
+    return result;
+}
+function campaignBonus(rules:any,wave:number):number {const p=rules.progression;return wave<p.start_wave?0:Math.min(p.max_bonus,(1+Math.floor((wave-p.start_wave)/p.every))*p.level_step);}
+function campaignDefaults():any {return {stage_designer_version:1,enemy_framework_version:2,enemy_visual_scale_multiplier:1,boss_visual_scale_multiplier:1,spawn_pacing:{batch_size:1,batch_growth_every:4,batch_max:8,individual_delay:0.4,batch_delay:0.65,jitter:0.25,max_alive:45,lane_count:7},wave_transition:{warning_sec:120,grace_sec:10,next_wave_delay:1.5},progression:{start_wave:1,every:4,level_step:0,max_bonus:0}};}
+function campaignValidate(doc:any,framework:any):string[] {
+    const errors:string[]=[];const fail=(path:string,message:string)=>errors.push(path+': '+message);
+    if(!ecObject(doc)||!EC_ID.test(doc.id||'')||!EC_ID.test(doc.arc_id||'')||typeof doc.display_name!=='string'||!doc.display_name.trim()||doc.display_name.length>160)return ['Invalid stage identity/name'];
+    if(JSON.stringify(doc).length>1048576)return ['Stage document exceeds 1 MiB'];
+    const r=doc.stage_rules;
+    if(!ecObject(r)||r.stage_designer_version!==1||r.enemy_framework_version!==2||!campaignRates(r.element_rates))return ['stage_rules.element_rates: five percentages must total 100'];
+    const bounded=(o:any,key:string,min:number,max:number,integer=false)=>{if(!ecObject(o)||typeof o[key]!=='number'||!Number.isFinite(o[key])||o[key]<min||o[key]>max||(integer&&!Number.isInteger(o[key])))fail('stage_rules.'+key,'Invalid bound');};
+    for(const key of ['enemy_visual_scale_multiplier','boss_visual_scale_multiplier'])bounded(r,key,0.1,5);
+    for(const [key,min,max] of [['batch_size',1,16],['batch_growth_every',0,100],['batch_max',1,16],['max_alive',1,200],['lane_count',2,16]] as [string,number,number][])bounded(r.spawn_pacing,key,min,max,true);
+    for(const key of ['batch_delay','jitter'])bounded(r.spawn_pacing,key,0,120);
+    if(ecObject(r.spawn_pacing)&&r.spawn_pacing.individual_delay!==undefined)bounded(r.spawn_pacing,'individual_delay',0.05,120);
+    for(const key of ['warning_sec','grace_sec','next_wave_delay'])bounded(r.wave_transition,key,0,3600);
+    for(const [key,min,max] of [['start_wave',1,100],['every',1,100],['level_step',0,100],['max_bonus',0,10000]] as [string,number,number][])bounded(r.progression,key,min,max,true);
+    if(errors.length)return errors;
+    if(r.spawn_pacing.batch_max<r.spawn_pacing.batch_size)fail('spawn_pacing.batch_max','Below batch size');
+    if(r.wave_transition.warning_sec+r.wave_transition.grace_sec<=0)fail('wave_transition','Timeout must be positive');
+    if(!Array.isArray(doc.waves)||doc.waves.length<1||doc.waves.length>100)return ['waves: expected 1..100'];
+    let total=0;const ids:any={};
+    doc.waves.forEach((wave:any,wi:number)=>{
+        const path='waves.'+wi;
+        if(!ecObject(wave)||!EC_ID.test(wave.id||'')||ids[wave.id]){fail(path,'Invalid/duplicate stable wave ID');return;}ids[wave.id]=true;
+        if(typeof wave.display_name!=='string'||wave.display_name.length>160)fail(path,'Invalid name');
+        if(wave.element_rates!==undefined&&!campaignRates(wave.element_rates)){fail(path+'.element_rates','Percentages must total 100');return;}
+        if(!Array.isArray(wave.entries)||!wave.entries.length||wave.entries.length>100){fail(path,'Expected 1..100 groups');return;}
+        const rates=wave.element_rates||r.element_rates,entryIds:any={};
+        wave.entries.forEach((entry:any,ei:number)=>{
+            const ep=path+'.entries.'+ei;
+            if(!ecObject(entry)||!EC_ID.test(entry.id||'')||entryIds[entry.id]){fail(ep,'Invalid/duplicate group ID');return;}entryIds[entry.id]=true;
+            for(const forbidden of ['resolved_elements','random_elements','element_sequence','modifiers','attributes'])if(entry[forbidden]!==undefined)fail(ep,forbidden+' is not an authored field');
+            if(typeof entry.boss!=='boolean')fail(ep+'.boss','Boolean required');
+            if(!entry.boss&&entry.elements!==undefined)fail(ep+'.elements','Creeps use stage/wave rates');
+            if(!Number.isInteger(entry.count)||entry.count<1||entry.count>1000)fail(ep+'.count','Expected 1..1000');else total+=entry.count;
+            if(!Number.isSafeInteger(entry.exp)||entry.exp<0||entry.exp>1000000)fail(ep+'.exp','Invalid EXP');
+            if(typeof entry.interval!=='number'||!Number.isFinite(entry.interval)||entry.interval<0.001||entry.interval>3600||typeof entry.start_delay!=='number'||!Number.isFinite(entry.start_delay)||entry.start_delay<0||entry.start_delay>3600)fail(ep,'Invalid schedule');
+            const fixed=entry.boss&&Array.isArray(entry.elements)&&entry.elements.length>0;
+            const elements=fixed?entry.elements:EC_ELEMENTS.filter(e=>rates[e]>0);
+            for(const difficulty of ['normal','epic','legend']){
+                const override=(entry.difficulty_overrides||{})[difficulty]||{};
+                if(!ecObject(override)||Object.keys(override).some(k=>!['level','skills','skills_by_element','loadout_template_id'].includes(k))){fail(ep+'.difficulty_overrides','Only level/loadout fields supported');continue;}
+                const effective=Object.assign({},entry,override);effective.level+=campaignBonus(r,wi+1);
+                const template=effective.loadout_template_id?(framework.loadout_templates||{})[effective.loadout_template_id]:effective.skills_by_element;
+                if(effective.loadout_template_id&&!template){fail(ep,'Unknown loadout template');continue;}
+                if(fixed){const candidate=ecCopy(effective);if(template)candidate.skills=template[elements[0]];delete candidate.loadout_template_id;delete candidate.skills_by_element;const error=ecValidateEntry(candidate,framework,doc);if(error)fail(ep+'/'+difficulty,error);}
+                else for(const element of elements){const candidate=ecCopy(effective);candidate.elements=[element];if(template)candidate.skills=template[element];delete candidate.loadout_template_id;delete candidate.skills_by_element;const error=ecValidateEntry(candidate,framework,doc);if(error)fail(ep+'/'+difficulty+'/'+element,error);}
+            }
+        });
+    });
+    if(total>10000)fail('waves','Maximum 10000 individuals');
+    return errors;
+}
+function campaignResolve(doc:any,framework:any,difficulty:string,seed:number,version:string):any {
+    if(!['normal','epic','legend'].includes(difficulty)||!Number.isInteger(seed)||seed<0||seed>4294967295)throw Error('Invalid difficulty/seed');
+    const errors=campaignValidate(doc,framework);if(errors.length)throw Error(errors.slice(0,20).join('\n'));
+    const stage=ecCopy(doc),random=campaignRandom(seed);let total_count=0,total_exp=0;
+    stage.waves.forEach((wave:any,wi:number)=>{
+        const rates=wave.element_rates||stage.stage_rules.element_rates;
+        const allocated=campaignAllocate(wave.entries.filter((e:any)=>!e.boss).reduce((n:number,e:any)=>n+e.count,0),rates,random);let cursor=0;
+        for(const entry of wave.entries){
+            Object.assign(entry,(entry.difficulty_overrides||{})[difficulty]||{});delete entry.difficulty_overrides;
+            entry.level+=campaignBonus(stage.stage_rules,wi+1);
+            entry.resolved_elements=[];
+            for(let i=0;i<entry.count;i++){
+                if(!entry.boss)entry.resolved_elements.push([allocated[cursor++]]);
+                else if(Array.isArray(entry.elements)&&entry.elements.length)entry.resolved_elements.push(ecCopy(entry.elements));
+                else {let pick=random()*100,chosen=EC_ELEMENTS.filter(e=>rates[e]>0).slice(-1)[0];for(const element of EC_ELEMENTS){pick-=rates[element];if(pick<0){chosen=element;break;}}entry.resolved_elements.push([chosen]);}
+            }
+            total_count+=entry.count;total_exp+=entry.count*entry.exp;
+        }
+    });
+    return {version:1,stage_id:doc.id,difficulty_id:difficulty,content_version:version,seed,stage,total_count,total_exp};
+}
+function campaignDocument(nk:nkruntime.Nakama,draft:any,id:string):any {
+    const saved=(draft.metadata.campaign_stages||{})[id];if(saved)return ecCopy(saved);
+    const header=nk.sqlQuery('SELECT id,arc_id,display_name,stage_rules FROM game_stages WHERE id=$1',[id])[0];if(!header)return null;
+    const rules=Object.assign({},parseJsonb(header.stage_rules)||{},campaignDefaults());
+    const arc=nk.sqlQuery('SELECT id,element,sort_order,enemy_visual_scale_multiplier FROM game_arcs WHERE id=$1',[header.arc_id])[0];
+    rules.campaign_arc_order=Number(arc&&arc.sort_order||0);rules.enemy_visual_scale_multiplier=Number(arc&&arc.enemy_visual_scale_multiplier||1);rules.boss_visual_scale_multiplier=[1,3,4,5,6].includes(rules.campaign_arc_order)?0.6:1;rules.element_rates=EC_ELEMENTS.reduce((o:any,e)=>{o[e]=e===(arc&&arc.element)?100:0;return o;},{});
+    if(!campaignRates(rules.element_rates))rules.element_rates={metal:20,water:20,wood:20,fire:20,earth:20};
+    const waves=nk.sqlQuery('SELECT * FROM game_stage_waves WHERE stage_id=$1 ORDER BY wave_index',[id]).map((w:any)=>({id:w.wave_id||'wave_'+w.wave_index,display_name:w.display_name||'',entries:(draft.stage_entry.filter((e:any)=>e.active&&e.data.stage_id===id&&e.data.wave_index===w.wave_index).sort((a:any,b:any)=>a.data.entry_index-b.data.entry_index).map((row:any)=>{const e=ecCopy(row.data);e.id=row.id;e.species_id=e.enemy_id;for(const key of ['enemy_id','stage_id','wave_index','entry_index'])delete e[key];return e;}))}));
+    for(const wave of waves)for(const entry of wave.entries){if(!entry.boss)delete entry.elements;delete entry.random_elements;}
+    return {document:{id,arc_id:header.arc_id,display_name:header.display_name,stage_rules:rules,waves},revision:'0'};
+}
+function campaignFramework(draft:any):any {
+    const framework=Object.assign({},draft.metadata.framework||{},{species:{},skill_atlas:ecIndex(draft.skill)});
+    for(const row of draft.catalog)if(row.active)framework.species[row.id]=Object.assign({},row.data,{visual_definition_id:row.data.visual_set_id});
+    return framework;
+}
+function campaignRpc(ctx:nkruntime.Context,logger:nkruntime.Logger,nk:nkruntime.Nakama,payload:string,action:string):string {
+    if(!ctx.userId||!isConfigAdmin(ctx))return ecError(403,'Forbidden');
+    try {
+        if(payload.length>1048576)return ecError(400,'Payload exceeds 1 MiB');
+        const req=JSON.parse(payload||'{}'),draft=ecRead(nk);
+        if(action==='overview'){
+            const arcs=nk.sqlQuery('SELECT id,display_name,sort_order FROM game_arcs ORDER BY sort_order,id',[]).map((a:any)=>({id:a.id,display_name:a.display_name,order:Number(a.sort_order)}));
+            const stages=nk.sqlQuery("SELECT id,arc_id,display_name FROM game_stages WHERE (stage_rules->>'enemy_framework_version')='2' ORDER BY arc_id,sort_order,id",[]).map((s:any)=>({...s,managed:!!(draft.metadata.campaign_stages||{})[s.id]}));
+            const visuals:any={};for(const asset of draft.visual_asset)if(asset.active&&['run','idle'].includes(asset.data.slot)){const source=(draft.metadata.asset_sources||{})[asset.data.source_id];const sheet=source&&source.sheets&&source.sheets[asset.data.slot];if(sheet&&typeof sheet.path==='string'&&sheet.path.startsWith('res://assets/')&&(!visuals[asset.data.visual_set_id]||asset.data.slot==='run'))visuals[asset.data.visual_set_id]={path:'/api/assets/'+sheet.path.slice('res://assets/'.length).split('/').map(encodeURIComponent).join('/'),columns:sheet.columns||3,rows:sheet.rows||3,frame_count:sheet.frame_count||9};}
+            return JSON.stringify({success:true,data:{arcs,stages,visuals,draft_revision:draft.revision,active_release:draft.active_release,enemies:draft.catalog.filter((r:any)=>r.active).map((r:any)=>({id:r.id,display_name:r.data.display_name,kind:r.data.kind,visual_set_id:r.data.visual_set_id})),loadout_templates:Object.keys((draft.metadata.framework||{}).loadout_templates||{}).map(id=>{const template=draft.metadata.framework.loadout_templates[id],refs=template.fire||template[Object.keys(template)[0]]||[],primary=refs.find((r:any)=>((draft.metadata.framework.skill_atlas||{})[r.skill_id]||{}).element!=='neutral')||refs[0],skill=primary&&draft.skill.find((r:any)=>r.id===primary.skill_id);return {id,label:(skill&&skill.data.display_name||primary&&primary.skill_id||id)+' / Lv'+(primary&&primary.level||1)+' / '+refs.length+' skills'};})}});
+        }
+        if(action==='get'){if(!EC_ID.test(req.id||''))return ecError(400,'Invalid ID');const value=campaignDocument(nk,draft,req.id);return value?JSON.stringify({success:true,data:{...value,draft_revision:draft.revision}}):ecError(404,'Stage not found');}
+        const doc=req.document;if(!ecObject(doc))return ecError(400,'document required');
+        const header=nk.sqlQuery('SELECT id,arc_id FROM game_stages WHERE id=$1',[doc.id])[0];if(!header||header.arc_id!==doc.arc_id)return ecError(422,'Stage/Arc identity cannot change');
+        const arc=nk.sqlQuery('SELECT sort_order FROM game_arcs WHERE id=$1',[doc.arc_id])[0];doc.stage_rules={...doc.stage_rules,campaign_arc_order:Number(arc&&arc.sort_order||0)};
+        const framework=campaignFramework(draft),errors=campaignValidate(doc,framework);
+        if(errors.length)return ecError(422,'Invalid stage',errors);
+        if(action==='resolve')return JSON.stringify({success:true,data:campaignResolve(doc,framework,req.difficulty_id||'normal',req.seed===undefined?269:req.seed,draft.revision)});
+        if(action!=='save')return ecError(400,'Unknown operation');
+        if(!/^\d{1,18}$/.test(req.expected_revision||'')||!/^\d{1,18}$/.test(req.expected_draft_revision||''))return ecError(400,'Revisions required');
+        const next=ecCopy(draft);next.metadata.campaign_stages=next.metadata.campaign_stages||{};next.metadata.campaign_stages[doc.id]={document:doc,revision:req.expected_revision};
+        const result=ecLiveEnabled(ctx)?ecProject(next):{errors:[],snapshot:null};if(result.errors.length)return ecError(422,'Content validation failed',result.errors.slice(0,30));
+        const saved=parseJsonb(nk.sqlQuery('SELECT campaign_stage_write($1::JSONB,$2,$3::BIGINT,$4,$5::JSONB,$6) AS result',[JSON.stringify(doc),req.expected_revision,req.expected_draft_revision,ctx.userId,JSON.stringify(result.snapshot),ecLiveEnabled(ctx)])[0].result);
+        return JSON.stringify({success:true,data:saved});
+    } catch(error){const message=String(error);if(message.includes('EC_CONFLICT'))return ecError(409,'Configuration changed; reload before saving');logger.error('Campaign operation failed: %s',message);return ecError(422,'Stage operation failed; check configuration');}
+}
+function rpc_admin_campaign_overview(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string{return campaignRpc(c,l,n,p,'overview');}
+function rpc_admin_campaign_stage_get(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string{return campaignRpc(c,l,n,p,'get');}
+function rpc_admin_campaign_stage_save(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string{return campaignRpc(c,l,n,p,'save');}
+function rpc_admin_campaign_stage_resolve(c:nkruntime.Context,l:nkruntime.Logger,n:nkruntime.Nakama,p:string):string{return campaignRpc(c,l,n,p,'resolve');}
+function campaignRunPlan(nk:nkruntime.Nakama,stageId:string,difficulty:string,runId:string):any {
+    const row=nk.sqlQuery('SELECT id,arc_id,display_name,stage_rules FROM game_stages WHERE id=$1',[stageId])[0];
+    if(!row||Number((parseJsonb(row.stage_rules)||{}).stage_designer_version)!==1)return null;
+    const framework=parseJsonb(nk.sqlQuery("SELECT value FROM game_config WHERE key='progression'",[])[0].value).enemy_framework;
+    const waves=nk.sqlQuery('SELECT * FROM game_stage_waves WHERE stage_id=$1 ORDER BY wave_index',[stageId]).map((w:any)=>({id:w.wave_id,display_name:w.display_name||'',entries:parseJsonb(w.entries)}));
+    const rates=(parseJsonb(row.stage_rules)||{}).wave_element_rates||{};for(const wave of waves)if(rates[wave.id])wave.element_rates=rates[wave.id];
+    let seed=269;for(let i=0;i<runId.length;i++)seed=(Math.imul(seed,31)+runId.charCodeAt(i))>>>0;
+    return campaignResolve({id:row.id,arc_id:row.arc_id,display_name:row.display_name,stage_rules:parseJsonb(row.stage_rules),waves},framework,difficulty,seed,String(framework.catalog_version||'0'));
+}
+const getStagePlan:nkruntime.RpcFunction=(ctx,_l,nk,payload)=>{
+    if(!ctx.userId)return ecError(403,'Session required');
+    let req:any;try{req=JSON.parse(payload||'{}');}catch(_){return ecError(400,'Invalid JSON');}
+    const row=nk.storageRead([{collection:'player_stage_runs',key:'active',userId:ctx.userId}])[0],run=row&&row.value;
+    if(!run||run.run_id!==req.run_id||run.status!=='active'||Date.now()>=Number(run.expires_at_ms))return ecError(404,'Active run not found');
+    if(run.enemy_catalog_version!==enemyCatalogVersion(nk))return ecError(409,'Content changed; start a new run');
+    return JSON.stringify({success:true,encounter_plan:run.encounter_plan||null});
+};

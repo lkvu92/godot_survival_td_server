@@ -18,9 +18,9 @@
         "regen_percent_per_10s": 0
       },
       "growth_per_level": {
-        "hp": 23.5,
-        "atk": 2.4,
-        "def": 1.2,
+        "hp": 18.8,
+        "atk": 1.92,
+        "def": 0.96,
         "move_speed": 0,
         "attack_speed": 0,
         "attack_range": 0
@@ -46,9 +46,9 @@
         "regen_percent_per_10s": 0
       },
       "growth_per_level": {
-        "hp": 37,
-        "atk": 1.25,
-        "def": 0.3,
+        "hp": 29.6,
+        "atk": 1,
+        "def": 0.24,
         "move_speed": 0,
         "attack_speed": 0,
         "attack_range": 0
@@ -74,9 +74,9 @@
         "regen_percent_per_10s": 0
       },
       "growth_per_level": {
-        "hp": 23.5,
-        "atk": 2.4,
-        "def": 1.2,
+        "hp": 18.8,
+        "atk": 1.92,
+        "def": 0.96,
         "move_speed": 0,
         "attack_speed": 0,
         "attack_range": 0
@@ -102,9 +102,9 @@
         "regen_percent_per_10s": 0
       },
       "growth_per_level": {
-        "hp": 88,
-        "atk": 2.6,
-        "def": 3,
+        "hp": 70.4,
+        "atk": 2.08,
+        "def": 2.4,
         "move_speed": 0,
         "attack_speed": 0,
         "attack_range": 0

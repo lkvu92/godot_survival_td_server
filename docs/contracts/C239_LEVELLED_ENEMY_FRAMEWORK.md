@@ -1,6 +1,6 @@
 # C239 Levelled enemies and shared skill atlas
 
-Version: 1.6.4 | Status: IN_PROGRESS | Date: 2026-11-04
+Version: 1.7.0 | Status: ACTIVE | Date: 2026-11-05
 
 ## Scope and authority
 Version 2 is opt-in per stage.stage_rules.enemy_framework_version. Legacy stages retain their original spawn/stat generation. Damage resolution for every stage is shared under C240. Authoritative catalog is progression.enemy_framework, transported by the existing authenticated config bootstrap RPC (request {table:"all"}; response progression includes enemy_framework). Existing game_config progression seed path is reused. No new RPC, local gameplay fallback, profile mutation or production publication. Test-only fixtures may load explicit server data in the existing harness.
@@ -119,3 +119,9 @@ Changelog 1.6.3 (2026-11-04): DB authoring authority, independent per-boss basel
 ## Changelog 1.6.4 (2026-11-04)
 
 C259 neutral presentation IDs receive empty legacy binding records and retain explicit v2 stage loadouts. Arc 7 legacy catalog admission runs only for legacy Arc 7 stages; v2 stages use the already-completed framework admission checks. Legacy regression still rejects a missing elemental compatibility definition. No combat math changes.
+
+## C239 1.7 — Creep and boss 20% growth stat balance (2026-11-05)
+
+- Reduce creep growth per level by 20% across all 5 roles (tank, damage, ranger, medium, runner): growth_per_level[stat] = 0.8 * base_attributes[stat] for HP, ATK, DEF. Base attributes at level 1 remain unchanged.
+- Reduce boss baseline stats by 20% for HP, ATK, DEF across all 5 elements in boss_element_baselines (Earth: 2816/4.16/18.0; Fire: 2304/4.8/6.0; Metal: 3008/3.84/14.4; Water: 3072/3.68/12.0; Wood: 2368/4.0/7.2). Attack speed and movement speed remain unchanged.
+- Alleviate campaign mid/late-game progression block and prevent boss timeout; preserves deterministic generation, level-1 creep baseline, schema bounds and online authority.

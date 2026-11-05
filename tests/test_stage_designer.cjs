@@ -1,0 +1,63 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),cp=require('node:child_process');
+const {database,runtime}=require('../tools/enemy_catalog_db.cjs');
+const ctx=runtime(),live=database(),name='c269_test_'+process.pid,nk=database(undefined,name);
+const fixture=ctx.ecRead(live),admin={userId:'c269-admin',env:{CONFIG_ADMIN_USER_ID:'c269-admin'}},logger={error(...args){console.error(...args);}};
+let checks=0;const equal=(a,b,msg)=>{assert.deepEqual(a===undefined?null:JSON.parse(JSON.stringify(a)),b===undefined?null:JSON.parse(JSON.stringify(b)),msg);checks++;};
+const ok=r=>{assert.equal(r.success,true,JSON.stringify(r));checks++;return r.data;};
+const rpc=(action,input={},who=admin)=>JSON.parse(ctx.campaignRpc(who,logger,nk,JSON.stringify(input),action));
+try {
+ cp.execFileSync('docker',['exec','survival_td_local-postgres-1','createdb','-U','postgres',name]);
+ nk.run(`CREATE TABLE game_enemies(id TEXT PRIMARY KEY,display_name TEXT,updated_at TIMESTAMPTZ DEFAULT NOW());
+ CREATE TABLE game_config(key TEXT PRIMARY KEY,value JSONB,updated_at TIMESTAMPTZ DEFAULT NOW());
+ CREATE TABLE game_stages(id TEXT PRIMARY KEY,arc_id TEXT,display_name TEXT,stage_rules JSONB,sort_order INT,updated_at TIMESTAMPTZ DEFAULT NOW());
+ CREATE TABLE game_arcs(id TEXT PRIMARY KEY,display_name TEXT,element TEXT,sort_order INT,enemy_visual_scale_multiplier REAL);
+ CREATE TABLE game_stage_waves(id SERIAL PRIMARY KEY,stage_id TEXT,wave_index INT,wave_id TEXT,display_name TEXT,entries JSONB,UNIQUE(stage_id,wave_index));
+ CREATE TABLE remote_config_releases(config_version BIGINT PRIMARY KEY,snapshot JSONB,min_app_version TEXT,latest_app_version TEXT,store_url TEXT,published_by TEXT);`);
+ ctx.createEnemyCatalogTables(nk);
+ nk.sqlExec('INSERT INTO game_stages(id,arc_id,display_name,stage_rules,sort_order) SELECT id,arc_id,display_name,stage_rules,sort_order FROM jsonb_populate_recordset(NULL::game_stages,$1::JSONB)',[JSON.stringify(live.sqlQuery('SELECT id,arc_id,display_name,stage_rules,sort_order FROM game_stages'))]);
+ nk.sqlExec('INSERT INTO game_arcs SELECT * FROM jsonb_populate_recordset(NULL::game_arcs,$1::JSONB)',[JSON.stringify(live.sqlQuery('SELECT id,display_name,element,sort_order,enemy_visual_scale_multiplier FROM game_arcs'))]);
+ const bundle={metadata:fixture.metadata};for(const [kind,table] of Object.entries({catalog:'enemy_catalog',visual_set:'enemy_visual_sets',visual_asset:'enemy_visual_assets',skill:'enemy_skill_catalog',stage_entry:'enemy_stage_entries'}))bundle[table]=fixture[kind];
+ nk.sqlQuery('SELECT enemy_catalog_import($1::JSONB,0,$2) AS result',[JSON.stringify(bundle),'fixture']);
+ nk.sqlExec('INSERT INTO game_stage_waves(stage_id,wave_index,wave_id,display_name,entries) SELECT stage_id,wave_index,wave_id,display_name,entries FROM jsonb_populate_recordset(NULL::game_stage_waves,$1::JSONB)',[JSON.stringify(live.sqlQuery('SELECT stage_id,wave_index,wave_id,display_name,entries FROM game_stage_waves'))]);
+ const initial=ctx.ecProject(ctx.ecRead(nk));equal(initial.errors,[]);
+ nk.sqlExec("INSERT INTO game_config VALUES('progression',$1::JSONB,NOW())",[JSON.stringify({enemy_framework:initial.snapshot.framework})]);
+ nk.sqlExec("INSERT INTO remote_config_releases VALUES(1,$1::JSONB,'1','1','','fixture')",[JSON.stringify({system:{}})]);
+ equal(rpc('overview',{},{}).code,403);const overview=ok(rpc('overview'));assert(overview.stages.length>1);
+ const target=overview.stages.find(s=>s.arc_id==='arc_2'),first=ok(rpc('get',{id:target.id})),doc=first.document;
+ const originalTemplate=doc.waves[0].entries[0].loadout_template_id;
+ const species=overview.enemies.find(e=>e.kind==='creep'),boss=overview.enemies.find(e=>e.kind==='boss');
+ doc.stage_rules.element_rates={metal:12.5,water:12.5,wood:12.5,fire:50,earth:12.5};
+ doc.waves=[{id:'wave_c269',display_name:'Allocation fixture',entries:[{id:'group_creep',species_id:species.id,count:16,level:1,exp:2,interval:0.2,start_delay:0,boss:false,skills:[]},{id:'group_boss_fixed',species_id:boss.id,count:1,level:1,exp:3,interval:1,start_delay:1,boss:true,elements:['fire'],skills:[]},{id:'group_boss_random',species_id:boss.id,count:1,level:1,exp:3,interval:1,start_delay:1,boss:true,skills:[]}]}];
+ if(originalTemplate)doc.waves[0].entries[0].loadout_template_id=originalTemplate;
+ const plan=ok(rpc('resolve',{document:doc,seed:269,difficulty_id:'normal'}));equal(plan.total_count,18);equal(plan.total_exp,38);equal(plan.stage.waves[0].entries[1].resolved_elements,[['fire']]);
+ const counts={};for(const [e] of plan.stage.waves[0].entries[0].resolved_elements)counts[e]=(counts[e]||0)+1;equal(counts,{metal:2,water:2,wood:2,fire:8,earth:2});
+ equal(ok(rpc('resolve',{document:doc,seed:269,difficulty_id:'normal'})),plan,'Reproducible');
+ const allFire=structuredClone(doc);allFire.stage_rules.element_rates={metal:0,water:0,wood:0,fire:100,earth:0};equal(ok(rpc('resolve',{document:allFire})).stage.waves[0].entries[0].resolved_elements.every(e=>e[0]==='fire'),true);
+ const invalid=structuredClone(doc);invalid.stage_rules.element_rates.fire=49;equal(rpc('resolve',{document:invalid}).code,422);
+ equal(doc.stage_rules.spawn_pacing.individual_delay,0.4,'New stage serial default');
+ const badSpacing=structuredClone(doc);badSpacing.stage_rules.spawn_pacing.individual_delay=0;equal(rpc('resolve',{document:badSpacing}).code,422);
+ const legacyPacing=structuredClone(doc);delete legacyPacing.stage_rules.spawn_pacing.individual_delay;equal(ok(rpc('resolve',{document:legacyPacing})).stage.stage_rules.spawn_pacing.individual_delay,undefined,'Old plans preserve batch compatibility');
+ const badBoss=structuredClone(doc);badBoss.waves[0].entries[1].elements=['fire','water'];equal(rpc('resolve',{document:badBoss}).code,422);
+ const badLevel=structuredClone(doc);badLevel.stage_rules.progression={start_wave:1,every:1,level_step:100,max_bonus:10000};badLevel.waves[0].entries[0].level=10000;equal(rpc('resolve',{document:badLevel}).code,422);
+ const waveOverride=structuredClone(doc);waveOverride.waves[0].element_rates={metal:0,water:100,wood:0,fire:0,earth:0};const waterPlan=ok(rpc('resolve',{document:waveOverride}));equal(waterPlan.stage.waves[0].entries[0].resolved_elements.every(e=>e[0]==='water'),true);equal(waterPlan.stage.waves[0].entries[1].resolved_elements,[['fire']]);
+ const badSkill=structuredClone(doc);delete badSkill.waves[0].entries[0].loadout_template_id;badSkill.waves[0].entries[0].skills=[{skill_id:'missing_skill',level:1}];equal(rpc('resolve',{document:badSkill}).code,422);
+ const progress=structuredClone(doc);progress.waves.push(structuredClone(progress.waves[0]));progress.waves[1].id='wave_progress';progress.stage_rules.progression={start_wave:2,every:1,level_step:2,max_bonus:2};const progressed=ok(rpc('resolve',{document:progress,difficulty_id:'epic'}));equal(progressed.stage.waves[0].entries[0].level,1);equal(progressed.stage.waves[1].entries[0].level,3);
+ // Counts, EXP and rounding bounds independent of every tested seed.
+ for(let n=1;n<=60;n++){const rates=doc.stage_rules.element_rates,allocated=Array.from(ctx.campaignAllocate(n,rates,ctx.campaignRandom(n)));equal(allocated.length,n);for(const e of ['metal','water','wood','fire','earth'])assert(Math.abs(allocated.filter(v=>v===e).length-n*rates[e]/100)<1);}
+ let saved=ok(rpc('save',{document:doc,expected_revision:'0',expected_draft_revision:first.draft_revision}));equal(rpc('save',{document:doc,expected_revision:'0',expected_draft_revision:first.draft_revision}).code,409);
+ equal(nk.sqlQuery("SELECT stage_rules FROM game_stages WHERE id=$1",[doc.id])[0].stage_rules.stage_designer_version,undefined,'Draft isolation');
+ let draft=ctx.ecRead(nk),projection=ctx.ecProject(draft);equal(projection.errors,[]);
+ const release=nk.sqlQuery('SELECT enemy_catalog_publish($1::JSONB,$2::BIGINT,$3,$4) AS result',[JSON.stringify(projection.snapshot),draft.revision,admin.userId,'C269 fixture baseline'])[0].result;
+ const resolved=ctx.campaignRunPlan(nk,doc.id,'normal','fixture-run');equal(resolved.total_count,18);equal(resolved.content_version,release.version);
+ const waves=nk.sqlQuery('SELECT * FROM game_stage_waves WHERE stage_id=$1',[doc.id]);equal(waves.length,1);
+ fs.mkdirSync(path.resolve(__dirname,'../../tmp/c269'),{recursive:true});fs.writeFileSync(path.resolve(__dirname,'../../tmp/c269/plan.json'),JSON.stringify(resolved));
+ fs.writeFileSync(path.resolve(__dirname,'../../tmp/c269/catalog.json'),JSON.stringify(projection.snapshot.framework));fs.writeFileSync(path.resolve(__dirname,'../../tmp/c269/enemies.json'),JSON.stringify(projection.snapshot.enemies));
+ // Atomic local live save, rollback and a failed CAS must preserve runtime.
+ draft=ctx.ecRead(nk);doc.waves[0].entries[0].count=8;
+ const liveAdmin={...admin,env:{...admin.env,APP_ENVIRONMENT:'develop',CONFIG_DRAFT_LIVE_ENABLED:'true'}};
+ saved=ok(rpc('save',{document:doc,expected_revision:saved.revision,expected_draft_revision:draft.revision},liveAdmin));equal(ctx.campaignRunPlan(nk,doc.id,'normal','fixture-run').total_count,10);equal(ctx.enemyCatalogVersion(nk),'draft:'+saved.draft_revision);
+ equal(rpc('save',{document:doc,expected_revision:'0',expected_draft_revision:saved.draft_revision},liveAdmin).code,409);equal(ctx.campaignRunPlan(nk,doc.id,'normal','fixture-run').total_count,10);
+ nk.sqlQuery('SELECT enemy_catalog_publish(NULL,$1::BIGINT,$2,$3,$4::BIGINT) AS result',[saved.draft_revision,admin.userId,'Rollback fixture',release.version]);equal(ctx.campaignRunPlan(nk,doc.id,'normal','fixture-run').total_count,18);
+ fs.writeFileSync(path.resolve(__dirname,'../../tmp/c269/fixture.sql'),cp.execFileSync('docker',['exec','survival_td_local-postgres-1','pg_dump','-U','postgres','-d',name,'--no-owner','--no-acl'],{encoding:'utf8',maxBuffer:80*1024*1024}));
+ console.log(JSON.stringify({status:'PASS',checks,database:name}));
+} finally {cp.execFileSync('docker',['exec','survival_td_local-postgres-1','dropdb','-U','postgres','--if-exists',name]);}

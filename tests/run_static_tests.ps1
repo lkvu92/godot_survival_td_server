@@ -2,6 +2,8 @@ $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path $PSScriptRoot -Parent
 Push-Location $repoRoot
 try {
+    & node tests/test_stage_allocation.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'C269 stage allocation regression failed' }
     & node tests/test_profile_consent.cjs
     if ($LASTEXITCODE -ne 0) { throw 'C251 profile consent regression failed' }
     & node tests/test_retention_assessment.cjs
@@ -16,6 +18,8 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'C240 shared combat damage regression failed' }
     & node tests/test_enemy_framework.cjs
     if ($LASTEXITCODE -ne 0) { throw 'C239 enemy framework regression failed' }
+    & node tests/test_combat_speed_engine.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'C268 canonical SPD regression failed' }
     & node tests/test_hero_growth_balance.cjs
     if ($LASTEXITCODE -ne 0) { throw 'C238 hero growth regression failed' }
     & node tests/test_gift_codes.cjs

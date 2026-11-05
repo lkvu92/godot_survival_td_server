@@ -1,0 +1,21 @@
+const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
+const root=path.resolve(__dirname,'../..'),fixture=JSON.parse(fs.readFileSync(path.join(root,'tmp/c269/plan.json'))),catalog=JSON.parse(fs.readFileSync(path.join(root,'tmp/c269/catalog.json')));
+const c=vm.createContext({JSON,Math,Number,String,Array,Set,Date});for(const module of ['server_admin','config_rpc','enemy_catalog_rpc','resource_rpc'])vm.runInContext(fs.readFileSync(path.join(root,'server/nakama/data/modules/build',module+'.js'),'utf8'),c);
+let objects,writes=0,broken=false;
+c.parseJsonObject=v=>typeof v==='string'?JSON.parse(v):v||{};c.sweepCombatError=()=>null;c.sweepConfig=()=>({});c.progressionReconcileCampaignUnlocks=()=>{};c.progressionReconcileArcModes=()=>{};c.progressionArcModeAllowed=()=>true;c.eventRecord=()=>{};
+c.enemyCatalogVersion=()=>fixture.content_version;c.talismanCreateStageRun=()=>({run:{run_id:'new-run',stage_id:fixture.stage_id,difficulty_id:'normal',status:'active',expires_at_ms:Date.now()+60000,enemy_catalog_version:fixture.content_version},version:'*'});
+c.campaignRunPlan=()=>{if(broken)throw Error('Bad plan');return c.campaignResolve(fixture.stage,catalog,'normal',269,fixture.content_version);};
+// The resolver input is an authored document, not its resolved run projection.
+const document=structuredClone(fixture.stage);for(const wave of document.waves)for(const entry of wave.entries)delete entry.resolved_elements;
+c.campaignRunPlan=()=>{if(broken)throw Error('Bad plan');return c.campaignResolve(document,catalog,'normal',269,fixture.content_version);};
+const nk={storageRead:requests=>requests.flatMap(r=>objects[r.collection]?[{collection:r.collection,key:r.key,userId:r.userId,value:structuredClone(objects[r.collection]),version:'1'}]:[]),storageWrite:batch=>{writes++;for(const row of batch)objects[row.collection]=structuredClone(row.value);return [];},sqlQuery:sql=>sql.includes('SELECT stage_rules')?[{stage_rules:document.stage_rules}]:sql.includes('stamina_cost')?[{stamina_cost:5}]:[]};
+const start=vm.runInContext('startStage',c),request={stage_id:fixture.stage_id,level_id:'normal',stage_plan_version:1,enemy_catalog_version:fixture.content_version,request_id:'retry-key'};
+const reset=()=>{writes=0;broken=false;objects={player_profiles:{stamina:30,unlocked_stages:[{stage_id:fixture.stage_id,unlocked_levels:['normal']}]}};};
+const call=r=>JSON.parse(start({userId:'owner'},{},nk,JSON.stringify(r)));
+reset();assert.equal(call({...request,stage_plan_version:0}).code,'CLIENT_UPDATE_REQUIRED');assert.equal(writes,0);
+assert.equal(call({...request,enemy_catalog_version:'stale'}).reason,'CONFIG_UPDATED');assert.equal(writes,0);
+broken=true;assert.equal(call(request).code,'STAGE_CONFIG_INVALID');assert.equal(writes,0);assert.equal(objects.player_profiles.stamina,30);
+broken=false;const accepted=call(request);assert.equal(accepted.success,true);assert.equal(accepted.encounter_plan.total_count,fixture.total_count);assert.equal(objects.player_profiles.stamina,25);assert.equal(objects.player_stage_runs.max_stage_base_exp,fixture.total_exp);assert.equal(writes,1);
+assert.equal(call(request).run_id,accepted.run_id);assert.equal(writes,1);assert.equal(objects.player_profiles.stamina,25);
+assert.equal(call({...request,request_id:'different'}).code,'COMBAT_ACTIVE');assert.equal(writes,1);
+console.log('PASS start_stage: capability gate, invalid plan before debit, frozen plan/EXP, atomic debit+run, retry without debit, active-run guard');

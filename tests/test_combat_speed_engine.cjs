@@ -1,0 +1,14 @@
+const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
+const root=path.resolve(__dirname,'..'),progression=require('../data/progression.json'),heroes=require('../data/heroes.json');
+assert.deepEqual(progression.combat_speed,{version:1,hero_unit:'spd_points',enemy_source_unit:'attacks_per_second',reference_spd:100,skill_flight_enabled:false});
+assert.equal(progression.hero_skill_travel_speed,undefined,'superseded flight config removed');
+assert.deepEqual(heroes.map(h=>h.attributes.attack_speed),[100,100,100,100,100]);
+assert.deepEqual(heroes.map(h=>h.level_up_stats.attack_speed),[1.01,1.012,1.01,1.016488,1.01],'growth factors unchanged');
+const ctx=vm.createContext({});vm.runInContext(fs.readFileSync(path.join(root,'nakama/data/modules/build/combat_power.js'),'utf8'),ctx);
+const rate=vm.runInContext('cpBasicAttackRate',ctx),evaluate=vm.runInContext('cpEvaluate',ctx),gear=vm.runInContext('cpApplyEquipment',ctx),valid=vm.runInContext('cpValidSpeedUnits',ctx);
+for(const [spd,expected] of [[80,.8],[100,1],[120,1.2],[150,1.5],[800,8],[1.5,.015],[0,0],[-1,0],[NaN,0],[Infinity,0]])assert.equal(rate(spd),expected,'no magnitude-based unit guessing');
+assert(valid(progression));assert(!valid({}));
+assert.equal(gear({attack_speed:100},[{durability:100,stats:{spd:20,speed_pct:10}}],progression.combat_power,progression.element_combat).attack_speed,132);
+const hero={id:'spd_fixture',element:'fire',auto_basic_attack:true,attributes:{hp:100,atk:100,def:0,attack_speed:120},level_up_stats:{},starting_skills:[]};
+assert.equal(evaluate(hero,1,{}, {},[],[],progression).offense,100*.75*1.2*progression.combat_power.offense_weight);
+console.log('PASS C268 server factory: canonical seed units, growth, pure rate, equipment and basic CP');

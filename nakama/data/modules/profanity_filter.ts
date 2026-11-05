@@ -152,3 +152,50 @@ function validatePlayerName(name: string): { valid: boolean; code?: number; erro
 
     return { valid: true };
 }
+
+// Free-text validation deliberately permits role words and long descriptions.
+function validateSupportText(value: string): boolean {
+    const norm = canonicalizeText(value.trim());
+    const unacc = stripAccents(norm);
+    const whitelistSet = new Set(PROFANITY_CONFIG.whitelist);
+    const exactTokensSet = new Set(PROFANITY_CONFIG.exact_tokens);
+
+    // Delimiter collapse check for short evasions like "d.k.m", "d_m", "c-a-c", "l.o.n"
+    const collapsedRaw = norm.replace(/[\s._\-–—,;:!?'"/\\]+/g, '');
+    const collapsedSpacesAndDots = unacc.replace(/[\s._\-–—,;:!?'"/\\]+/g, '');
+    if ((exactTokensSet.has(collapsedRaw) || exactTokensSet.has(collapsedSpacesAndDots)) && !whitelistSet.has(collapsedRaw) && !whitelistSet.has(collapsedSpacesAndDots)) {
+        return false;
+    }
+
+    // Compound phrases match (Contains / Substring check)
+    for (const phrase of PROFANITY_CONFIG.contains_phrases) {
+        const phraseNorm = canonicalizeText(phrase);
+        const phraseUnacc = stripAccents(phraseNorm);
+        const phraseCollapsed = phraseUnacc.replace(/[\s._\-–—,;:!?'"/\\]+/g, '');
+
+        if (norm.includes(phraseNorm) || unacc.includes(phraseUnacc) || (phraseCollapsed.length >= 3 && collapsedSpacesAndDots.includes(phraseCollapsed))) {
+            return false;
+        }
+    }
+
+    // Exact single vulgar tokens match (Token boundary check)
+    // Extract tokens from both accented and unaccented representations
+    const rawTokens = norm.split(/[^a-z0-9à-ỹđ]+/i).filter(Boolean);
+    const unaccTokens = unacc.split(/[^a-z0-9]+/i).filter(Boolean);
+
+    for (const token of rawTokens) {
+        if (whitelistSet.has(token)) continue;
+        if (exactTokensSet.has(token)) {
+            return false;
+        }
+    }
+
+    for (const token of unaccTokens) {
+        if (whitelistSet.has(token)) continue;
+        if (exactTokensSet.has(token)) {
+            return false;
+        }
+    }
+
+    return true;
+}

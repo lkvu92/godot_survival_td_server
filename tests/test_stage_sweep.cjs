@@ -42,7 +42,14 @@ const start=(rounds=2)=>{const result=rpc('startSweep',request(rounds));assert(r
 const process=()=>fn('sweepProcess')(nk,'u',logger,now,4);
 for(const [hp,grade]of [[1,'S'],[.900001,'S'],[.9,'A'],[.800001,'A'],[.8,'B'],[.700001,'B'],[.7,'C'],[.600001,'C'],[.6,'D'],[0,'D']])assert.equal(fn('sweepGrade')(nk,hp),grade);
 assert.equal(fn('sweepGrade')(nk,1,false),'');assert.throws(()=>fn('sweepGrade')(nk,1.01));assert.throws(()=>fn('sweepGrade')(nk,NaN));
-reset();fn('sweepSetBest')(profile(),'stage_1_1','normal','A');assert.equal(profile().stage_grades['stage_1_1:normal'],'S');assert.equal(fn('sweepQuantity')(nk,{base_quantity:10},'A'),9);assert.equal(fn('sweepQuantity')(nk,{base_quantity:1},'D'),1);assert.equal(fn('sweepQuantity')(nk,{base_quantity:0},'D'),0);
+reset();fn('sweepSetBest')(profile(),'stage_1_1','normal','A');assert.equal(profile().stage_grades['stage_1_1:normal'],'S');
+fn('sweepSetBest')(profile(),'stage_1_1','normal','D');assert.equal(profile().stage_grades['stage_1_1:normal'],'S');
+profile().completed_stage_levels=[{stage_id:'stage_2_04',level_id:'normal'}];
+assert.equal(fn('sweepReconcileStageGrades')(profile()),true);
+assert.equal(profile().stage_grades['stage_2_04:normal'],'S');
+fn('sweepSetBest')(profile(),'stage_2_04','normal','D');
+assert.equal(profile().stage_grades['stage_2_04:normal'],'S');
+assert.equal(fn('sweepQuantity')(nk,{base_quantity:10},'A'),9);assert.equal(fn('sweepQuantity')(nk,{base_quantity:1},'D'),1);assert.equal(fn('sweepQuantity')(nk,{base_quantity:0},'D'),0);
 vm.runInContext('progressionCompleteStage=()=>{};',c);
 row('player_stage_runs','active',{run_id:'current_A',status:'active',stage_id:'stage_1_1',difficulty_id:'normal',expires_at_ms:now+60000});
 const currentA=rpc('awardStageProgression',{stage_id:'stage_1_1',difficulty_id:'normal',run_id:'current_A',hero_id:'hero',won:true,base_exp:100,objective_hp_ratio:.9});

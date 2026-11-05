@@ -2,7 +2,10 @@ const fs = require('fs'), path = require('path'), vm = require('vm'), assert = r
 const read = p => JSON.parse(fs.readFileSync(path.join(__dirname, '..', p), 'utf8'));
 const catalog = read('data/items.json'), progression = read('data/progression.json'), packs = read('data/packs.json'), tower = read('data/trial_tower.json');
 const items = catalog.filter(i => i.attributes && Number.isInteger(i.attributes.atlas_slot));
-assert.equal(items.length, 40);
+assert.equal(items.filter(i=>i.id!=='energy_elixir_low').length,40,'Original consumable catalog remains intact');
+const lowEnergy=items.find(i=>i.id==='energy_elixir_low');assert(lowEnergy,'C257 mail conversion requires a 5-stamina bottle');
+assert.deepEqual(lowEnergy.attributes.effect,{context:'inventory',kind:'stamina',value:5});
+assert.equal(lowEnergy.attributes.enabled,true);assert.equal(lowEnergy.stackable,true);
 assert(!catalog.some(i => i.id === 'loot_magnet_talisman'));
 const boostCards = [
  ['exp_boost_card_10','exp',1.1,13,'common'], ['exp_boost_card_25','exp',1.25,14,'rare'], ['exp_boost_card_50','exp',1.5,15,'epic'],
@@ -128,7 +131,7 @@ assert(reroll('roll-a').duplicate);assert.equal(quantity('spirit_root_reset'),1,
 row('player_stage_runs','active',{status:'active',expires_at_ms:Date.now()+60000});assert(!reroll('roll-b').success);assert.equal(quantity('spirit_root_reset'),1);
 reset();conflict=true;assert(!reroll('failed-roll').success);assert.equal(quantity('spirit_root_reset'),2);assert(!profile().talent_score);
 reset();profile().name_changes_used='invalid';assert(!renameTo('Invalid Quota').success);assert.equal(quantity('rename_talisman'),2);
-console.log('PASS consumables: 40 catalog entries, 1-hour boost-card shop at 1 Gem = 500 Gold, event-pack-only high cards, atomic purchases and use guards');
+console.log('PASS consumables: original catalog plus C257 5-stamina mail bottle, 1-hour boost-card shop at 1 Gem = 500 Gold, event-pack-only high cards, atomic purchases and use guards');
 
 const purchase=(id,currency,request_id,protocol=2,quantity=1)=>JSON.parse(storePurchase({userId:'u'},{},nk,JSON.stringify({item_id:id,currency,request_id,purchase_protocol:protocol,quantity})));
 reset();assert(purchase('campaign_sweep_ticket','gems','ticket-buy').success);

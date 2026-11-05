@@ -103,8 +103,29 @@ function sweepResourceRuntime(base:nkruntime.Nakama,userId:string):nkruntime.Nak
 }
 function sweepCombatError(profile:any):any {return sweepActive(profile)?{success:false,ok:false,code:'SWEEP_ACTIVE',message:'Đang càn quét. Hãy kết thúc hoặc hủy càn quét để tham chiến.'}:null;}
 function sweepSetBest(profile:any,stage:string,mode:string,grade:string):void {
-    if(!grade)return;const order=['D','C','B','A','S'];profile.stage_grades=profile.stage_grades||{};
-    const key=stage+':'+mode;if(order.indexOf(grade)>order.indexOf(profile.stage_grades[key]))profile.stage_grades[key]=grade;
+    const normalized=String(grade||'').trim().toUpperCase();
+    const order=['D','C','B','A','S','SS','SSS'];
+    if(order.indexOf(normalized)<0)return;
+    profile.stage_grades=profile.stage_grades&&typeof profile.stage_grades==='object'&&!Array.isArray(profile.stage_grades)?profile.stage_grades:{};
+    const key=stage+':'+mode,current=String(profile.stage_grades[key]||'').trim().toUpperCase();
+    if(order.indexOf(normalized)>order.indexOf(current))profile.stage_grades[key]=normalized;
+}
+function sweepReconcileStageGrades(profile:any):boolean {
+    if(!profile||typeof profile!=='object')return false;
+    const completed=Array.isArray(profile.completed_stage_levels)?profile.completed_stage_levels:[];
+    const grades=profile.stage_grades&&typeof profile.stage_grades==='object'&&!Array.isArray(profile.stage_grades)?profile.stage_grades:{};
+    const order=['D','C','B','A','S','SS','SSS'];
+    let changed=profile.stage_grades!==grades;
+    for(const entry of completed){
+        if(!entry||typeof entry!=='object')continue;
+        const stageId=String(entry.stage_id||'').trim(),levelId=String(entry.level_id||'').trim();
+        if(!stageId||!levelId||stageId==='stage_0_1'||stageId==='stage_0_admin_test'||stageId.indexOf('stage_0_')===0)continue;
+        const key=stageId+':'+levelId,existing=String(grades[key]||'').trim().toUpperCase();
+        if(order.indexOf(existing)<0){grades[key]='S';changed=true;}
+        else if(grades[key]!==existing){grades[key]=existing;changed=true;}
+    }
+    profile.stage_grades=grades;
+    return changed;
 }
 function sweepCount(items:any[],ticket:string=SWEEP_TICKET):number {return items.reduce((n:number,r:any)=>n+(r.item_id===ticket?Math.max(0,Number(r.quantity)||0):0),0);}
 function sweepStaminaTime(p:any,nowMs:number):number {
@@ -123,7 +144,7 @@ function sweepRead(nk:nkruntime.Nakama,userId:string,nowMs:number=Date.now()):an
     const get=(c:string)=>rows.find(r=>r.collection===c);
     const p=get('player_profiles'),i=get('player_inventory'),h=get('player_heroes'),r=get('player_stage_runs');
     if(!p||!i||!h)throw new Error('PLAYER_INCOMPLETE');
-    const profile=parseJsonObject(p.value);sweepRefreshStamina(nk,profile,nowMs);
+    const profile=parseJsonObject(p.value);sweepReconcileStageGrades(profile);sweepRefreshStamina(nk,profile,nowMs);
     const t=get('player_trial_tower');
     return {p,i,h,r,t,tower:t?parseJsonObject(t.value):{},profile,inventory:parseJsonObject(i.value),heroes:parseJsonObject(h.value)};
 }

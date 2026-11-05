@@ -38,37 +38,37 @@
   },
   "boss_elements": {
     "earth": {
-      "hp": 3520,
-      "atk": 5.2,
-      "def": 22.5,
+      "hp": 2816,
+      "atk": 4.16,
+      "def": 18,
       "attack_speed": 1.302,
       "move_speed": 290
     },
     "fire": {
-      "hp": 2880,
-      "atk": 6,
-      "def": 7.5,
+      "hp": 2304,
+      "atk": 4.8,
+      "def": 6,
       "attack_speed": 1.218,
       "move_speed": 295
     },
     "metal": {
-      "hp": 3760,
-      "atk": 4.8,
-      "def": 18,
+      "hp": 3008,
+      "atk": 3.84,
+      "def": 14.4,
       "attack_speed": 1.26,
       "move_speed": 285
     },
     "water": {
-      "hp": 3840,
-      "atk": 4.6,
-      "def": 15,
+      "hp": 3072,
+      "atk": 3.68,
+      "def": 12,
       "attack_speed": 1.26,
       "move_speed": 280
     },
     "wood": {
-      "hp": 2960,
-      "atk": 5,
-      "def": 9,
+      "hp": 2368,
+      "atk": 4,
+      "def": 7.2,
       "attack_speed": 1.638,
       "move_speed": 335
     }
