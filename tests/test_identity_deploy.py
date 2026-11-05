@@ -32,6 +32,15 @@ class IdentityConfigurationTests(unittest.TestCase):
             services['account-identity']['environment']['SMTP_PORT'] = port
             self.assertTrue(runtime.validate_identity(services))
 
+    def test_web_client_origin_is_separate_and_must_be_safe(self):
+        services = self.fixture()
+        services['account-identity']['environment']['WEB_CLIENT_URL'] = 'https://lkvustudio.com/'
+        self.assertTrue(runtime.validate_identity(services))
+        for value in ['http://lkvustudio.com', 'https://lkvustudio.com/account', 'https://user:pass@lkvustudio.com', 'https://lkvustudio.com/?token=secret']:
+            services['account-identity']['environment']['WEB_CLIENT_URL'] = value
+            with self.assertRaises(runtime.ConfigError):
+                runtime.validate_identity(services)
+
     def test_missing_mail_key_and_public_http_fail_without_secret_leak(self):
         for key, value in [('SMTP_USER', ''), ('SMTP_PASSWORD', ''), ('SMTP_PORT', '25'),
                            ('ACCOUNT_IDENTITY_OUTBOX_KEY', 'a'*64), ('ACCOUNT_IDENTITY_PUBLIC_URL', 'http://identity.example')]:

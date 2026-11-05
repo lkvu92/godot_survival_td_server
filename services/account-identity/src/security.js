@@ -32,6 +32,16 @@ export function validateConfig(env) {
   if(url.username||url.password||url.search||url.hash||url.pathname!=='/')throw new Error('Invalid public URL');
   if(url.protocol!=='https:' && !(env.APP_ENVIRONMENT==='develop'&&url.protocol==='http:'))throw new Error('Public HTTPS required');
   if(!['465','587'].includes(env.SMTP_PORT||'587'))throw new Error('SMTP TLS port required');
+  validateWebClientURL(env);
   normalizeEmail(env.SMTP_FROM);normalizeEmail(env.SMTP_USER);
+  return url;
+}
+
+export function validateWebClientURL(env) {
+  const value=env.WEB_CLIENT_URL||env.ACCOUNT_IDENTITY_PUBLIC_URL;
+  if(typeof value!=='string'||/[\r\n]/.test(value))throw new Error('Invalid WEB_CLIENT_URL');
+  const url=new URL(value);
+  if(url.username||url.password||url.search||url.hash||url.pathname!=='/')throw new Error('Invalid WEB_CLIENT_URL');
+  if(url.protocol!=='https:'&&!(env.APP_ENVIRONMENT==='develop'&&url.protocol==='http:'))throw new Error('WEB_CLIENT_URL requires HTTPS outside develop');
   return url;
 }

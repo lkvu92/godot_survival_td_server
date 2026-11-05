@@ -396,3 +396,4 @@ C252 1.1.0: job-local admission validation cache and batched stage-wave transpor
 - [C269 Stage Designer](contracts/C269_STAGE_DESIGNER.md) ? server encounter plans, serial batch pacing and dashboard (C269 v1.1, ACTIVE).
 
 - [C257 Daily Pack Mail](contracts/C257_DAILY_PACK_MAIL.md) ? mail delivery/claim regression and full server static suite PASS (0.2.1).
+- C232 v3.4.1: WEB_CLIENT_URL selects the public web origin independently from the identity API origin.

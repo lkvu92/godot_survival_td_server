@@ -44,6 +44,12 @@ def validate_identity(services):
         raise ConfigError("Invalid ACCOUNT_IDENTITY_PUBLIC_URL")
     if public.scheme != "https" and not (env.get("APP_ENVIRONMENT") == "develop" and public.scheme == "http"):
         raise ConfigError("ACCOUNT_IDENTITY_PUBLIC_URL requires HTTPS outside develop")
+    if env.get("WEB_CLIENT_URL"):
+        web = urlsplit(str(env["WEB_CLIENT_URL"]))
+        if not web.hostname or web.username or web.password or web.query or web.fragment or web.path not in ["", "/"] or any(c in str(env["WEB_CLIENT_URL"]) for c in "\r\n"):
+            raise ConfigError("Invalid WEB_CLIENT_URL")
+        if web.scheme != "https" and not (env.get("APP_ENVIRONMENT") == "develop" and web.scheme == "http"):
+            raise ConfigError("WEB_CLIENT_URL requires HTTPS outside develop")
     return True
 
 
