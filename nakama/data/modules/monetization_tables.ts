@@ -239,5 +239,18 @@ function createMonetizationTables(nk: nkruntime.Nakama, logger: nkruntime.Logger
       purchase_order_id TEXT PRIMARY KEY REFERENCES monetization_purchase_orders(id) ON DELETE CASCADE,
       last_attempt_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),failures INT NOT NULL DEFAULT 0);
       CREATE INDEX IF NOT EXISTS purchase_orders_financial_sync_idx ON monetization_purchase_orders(platform,status,created_at);`,[]);
+    nk.sqlExec(`CREATE TABLE IF NOT EXISTS payment_delivery_jobs (
+      token_hash TEXT PRIMARY KEY CHECK(token_hash ~ '^[a-f0-9]{64}$'),encrypted_token TEXT NOT NULL,
+      package_name TEXT NOT NULL,product_id TEXT NOT NULL DEFAULT '',expected_order_id TEXT NOT NULL DEFAULT '',expected_user_id TEXT NOT NULL DEFAULT '',
+      purchase_order_id TEXT REFERENCES monetization_purchase_orders(id),payment_state TEXT NOT NULL DEFAULT 'UNKNOWN',
+      status TEXT NOT NULL DEFAULT 'queued' CHECK(status IN ('queued','processing','retry','delivered','complete','blocked','review')),
+      attempts INT NOT NULL DEFAULT 0,revision BIGINT NOT NULL DEFAULT 1,lease_id TEXT NOT NULL DEFAULT '',lease_until TIMESTAMPTZ,
+      next_attempt_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),delivery_completed_at TIMESTAMPTZ,finalized_at TIMESTAMPTZ,
+      last_error TEXT NOT NULL DEFAULT '',created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
+      CREATE INDEX IF NOT EXISTS payment_delivery_due_idx ON payment_delivery_jobs(status,next_attempt_at);
+      CREATE INDEX IF NOT EXISTS payment_delivery_order_idx ON payment_delivery_jobs(purchase_order_id);
+      CREATE TABLE IF NOT EXISTS payment_delivery_audit (
+        id BIGSERIAL PRIMARY KEY,actor TEXT NOT NULL,action TEXT NOT NULL,order_id TEXT NOT NULL DEFAULT '',token_hash TEXT NOT NULL,
+        reason TEXT NOT NULL,job_revision BIGINT NOT NULL,created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());`,[]);
     logger.info("Monetization tables created/verified.");
 }

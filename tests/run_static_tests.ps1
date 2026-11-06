@@ -2,6 +2,10 @@ $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path $PSScriptRoot -Parent
 Push-Location $repoRoot
 try {
+    & node tests/test_catalog_response_metadata.cjs
+    if ($LASTEXITCODE -ne 0) { throw 'C252 catalog metadata regression failed' }
+    & node --test services/monetization-verifier/test/purchase_recovery.test.js
+    if ($LASTEXITCODE -ne 0) { throw 'C271 payment recovery regression failed' }
     & node tests/test_stage_allocation.cjs
     if ($LASTEXITCODE -ne 0) { throw 'C269 stage allocation regression failed' }
     & node tests/test_profile_consent.cjs

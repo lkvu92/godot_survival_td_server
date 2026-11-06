@@ -1865,6 +1865,19 @@ function createMonetizationTables(nk, logger) {
       purchase_order_id TEXT PRIMARY KEY REFERENCES monetization_purchase_orders(id) ON DELETE CASCADE,
       last_attempt_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),failures INT NOT NULL DEFAULT 0);
       CREATE INDEX IF NOT EXISTS purchase_orders_financial_sync_idx ON monetization_purchase_orders(platform,status,created_at);`, []);
+  nk.sqlExec(`CREATE TABLE IF NOT EXISTS payment_delivery_jobs (
+      token_hash TEXT PRIMARY KEY CHECK(token_hash ~ '^[a-f0-9]{64}$'),encrypted_token TEXT NOT NULL,
+      package_name TEXT NOT NULL,product_id TEXT NOT NULL DEFAULT '',expected_order_id TEXT NOT NULL DEFAULT '',expected_user_id TEXT NOT NULL DEFAULT '',
+      purchase_order_id TEXT REFERENCES monetization_purchase_orders(id),payment_state TEXT NOT NULL DEFAULT 'UNKNOWN',
+      status TEXT NOT NULL DEFAULT 'queued' CHECK(status IN ('queued','processing','retry','delivered','complete','blocked','review')),
+      attempts INT NOT NULL DEFAULT 0,revision BIGINT NOT NULL DEFAULT 1,lease_id TEXT NOT NULL DEFAULT '',lease_until TIMESTAMPTZ,
+      next_attempt_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),delivery_completed_at TIMESTAMPTZ,finalized_at TIMESTAMPTZ,
+      last_error TEXT NOT NULL DEFAULT '',created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
+      CREATE INDEX IF NOT EXISTS payment_delivery_due_idx ON payment_delivery_jobs(status,next_attempt_at);
+      CREATE INDEX IF NOT EXISTS payment_delivery_order_idx ON payment_delivery_jobs(purchase_order_id);
+      CREATE TABLE IF NOT EXISTS payment_delivery_audit (
+        id BIGSERIAL PRIMARY KEY,actor TEXT NOT NULL,action TEXT NOT NULL,order_id TEXT NOT NULL DEFAULT '',token_hash TEXT NOT NULL,
+        reason TEXT NOT NULL,job_revision BIGINT NOT NULL,created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());`, []);
   logger.info("Monetization tables created/verified.");
 }
 
@@ -3319,7 +3332,7 @@ function processStage(row, nk, prefetchedWaves) {
   row.difficulty_levels = parseJsonb(row.difficulty_levels);
   row.loot_table = parseJsonb(row.loot_table);
   const waves = prefetchedWaves !== void 0 ? prefetchedWaves : nk.sqlQuery(
-    "SELECT *, entries::TEXT AS entries FROM game_stage_waves WHERE stage_id = $1 ORDER BY wave_index",
+    "SELECT id,stage_id,wave_index,wave_id,display_name,entries::TEXT AS entries FROM game_stage_waves WHERE stage_id = $1 ORDER BY wave_index",
     [row.id]
   );
   row.waves = waves.map((w) => ({
@@ -3332,7 +3345,7 @@ function processStage(row, nk, prefetchedWaves) {
 }
 function loadConfigStages(nk) {
   const stages = nk.sqlQuery("SELECT * FROM game_stages ORDER BY sort_order, level, id", []);
-  const waves = nk.sqlQuery("SELECT *, entries::TEXT AS entries FROM game_stage_waves ORDER BY stage_id, wave_index", []);
+  const waves = nk.sqlQuery("SELECT id,stage_id,wave_index,wave_id,display_name,entries::TEXT AS entries FROM game_stage_waves ORDER BY stage_id, wave_index", []);
   const grouped = /* @__PURE__ */ Object.create(null);
   for (const wave of waves) (grouped[String(wave.stage_id)] || (grouped[String(wave.stage_id)] = [])).push(wave);
   return stages.map((stage) => processStage(stage, nk, grouped[String(stage.id)] || []));
@@ -3571,6 +3584,14 @@ function invokeWithVersionGate(ctx, logger, nk, payload, handler) {
   const raw = handler(ctx, logger, sweepResourceRuntime(nk, ctx.userId), payload);
   if (handler === getGameConfig && getActiveRemoteConfig(nk).version !== active.version) {
     return JSON.stringify({ success: false, code: 409, reason: "ENEMY_CATALOG_CHANGED", message: "Config changed during bootstrap; retry" });
+  }
+  if (handler === getGameConfig && request.table === "all" && raw.length > 2 && raw[0] === "{" && raw[raw.length - 1] === "}") {
+    const metadata = { config_version: active.version };
+    if (ctx.userId && typeof featureRuntime === "function") {
+      const row = nk.storageRead([{ collection: "player_profiles", key: "main", userId: ctx.userId }])[0];
+      if (row && row.value.feature_unlocks) metadata.feature_unlocks = row.value.feature_unlocks;
+    }
+    return raw.slice(0, -1) + "," + JSON.stringify(metadata).slice(1);
   }
   try {
     const response = JSON.parse(raw || "{}");
@@ -9147,7 +9168,6 @@ const createPurchaseOrder = (ctx, _logger, nk, payload) => {
 };
 const iapGoogleClaim = (ctx, logger, nk, payload) => {
   if (!ctx.userId) return monetizationError(401, "Authentication required");
-  if (!isRemoteFlagEnabled(nk, "payment_enabled")) return monetizationError(403, "Payments are disabled");
   let req;
   try {
     req = JSON.parse(payload || "{}");
@@ -13254,7 +13274,7 @@ function portalMakeReport(data, policy, configVersion) {
   return { schema_version: 1, generated_at: (/* @__PURE__ */ new Date()).toISOString(), scope: "local PostgreSQL ledger; not external provider settlement", config_version: configVersion, policy_revision: policy.revision, status: Object.values(data.anomalies).some((n) => Number(n) > 0) ? "REVIEW_REQUIRED" : "CLEAN", counts: data.counts, anomalies: data.anomalies, financial_totals_by_currency: data.financial_totals_by_currency || [] };
 }
 const PORTAL_ORDER_SELECT = `SELECT o.id,o.user_id,o.product_id,o.status,o.platform,o.store_product_id,o.transaction_id,
- o.purchase_token_hash,o.failure_reason,o.target_server_id,o.target_generation,o.reward_snapshot,
+ o.purchase_token_hash,o.failure_reason,o.target_server_id,o.target_generation,o.reward_snapshot,o.vip_exp,o.vip_environment,
  o.created_at::text,o.validated_at::text,o.fulfilled_at::text,
  COALESCE(p.display_name,o.product_id) AS product_name,f.currency,f.original_amount::text,f.tax_amount::text,
  f.google_order_id,f.last_synced_at::text,COALESCE(refund.refunded_amount,0)::text AS refunded_amount
@@ -13318,7 +13338,7 @@ function portalOrderList(nk, req) {
   const rows = nk.sqlQuery(`${PORTAL_ORDER_SELECT} WHERE ${where.join(" AND ")} ORDER BY o.created_at DESC,o.id DESC LIMIT $${params.length}`, params);
   const more = rows.length > limit;
   rows.splice(limit);
-  return { orders: rows.map(portalOrder), total_count: Number(totals.total_orders), next_cursor: more ? String(rows[rows.length - 1].id) : null, stats: { total_orders: Number(totals.total_orders), fulfilled_orders: Number(totals.fulfilled_orders), pending_orders: Number(totals.pending_orders), revenue_by_currency: revenue } };
+  return { orders: rows.map((row) => Object.assign(portalOrder(row), { recovery: typeof pdSummary === "function" ? pdSummary(nk, row) : void 0 })), total_count: Number(totals.total_orders), next_cursor: more ? String(rows[rows.length - 1].id) : null, stats: { total_orders: Number(totals.total_orders), fulfilled_orders: Number(totals.fulfilled_orders), pending_orders: Number(totals.pending_orders), revenue_by_currency: revenue } };
 }
 function portalAdList(nk, req) {
   const limit = portalInt(req.limit, 50, 1, 100), cursor = portalText(req.cursor), params = [];
@@ -13356,7 +13376,7 @@ function portalAdminRead(ctx, logger, nk, payload, action) {
       if (!id) return portalError(400, "order_id required");
       const row = nk.sqlQuery(PORTAL_ORDER_SELECT + " WHERE o.id=$1", [id])[0];
       if (!row) return portalError(404, "Order not found");
-      data = portalOrder(row);
+      data = Object.assign(portalOrder(row), { recovery: typeof pdSummary === "function" ? pdSummary(nk, row) : void 0 });
     } else if (action === "ads_list") data = portalAdList(nk, req);
     else if (action === "reconciliation") {
       const release = nk.sqlQuery("SELECT config_version,snapshot FROM remote_config_releases ORDER BY config_version DESC LIMIT 1", [])[0];
@@ -15471,6 +15491,209 @@ var __spreadValues = (a, b) => {
     }
   return a;
 };
+function pdError(code, reason) {
+  const messages = {
+    FORBIDDEN: "Kh\xF4ng c\xF3 quy\u1EC1n th\u1EF1c hi\u1EC7n.",
+    ORDER_NOT_FOUND: "Kh\xF4ng t\xECm th\u1EA5y \u0111\u01A1n.",
+    REASON_REQUIRED: "Vui l\xF2ng nh\u1EADp l\xFD do t\u1EEB 5 \u0111\u1EBFn 500 k\xFD t\u1EF1.",
+    NO_RECOVERABLE_RECEIPT: "Ch\u01B0a c\xF3 receipt c\xF3 th\u1EC3 ph\u1EE5c h\u1ED3i. Ng\u01B0\u1EDDi ch\u01A1i c\u1EA7n \u0111\u1ED3ng b\u1ED9 giao d\u1ECBch t\u1EEB Google Play.",
+    DELIVERY_IN_PROGRESS: "\u0110\u01A1n \u0111ang \u0111\u01B0\u1EE3c worker x\u1EED l\xFD.",
+    INCONSISTENT_DELIVERY: "D\u1EA5u giao v\xE0 ledger ch\u01B0a kh\u1EDBp; c\u1EA7n \u0111\u1ED1i so\xE1t.",
+    NOT_RETRYABLE: "\u0110\u01A1n ch\u01B0a \u0111\u1EE7 \u0111i\u1EC1u ki\u1EC7n ch\u1EA1y l\u1EA1i."
+  };
+  return JSON.stringify({ success: false, code, reason, message: messages[reason] || "Tr\u1EA1ng th\xE1i x\u1EED l\xFD \u0111\xE3 thay \u0111\u1ED5i ho\u1EB7c c\u1EA7n \u0111\u1ED1i so\xE1t. Vui l\xF2ng t\u1EA3i l\u1EA1i \u0111\u01A1n." });
+}
+function pdProof(nk, order, hash) {
+  const scope = { accountId: String(order.user_id), serverId: String(order.target_server_id), generation: Number(order.target_generation) };
+  const scoped = characterRuntime(nk, scope), userId = scope.accountId;
+  const marker = scoped.storageRead([{ collection: "player_purchase_grants", key: hash, userId }])[0];
+  const ledger = nk.sqlQuery("SELECT id,user_id,product_id,status,granted_seconds,target_server_id,target_generation,COALESCE(NULLIF(purchase_order_id,''),request_id) AS original_order_id FROM monetization_purchases WHERE purchase_token_hash=$1", [hash])[0];
+  const vip = ledger && Number(order.vip_exp) > 0 ? nk.sqlQuery("SELECT user_id,environment,exp FROM player_vip_credits WHERE purchase_id=$1", [ledger.id])[0] : null;
+  const mailed = (parseJsonb(order.reward_snapshot) || []).some((r) => ["currency", "item", "hero"].includes(r.reward_type) && !(DAILY_PACK_IDS.includes(order.product_id) && r.metadata && Number(r.metadata.daily_pack_days) === 30));
+  const mail = mailed ? scoped.storageRead([{ collection: "player_mail_deliveries", key: mailId(nk, "purchase:" + hash), userId }])[0] : null;
+  const needsNoAds = (parseJsonb(order.reward_snapshot) || []).filter((r) => r.reward_type === "entitlement" && r.reward_id === "no_ads_seconds").reduce((n, r) => n + Number(r.quantity), 0);
+  const inconsistent = !!ledger && (!marker || ledger.user_id !== userId || ledger.product_id !== order.product_id || Number(ledger.granted_seconds) !== needsNoAds || ledger.original_order_id !== order.id || ledger.target_server_id !== scope.serverId || Number(ledger.target_generation) !== scope.generation) || !!vip && (vip.user_id !== userId || vip.environment !== order.vip_environment || Number(vip.exp) !== Number(order.vip_exp)) || !!marker && mailed && !mail;
+  return { complete: !!marker && !!ledger && ledger.status !== "voided" && !inconsistent && (!(Number(order.vip_exp) > 0) || !!vip), inconsistent, marker: !!marker, claimed: !!(mail && mail.value.claimed_at_ms), mail: !!mail };
+}
+function pdSummary(nk, order) {
+  const job = nk.sqlQuery(`SELECT token_hash,payment_state,status,attempts,last_error,delivery_completed_at,finalized_at,
+      lease_until>NOW() AS leased FROM payment_delivery_jobs WHERE purchase_order_id=$1 OR expected_order_id=$1 ORDER BY updated_at DESC LIMIT 1`, [order.id])[0];
+  if (!job) return { payment_state: "UNKNOWN", delivery_state: order.status === "fulfilled" ? "DELIVERED_LEGACY" : "NOT_STARTED", finalization_state: "UNKNOWN", can_retry: false, reason: "NO_RECOVERABLE_RECEIPT", job_status: "none", attempts: 0, last_error: "" };
+  const proof = pdProof(nk, order, job.token_hash);
+  const blocked = ["blocked", "complete"].includes(job.status) || ["CANCELED", "VOIDED", "PENDING"].includes(job.payment_state) || proof.inconsistent;
+  return {
+    payment_state: job.payment_state,
+    delivery_state: proof.inconsistent ? "REVIEW_REQUIRED" : proof.complete ? proof.mail && !proof.claimed ? "DELIVERED_AWAITING_CLAIM" : "DELIVERED" : proof.marker ? "REPAIR_COMPLETION" : "NOT_STARTED",
+    finalization_state: job.finalized_at ? "FINALIZED" : job.delivery_completed_at ? "ACK_PENDING" : "NOT_STARTED",
+    can_retry: !blocked && !job.leased,
+    reason: proof.inconsistent ? "INCONSISTENT_DELIVERY" : job.leased ? "DELIVERY_IN_PROGRESS" : blocked ? "NOT_RETRYABLE" : "VERIFY_AND_CONTINUE",
+    job_status: job.status,
+    attempts: Number(job.attempts),
+    last_error: job.last_error
+  };
+}
+function pdFinish(nk, job, status, reason, state) {
+  const rows = nk.sqlQuery(`UPDATE payment_delivery_jobs SET status=$3,last_error=$4,payment_state=COALESCE($5,payment_state),
+      lease_until=NULL,lease_id='',next_attempt_at=NOW()+make_interval(secs=>LEAST(3600,30*(1+attempts))),revision=revision+1,updated_at=NOW()
+      WHERE token_hash=$1 AND lease_id=$2 AND lease_until>NOW() RETURNING token_hash`, [job.token_hash, job.lease_id, status, reason, state || null]);
+  if (!rows.length) throw Error("STALE_DELIVERY_LEASE");
+}
+function pdApply(ctx, logger, nk, job, v) {
+  if (!v || !["PENDING", "PURCHASED", "CANCELED", "VOIDED"].includes(v.state) || v.package_name !== job.package_name) throw Error("INVALID_PROVIDER_STATE");
+  if (v.state === "PENDING") {
+    pdFinish(nk, job, "retry", "WAITING_PAYMENT", "PENDING");
+    return { delivered: false };
+  }
+  if (v.state === "CANCELED" || v.state === "VOIDED") {
+    nk.sqlQuery("SELECT void_store_purchase($1)", [job.token_hash]);
+    pdFinish(nk, job, "blocked", "PAYMENT_REVOKED", v.state);
+    return { delivered: false };
+  }
+  if (typeof v.order_id !== "string" || typeof v.user_id !== "string" || typeof v.product_id !== "string" || typeof v.transaction_id !== "string" || !v.transaction_id || v.quantity !== 1) throw Error("UNSUPPORTED_PROVIDER_BINDING");
+  const rows = nk.sqlQuery("SELECT * FROM monetization_purchase_orders WHERE id=$1", [v.order_id]);
+  const order = rows[0];
+  if (!order || order.user_id !== v.user_id || order.platform !== "android" || String(order.store_product_id || order.product_id) !== v.product_id || job.product_id && job.product_id !== v.product_id || job.expected_order_id && job.expected_order_id !== order.id || job.expected_user_id && job.expected_user_id !== order.user_id || job.purchase_order_id && job.purchase_order_id !== order.id || order.vip_environment !== "production" || !["pending", "fulfilled"].includes(order.status)) throw Error("ORIGINAL_ORDER_REVIEW_REQUIRED");
+  if (nk.sqlQuery("SELECT 1 FROM store_purchase_voids WHERE token_hash=$1", [job.token_hash]).length) {
+    pdFinish(nk, job, "blocked", "PAYMENT_REVOKED", "VOIDED");
+    return { delivered: false };
+  }
+  const workerCtx = { userId: order.user_id, env: ctx.env };
+  if (!isProductionTestPurchaseAllowed(workerCtx, nk, { environment: v.test_purchase ? "sandbox" : "production" })) throw Error("TEST_PURCHASE_NOT_ALLOWED");
+  const scope = { accountId: order.user_id, serverId: order.target_server_id, generation: Number(order.target_generation) };
+  const bound = nk.sqlQuery(`UPDATE payment_delivery_jobs SET purchase_order_id=$3,payment_state='PURCHASED',updated_at=NOW()
+      WHERE token_hash=$1 AND lease_id=$2 AND lease_until>NOW() RETURNING token_hash`, [job.token_hash, job.lease_id, order.id]);
+  if (!bound.length) throw Error("STALE_DELIVERY_LEASE");
+  const proof = pdProof(nk, order, job.token_hash);
+  if (proof.inconsistent) throw Error("INCONSISTENT_DELIVERY");
+  if (!proof.complete || order.status !== "fulfilled") {
+    if (identityRestoreBlocked(nk) || identityGameplayGate(workerCtx, nk)) throw Error("ACCOUNT_ADMISSION_REVIEW_REQUIRED");
+    const server = validatedServer(nk, { server_id: scope.serverId, generation: scope.generation });
+    if (server.error) throw Error("ORIGINAL_SERVER_UNAVAILABLE");
+    if (!nk.sqlQuery("SELECT 1 FROM player_characters WHERE account_id=$1::UUID AND server_id=$2 AND generation=$3 AND status='ready'", [scope.accountId, scope.serverId, scope.generation]).length) throw Error("ORIGINAL_CHARACTER_REVIEW_REQUIRED");
+    const result = JSON.parse(withActiveAccount(nk, order.user_id, () => withServerRequest(nk, scope, () => fulfillVerifiedStoreOrder(
+      workerCtx,
+      logger,
+      characterRuntime(nk, scope),
+      order,
+      { platform: "android", productId: order.product_id, storeProductId: v.product_id, transactionId: v.transaction_id, tokenHash: job.token_hash, seenBefore: false, receiptOwner: order.user_id, mode: "production" }
+    ))));
+    if (result.status !== "success") throw Error("DELIVERY_RETRY_REQUIRED");
+  }
+  if (!pdProof(nk, order, job.token_hash).complete) throw Error("INCONSISTENT_DELIVERY");
+  if (nk.sqlQuery("SELECT 1 FROM store_purchase_voids WHERE token_hash=$1", [job.token_hash]).length) {
+    pdFinish(nk, job, "blocked", "PAYMENT_REVOKED", "VOIDED");
+    return { delivered: false };
+  }
+  const saved = nk.sqlQuery(`UPDATE payment_delivery_jobs SET status='delivered',delivery_completed_at=COALESCE(delivery_completed_at,NOW()),last_error='',revision=revision+1,updated_at=NOW()
+      WHERE token_hash=$1 AND lease_id=$2 AND lease_until>NOW() RETURNING token_hash`, [job.token_hash, job.lease_id]);
+  if (!saved.length) throw Error("STALE_DELIVERY_LEASE");
+  return { delivered: true, fulfillment_type: order.fulfillment_type };
+}
+const googlePlayDelivery = (ctx, logger, nk, payload) => {
+  if (ctx.userId || !ctx.env || !ctx.env.MONETIZATION_VERIFIER_SECRET) return pdError(403, "FORBIDDEN");
+  let req;
+  try {
+    req = JSON.parse(payload || "{}");
+  } catch (_e) {
+    return pdError(400, "INVALID_REQUEST");
+  }
+  if ((payload || "").length > 2e4 || req.verifier_secret !== ctx.env.MONETIZATION_VERIFIER_SECRET) return pdError(403, "FORBIDDEN");
+  const hash = String(req.token_hash || "");
+  try {
+    if (req.action === "lease") {
+      const limit = Math.min(20, Math.max(1, Number(req.limit) || 5)), lease = nk.uuidv4();
+      const jobs = nk.sqlQuery(`WITH due AS (SELECT token_hash FROM payment_delivery_jobs WHERE status IN ('queued','retry','processing','delivered')
+              AND next_attempt_at<=NOW() AND (lease_until IS NULL OR lease_until<NOW()) ORDER BY next_attempt_at LIMIT $1 FOR UPDATE SKIP LOCKED)
+              UPDATE payment_delivery_jobs j SET status='processing',lease_id=$2,lease_until=NOW()+INTERVAL '120 seconds',attempts=attempts+1,revision=revision+1,updated_at=NOW()
+              FROM due WHERE j.token_hash=due.token_hash RETURNING j.token_hash,j.encrypted_token,j.package_name,j.product_id,j.expected_order_id,j.expected_user_id,j.lease_id`, [Math.floor(limit), lease]);
+      return JSON.stringify({ success: true, jobs });
+    }
+    if (!/^[a-f0-9]{64}$/.test(hash)) return pdError(400, "INVALID_TOKEN_HASH");
+    if (req.action === "enqueue") {
+      if (typeof req.encrypted_token !== "string" || !/^v1\.[A-Za-z0-9+/=]+\.[A-Za-z0-9+/=]+\.[A-Za-z0-9+/=]+$/.test(req.encrypted_token) || req.encrypted_token.length > 16e3 || typeof req.package_name !== "string" || !/^[a-zA-Z0-9_.]{3,200}$/.test(req.package_name)) return pdError(400, "INVALID_ENCRYPTED_RECEIPT");
+      const args = [hash, req.encrypted_token, req.package_name, String(req.product_id || "").slice(0, 200), String(req.expected_order_id || "").slice(0, 180), String(req.expected_user_id || "").slice(0, 80)];
+      nk.sqlExec(`INSERT INTO payment_delivery_jobs(token_hash,encrypted_token,package_name,product_id,expected_order_id,expected_user_id) VALUES($1,$2,$3,$4,$5,$6) ON CONFLICT DO NOTHING`, args);
+      const old = nk.sqlQuery("SELECT package_name,product_id,expected_order_id,expected_user_id FROM payment_delivery_jobs WHERE token_hash=$1", [hash])[0];
+      if (old.package_name !== args[2] || old.product_id && args[3] && old.product_id !== args[3] || old.expected_order_id && args[4] && old.expected_order_id !== args[4] || old.expected_user_id && args[5] && old.expected_user_id !== args[5]) return pdError(409, "RECEIPT_BINDING_CONFLICT");
+      if (req.revoked === true) {
+        nk.sqlQuery("SELECT void_store_purchase($1)", [hash]);
+        nk.sqlExec("UPDATE payment_delivery_jobs SET status='blocked',payment_state='VOIDED',last_error='PAYMENT_REVOKED',lease_id='',lease_until=NULL,revision=revision+1,updated_at=NOW() WHERE token_hash=$1", [hash]);
+      } else if (req.review === true) nk.sqlExec("UPDATE payment_delivery_jobs SET status='review',last_error='PARTIAL_REFUND_REVIEW',lease_id='',lease_until=NULL,revision=revision+1,updated_at=NOW() WHERE token_hash=$1 AND status<>'blocked'", [hash]);
+      return JSON.stringify({ success: true, queued: true });
+    }
+    const job = nk.sqlQuery("SELECT * FROM payment_delivery_jobs WHERE token_hash=$1 AND lease_id=$2 AND lease_until>NOW()", [hash, String(req.lease_id || "")])[0];
+    if (!job) return pdError(409, "STALE_DELIVERY_LEASE");
+    if (req.action === "apply") {
+      try {
+        return JSON.stringify(__spreadValues({ success: true }, pdApply(ctx, logger, nk, job, req.verified)));
+      } catch (error) {
+        const reason = String(error).replace(/^Error: /, "");
+        const transient = ["DELIVERY_RETRY_REQUIRED", "ORIGINAL_SERVER_UNAVAILABLE", "SERVER_REQUEST_FENCED"].includes(reason);
+        pdFinish(nk, job, transient ? "retry" : "review", /^[A-Z_]{3,100}$/.test(reason) ? reason : "DELIVERY_REVIEW_REQUIRED");
+        return JSON.stringify({ success: true, delivered: false, review: !transient });
+      }
+    }
+    if (req.action === "finalized") {
+      if (!job.delivery_completed_at || job.status !== "delivered") return pdError(409, "DELIVERY_NOT_COMPLETE");
+      const done = nk.sqlQuery(`UPDATE payment_delivery_jobs SET status='complete',finalized_at=NOW(),lease_id='',lease_until=NULL,last_error='',revision=revision+1,updated_at=NOW()
+              WHERE token_hash=$1 AND lease_id=$2 AND lease_until>NOW() AND NOT EXISTS(SELECT 1 FROM store_purchase_voids WHERE token_hash=$1) RETURNING token_hash`, [hash, job.lease_id]);
+      return done.length ? JSON.stringify({ success: true }) : pdError(409, "STALE_OR_REVOKED_DELIVERY");
+    }
+    if (req.action === "retry") {
+      const reason = String(req.reason || "PROVIDER_RETRY");
+      pdFinish(nk, job, req.review === true ? "review" : "retry", /^[A-Z_]{3,100}$/.test(reason) ? reason : "PROVIDER_RETRY");
+      return JSON.stringify({ success: true });
+    }
+    return pdError(400, "INVALID_ACTION");
+  } catch (_error) {
+    logger.warn("Payment recovery operation failed; retry with durable identity");
+    return pdError(409, "DELIVERY_OPERATION_RETRY");
+  }
+};
+function pdAdmin(ctx, nk, payload, retry) {
+  if (!ctx.userId || !isConfigAdmin(ctx)) return pdError(403, "FORBIDDEN");
+  let req;
+  try {
+    req = JSON.parse(payload || "{}");
+  } catch (_e) {
+    return pdError(400, "INVALID_REQUEST");
+  }
+  const order = nk.sqlQuery("SELECT * FROM monetization_purchase_orders WHERE id=$1", [String(req.order_id || "")])[0];
+  if (!order) return pdError(404, "ORDER_NOT_FOUND");
+  const summary = pdSummary(nk, order);
+  if (!retry) return JSON.stringify({ success: true, data: summary });
+  if (typeof req.reason !== "string" || req.reason.trim().length < 5 || req.reason.length > 500) return pdError(400, "REASON_REQUIRED");
+  if (!summary.can_retry) return pdError(409, summary.reason);
+  const rows = nk.sqlQuery(`WITH queued AS (UPDATE payment_delivery_jobs SET status='queued',next_attempt_at=NOW(),last_error='',revision=revision+1,updated_at=NOW()
+      WHERE (purchase_order_id=$1 OR expected_order_id=$1) AND status IN ('queued','retry','review','delivered') AND payment_state NOT IN ('CANCELED','VOIDED','PENDING')
+      AND (lease_until IS NULL OR lease_until<NOW()) AND NOT EXISTS(SELECT 1 FROM store_purchase_voids v WHERE v.token_hash=payment_delivery_jobs.token_hash)
+      RETURNING token_hash,revision)
+      INSERT INTO payment_delivery_audit(actor,action,order_id,token_hash,reason,job_revision) SELECT $2,'admin_retry',$1,token_hash,$3,revision FROM queued RETURNING id`, [order.id, ctx.userId, req.reason.trim()]);
+  return rows.length ? JSON.stringify({ success: true, data: { success: true, message: "\u0110\xE3 x\u1EBFp h\xE0ng ki\u1EC3m tra v\xE0 ti\u1EBFp t\u1EE5c \u0111\u01A1n g\u1ED1c; kh\xF4ng t\u1EA1o th\xEAm ph\u1EA7n th\u01B0\u1EDFng." } }) : pdError(409, "DELIVERY_STATE_CHANGED");
+}
+function rpcAdminOrderRecovery(c, _l, n, p) {
+  return pdAdmin(c, n, p, false);
+}
+function rpcAdminOrderFulfill(c, _l, n, p) {
+  return pdAdmin(c, n, p, true);
+}
+
+var __defProp = Object.defineProperty;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
 function compliancePolicy(nk, ctx) {
   const active = getActiveRemoteConfig(nk);
   const p = active.config && active.config.system && active.config.system.compliance_policy;
@@ -16209,6 +16432,9 @@ function InitModule(ctx, logger, nk, initializer) {
   initializer.registerRpc("admin_portal_catalog_get", rpcPortalCatalogGet);
   initializer.registerRpc("admin_order_list", rpcPortalOrderList);
   initializer.registerRpc("admin_order_get", rpcPortalOrderGet);
+  initializer.registerRpc("admin_order_recovery_get", rpcAdminOrderRecovery);
+  initializer.registerRpc("admin_order_fulfill", rpcAdminOrderFulfill);
+  initializer.registerRpc("google_play_delivery", googlePlayDelivery);
   initializer.registerRpc("admin_ad_reward_list", rpcPortalAdList);
   initializer.registerRpc("admin_reconciliation_report", rpcPortalReconciliation);
   initializer.registerRpc("admin_item_list", rpcAdminItemList);

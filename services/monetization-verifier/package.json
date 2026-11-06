@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node src/server.js",
-    "check": "node --check src/server.js && node --check src/admob_ssv.js",
+    "check": "node --check src/server.js && node --check src/admob_ssv.js && node --check src/purchase_recovery.js",
     "test": "node --test test/*.test.js"
   },
   "dependencies": {

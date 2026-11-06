@@ -308,7 +308,7 @@ function portalMakeReport(data,policy,configVersion){
 }
 
 const PORTAL_ORDER_SELECT = `SELECT o.id,o.user_id,o.product_id,o.status,o.platform,o.store_product_id,o.transaction_id,
- o.purchase_token_hash,o.failure_reason,o.target_server_id,o.target_generation,o.reward_snapshot,
+ o.purchase_token_hash,o.failure_reason,o.target_server_id,o.target_generation,o.reward_snapshot,o.vip_exp,o.vip_environment,
  o.created_at::text,o.validated_at::text,o.fulfilled_at::text,
  COALESCE(p.display_name,o.product_id) AS product_name,f.currency,f.original_amount::text,f.tax_amount::text,
  f.google_order_id,f.last_synced_at::text,COALESCE(refund.refunded_amount,0)::text AS refunded_amount
@@ -338,7 +338,7 @@ function portalOrderList(nk:nkruntime.Nakama,req:any):any {
  const cursor=portalText(req.cursor);if(cursor){const pivot=nk.sqlQuery('SELECT created_at::text,id FROM monetization_purchase_orders WHERE id=$1',[cursor])[0];if(!pivot)throw Error('Invalid cursor');params.push(pivot.created_at,pivot.id);where.push(`(o.created_at,o.id)<($${params.length-1}::timestamptz,$${params.length})`);}
  params.push(limit+1);const rows=nk.sqlQuery(`${PORTAL_ORDER_SELECT} WHERE ${where.join(' AND ')} ORDER BY o.created_at DESC,o.id DESC LIMIT $${params.length}`,params);
  const more=rows.length>limit;rows.splice(limit);
- return {orders:rows.map(portalOrder),total_count:Number(totals.total_orders),next_cursor:more?String(rows[rows.length-1].id):null,stats:{total_orders:Number(totals.total_orders),fulfilled_orders:Number(totals.fulfilled_orders),pending_orders:Number(totals.pending_orders),revenue_by_currency:revenue}};
+ return {orders:rows.map((row:any)=>Object.assign(portalOrder(row),{recovery:typeof pdSummary==='function'?pdSummary(nk,row):undefined})),total_count:Number(totals.total_orders),next_cursor:more?String(rows[rows.length-1].id):null,stats:{total_orders:Number(totals.total_orders),fulfilled_orders:Number(totals.fulfilled_orders),pending_orders:Number(totals.pending_orders),revenue_by_currency:revenue}};
 }
 function portalAdList(nk:nkruntime.Nakama,req:any):any {
  const limit=portalInt(req.limit,50,1,100),cursor=portalText(req.cursor),params:any[]=[];let where='';
@@ -355,7 +355,7 @@ function portalAdminRead(ctx:nkruntime.Context,logger:nkruntime.Logger,nk:nkrunt
  else if(action==='user_get')data=portalUserGet(nk,req);
  else if(action==='catalog_get')data={heroes:nk.sqlQuery('SELECT * FROM game_heroes ORDER BY id',[]).map(processHero),enemies:nk.sqlQuery('SELECT * FROM game_enemies ORDER BY id',[]).map(processEnemy),skills:nk.sqlQuery('SELECT * FROM game_skills ORDER BY id',[]).map(processSkill)};
  else if(action==='orders_list')data=portalOrderList(nk,req);
- else if(action==='order_get'){const id=portalText(req.order_id);if(!id)return portalError(400,'order_id required');const row=nk.sqlQuery(PORTAL_ORDER_SELECT+' WHERE o.id=$1',[id])[0];if(!row)return portalError(404,'Order not found');data=portalOrder(row);}
+ else if(action==='order_get'){const id=portalText(req.order_id);if(!id)return portalError(400,'order_id required');const row=nk.sqlQuery(PORTAL_ORDER_SELECT+' WHERE o.id=$1',[id])[0];if(!row)return portalError(404,'Order not found');data=Object.assign(portalOrder(row),{recovery:typeof pdSummary==='function'?pdSummary(nk,row):undefined});}
  else if(action==='ads_list')data=portalAdList(nk,req);
  else if(action==='reconciliation'){
  const release=nk.sqlQuery('SELECT config_version,snapshot FROM remote_config_releases ORDER BY config_version DESC LIMIT 1',[])[0];

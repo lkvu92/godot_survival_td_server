@@ -165,7 +165,7 @@ function processStage(row: any, nk: nkruntime.Nakama, prefetchedWaves?: any[]): 
 	row.loot_table = parseJsonb(row.loot_table);
     
     const waves = prefetchedWaves !== undefined ? prefetchedWaves : nk.sqlQuery(
-        "SELECT *, entries::TEXT AS entries FROM game_stage_waves WHERE stage_id = $1 ORDER BY wave_index",
+        "SELECT id,stage_id,wave_index,wave_id,display_name,entries::TEXT AS entries FROM game_stage_waves WHERE stage_id = $1 ORDER BY wave_index",
         [row.id]
     );
     row.waves = waves.map((w: any) => ({
@@ -179,7 +179,7 @@ function processStage(row: any, nk: nkruntime.Nakama, prefetchedWaves?: any[]): 
 
 function loadConfigStages(nk: nkruntime.Nakama): any[] {
     const stages = nk.sqlQuery("SELECT * FROM game_stages ORDER BY sort_order, level, id", []);
-    const waves = nk.sqlQuery("SELECT *, entries::TEXT AS entries FROM game_stage_waves ORDER BY stage_id, wave_index", []);
+    const waves = nk.sqlQuery("SELECT id,stage_id,wave_index,wave_id,display_name,entries::TEXT AS entries FROM game_stage_waves ORDER BY stage_id, wave_index", []);
     const grouped: {[key:string]:any[]} = Object.create(null);
     for (const wave of waves) (grouped[String(wave.stage_id)] || (grouped[String(wave.stage_id)] = [])).push(wave);
     return stages.map(stage => processStage(stage, nk, grouped[String(stage.id)] || []));
@@ -420,6 +420,16 @@ function invokeWithVersionGate(ctx: nkruntime.Context, logger: nkruntime.Logger,
         const raw = handler(ctx, logger, sweepResourceRuntime(nk,ctx.userId), payload);
         if (handler === getGameConfig && getActiveRemoteConfig(nk).version !== active.version) {
             return JSON.stringify({success:false,code:409,reason:'ENEMY_CATALOG_CHANGED',message:'Config changed during bootstrap; retry'});
+        }
+        // The bulk producer already serialized valid JSON. Avoid decoding and
+        // encoding the entire catalog again just to add two small metadata fields.
+        if (handler === getGameConfig && request.table === 'all' && raw.length > 2 && raw[0] === '{' && raw[raw.length - 1] === '}') {
+            const metadata:any = {config_version:active.version};
+            if(ctx.userId && typeof featureRuntime === 'function') {
+                const row=nk.storageRead([{collection:'player_profiles',key:'main',userId:ctx.userId}])[0];
+                if(row&&row.value.feature_unlocks)metadata.feature_unlocks=row.value.feature_unlocks;
+            }
+            return raw.slice(0,-1)+','+JSON.stringify(metadata).slice(1);
         }
         try {
             const response = JSON.parse(raw || "{}");

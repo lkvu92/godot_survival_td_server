@@ -1,6 +1,6 @@
 # C252 — Responsive catalog bootstrap
 
-Version 1.1.0 · ACTIVE (desktop scoped) · 2026-11-03.
+Version 1.1.2 · ACTIVE (desktop scoped) · 2026-11-06.
 
 55% LoadingScreen maps to ConfigService.load_all_config: network response, JSON parsing, full DataRegistry validation including all stages/difficulties, copies/indexes. Diagnose using the authenticated remote catalog fixture and monotonic stage timing/frame gaps, never gameplay fallback.
 
@@ -34,6 +34,12 @@ its seeded descriptor as before. No schema-only admission or validation bypass.
 Server loads stage waves in one ordered query, casts entries JSONB to text at
 the SQL boundary and groups by stage ID. The RPC response schema and complete
 catalog are unchanged. No data publication/release creation is required.
+
+## 1.1.2 - 2026-11-06 production transport deadline
+
+Wave reads select explicit scalar columns plus entries::TEXT only. Do not include SELECT * alongside the text projection: it also transfers/materializes the original multi-megabyte JSONB column before replacing it. Preserve all response wave fields and ordering.
+
+The all-catalog version gate appends config_version and the current character's feature metadata to the valid JSON object already serialized by getGameConfig. It must not parse/serialize the entire multi-megabyte object again. Keep the active-release recheck, existing metadata semantics, force-update/errors and normal handling of other RPCs/tables. No global cache or offline fallback. Client bulk-catalog deadline is at least 30 seconds; ordinary RPC deadline stays unchanged. Regression checks compare complete decoded content and release-race/error behavior, plus native public HTTPS timing and client validation. Production incident: two 5-second requests timed out; 30-second request succeeded in ~7 seconds with 7.9 MB response; the downloaded catalog passed the client worker.
 
 Validation: compare full RPC payload before/after, query-count regression,
 malformed schedule/reference/override/skill rejection, unchanged seeded battle

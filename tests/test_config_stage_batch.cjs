@@ -7,7 +7,7 @@ const copy=x=>JSON.parse(JSON.stringify(x));
 const legacy={sqlQuery(sql,args){assert(sql.includes('WHERE stage_id = $1'));return copy(waves.filter(w=>w.stage_id===args[0]));}};
 const expected=stages.map(s=>ctx.processStage(copy(s),legacy));
 let queries=0;
-const nk={sqlQuery(sql){queries++;if(sql.includes('FROM game_stages'))return copy(stages);assert(sql.includes('entries::TEXT AS entries')&&sql.includes('ORDER BY stage_id, wave_index'));return copy(waves);}};
+const nk={sqlQuery(sql){queries++;if(sql.includes('FROM game_stages'))return copy(stages);assert(sql.includes('entries::TEXT AS entries')&&sql.includes('ORDER BY stage_id, wave_index'));assert(!sql.includes('SELECT *'),'Do not fetch the original JSONB entries alongside its text projection');return copy(waves);}};
 const actual=ctx.loadConfigStages(nk);
 assert.deepEqual(copy(actual),copy(expected));
 assert.equal(queries,2,'Stage count must not increase SQL count');

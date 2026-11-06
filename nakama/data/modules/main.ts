@@ -646,6 +646,9 @@ function InitModule(
     initializer.registerRpc("admin_portal_catalog_get", rpcPortalCatalogGet);
     initializer.registerRpc("admin_order_list", rpcPortalOrderList);
     initializer.registerRpc("admin_order_get", rpcPortalOrderGet);
+    initializer.registerRpc("admin_order_recovery_get", rpcAdminOrderRecovery);
+    initializer.registerRpc("admin_order_fulfill", rpcAdminOrderFulfill);
+    initializer.registerRpc("google_play_delivery", googlePlayDelivery);
     initializer.registerRpc("admin_ad_reward_list", rpcPortalAdList);
     initializer.registerRpc("admin_reconciliation_report", rpcPortalReconciliation);
     initializer.registerRpc('admin_item_list', rpcAdminItemList);

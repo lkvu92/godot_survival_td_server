@@ -400,3 +400,8 @@ C252 1.1.0: job-local admission validation cache and batched stage-wave transpor
 - C232 v3.4.2: WEB_CLIENT_URL preserves the public web base path (/ttl) independently from the identity API origin.
 
 - [C270 Workers admin data](contracts/C270_WORKERS_ADMIN_DATA.md): database-backed portal reads and Workers compatibility; implementation and production validation pending.
+# C271 payment delivery recovery
+
+[C271](contracts/C271_PAYMENT_DELIVERY_RECOVERY.md): runtime/worker/admin deployed; exact RTDN Push identity and Google acceptance pending (IN_PROGRESS, 2026-11-06). [Operations](PAYMENT_DELIVERY_OPERATIONS.md) · [Deployment](reports/C271_DEPLOYMENT.md).
+
+C252 1.1.2: production bulk-catalog timeout; remove redundant server JSON round-trip and allow 30 seconds for the client catalog request.

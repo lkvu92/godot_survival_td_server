@@ -825,7 +825,7 @@ const createPurchaseOrder: nkruntime.RpcFunction = (ctx, _logger, nk, payload) =
 
 const iapGoogleClaim: nkruntime.RpcFunction = (ctx, logger, nk, payload) => {
     if (!ctx.userId) return monetizationError(401, "Authentication required");
-    if (!isRemoteFlagEnabled(nk, "payment_enabled")) return monetizationError(403, "Payments are disabled");
+    // Checkout can be disabled independently of completing an already-paid order.
     let req: any;
     try { req = JSON.parse(payload || "{}"); } catch (_e) { return monetizationError(400, "Invalid JSON"); }
     const purchaseOrderId = String(req.purchase_order_id || "");

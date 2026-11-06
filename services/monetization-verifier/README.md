@@ -36,3 +36,19 @@ Nakama or protect it with the configured bearer secret.
 The repository's local stack includes this service. From `nakama/`, run
 `docker compose up -d --build`; its health endpoint is then available at
 `http://localhost:8082/health`. The checked-in secret is local-development only.
+
+## Durable purchase recovery (C271)
+
+Read [payment operations](../../docs/PAYMENT_DELIVERY_OPERATIONS.md) before rollout.
+Configure a persistent 32-byte base64 `PURCHASE_RECOVERY_ENCRYPTION_KEY` before
+purchase intake; an absent key fails closed. Keep it with protected DB backups.
+`PURCHASE_RECOVERY_ENABLED=true` runs the leased recovery loop every 10 seconds.
+Install the matching Nakama runtime before enabling it. Google consume/acknowledge
+is performed after durable delivery, including repair of missing SQL/VIP completion.
+
+Authenticated RTDN additionally requires the exact
+`GOOGLE_PUBSUB_SERVICE_ACCOUNT_EMAIL`, expected audience and package, and Play
+Console/Pub/Sub setup. Do not substitute the Play API credential's email without
+checking the actual Push subscription identity. Without RTDN, only receipts
+already persisted by client verification can recover independently of the app.
+Run `npm test` and the isolated native `server/tests/test_payment_delivery_runtime.cjs`.

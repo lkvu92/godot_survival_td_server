@@ -3,6 +3,7 @@ import { createServer } from "node:http";
 import { google } from "googleapis";
 import { syncFinancialBatch } from "./play_financials.js";
 import { processAdmobCallback, ssvErrorReason } from "./admob_ssv.js";
+import { recoveryKey, enqueueReceipt, validatePushIdentity, enqueueNotification, recoverBatch } from "./purchase_recovery.js";
 
 const port = Number(process.env.PORT || 8080);
 const appEnvironment = String(process.env.APP_ENVIRONMENT || "develop").toLowerCase() === "production"
@@ -28,8 +29,12 @@ function json(response, status, body) {
 }
 
 async function readJson(request) {
-  const chunks = [];
-  for await (const chunk of request) chunks.push(chunk);
+  const chunks = []; let size = 0;
+  for await (const chunk of request) {
+    size += chunk.length;
+    if (size > 131072) throw new Error('REQUEST_TOO_LARGE');
+    chunks.push(chunk);
+  }
   return JSON.parse(Buffer.concat(chunks).toString("utf8") || "{}");
 }
 
@@ -40,6 +45,10 @@ function authorize(request) {
 async function verifyPlayPurchase(body) {
   const expectedPackage = String(process.env.GOOGLE_PLAY_PACKAGE_NAME || "");
   if ((body.purchase_order_id || body.verification_only === true) && (!expectedPackage || String(body.package_name || "") !== expectedPackage)) return { verified: false };
+  // Persist encrypted receipt before querying Google or granting anything.
+  await enqueueReceipt({token:String(body.purchase_token||''),packageName:expectedPackage,productId:String(body.product_id||''),
+    expectedOrderId:String(body.purchase_order_id||''),expectedUserId:String(body.user_id||''),key:recoveryKey(process.env.PURCHASE_RECOVERY_ENCRYPTION_KEY),
+    bridge:payload=>callNakamaVerifierRpc('google_play_delivery',payload)});
   const auth = new google.auth.GoogleAuth({ scopes: ["https://www.googleapis.com/auth/androidpublisher"] });
   const publisher = google.androidpublisher({ version: "v3", auth });
   const result = await publisher.purchases.products.get({
@@ -48,7 +57,7 @@ async function verifyPlayPurchase(body) {
     token: String(body.purchase_token || ""),
   });
   const purchase = result.data || {};
-  if (Number(purchase.purchaseState) !== 0) return { verified: false };
+  if (Number(purchase.purchaseState) !== 0 || (purchase.quantity!==undefined&&purchase.quantity!==1)) return { verified: false };
   // The app sets this to the authenticated Nakama user UUID before launching
   // Billing. Requiring an exact match prevents a valid token being moved to a
   // different game account.
@@ -59,13 +68,7 @@ async function verifyPlayPurchase(body) {
   const expectedOrderId = String(body.purchase_order_id || "");
   if (expectedOrderId && String(purchase.obfuscatedExternalProfileId || "") !== expectedOrderId) return { verified: false };
 
-  if (body.verification_only !== true && Number(purchase.consumptionState) !== 1) {
-    await publisher.purchases.products.consume({
-      packageName: String(body.package_name || ""),
-      productId: String(body.product_id || ""),
-      token: String(body.purchase_token || ""),
-    });
-  }
+  // The recovery worker finalizes with Google only after durable game delivery.
   return {
     verified: true,
     token_hash: createHash("sha256").update(String(body.purchase_token)).digest("hex"),
@@ -110,6 +113,7 @@ async function callNakamaVerifierRpc(rpcId, payload) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...payload, verifier_secret: verifierSecret }),
+      signal: AbortSignal.timeout(20000),
     },
   );
   if (!response.ok) throw new Error(`Nakama ${rpcId} failed: ${response.status}`);
@@ -125,19 +129,16 @@ async function processRtdn(request) {
   const idToken = authorization.startsWith("Bearer ") ? authorization.slice(7) : "";
   if (!idToken) throw new Error("Missing Pub/Sub OIDC token");
   const oauth = new google.auth.OAuth2();
-  await oauth.verifyIdToken({ idToken, audience });
+  const ticket=await oauth.verifyIdToken({ idToken, audience });
+  validatePushIdentity(ticket.getPayload(),process.env.GOOGLE_PUBSUB_SERVICE_ACCOUNT_EMAIL);
 
   const envelope = await readJson(request);
   const encoded = String(envelope?.message?.data || "");
   const notification = JSON.parse(Buffer.from(encoded, "base64").toString("utf8") || "{}");
-  const voided = notification.voidedPurchaseNotification;
-  // productType=2 is a voided one-time product. Purchase/cancel notifications are
-  // state-change hints, not proof that an already-granted entitlement was refunded.
-  if (Number(voided?.productType) !== 2 || !voided?.purchaseToken) {
-    return { ignored: true };
-  }
-  const purchaseTokenHash = createHash("sha256").update(String(voided.purchaseToken)).digest("hex");
-  return callNakamaVerifierRpc("google_play_rtdn_confirm", { purchase_token_hash: purchaseTokenHash });
+  const result=await enqueueNotification({notification,packageName:String(process.env.GOOGLE_PLAY_PACKAGE_NAME||''),key:recoveryKey(process.env.PURCHASE_RECOVERY_ENCRYPTION_KEY),
+    bridge:payload=>callNakamaVerifierRpc('google_play_delivery',payload)});
+  console.log(JSON.stringify({event:'google_play_rtdn_accepted',notification_type:notification.testNotification?'test':notification.oneTimeProductNotification?'one_time':notification.voidedPurchaseNotification?'voided':'other',queued:result?.queued===true}));
+  return result;
 }
 
 const server = createServer(async (request, response) => {
@@ -174,13 +175,8 @@ const server = createServer(async (request, response) => {
       console.warn(JSON.stringify({ event: "admob_ssv_rejected", reason }));
       return json(response, 400, { error: reason });
     }
-    if (route === "/admob/ssv") {
-      const reason = ssvErrorReason(error);
-      console.warn(JSON.stringify({ event: "admob_ssv_rejected", reason }));
-      return json(response, 400, { error: reason });
-    }
-    console.error(error);
-    return json(response, 400, { error: error instanceof Error ? error.message : "request_failed" });
+    console.warn(JSON.stringify({event:'payment_bridge_request_failed',route}));
+    return json(response, 503, { error: 'provider_or_bridge_unavailable' });
   }
 });
 
@@ -201,4 +197,15 @@ async function runFinancialSync() {
 server.listen(port, () => {
   console.log(`Monetization verifier listening on :${port}`);
   setTimeout(runFinancialSync, 5000).unref();
+  setTimeout(runRecovery, 1000).unref();
 });
+
+async function runRecovery(){
+  try{
+    if(process.env.PURCHASE_RECOVERY_ENABLED!=='true')return;
+    const key=recoveryKey(process.env.PURCHASE_RECOVERY_ENCRYPTION_KEY);
+    const auth=new google.auth.GoogleAuth({scopes:['https://www.googleapis.com/auth/androidpublisher']});
+    await recoverBatch({key,packageName:String(process.env.GOOGLE_PLAY_PACKAGE_NAME||''),publisher:google.androidpublisher({version:'v3',auth}),bridge:payload=>callNakamaVerifierRpc('google_play_delivery',payload)});
+  }catch(_e){console.warn('Payment recovery unavailable; durable jobs retained for retry.');}
+  finally{setTimeout(runRecovery,10000).unref();}
+}
