@@ -12,7 +12,7 @@ function callback(fields = {}) {
   const params = new URLSearchParams({ ad_unit: "123", transaction_id: "fixture-transaction", ...fields });
   params.sort();
   const signed = params.toString();
-  const signature = sign("sha256", Buffer.from(signed), privateKey).toString("base64url");
+  const signature = sign("sha256", Buffer.from(decodeURIComponent(signed)), privateKey).toString("base64url");
   return "/admob/ssv?" + signed + "&signature=" + signature + "&key_id=fixture";
 }
 function setup() {
@@ -65,4 +65,26 @@ test("duplicate security parameters rejected and downstream failure not acknowle
   await assert.rejects(processAdmobCallback(callback(metadata), s.options));
   assert(!s.events.includes("admob_ssv_reward_confirmed"));
   assert.equal(ssvErrorReason(Error("Bearer private credential")), "VERIFICATION_OR_BRIDGE_UNAVAILABLE");
+});
+
+// This is the encoding difference seen in the real Android callback.
+test("Google URI.getQuery signed UTF-8 handles escaped JSON, literal plus and percent once", async () => {
+  const s = setup();
+  const fields = { user_id: "fixture+user", custom_data: JSON.stringify({ad_session_id: "session+%2F & t", user_id: "fixture+user"}) };
+  const url = callback(fields);
+  await processAdmobCallback(url, s.options);
+  assert.equal(s.confirmations[0].ad_session_id, "session+%2F & t");
+  assert.equal(s.confirmations[0].user_id, "fixture+user");
+  await assert.rejects(processAdmobCallback(url.replace("fixture%2Buser", "tampered"), setup().options), /INVALID_SIGNATURE/);
+  await assert.rejects(processAdmobCallback(url.replace("custom_data=", "custom_data=%ZZ"), setup().options), /INVALID_SIGNATURE/);
+});
+
+test("raw encoded JSON signature is not the Google URI.getQuery representation", async () => {
+  const unsigned = new URLSearchParams({ad_unit: "123", transaction_id: "t", ...metadata});
+  unsigned.sort();
+  const raw = unsigned.toString();
+  const signature = sign("sha256", Buffer.from(raw), privateKey).toString("base64url");
+  const s = setup();
+  await assert.rejects(processAdmobCallback("/admob/ssv?" + raw + "&signature=" + signature + "&key_id=fixture", s.options), /INVALID_SIGNATURE/);
+  assert.equal(s.confirmations.length, 0);
 });

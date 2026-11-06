@@ -79,7 +79,7 @@ const keepAlive=setInterval(()=>{},1000);
  const callbackBase='http://127.0.0.1:'+callbackServer.address().port;
  function signed(custom,tx,extra={}){
   const params=new URLSearchParams({ad_unit:'123',user_id:custom.user_id,custom_data:JSON.stringify(custom),transaction_id:tx,reward_amount:'999',reward_item:'forged-gems',...extra});params.sort();
-  const payload=params.toString();return '/admob/ssv?'+payload+'&signature='+sign('sha256',Buffer.from(payload),privateKey).toString('base64url')+'&key_id=local-test';
+  const payload=params.toString();return '/admob/ssv?'+payload+'&signature='+sign('sha256',Buffer.from(decodeURIComponent(payload)),privateKey).toString('base64url')+'&key_id=local-test';
  }
  async function callback(url,expected=200){const r=await fetch(callbackBase+url);const body=await r.json();assert.equal(r.status,expected,JSON.stringify(body));return body;}
  const mission='daily_mission_talisman_fragment_ad';let last;

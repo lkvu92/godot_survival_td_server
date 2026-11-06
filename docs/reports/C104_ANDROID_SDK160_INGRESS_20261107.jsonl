@@ -1,0 +1,14 @@
+{"event": "capture_ready", "started_at_utc": "2026-11-06T19:43:59Z", "seconds": 130, "filter": "verifier HTTP SSV only; payload redacted"}
+{"event": "ssv_ingress", "fields": ["ad_network", "ad_unit", "custom_data", "key_id", "reward_amount", "reward_item", "signature", "timestamp", "transaction_id", "user_id"], "has_signature": true, "ad_unit": "5496497462", "user_hash": "40bc00ed028a", "session_hash": "147e904bbc69", "custom_user_matches": true, "has_session": true, "has_transaction": true}
+{"event": "ssv_http_response", "status": "400"}
+{"event": "ssv_ingress", "fields": ["ad_network", "ad_unit", "custom_data", "key_id", "reward_amount", "reward_item", "signature", "timestamp", "transaction_id", "user_id"], "has_signature": true, "ad_unit": "5496497462", "user_hash": "40bc00ed028a", "session_hash": "147e904bbc69", "custom_user_matches": true, "has_session": true, "has_transaction": true}
+{"event": "ssv_http_response", "status": "400"}
+{"event": "ssv_ingress", "fields": ["ad_network", "ad_unit", "custom_data", "key_id", "reward_amount", "reward_item", "signature", "timestamp", "transaction_id", "user_id"], "has_signature": true, "ad_unit": "5496497462", "user_hash": "40bc00ed028a", "session_hash": "147e904bbc69", "custom_user_matches": true, "has_session": true, "has_transaction": true}
+{"event": "ssv_http_response", "status": "400"}
+{"event": "ssv_ingress", "fields": ["ad_network", "ad_unit", "custom_data", "key_id", "reward_amount", "reward_item", "signature", "timestamp", "transaction_id", "user_id"], "has_signature": true, "ad_unit": "5496497462", "user_hash": "40bc00ed028a", "session_hash": "147e904bbc69", "custom_user_matches": true, "has_session": true, "has_transaction": true}
+{"event": "ssv_http_response", "status": "400"}
+{"event": "ssv_ingress", "fields": ["ad_network", "ad_unit", "custom_data", "key_id", "reward_amount", "reward_item", "signature", "timestamp", "transaction_id", "user_id"], "has_signature": true, "ad_unit": "5496497462", "user_hash": "40bc00ed028a", "session_hash": "147e904bbc69", "custom_user_matches": true, "has_session": true, "has_transaction": true}
+{"event": "ssv_http_response", "status": "400"}
+{"event": "ssv_ingress", "fields": ["diagnostic"], "has_signature": false, "ad_unit": "", "user_hash": "e3b0c44298fc", "session_hash": "e3b0c44298fc", "custom_user_matches": false, "has_session": false, "has_transaction": false}
+{"event": "ssv_http_response", "status": "400"}
+{"event": "capture_finished", "ssv_requests": 6, "ssv_responses": 6}

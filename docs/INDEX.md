@@ -406,3 +406,7 @@ C252 1.1.0: job-local admission validation cache and batched stage-wave transpor
 [C271](contracts/C271_PAYMENT_DELIVERY_RECOVERY.md): runtime/worker/admin deployed; exact RTDN Push identity and Google acceptance pending (IN_PROGRESS, 2026-11-06). [Operations](PAYMENT_DELIVERY_OPERATIONS.md) · [Deployment](reports/C271_DEPLOYMENT.md).
 
 C252 1.1.2: production bulk-catalog timeout; remove redundant server JSON round-trip and allow 30 seconds for the client catalog request.
+
+- C104 1.13.2: real Android SSV fails raw-query signature verification; percent-decoded signed content matches Google reference and public key. Local fix, 14 verifier tests and isolated Nakama PASS; deployed runtime image with clean VPS checkout. New real device view automatically granted stamina 149 -> 164.
+
+- C180 1.0.3: Hero 1 ice-domain radius grows 10% per level with matching visuals and no top-only fade; server snapshot publishing required.

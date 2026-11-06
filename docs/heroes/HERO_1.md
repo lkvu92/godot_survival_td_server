@@ -127,7 +127,7 @@ Skill hỗ trợ, **không gây sát thương trực tiếp**. Mỗi lần tạo
 |---|---:|---:|---:|---:|---:|
 | Hồi chiêu (s) (`cooldown`) | 15 | 14.5 | 14 | 13.5 | 13 |
 | Thời gian băng giới (s) (`domain_duration`) | 6 | 7 | 8 | 9 | 10 |
-| Bán kính băng giới (px) (`domain_radius`) | 240 | 250 | 260 | 270 | 280 |
+| Bán kính băng giới (px) (`domain_radius`) | 240 | 264 | 290.4 | 319.44 | 351.384 |
 | Giảm tốc độ đánh quái (%) (`attack_speed_slow`) | 20 | 22.5 | 25 | 27.5 | 30 |
 | Giảm giáp quái (%) (`def_reduction`) | 15 | 17.5 | 20 | 22.5 | 25 |
 

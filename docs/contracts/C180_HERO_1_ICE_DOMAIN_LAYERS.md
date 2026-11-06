@@ -1,8 +1,8 @@
 # C180 — Hero 1: Cực Địa Băng Giới, các tầng hiển thị
 
 Status: ACTIVE
-Version: 1.0.2
-Updated: 2026-10-24
+Version: 1.0.3
+Updated: 2026-11-07
 
 Thông số hiện hành: [Hero 1](../heroes/HERO_1.md), [mục lục 5 hero](../HERO_SKILLS_CURRENT.md).
 Sau C189, băng giới là **hero_1_skill_3**, không phải slot 4. Tên asset
@@ -17,7 +17,7 @@ Mở theo hero Lv20, chọn trong trận từ Lv10.
 |---|---:|---:|---:|---:|---:|
 | Hồi chiêu (s) | 15 | 14.5 | 14 | 13.5 | 13 |
 | Tồn tại (s) | 6 | 7 | 8 | 9 | 10 |
-| Bán kính (px) | 240 | 250 | 260 | 270 | 280 |
+| Bán kính (px) | 240 | 264 | 290.4 | 319.44 | 351.384 |
 | Giảm tốc đánh quái (%) | 20 | 22.5 | 25 | 27.5 | 30 |
 | Giảm giáp quái (%) | 15 | 17.5 | 20 | 22.5 | 25 |
 
@@ -46,3 +46,22 @@ không có fallback gameplay JSON phía client. UiSkin/signals không đổi.
 | 1.0.2 | 2026-10-24 | Đồng bộ mô tả hiện hành, slot3 và bảng theo cấp; liên kết trang Hero1. |
 | 1.0.1 | 2026-10-24 | Đường cong hỗ trợ theo cấp, không damage, thay vùng theo owner. |
 | 1.0.0 | 2026-10-23 | Phiên bản lịch sử có field10s/CD15s và slot4 trước C189. |
+
+## 1.0.3 - Circular field scaling
+
+Radius is authoritative per-level server data: 240 * 1.1^(level-1),
+unchanged base level and 10% growth over the preceding level. Ground circle,
+trail, beam and seal scale consistently with the radius; enemy queries and
+slow gradient use that exact radius. Remove directional top alpha fade, retain
+the uniform feathered circular boundary and animation fade-in/out. No new RPC,
+offline fallback or change to cast range, timing, damage or other debuffs.
+Existing field keeps its cast snapshot; updated level applies on next cast.
+
+| 1.0.3 | 2026-11-07 | Remove directional fade and scale radius and visuals by 10% per skill level. |
+
+Validation: Godot runtime fixture PASS for all five radii, targets immediately
+inside/outside, slow, cleanup, field bounds and visual scaling; client static
+checks and Nakama build PASS. Existing hero damage balance suite fails its C197
+baseline hash even with unchanged HEAD skills.json; further execution also
+reports an unrelated hero_4_skill_1 expectation. No Android render or production
+config publication has been performed.

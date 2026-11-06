@@ -1,6 +1,6 @@
 # C104 — Monetization recovery and SSV bridge
 
-Version: 1.13.1 | Status: IN_PROGRESS | Updated: 2026-11-06
+Version: 1.13.2 | Status: IN_PROGRESS | Updated: 2026-11-07
 
 Canonical feature contract: [client C104](../../../client/docs/contracts/C104_MONETIZATION.md).
 
@@ -22,6 +22,15 @@ the full receipt batch and uses existing resolve/claim RPCs. Server ownership,
 idempotency and online-only reward authority remain unchanged. No SQL schema,
 catalog, reward or new public RPC. No offline grants.
 
+## Signed content encoding
+
+Match the Google Java URI.getQuery reference: percent-decode the signed query
+prefix once as UTF-8 before ECDSA SHA-256 verification. Preserve parameter order
+and literal plus signs; do not form-decode or reserialize. Parse metadata from
+the original query with URLSearchParams. Malformed encoding is rejected.
+Android real callback evidence: raw verification false, decoded verification
+true using the current Google public key. Strict SSV remains mandatory.
+
 ## Verification
 
 Exercise valid signed probe/no grant, valid reward callback, tampering, wrong
@@ -35,13 +44,14 @@ uses actual isolated PostgreSQL/Nakama with multi-server enabled. Direct grant
 adds 15 stamina once. Signed fixture HTTP callbacks preserve user/session and
 grant one low fragment only on daily action three. Wrong unit/signature/user,
 wrong owner, replay, callback reward overrides and cross-server/account effects
-are checked. Production Google callback receipt remains unresolved. See
+are checked. 2026-11-07 real callback arrived; signed-content decoding fixed and deployed from local source. New device view automatically granted stamina 149 -> 164. Other Android crash/placement acceptance remains open. See
 docs/reports/ADMOB_SSV_MISSING_CALLBACK_20261106.md.
 
 ## Changelog
 
 | Version | Date | Change |
 |---|---|---|
+| 1.13.2 | 2026-11-07 | Match Google URI.getQuery percent-decoding before signature verification; real Android callback regression. |
 | 1.13.1 | 2026-11-06 | Signed empty Console probes may use a different ad unit; no-grant probe branch precedes reward unit allowlist. Real rewards retain strict unit validation. |
 | 1.13.0 | 2026-11-06 | C271 adds encrypted receipt intake, durable worker recovery and delivery-before-finalization; live RTDN acceptance remains pending. |
 | 1.12.0 | 2026-11-04 | Signed setup probe without grant; sanitized verifier diagnostics and pending recovery integration. |

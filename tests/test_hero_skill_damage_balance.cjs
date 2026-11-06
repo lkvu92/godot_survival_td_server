@@ -19,7 +19,8 @@ baselineSkills.find(s=>s.id==='hero_1_skill_4').levels.forEach((l,i)=>{
   l.stats.speed_pct=[10,20,30,40,50][i];l.stats.freeze_duration=0.3;
   delete l.stats.freeze_chance;delete l.stats.freeze_damage_multiplier;
 });
-baselineSkills.find(s=>s.id==='hero_1_skill_3').levels.forEach(l=>{
+baselineSkills.find(s=>s.id==='hero_1_skill_3').levels.forEach((l,i)=>{
+  l.stats.domain_radius=[240,250,260,270,280][i];
   l.stats.damage_pct=20;l.stats.attack_speed_slow=0.3;l.stats.def_reduction=0.2;
 });
 baselineIce.flank_bolt_config.damage_multiplier=0.6;
@@ -135,7 +136,7 @@ for(const [i,level] of iceDomain.levels.entries()){
   const stats=level.stats;
   assert.equal(stats.cooldown,[15,14.5,14,13.5,13][i]);
   assert.equal(stats.domain_duration,[6,7,8,9,10][i]);
-  assert.equal(stats.domain_radius,[240,250,260,270,280][i]);
+  assert.equal(stats.domain_radius,[240,264,290.4,319.44,351.384][i]);
   assert.equal(stats.attack_speed_slow,[0.2,0.225,0.25,0.275,0.3][i]);
   assert.equal(stats.def_reduction,[0.15,0.175,0.2,0.225,0.25][i]);
   assert.equal(stats.damage_pct,0,'Support domain does not deal direct damage');

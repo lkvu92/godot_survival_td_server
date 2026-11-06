@@ -18,8 +18,13 @@ export async function verifyAdmobCallback(rawUrl, { getKeys, expectedAdUnit }) {
   for (const name of ["signature", "key_id", "ad_unit", "custom_data", "user_id", "transaction_id"]) {
     if (params.getAll(name).length > 1) throw new Error("DUPLICATE_PARAMETER");
   }
+  // Google's reference uses URI.getQuery(), which percent-decodes once.
+  // Preserve literal '+' and parameter order; URLSearchParams.toString() changes both.
+  let signedContent;
+  try { signedContent = decodeURIComponent(query.slice(0, signatureIndex)); }
+  catch { throw new Error("INVALID_SIGNATURE"); }
   const pem = (await getKeys()).get(params.get("key_id") || "");
-  if (!pem || !verifySignature("sha256", Buffer.from(query.slice(0, signatureIndex)), pem,
+  if (!pem || !verifySignature("sha256", Buffer.from(signedContent, "utf8"), pem,
     fromBase64Url(params.get("signature") || ""))) throw new Error("INVALID_SIGNATURE");
   const adUnit = params.get("ad_unit") || "";
 

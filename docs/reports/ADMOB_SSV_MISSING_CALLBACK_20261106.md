@@ -179,3 +179,41 @@ reward flow. No source/config/reward writes were made on the VPS.
 
 Evidence: C104_ANDROID_INGRESS_20261107.jsonl,
 C104_ANDROID_NETWORK_20261107.txt. Strict SSV acceptance remains open.
+
+## 2026-11-07 SDK 1.6.0: real SSV root cause and acceptance
+
+Android SDK 1.6.0 native earned callback reached Google and actual Google SSV
+reached the verifier with configured unit 5496497462, matching user/session.
+Five provider retries returned HTTP 400 INVALID_SIGNATURE. This supersedes the
+previous observation of no callback; those earlier captures were earlier runs.
+
+Using the actual captured callback and Google's current public key, raw signed
+query verification was false; percent-decoded signed prefix verification was
+true. Google reference uses Java URI.getQuery, which percent-decodes. Local
+verifier now decodes once before SHA-256 ECDSA, preserving order and literal +.
+URLSearchParams still parses original metadata; no unverified grant path added.
+All five actual callback retries verify locally without calling Nakama.
+
+Verifier 14/14 tests and syntax checks PASS. Isolated PostgreSQL/Nakama runtime
+regressions PASS: stamina 10 -> 25 once, daily reward third completion only,
+replay/ownership/account/server isolation and callback reward overrides checked.
+
+Deployment: source edited only locally. Docker image built from the existing
+production image plus local admob_ssv.js (image manifest
+9a1b25ecdcdb6e8dc3c9492e15bb23b2f3996a3aa115f9963ac5b17280e01d41).
+Production compose service recreated with --no-build; Nginx test/reload PASS.
+VPS repository git status remained clean; no VPS checkout files edited.
+Rollback image: survival-td-monetization-verifier:c104-before-decoding.
+
+First recovery: replayed the genuine Google-signed callback for the viewed
+19:48 UTC session, HTTP 200; replay again HTTP 200 and no extra grant. Client
+retry confirmed stamina 134 -> 149 and remaining ads 3/3 -> 2/3.
+Then a NEW device rewarded view completed with no manual HTTP replay: Google
+callback -> verified -> reward_confirmed; stamina 149 -> 164, remaining 2/3 ->
+1/3. No freeze/crash observed in these views. This does not prove old Godot
+SIGSEGV or every placement resolved. Side-by-side diagnostic package differs
+from Play package; existing Play APK has not been replaced by this test.
+
+Raw signed callback material stays in ignored local tmp, excluded from reports.
+Sanitized pre-fix ingress: C104_ANDROID_SDK160_INGRESS_20261107.jsonl.
+Reference: https://developers.google.com/admob/android/ssv#get_content_to_be_verified

@@ -65,9 +65,9 @@
     },
     {
       "id": "C104_MONETIZATION",
-      "version": "1.13.1",
+      "version": "1.13.2",
       "status": "IN_PROGRESS",
-      "updated_at": "2026-11-06",
+      "updated_at": "2026-11-07",
       "contract_file": "docs/contracts/C104_MONETIZATION.md"
     },
     {
@@ -430,9 +430,9 @@
     },
     {
       "id": "C180_HERO_1_ICE_DOMAIN_LAYERS",
-      "version": "1.0.2",
+      "version": "1.0.3",
       "status": "ACTIVE",
-      "updated_at": "2026-10-24",
+      "updated_at": "2026-11-07",
       "contract_file": "docs/contracts/C180_HERO_1_ICE_DOMAIN_LAYERS.md"
     },
     {
