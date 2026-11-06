@@ -164,9 +164,9 @@
     },
     {
       "id": "C239_LEVELLED_ENEMY_FRAMEWORK",
-      "version": "1.7.0",
+      "version": "1.7.1",
       "status": "ACTIVE",
-      "updated_at": "2026-11-05",
+      "updated_at": "2026-11-06",
       "contract_file": "docs/contracts/C239_LEVELLED_ENEMY_FRAMEWORK.md"
     },
     {

@@ -25,7 +25,8 @@ C250 operations: [runbook](ARCHIVE_RECOVERY_RUNBOOK.md), contract 1.0.0 TESTED_S
 - C239 v1.4 Arc 1 local migration: all ten stages, random/dual elements and native skills; ACTIVE. [Acceptance and UI proof](reports/C239_ARC1_ACCEPTANCE.md).
 - C239 v1.2: creep/boss canonical atlas migration and native executor bindings; ACTIVE.
 - [C240 Shared combat damage](contracts/C240_SHARED_COMBAT_DAMAGE.md): deterministic kernel, neutral basics and explicit skill elements across gameplay/tower/tribulation; ACTIVE. [Usage](COMBAT_DAMAGE.md), [acceptance](reports/C240_ACCEPTANCE.md).
-- [C239 Levelled enemies and shared skill atlas](contracts/C239_LEVELLED_ENEMY_FRAMEWORK.md): opt-in framework and isolated stage pilot; ACTIVE. [Acceptance](reports/C239_ACCEPTANCE.md).
+- [C239 Levelled enemies and shared skill atlas](contracts/C239_LEVELLED_ENEMY_FRAMEWORK.md): v1.7.1 explicit target-derived production rollout for 70 stages, C259 import/publication and protected rollback; ACTIVE. [Acceptance](reports/C239_ACCEPTANCE.md).
+- [C239 production stage migration](reports/C239_PRODUCTION_STAGE_MIGRATION.md): 70 stages / 1,385 waves, enemy release 2 / config 21, backup and tested rollback (2026-11-06).
 - [C237 Chu Tước rework](contracts/C237_ARC7_VAN_YEU_CO_LINH.md) v1.6.1: six-angle feather shots converge on the locked snapshot center; retains Lv60 campaign progression.
 - [C196 v1.5 Skill 1 H4](contracts/C196_HERO4_SKILL_REBALANCE.md): phục hồi sát thương trực tiếp 40/55/70/85/100% ATK sau C238; giữ nguyên độc và hồi chiêu.
 - [C238 Hero growth balance](contracts/C238_HERO_GROWTH_BALANCE.md) v1.1.1: [Lv1/30/50/70 simulation and exact curves](HERO_STATS_CURRENT.md), approved H2/H4 growth; [production rollout verified](reports/C238_PRODUCTION_ROLLOUT.md).

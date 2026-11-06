@@ -1,6 +1,14 @@
 # C239 Levelled enemies and shared skill atlas
 
-Version: 1.7.0 | Status: ACTIVE | Date: 2026-11-05
+Version: 1.7.1 | Status: ACTIVE | Date: 2026-11-06
+
+## Explicit production campaign rollout (1.7.1)
+
+The authorized rollout imports the target production catalog through C259 and enables the 70 canonical Arc 1–7 stages in one transaction with catalog publication. It is not a generic seed or a local DB copy. Plan against a consistent target snapshot; require CAS on stage/wave/config/catalog inputs, backup and a tested rollback. Preserve target species/skills/baselines, stage levels, unlocks, loot, recommendations, count, EXP and spawn timing. Clear only legacy stage boss skill selectors, replace wave entries with validated canonical v2 loadouts, and install v2 stage rules while retaining target required_user_level. Two compatibility stages stay legacy. Keep the existing v2 scheduler until each stage is explicitly saved through C269; opening Stage Designer must not change pacing or element policy. All three difficulties must validate, and authenticated bootstrap must admit the published snapshot. Existing runs retain version admission rules; no client fallback or player-state writes.
+
+|Version|Date|Change|
+|---|---|---|
+|1.7.1|2026-11-06|Explicit target-derived C259 import and atomic 70-stage production rollout, protected by backup/CAS/readback and rollback.|
 
 ## Scope and authority
 Version 2 is opt-in per stage.stage_rules.enemy_framework_version. Legacy stages retain their original spawn/stat generation. Damage resolution for every stage is shared under C240. Authoritative catalog is progression.enemy_framework, transported by the existing authenticated config bootstrap RPC (request {table:"all"}; response progression includes enemy_framework). Existing game_config progression seed path is reused. No new RPC, local gameplay fallback, profile mutation or production publication. Test-only fixtures may load explicit server data in the existing harness.
