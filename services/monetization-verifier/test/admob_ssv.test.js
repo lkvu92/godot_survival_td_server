@@ -35,8 +35,15 @@ test("valid reward preserves identifiers for the trusted bridge exactly once", a
   assert.deepEqual(s.events, ["admob_ssv_received_verified", "admob_ssv_reward_confirmed"]);
   assert(!JSON.stringify(s.events).includes("fixture-user"));
 });
+test("signed empty Console probe with another unit never grants; real reward still rejects", async () => {
+  const s = setup();
+  assert.deepEqual(await processAdmobCallback(callback({ ad_unit: "console-test-unit" }), s.options), { ok: true, verification_probe: true });
+  assert.equal(s.confirmations.length, 0);
+  await assert.rejects(processAdmobCallback(callback({ ...metadata, ad_unit: "console-test-unit" }), s.options), /UNEXPECTED_AD_UNIT/);
+  assert.equal(s.confirmations.length, 0);
+});
 test("tampering, unknown key, wrong unit and unsigned probe never reach bridge", async () => {
-  for (const url of [callback().replace("ad_unit=123", "ad_unit=999"), callback().replace("key_id=fixture", "key_id=other"), callback({ ad_unit: "999" }), "/admob/ssv"]) {
+  for (const url of [callback().replace("ad_unit=123", "ad_unit=999"), callback().replace("key_id=fixture", "key_id=other"), callback({ ...metadata, ad_unit: "999" }), "/admob/ssv"]) {
     const s = setup();
     await assert.rejects(processAdmobCallback(url, s.options));
     assert.equal(s.confirmations.length, 0);

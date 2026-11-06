@@ -382,7 +382,8 @@ C252 1.1.0: job-local admission validation cache and batched stage-wave transpor
 
 - C104 1.11.6 / C233 Android production 2026-11-04: release APK installed; Google license-test purchase/cancel/decline, mailbox claim and localized VND price verified scoped. Rewarded SDK earned but server remains prepared; pending resolution and financial sync remain open. [Device evidence](../../client/docs/reports/C104_C233_20261104/device-production/README.md).
 
-- [C104 1.12.0 recovery](contracts/C104_MONETIZATION.md): pending/resume full-batch receipt recovery and Google-signed SSV Console setup probe without rewards; implementation/acceptance in progress.
+- [C104 1.13.1 recovery](contracts/C104_MONETIZATION.md): signed empty SSV Console probes accept the probe unit without granting rewards; real reward callbacks retain the configured ad-unit allowlist. Pending/resume recovery and live acceptance remain in progress.
+- [C104 native grant/callback investigation](reports/ADMOB_SSV_MISSING_CALLBACK_20261106.md): actual isolated Nakama/PostgreSQL direct grant and signed HTTP callback tests PASS; production Google reward callback remains missing.
 
 - [C261 Boss speed reduction](contracts/C261_BOSS_SPEED_REDUCTION.md): attack speed x0.70 and movement speed x0.60 across all elements; local draft:431 TESTED_SCOPED; production pending.
 

@@ -22,13 +22,13 @@ export async function verifyAdmobCallback(rawUrl, { getKeys, expectedAdUnit }) {
   if (!pem || !verifySignature("sha256", Buffer.from(query.slice(0, signatureIndex)), pem,
     fromBase64Url(params.get("signature") || ""))) throw new Error("INVALID_SIGNATURE");
   const adUnit = params.get("ad_unit") || "";
-  if (!expectedUnit(adUnit, expectedAdUnit)) throw new Error("UNEXPECTED_AD_UNIT");
 
   const customText = params.get("custom_data") || "";
   const callbackUser = params.get("user_id") || "";
   // AdMob Console's default Verify URL request has no game session metadata.
   // Prove the signed endpoint is reachable, without touching a reward ledger.
   if (!customText && !callbackUser) return { verification_probe: true };
+  if (!expectedUnit(adUnit, expectedAdUnit)) throw new Error("UNEXPECTED_AD_UNIT");
   let custom;
   try { custom = JSON.parse(customText); } catch { throw new Error("INVALID_CUSTOM_DATA"); }
   if (!custom || typeof custom !== "object" || Array.isArray(custom)) throw new Error("INVALID_CUSTOM_DATA");

@@ -1,0 +1,59 @@
+{
+  "environment": "isolated local Nakama 3.24.2 + PostgreSQL 16",
+  "signatures": "local fixture key, never Google production proof",
+  "results": [
+    {
+      "case": "direct_grant",
+      "function": "admobSsvConfirm -> grantPreparedReward",
+      "before": 10,
+      "after": 25,
+      "delta": 15,
+      "replay_delta": 0,
+      "status": "granted"
+    },
+    {
+      "case": "signed_callback_1",
+      "handler_entered": true,
+      "bridge_entered": true,
+      "user_matches": true,
+      "session_matches": true,
+      "ledger_reward": "daily_fragment",
+      "daily_progress": 1,
+      "inventory_quantity": 0,
+      "status": "granted"
+    },
+    {
+      "case": "signed_callback_2",
+      "handler_entered": true,
+      "bridge_entered": true,
+      "user_matches": true,
+      "session_matches": true,
+      "ledger_reward": "daily_fragment",
+      "daily_progress": 2,
+      "inventory_quantity": 0,
+      "status": "granted"
+    },
+    {
+      "case": "signed_callback_3",
+      "handler_entered": true,
+      "bridge_entered": true,
+      "user_matches": true,
+      "session_matches": true,
+      "ledger_reward": "daily_fragment",
+      "daily_progress": 3,
+      "inventory_quantity": 1,
+      "status": "granted"
+    },
+    {
+      "case": "negative_and_isolation",
+      "wrong_unit_rejected_before_bridge": true,
+      "user_metadata_mismatch_rejected_before_bridge": true,
+      "invalid_signature_rejected_before_bridge": true,
+      "wrong_ledger_owner_no_grant": true,
+      "other_user_unchanged": true,
+      "other_server_unchanged": true,
+      "legacy_storage_unchanged": true,
+      "callback_cannot_select_reward": true
+    }
+  ]
+}

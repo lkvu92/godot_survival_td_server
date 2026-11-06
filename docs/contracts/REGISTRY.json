@@ -65,7 +65,7 @@
     },
     {
       "id": "C104_MONETIZATION",
-      "version": "1.13.0",
+      "version": "1.13.1",
       "status": "IN_PROGRESS",
       "updated_at": "2026-11-06",
       "contract_file": "docs/contracts/C104_MONETIZATION.md"
